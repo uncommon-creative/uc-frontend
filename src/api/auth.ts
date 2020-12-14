@@ -1,32 +1,48 @@
 import Amplify, { Auth } from 'aws-amplify';
+import { env } from 'process';
+import { configuration } from '../config'
 
 export const configure = () => {
 
-  Amplify.configure({
-    Auth: {
-
-      // REQUIRED - Amazon Cognito Region
-      region: 'eu-west-1',
-
-      // OPTIONAL - Amazon Cognito User Pool ID
-      userPoolId: 'eu-west-1_oTpx48dzK',
-
-      userPoolWebClientId: '3q5cqr56mn53eieb2i7l5vokf',
-
-      // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
-      mandatorySignIn: false
-
-    }
-  });
+  const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
+  Amplify.configure(configuration[stage]);
 
 }
 
 export const isAuthenticated = async () => {
-  try{
+  try {
     const user = await Auth.currentAuthenticatedUser();
     return true;
-  }catch(error){
+  } catch (error) {
     return false;
   }
 
+}
+
+export const login = async (username: any, password: any) => {
+
+  try {
+    const user = await Auth.signIn(username, password);
+    console.log('with result: ', user)
+  } catch (error) {
+    console.log('with error: ', error)
+    throw error;
+  }
+}
+
+export const signup = async (email: any, password: any) => {
+  try {
+    const user = await Auth.signUp({
+      username: email,
+      password,
+      attributes: {
+        email,
+        // 'custom:favorite_flavor': 'Cookie Dough'  // custom attribute, not standard
+      }
+    })
+    console.log('with signup result: ', user)
+  } catch (error) {
+    console.log('with signup error: ', error)
+    throw error;
+  }
 }

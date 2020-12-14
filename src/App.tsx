@@ -4,11 +4,14 @@ import './App.scss';
 import { Provider } from 'react-redux'
 import { configureStore } from './store'
 import { AppRouter } from './router'
+import { NotificationLayer } from './notification'
 
 function App() {
   return (
     <Provider store={configureStore({})}>
-      <AppRouter />
+      <NotificationLayer>
+        <AppRouter />
+      </NotificationLayer>
     </Provider>
   );
 }

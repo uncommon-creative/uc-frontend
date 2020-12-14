@@ -6,8 +6,13 @@ import {
   Link,
   Redirect,
 } from "react-router-dom";
+import { Header } from "./header";
+import { Container } from "reactstrap";
 
-import { Home } from './pages/Home'
+import { Home } from './pages/home'
+import { LoginPage } from './pages/login'
+import { SignupPage } from './pages/signup'
+import { SignupConfirmPage } from './pages/signupConfirm'
 
 import * as AuthApi from './api/auth'
 
@@ -48,28 +53,24 @@ const PrivateRoute = ({ children: Component, ...rest }: any) => {
 export const AppRouter = () => {
   return (
     <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-            <li>
-              <Link to="/users">Users</Link>
-            </li>
-          </ul>
-        </nav>
-
+      <Header className="mb-3" />
+      <Container fluid>
         <Switch>
           <Route path="/about">
             <About />
           </Route>
           <Route path="/login">
-            <Login />
+            <LoginPage />
           </Route>
+          <Route path="/signup/confirm/:code">
+            <SignupConfirmPage />
+          </Route>          
+          <Route path="/signup/confirm/">
+            <SignupConfirmPage />
+          </Route>          
+          <Route path="/signup">
+            <SignupPage />
+          </Route>          
           <Route path="/users">
             <Users />
           </Route>
@@ -77,17 +78,13 @@ export const AppRouter = () => {
             <Home />
           </PrivateRoute>
         </Switch>
-      </div>
+      </Container>
     </Router>
   );
 }
 
 function About() {
   return <h2>About</h2>;
-}
-
-function Login() {
-  return <h2>Login</h2>;
 }
 
 function Users() {
