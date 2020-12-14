@@ -8,6 +8,6 @@ export function* sagas() {
 
 function* willShowNotification(action: any) {
   console.log('in willShowNotification function');
-  yield delay(3000)
+  yield delay(5000)
   yield put(NotificationActions.willHideNotification())
 }

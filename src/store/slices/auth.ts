@@ -4,12 +4,17 @@ import { transpileModule } from "typescript";
 export const currentSlice = createSlice({
   name: 'auth',
   initialState: {
+    confirmed: false,
     logged: false,
     error: undefined
   },
   reducers: {
+    willConfirmUser: (state, action: PayloadAction<any>) => state,
+    didConfirmUserSuccess: (state, action: PayloadAction<any>) => void(state.confirmed = true as any),
+    didConfirmUserFails: (state, action: PayloadAction<any>) => void(state.error = action.payload),
+
     willLoginUser: (state, action: PayloadAction<any>) =>  state,
-    didLoginUserSuccess: (state, action: PayloadAction<any>) =>  state.logged = true as any,
+    didLoginUserSuccess: (state, action: PayloadAction<any>) =>  void(state.logged = true as any),
     didLoginUserFails: (state, action: PayloadAction<any>) =>  void(state.error = action.payload),
 
     willSignupUser: (state, action: PayloadAction<any>) =>  state,
