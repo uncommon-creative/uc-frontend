@@ -11,9 +11,7 @@ import * as Yup from 'yup';
 
 import { actions as AuthActions, selectors as AuthSelectors } from '../store/slices/auth'
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Link
-} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
 const LoginSchema = Yup.object().shape({
@@ -56,7 +54,7 @@ export const LoginPage = () => {
             validateOnBlur={true}
             onSubmit={values => {
               console.log('in onsubmit with: ', values)
-              dispatch(AuthActions.wilLoginUser({ username: values.username, password: values.password }));
+              dispatch(AuthActions.willLoginUser({ username: values.username, password: values.password }));
             }}
           >
             {({ errors, touched, setFieldValue, values }) => (

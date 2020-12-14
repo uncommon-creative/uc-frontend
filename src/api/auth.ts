@@ -19,6 +19,17 @@ export const isAuthenticated = async () => {
 
 }
 
+export const confirm = async (username: any, code: any) => {
+  try {
+    const confirm = await Auth.confirmSignUp(username, code);
+    console.log('with result: ', confirm)
+    return confirm
+  } catch (error) {
+    console.log('with error: ', error)
+    throw error;
+  }
+}
+
 export const login = async (username: any, password: any) => {
 
   try {
