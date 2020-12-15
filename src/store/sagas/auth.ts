@@ -24,7 +24,6 @@ function* willConfirmUser(action: any) {
     console.log("willConfirmUser success result ", result)
     yield put(AuthActions.didConfirmUserSuccess(result));
 
-    // yield delay(3000);
     yield put(NotificationActions.willShowNotification({ message: result, type: "success" }));
     action.payload.history.push('/login')
   } catch (error) {
@@ -51,7 +50,11 @@ function* willSignupUser(action: any) {
   try {
     yield put(UIActions.startActivityRunning("signup"));
     localStorage.setItem('username', action.payload.email)
+<<<<<<< Updated upstream
     const result = yield call(AuthApi.signup, action.payload.email, action.payload.password)
+=======
+    const result = yield call(AuthApi.signup, action.payload.email, action.payload.password, action.payload.given_name, action.payload.family_name)
+>>>>>>> Stashed changes
     yield put(AuthActions.didSignupUserSuccess(result));
     //Redirect to Confirm 
     action.payload.history.push('/signup/confirm')
