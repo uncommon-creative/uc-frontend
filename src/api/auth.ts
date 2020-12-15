@@ -41,13 +41,15 @@ export const login = async (username: any, password: any) => {
   }
 }
 
-export const signup = async (email: any, password: any) => {
+export const signup = async (email: any, password: any, given_name: any, family_name: any) => {
   try {
     const user = await Auth.signUp({
       username: email,
       password,
       attributes: {
         email,
+        given_name,
+        family_name
         // 'custom:favorite_flavor': 'Cookie Dough'  // custom attribute, not standard
       }
     })
