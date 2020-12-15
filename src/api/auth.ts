@@ -35,6 +35,7 @@ export const login = async (username: any, password: any) => {
   try {
     const user = await Auth.signIn(username, password);
     console.log('with result: ', user)
+    return user
   } catch (error) {
     console.log('with error: ', error)
     throw error;

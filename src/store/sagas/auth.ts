@@ -38,13 +38,17 @@ function* willConfirmUser(action: any) {
 
 function* willLoginUser(action: any) {
   console.log('in willLoginUser with ', action)
+  yield put(UIActions.startActivityRunning("login"));
   try {
     const result = yield call(AuthApi.login, action.payload.username, action.payload.password)
+    console.log("result: ", result)
     yield put(AuthActions.didLoginUserSuccess(result));
+    action.payload.history.goBack()
   } catch (error) {
     yield put(AuthActions.didLoginUserFails(error));
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
+  yield put(UIActions.stopActivityRunning("login"));
 }
 
 function* willSignupUser(action: any) {

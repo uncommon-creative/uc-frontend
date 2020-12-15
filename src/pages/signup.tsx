@@ -15,11 +15,11 @@ import { Link, useHistory } from 'react-router-dom';
 import { ActivityButton } from '../components/ActivityButton'
 
 const LoginSchema = Yup.object().shape({
-  givenName: Yup.string()
+  name: Yup.string()
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
     .required('Required'),
-  familyName: Yup.string()
+  surname: Yup.string()
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
     .required('Required'),
@@ -72,8 +72,8 @@ export const SignupPage = () => {
             initialValues={{
               email: '',
               emailConfirm: '',
-              familyName: '',
-              givenName: '',
+              name: '',
+              surname: '',
               password: '',
               passwordConfirm: ''
             }}
@@ -81,34 +81,34 @@ export const SignupPage = () => {
             validateOnBlur={true}
             onSubmit={values => {
               console.log('in onsubmit with: ', values)
-              dispatch(AuthActions.willSignupUser({ email: values.email, password: values.password, family_name: values.familyName, given_name: values.givenName, history: history }));
+              dispatch(AuthActions.willSignupUser({ email: values.email, password: values.password, history: history }));
             }}
           >
             {({ errors, touched, setFieldValue, values }) => (
               <Form>
                 <FormGroup>
-                  <Label for="givenName">Name</Label>
-                  <Input invalid={errors.givenName && touched.givenName ? true : false} type="text" name="givenName" id="givenName" placeholder="with a placeholder" tag={Field} />
-                  {errors.givenName && touched.givenName ? (
-                    <FormFeedback>{errors.givenName}</FormFeedback>
+                  <Label for="username">Name</Label>
+                  <Input invalid={errors.name && touched.name ? true : false} type="text" name="name" id="name" placeholder="with a placeholder" tag={Field} />
+                  {errors.name && touched.name ? (
+                    <FormFeedback>{errors.name}</FormFeedback>
                   ) : null}
                 </FormGroup>
                 <FormGroup>
-                  <Label for="familyName">Surname</Label>
-                  <Input invalid={errors.familyName && touched.familyName ? true : false} type="text" name="familyName" id="familyName" placeholder="with a placeholder" tag={Field} />
-                  {errors.familyName && touched.familyName ? (
-                    <FormFeedback>{errors.familyName}</FormFeedback>
+                  <Label for="username">Surname</Label>
+                  <Input invalid={errors.surname && touched.surname ? true : false} type="text" name="surname" id="surname" placeholder="with a placeholder" tag={Field} />
+                  {errors.surname && touched.surname ? (
+                    <FormFeedback>{errors.surname}</FormFeedback>
                   ) : null}
                 </FormGroup>
                 <FormGroup>
-                  <Label for="email">Email Address</Label>
+                  <Label for="username">Email Address</Label>
                   <Input invalid={errors.email && touched.email ? true : false} type="text" name="email" id="email" placeholder="with a placeholder" tag={Field} />
                   {errors.email && touched.email ? (
                     <FormFeedback>{errors.email}</FormFeedback>
                   ) : null}
                 </FormGroup>
                 <FormGroup>
-                  <Label for="emailConfirm">Confirm Email Address</Label>
+                  <Label for="username">Confirm Email Address</Label>
                   <Input invalid={errors.emailConfirm && touched.emailConfirm ? true : false} type="text" name="emailConfirm" id="emailConfirm" placeholder="with a placeholder" tag={Field} />
                   {errors.emailConfirm && touched.emailConfirm ? (
                     <FormFeedback>{errors.emailConfirm}</FormFeedback>
@@ -123,7 +123,7 @@ export const SignupPage = () => {
                   ) : null}
                 </FormGroup>
                 <FormGroup>
-                  <Label for="passwordConfirm">Confirm Password</Label>
+                  <Label for="password">Confirm Password</Label>
                   <Input invalid={errors.passwordConfirm && touched.passwordConfirm ? true : false} type="password" name="passwordConfirm" id="passwordConfirm" placeholder="password confirm" tag={Field} />
                   {errors.passwordConfirm && touched.passwordConfirm ? (
                     <FormFeedback>{errors.passwordConfirm}</FormFeedback>
@@ -131,7 +131,7 @@ export const SignupPage = () => {
                 </FormGroup>
                 <Row>
                   <Col>
-                    <ActivityButton type="submit" name="signup" color="primary" block>Signup</ActivityButton>
+                    <ActivityButton name="signup" color="primary" disabled block>Signup</ActivityButton>
                   </Col>
                 </Row>
                 <Row>
