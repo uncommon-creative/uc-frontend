@@ -15,6 +15,7 @@ export function* sagas() {
 
 function* willConfirmUser(action: any) {
   console.log("in willConfirmUser with ", action)
+  yield put(NotificationActions.willShowNotification({ message: "Confirming username " + action.payload.username, type: "info" }))
 
   try {
     yield put(UIActions.startActivityRunning("confirm"));
@@ -26,6 +27,7 @@ function* willConfirmUser(action: any) {
 
     yield put(NotificationActions.willShowNotification({ message: result, type: "success" }));
     action.payload.history.push('/login')
+    yield put(UIActions.stopActivityRunning("confirm"));
   } catch (error) {
     yield put(AuthActions.didConfirmUserFails(error));
     console.log("willConfirmUser fails error ", error)
@@ -36,13 +38,17 @@ function* willConfirmUser(action: any) {
 
 function* willLoginUser(action: any) {
   console.log('in willLoginUser with ', action)
+  yield put(UIActions.startActivityRunning("login"));
   try {
     const result = yield call(AuthApi.login, action.payload.username, action.payload.password)
+    console.log("result: ", result)
     yield put(AuthActions.didLoginUserSuccess(result));
+    action.payload.history.goBack()
   } catch (error) {
     yield put(AuthActions.didLoginUserFails(error));
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
+  yield put(UIActions.stopActivityRunning("login"));
 }
 
 function* willSignupUser(action: any) {

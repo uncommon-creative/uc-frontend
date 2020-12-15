@@ -5,26 +5,32 @@ import {
   Route,
   Link,
   Redirect,
+  useHistory
 } from "react-router-dom";
 import { Header } from "./header";
 import { Container } from "reactstrap";
 
-import { Home } from './pages/Home'
+import { HomePage } from './pages/Home'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
 import { SignupConfirmPage } from './pages/signupConfirm'
 
 import * as AuthApi from './api/auth'
 
-const PrivateRoute = ({ children: Component, ...rest }: any) => {
+const PrivateRoute = ({ children, ...rest }: any) => {
 
+  let history = useHistory();
   const [isLoggedIn, setIsLoggedIn] = React.useState(false)
+
   React.useEffect(() => {
     AuthApi.isAuthenticated().then((result) => {
       if (result) {
+        console.log("isAuthenticated: ", result)
         setIsLoggedIn(true)
       } else {
+        console.log("isAuthenticated: ", result)
         setIsLoggedIn(false)
+        history.push('/login')
       }
     })
       .catch((error) => {
@@ -36,19 +42,24 @@ const PrivateRoute = ({ children: Component, ...rest }: any) => {
   return (
     <Route
       {...rest}
-      render={props => {
+      render={
+        props => {
+        console.log("isLoggedIn: ", isLoggedIn)
         return (
-          isLoggedIn ? (
-            <Component {...props} />
-          ) : (
-              <Redirect to="/login" />
-            )
+          // isLoggedIn == "LOGGED" ?
+          // <Component {...props} />
+          children
+          // : (
+          // <Redirect to="/login" />
+          // <LoginPage />
+          // )
         )
       }
       }
     />
   )
 }
+
 
 export const AppRouter = () => {
   return (
@@ -64,18 +75,18 @@ export const AppRouter = () => {
           </Route>
           <Route path="/signup/confirm/:code">
             <SignupConfirmPage />
-          </Route>          
+          </Route>
           <Route path="/signup/confirm/">
             <SignupConfirmPage />
-          </Route>          
+          </Route>
           <Route path="/signup">
             <SignupPage />
-          </Route>          
-          <Route path="/users">
-            <Users />
           </Route>
-          <PrivateRoute path="/">
-            <Home />
+          <PrivateRoute path="/users">
+            <Users />
+          </PrivateRoute>
+          <PrivateRoute path="/" >
+            <HomePage />
           </PrivateRoute>
         </Switch>
       </Container>

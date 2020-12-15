@@ -6,6 +6,7 @@ export const currentSlice = createSlice({
   initialState: {
     confirmed: false,
     logged: false,
+    user: {},
     error: undefined
   },
   reducers: {
@@ -14,7 +15,7 @@ export const currentSlice = createSlice({
     didConfirmUserFails: (state, action: PayloadAction<any>) => void(state.error = action.payload),
 
     willLoginUser: (state, action: PayloadAction<any>) =>  state,
-    didLoginUserSuccess: (state, action: PayloadAction<any>) =>  void(state.logged = true as any),
+    didLoginUserSuccess: (state, action: PayloadAction<any>) =>  void(state.logged = true as any, state.user = action.payload.user),
     didLoginUserFails: (state, action: PayloadAction<any>) =>  void(state.error = action.payload),
 
     willSignupUser: (state, action: PayloadAction<any>) =>  state,
