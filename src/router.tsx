@@ -3,22 +3,19 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   Redirect,
   useHistory
 } from "react-router-dom";
-import { Header } from "./header";
+import { useSelector } from "react-redux";
 import { Container } from "reactstrap";
 
+import { Header } from "./header";
 import { HomePage } from './pages/home'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
 import { SignupConfirmPage } from './pages/signupConfirm'
-import { ForgotPasswordPage } from './pages/ForgotPassword'
 
-import * as AuthApi from './api/auth'
 import { selectors as AuthSelectors } from './store/slices/auth'
-import { useSelector } from "react-redux";
 const PrivateRoute = ({ children, ...rest }: any) => {
 
   let history = useHistory();
@@ -35,16 +32,16 @@ const PrivateRoute = ({ children, ...rest }: any) => {
             <>
               {isChecked ? (
                 <>
-                {isLogged ? (
-                  children
-  
-                ) : (
-                    <Redirect to="/login" />
-                  )}
+                  {isLogged ? (
+                    children
+
+                  ) : (
+                      <Redirect to="/login" />
+                    )}
                 </>
               ) : (
-                <p>waiting</p>
-              )
+                  <p>waiting</p>
+                )
               }
 
             </>
@@ -76,9 +73,6 @@ export const AppRouter = () => {
           </Route>
           <Route path="/signup">
             <SignupPage />
-          </Route>
-          <Route path="/forgot-password">
-            <ForgotPasswordPage />
           </Route>
           <PrivateRoute path="/users">
             <Users />
