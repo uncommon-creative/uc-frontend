@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { Container, Card, CardTitle, Nav, NavItem, NavLink, Table, TabContent, TabPane, Row, Col } from 'reactstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { Container, Card, CardTitle, Nav, NavItem, NavLink, Table, TabContent, TabPane, Row, Col, Button } from 'reactstrap';
+
+import { actions as NotificationActions } from '../store/slices/notification'
 
 const DATA = [
   {
@@ -97,6 +100,7 @@ function TableData({ tabId, data }: any) {
 
 export const HomePage = () => {
 
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('1');
 
   const toggle = (tab: any) => {
@@ -105,15 +109,23 @@ export const HomePage = () => {
 
   return (
     <Container>
-      <Card className="mt-3 mt-lg-10 rounded" outline color="primary">
-        <CardTitle tag="h2">Welcome</CardTitle>
-        <Nav tabs color="secondary">
+      <Card className="mt-3 mt-lg-5 rounded" outline color="primary">
+        <div className="row">
+          <div className="col-12 col-sm-9">
+            <CardTitle tag="h2">Welcome User</CardTitle>
+          </div>
+          <div className="col-12 col-sm-3">
+            <Button color="primary" className="w-75 mt-sm-2 mb-2 mx-auto"
+              onClick={() => dispatch(NotificationActions.willShowNotification({ message: "Create new project", type: "info" }))}
+            >+ new project</Button>
+          </div>
+        </div>
+        <Nav tabs>
           <NavItem >
             <NavLink
               active={activeTab === '1'}
               // className={ activeTab === '1' && "active"}
               onClick={() => { toggle('1'); }}
-              color="secondary"
             >
               Freelance
             </NavLink>
@@ -148,6 +160,7 @@ export const HomePage = () => {
             <TableData tabId="3" data={DATA} />
           </TabPane>
         </TabContent>
+
       </Card>
     </Container >
 
