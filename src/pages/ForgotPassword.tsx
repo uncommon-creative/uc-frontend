@@ -68,7 +68,7 @@ export const ForgotPasswordPage = () => {
               validateOnBlur={true}
               onSubmit={values => {
                 console.log('in onsubmit with: ', values)
-                dispatch(AuthActions.willForgotPasswordRequest({ email: values.email, code: values.code, password: values.password, history: history }))
+                dispatch(AuthActions.willForgotPasswordConfirm({ email: values.email, code: values.code, password: values.password, history: history }))
               }}
             >
               {({ errors, touched, setFieldValue, values }) => (

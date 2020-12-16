@@ -10,7 +10,7 @@ import {
 import { Header } from "./header";
 import { Container } from "reactstrap";
 
-import { HomePage } from './pages/Home'
+import { HomePage } from './pages/home'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
 import { SignupConfirmPage } from './pages/signupConfirm'
@@ -22,43 +22,8 @@ import { useSelector } from "react-redux";
 const PrivateRoute = ({ children, ...rest }: any) => {
 
   let history = useHistory();
-  // const [isLoggedIn, setIsLoggedIn] = React.useState(false)
-  // const [waiting, setWaiting] = React.useState(true)
   const isLogged = useSelector(AuthSelectors.isLogged)
   const isChecked = useSelector(AuthSelectors.isChecked)
-
-  // React.useEffect(() => {
-  //   AuthApi.isAuthenticated().then((result) => {
-  //     if (result) {
-  //       console.log("isAuthenticated true?: ", result)
-  //       setWaiting(false);
-  //       setIsLoggedIn(true);
-  //     } else {
-  //       console.log("isAuthenticated: ", result)
-  //       setWaiting(false);
-  //       setIsLoggedIn(false);
-  //       history.push('/login')
-  //     }
-  //   })
-  //     .catch((error) => {
-  //       setWaiting(false);
-  //       setIsLoggedIn(false)
-  //     })
-  //   return () => { }
-  // }, [])
-
-  // React.useEffect(() => {
-
-  //   if(isLogged){
-  //     console.log('inside isLogged = true');
-  //     setWaiting(false);
-  //     setIsLoggedIn(true);
-  //   }else{
-  //     setWaiting(false);
-  //     setIsLoggedIn(false);
-  //   }
-  //   return () => {}
-  // }, [isLogged])
 
   return (
     <Route
@@ -83,13 +48,6 @@ const PrivateRoute = ({ children, ...rest }: any) => {
               }
 
             </>
-            // isLoggedIn == "LOGGED" ?
-            // <Component {...props} />
-            // children
-            // : (
-            // <Redirect to="/login" />
-            // <LoginPage />
-            // )
           )
         }
       }
