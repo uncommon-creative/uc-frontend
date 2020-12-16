@@ -6,13 +6,26 @@ import { actions as NotificationActions } from '../slices/notification'
 import { actions as UIActions } from '../slices/ui'
 
 export function* sagas() {
-  yield call(test, {});
   yield takeLatest(AuthActions.willLoginUser.type, willLoginUser)
   yield takeLatest(AuthActions.willSignupUser.type, willSignupUser)
   yield takeLatest(AuthActions.willConfirmUser.type, willConfirmUser)
+  yield call(checkAuthentication);
   console.log('in auth saga');
 }
 
+function* checkAuthentication(){
+
+  yield call(AuthApi.configure);
+  const result = yield call(AuthApi.isAuthenticated);
+
+  console.log('in check auth onLoad: ', result);
+  if(result){
+    const user = yield call(AuthApi.getAuthenticatedUser);
+    yield put(AuthActions.didLoginUserSuccess(user));
+  }else{
+    yield put(AuthActions.didLoginUserFails({}));
+  }
+}
 function* willConfirmUser(action: any) {
   console.log("in willConfirmUser with ", action)
   yield put(NotificationActions.willShowNotification({ message: "Confirming username " + action.payload.username, type: "info" }))
@@ -43,10 +56,17 @@ function* willLoginUser(action: any) {
     const result = yield call(AuthApi.login, action.payload.username, action.payload.password)
     console.log("result: ", result)
     yield put(AuthActions.didLoginUserSuccess(result));
-    action.payload.history.goBack()
+    action.payload.history.push("/")
   } catch (error) {
     yield put(AuthActions.didLoginUserFails(error));
-    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
+
+    if (error.code == "UserNotConfirmedException") {
+      console.log('in UserNotConfirmedException');
+      const message = <>User not Confirmed - <a className="alert-link" href="/confirm/resend">Resend confirmation Email</a></>
+      yield put(NotificationActions.willShowNotification({ message: message, type: "danger", delay: 10000 }));
+    } else {
+      yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
+    }
   }
   yield put(UIActions.stopActivityRunning("login"));
 }
@@ -58,7 +78,7 @@ function* willSignupUser(action: any) {
     localStorage.setItem('username', action.payload.email)
     const result = yield call(AuthApi.signup, action.payload.email, action.payload.password, action.payload.given_name, action.payload.family_name)
     yield put(AuthActions.didSignupUserSuccess(result));
-    //Redirect to Confirm 
+    //Redirect to Confirm
     action.payload.history.push('/signup/confirm')
     yield put(UIActions.stopActivityRunning("signup"));
   } catch (error) {
@@ -67,10 +87,4 @@ function* willSignupUser(action: any) {
     yield delay(1000);
     yield put(UIActions.stopActivityRunning("signup"));
   }
-}
-
-function* test(action: any) {
-  console.log('in test function');
-  yield call(AuthApi.configure);
-  console.log('after configure');
 }

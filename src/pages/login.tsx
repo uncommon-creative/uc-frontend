@@ -61,15 +61,15 @@ export const LoginPage = () => {
             {({ errors, touched, setFieldValue, values }) => (
               <Form>
                 <FormGroup>
-                  <Label for="username">Username</Label>
-                  <Input invalid={errors.username && touched.username ? true : false} type="text" name="username" id="username" placeholder="with a placeholder" tag={Field} />
+                  <Label for="username">Email</Label>
+                  <Input invalid={errors.username && touched.username ? true : false} type="text" name="username" id="username" placeholder="with a placeholder" autoComplete="email" tag={Field} />
                   {errors.username && touched.username ? (
                     <FormFeedback>{errors.username}</FormFeedback>
                   ) : null}
                 </FormGroup>
                 <FormGroup>
                   <Label for="password">Password</Label>
-                  <Input invalid={errors.password && touched.password ? true : false} type="password" name="password" id="password" placeholder="password placeholder" tag={Field} />
+                  <Input invalid={errors.password && touched.password ? true : false} type="password" name="password" id="password" placeholder="password placeholder" autoComplete="current-password" tag={Field} />
                   {errors.password && touched.password ? (
                     <FormFeedback>{errors.password}</FormFeedback>
                   ) : null}
