@@ -10,7 +10,7 @@ import {
 import { Header } from "./header";
 import { Container } from "reactstrap";
 
-import { HomePage } from './pages/home'
+import { HomePage } from './pages/Home'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
 import { SignupConfirmPage } from './pages/signupConfirm'

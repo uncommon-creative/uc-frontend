@@ -13,16 +13,16 @@ export function* sagas() {
   console.log('in auth saga');
 }
 
-function* checkAuthentication(){
+function* checkAuthentication() {
 
   yield call(AuthApi.configure);
   const result = yield call(AuthApi.isAuthenticated);
 
   console.log('in check auth onLoad: ', result);
-  if(result){
+  if (result) {
     const user = yield call(AuthApi.getAuthenticatedUser);
     yield put(AuthActions.didLoginUserSuccess(user));
-  }else{
+  } else {
     yield put(AuthActions.didLoginUserFails({}));
   }
 }
@@ -76,7 +76,7 @@ function* willSignupUser(action: any) {
   try {
     yield put(UIActions.startActivityRunning("signup"));
     localStorage.setItem('username', action.payload.email)
-    const result = yield call(AuthApi.signup, action.payload.email, action.payload.password, action.payload.given_name, action.payload.family_name)
+    const result = yield call(AuthApi.signup, action.payload.email, action.payload.password, action.payload.name, action.payload.surname)
     yield put(AuthActions.didSignupUserSuccess(result));
     //Redirect to Confirm
     action.payload.history.push('/signup/confirm')
@@ -87,4 +87,20 @@ function* willSignupUser(action: any) {
     yield delay(1000);
     yield put(UIActions.stopActivityRunning("signup"));
   }
+}
+
+function* willResendSignupConfirm(action: any) {
+  console.log("in willResendSignupConfirm with ", action)
+  try {
+    yield put(UIActions.startActivityRunning("resendSignupConfirm"));
+    localStorage.setItem('username', action.payload.email)
+    const result = yield call(AuthApi.signup, action.payload.email, action.payload.password, action.payload.name, action.payload.surname)
+    yield put(AuthActions.didSignupUserSuccess(result));
+    //Redirect to Confirm
+    action.payload.history.push('/signup/confirm')
+  } catch (error) {
+    yield put(AuthActions.didSignupUserFails(error));
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
+  }
+  yield put(UIActions.stopActivityRunning("resendSignupConfirm"));
 }

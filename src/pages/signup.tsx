@@ -87,28 +87,28 @@ export const SignupPage = () => {
             {({ errors, touched, setFieldValue, values }) => (
               <Form>
                 <FormGroup>
-                  <Label for="username">Name</Label>
+                  <Label for="name">Name</Label>
                   <Input invalid={errors.name && touched.name ? true : false} type="text" name="name" id="name" placeholder="with a placeholder" tag={Field} />
                   {errors.name && touched.name ? (
                     <FormFeedback>{errors.name}</FormFeedback>
                   ) : null}
                 </FormGroup>
                 <FormGroup>
-                  <Label for="username">Surname</Label>
+                  <Label for="surname">Surname</Label>
                   <Input invalid={errors.surname && touched.surname ? true : false} type="text" name="surname" id="surname" placeholder="with a placeholder" tag={Field} />
                   {errors.surname && touched.surname ? (
                     <FormFeedback>{errors.surname}</FormFeedback>
                   ) : null}
                 </FormGroup>
                 <FormGroup>
-                  <Label for="username">Email Address</Label>
+                  <Label for="email">Email Address</Label>
                   <Input invalid={errors.email && touched.email ? true : false} type="text" name="email" id="email" placeholder="with a placeholder" tag={Field} />
                   {errors.email && touched.email ? (
                     <FormFeedback>{errors.email}</FormFeedback>
                   ) : null}
                 </FormGroup>
                 <FormGroup>
-                  <Label for="username">Confirm Email Address</Label>
+                  <Label for="emailConfirm">Confirm Email Address</Label>
                   <Input invalid={errors.emailConfirm && touched.emailConfirm ? true : false} type="text" name="emailConfirm" id="emailConfirm" placeholder="with a placeholder" tag={Field} />
                   {errors.emailConfirm && touched.emailConfirm ? (
                     <FormFeedback>{errors.emailConfirm}</FormFeedback>
@@ -123,7 +123,7 @@ export const SignupPage = () => {
                   ) : null}
                 </FormGroup>
                 <FormGroup>
-                  <Label for="password">Confirm Password</Label>
+                  <Label for="passwordConfirm">Confirm Password</Label>
                   <Input invalid={errors.passwordConfirm && touched.passwordConfirm ? true : false} type="password" name="passwordConfirm" id="passwordConfirm" placeholder="password confirm" tag={Field} />
                   {errors.passwordConfirm && touched.passwordConfirm ? (
                     <FormFeedback>{errors.passwordConfirm}</FormFeedback>
