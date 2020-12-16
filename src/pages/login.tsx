@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import {
   Card, CardImg, CardText, CardBody,
   CardTitle, CardSubtitle, Button,
@@ -8,10 +7,11 @@ import {
 } from 'reactstrap';
 import { Formik, Form, Field, ErrorMessage, setNestedObjectValues } from 'formik';
 import * as Yup from 'yup';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useHistory } from "react-router-dom";
 
 import { actions as AuthActions, selectors as AuthSelectors } from '../store/slices/auth'
-import { useDispatch, useSelector } from 'react-redux';
-import { Link } from "react-router-dom";
+import { ActivityButton } from '../components/ActivityButton'
 
 
 const LoginSchema = Yup.object().shape({
@@ -29,6 +29,7 @@ export const LoginPage = () => {
 
   const dispatch = useDispatch();
   const loginError = useSelector(AuthSelectors.getLoggedError);
+  let history = useHistory();
   console.log('loginError: ');
 
   React.useEffect(() => {
@@ -54,27 +55,27 @@ export const LoginPage = () => {
             validateOnBlur={true}
             onSubmit={values => {
               console.log('in onsubmit with: ', values)
-              dispatch(AuthActions.willLoginUser({ username: values.username, password: values.password }));
+              dispatch(AuthActions.willLoginUser({ username: values.username, password: values.password, history: history }));
             }}
           >
             {({ errors, touched, setFieldValue, values }) => (
               <Form>
                 <FormGroup>
-                  <Label for="username">Username</Label>
-                  <Input invalid={errors.username && touched.username ? true : false} type="text" name="username" id="username" placeholder="with a placeholder" tag={Field} />
+                  <Label for="username">Email</Label>
+                  <Input invalid={errors.username && touched.username ? true : false} type="text" name="username" id="username" placeholder="with a placeholder" autoComplete="email" tag={Field} />
                   {errors.username && touched.username ? (
                     <FormFeedback>{errors.username}</FormFeedback>
                   ) : null}
                 </FormGroup>
                 <FormGroup>
                   <Label for="password">Password</Label>
-                  <Input invalid={errors.password && touched.password ? true : false} type="password" name="password" id="password" placeholder="password placeholder" tag={Field} />
+                  <Input invalid={errors.password && touched.password ? true : false} type="password" name="password" id="password" placeholder="password placeholder" autoComplete="current-password" tag={Field} />
                   {errors.password && touched.password ? (
                     <FormFeedback>{errors.password}</FormFeedback>
                   ) : null}
 
                 </FormGroup>
-                <Button type="submit" color="primary" block>Login</Button>
+                <ActivityButton type="submit" name="login" color="primary" block>Login</ActivityButton>
                 <Button color="primary" block to="/signup" outline tag={Link}>Signup</Button>
                 <Button color="link" block>Forgot Password?</Button>
               </Form>

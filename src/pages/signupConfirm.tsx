@@ -43,8 +43,11 @@ export const SignupConfirmPage = () => {
         }
         {code && username &&
           <Container fluid className="text-center">
-            <h2>Account Confirmed</h2>
-            <Button color="link" to="/login" block tag={Link}>Login</Button>
+            <h2>Account Confirming</h2>
+            <p className="lead">
+              You will be redirected to
+              <Button color="link" to="/login" block tag={Link}>Login</Button>
+            </p>
           </Container>
         }
         {code && !username &&

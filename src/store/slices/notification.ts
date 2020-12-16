@@ -6,12 +6,19 @@ export const currentSlice = createSlice({
     visible: false,
     message: "",
     type: "success",
-    dismissable: false
+    dismissable: false,
+    delay: 5000,
+    rightMessage: "Test"
   }
-,
+  ,
   reducers: {
-    willShowNotification: (state, action: PayloadAction<any>) =>  void(state.visible = true as any, state.message = action.payload.message, state.type = action.payload.type),
-    willHideNotification: (state, action: PayloadAction<any>) =>  void(state.visible = false as any)
+    willShowNotification: (state, action: PayloadAction<any>) => void (
+      state.visible = true as any,
+      state.message = action.payload.message,
+      state.type = action.payload.type,
+      state.delay = action.payload.delay != undefined ? action.payload.delay : 5000
+    ),
+    willHideNotification: (state, action: PayloadAction<any>) => void (state.visible = false as any)
   }
 })
 
