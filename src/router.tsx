@@ -3,61 +3,24 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   Redirect,
   useHistory
 } from "react-router-dom";
-import { Header } from "./header";
+import { useSelector } from "react-redux";
 import { Container } from "reactstrap";
 
+import { Header } from "./header";
 import { HomePage } from './pages/home'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
 import { SignupConfirmPage } from './pages/signupConfirm'
 
-import * as AuthApi from './api/auth'
 import { selectors as AuthSelectors } from './store/slices/auth'
-import { useSelector } from "react-redux";
 const PrivateRoute = ({ children, ...rest }: any) => {
 
   let history = useHistory();
-  // const [isLoggedIn, setIsLoggedIn] = React.useState(false)
-  // const [waiting, setWaiting] = React.useState(true)
   const isLogged = useSelector(AuthSelectors.isLogged)
   const isChecked = useSelector(AuthSelectors.isChecked)
-
-  // React.useEffect(() => {
-  //   AuthApi.isAuthenticated().then((result) => {
-  //     if (result) {
-  //       console.log("isAuthenticated true?: ", result)
-  //       setWaiting(false);
-  //       setIsLoggedIn(true);
-  //     } else {
-  //       console.log("isAuthenticated: ", result)
-  //       setWaiting(false);
-  //       setIsLoggedIn(false);
-  //       history.push('/login')
-  //     }
-  //   })
-  //     .catch((error) => {
-  //       setWaiting(false);
-  //       setIsLoggedIn(false)
-  //     })
-  //   return () => { }
-  // }, [])
-
-  // React.useEffect(() => {
-
-  //   if(isLogged){
-  //     console.log('inside isLogged = true');
-  //     setWaiting(false);
-  //     setIsLoggedIn(true);
-  //   }else{
-  //     setWaiting(false);
-  //     setIsLoggedIn(false);
-  //   }
-  //   return () => {}
-  // }, [isLogged])
 
   return (
     <Route
@@ -69,26 +32,19 @@ const PrivateRoute = ({ children, ...rest }: any) => {
             <>
               {isChecked ? (
                 <>
-                {isLogged ? (
-                  children
-  
-                ) : (
-                    <Redirect to="/login" />
-                  )}
+                  {isLogged ? (
+                    children
+
+                  ) : (
+                      <Redirect to="/login" />
+                    )}
                 </>
               ) : (
-                <p>waiting</p>
-              )
+                  <p>waiting</p>
+                )
               }
 
             </>
-            // isLoggedIn == "LOGGED" ?
-            // <Component {...props} />
-            // children
-            // : (
-            // <Redirect to="/login" />
-            // <LoginPage />
-            // )
           )
         }
       }
