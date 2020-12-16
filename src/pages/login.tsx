@@ -45,7 +45,7 @@ export const LoginPage = () => {
       <Card className="mt-3 mt-lg-10">
         <CardBody>
           <CardTitle tag="h5" className="text-center">Login Page</CardTitle>
-          <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Hint: Insert User e Password</CardSubtitle>
+          <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Hint: Insert User and Password</CardSubtitle>
           <Formik
             initialValues={{
               username: '',

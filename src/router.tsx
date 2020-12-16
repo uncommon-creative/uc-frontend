@@ -10,10 +10,11 @@ import {
 import { Header } from "./header";
 import { Container } from "reactstrap";
 
-import { HomePage } from './pages/home'
+import { HomePage } from './pages/Home'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
 import { SignupConfirmPage } from './pages/signupConfirm'
+import { ForgotPasswordPage } from './pages/ForgotPassword'
 
 import * as AuthApi from './api/auth'
 import { selectors as AuthSelectors } from './store/slices/auth'
@@ -117,6 +118,9 @@ export const AppRouter = () => {
           </Route>
           <Route path="/signup">
             <SignupPage />
+          </Route>
+          <Route path="/forgot-password">
+            <ForgotPasswordPage />
           </Route>
           <PrivateRoute path="/users">
             <Users />

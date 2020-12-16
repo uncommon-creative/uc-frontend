@@ -9,20 +9,22 @@ export function* sagas() {
   yield takeLatest(AuthActions.willLoginUser.type, willLoginUser)
   yield takeLatest(AuthActions.willSignupUser.type, willSignupUser)
   yield takeLatest(AuthActions.willConfirmUser.type, willConfirmUser)
+  yield takeLatest(AuthActions.willForgotPasswordRequest.type, willForgotPasswordRequest)
+  yield takeLatest(AuthActions.willForgotPasswordConfirm.type, willForgotPasswordConfirm)
   yield call(checkAuthentication);
   console.log('in auth saga');
 }
 
-function* checkAuthentication(){
+function* checkAuthentication() {
 
   yield call(AuthApi.configure);
   const result = yield call(AuthApi.isAuthenticated);
 
   console.log('in check auth onLoad: ', result);
-  if(result){
+  if (result) {
     const user = yield call(AuthApi.getAuthenticatedUser);
     yield put(AuthActions.didLoginUserSuccess(user));
-  }else{
+  } else {
     yield put(AuthActions.didLoginUserFails({}));
   }
 }
@@ -87,4 +89,32 @@ function* willSignupUser(action: any) {
     yield delay(1000);
     yield put(UIActions.stopActivityRunning("signup"));
   }
+}
+
+function* willForgotPasswordRequest(action: any) {
+  console.log("in willForgotPasswordRequest with ", action)
+  yield put(UIActions.startActivityRunning("requestNewPassword"));
+  try {
+    const result = yield call(AuthApi.forgotPasswordRequest, action.payload.email)
+    yield put(AuthActions.didForgotPasswordRequestSuccess(result))
+  } catch (error) {
+    yield put(AuthActions.didForgotPasswordRequestFails(error));
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
+  }
+  yield put(UIActions.stopActivityRunning("requestNewPassword"));
+}
+
+
+function* willForgotPasswordConfirm(action: any) {
+  console.log("in willForgotPasswordConfirm with ", action)
+  yield put(UIActions.startActivityRunning("confirmNewPassword"));
+  try {
+    const result = yield call(AuthApi.forgotPasswordConfirm, action.payload.email, action.payload.code, action.payload.password)
+    yield put(AuthActions.didForgotPasswordConfirmSuccess(result))
+    action.payload.history.push('/login')
+  } catch (error) {
+    yield put(AuthActions.didForgotPasswordConfirmFails(error));
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
+  }
+  yield put(UIActions.stopActivityRunning("confirmNewPassword"));
 }
