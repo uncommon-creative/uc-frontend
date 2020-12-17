@@ -13,24 +13,26 @@ export const currentSlice = createSlice({
   },
   reducers: {
     willConfirmUser: (state, action: PayloadAction<any>) => state,
-    didConfirmUserSuccess: (state, action: PayloadAction<any>) => void(state.confirmed = true as any),
-    didConfirmUserFails: (state, action: PayloadAction<any>) => void(state.error = action.payload),
+    didConfirmUserSuccess: (state, action: PayloadAction<any>) => void (state.confirmed = true as any),
+    didConfirmUserFails: (state, action: PayloadAction<any>) => void (state.error = action.payload),
 
-    willLoginUser: (state, action: PayloadAction<any>) =>  state,
-    didLoginUserSuccess: (state, action: PayloadAction<any>) =>  void(state.checked = true, state.logged = true as any, state.user = action.payload.user),
-    didLoginUserFails: (state, action: PayloadAction<any>) =>  void(state.checked = true, state.error = action.payload),
+    willLoginUser: (state, action: PayloadAction<any>) => state,
+    didLoginUserSuccess: (state, action: PayloadAction<any>) => void (state.checked = true, state.logged = true as any, state.user = action.payload.user),
+    didLoginUserFails: (state, action: PayloadAction<any>) => void (state.checked = true, state.error = action.payload),
 
-    willSignupUser: (state, action: PayloadAction<any>) =>  state,
-    didSignupUserSuccess: (state, action: PayloadAction<any>) =>  state,
-    didSignupUserFails: (state, action: PayloadAction<any>) =>  void(state.error = action.payload),
+    willSignupUser: (state, action: PayloadAction<any>) => state,
+    didSignupUserSuccess: (state, action: PayloadAction<any>) => state,
+    didSignupUserFails: (state, action: PayloadAction<any>) => void (state.error = action.payload),
 
-    willForgotPasswordRequest: (state, action: PayloadAction<any>) =>  state,
-    didForgotPasswordRequestSuccess: (state, action: PayloadAction<any>) =>  void(state.forgotPasswordRequested = true),
-    didForgotPasswordRequestFails: (state, action: PayloadAction<any>) =>  void(state.error = action.payload),
+    willForgotPasswordRequest: (state, action: PayloadAction<any>) => state,
+    didForgotPasswordRequestSuccess: (state, action: PayloadAction<any>) => void (state.forgotPasswordRequested = true),
+    didForgotPasswordRequestFails: (state, action: PayloadAction<any>) => void (state.error = action.payload),
 
-    willForgotPasswordConfirm: (state, action: PayloadAction<any>) =>  state,
-    didForgotPasswordConfirmSuccess: (state, action: PayloadAction<any>) =>  void(state.forgotPasswordRequested = false),
-    didForgotPasswordConfirmFails: (state, action: PayloadAction<any>) =>  void(state.error = action.payload)
+    willForgotPasswordConfirm: (state, action: PayloadAction<any>) => state,
+    didForgotPasswordConfirmSuccess: (state, action: PayloadAction<any>) => void (state.forgotPasswordRequested = false),
+    didForgotPasswordConfirmFails: (state, action: PayloadAction<any>) => void (state.error = action.payload),
+
+    willResendSignup: (state, action: PayloadAction<any>) => state,
   }
 })
 

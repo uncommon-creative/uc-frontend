@@ -90,3 +90,12 @@ export const forgotPasswordConfirm = async (email: any, code: any, password: any
     throw error;
   }
 }
+
+export const resendSignuUpCode = async (email: any) => {
+  try {
+    const resend = await Auth.resendSignUp(email)
+  } catch (error) {
+    console.log('with resendSignUp error: ', error)
+    throw error;
+  }
+}

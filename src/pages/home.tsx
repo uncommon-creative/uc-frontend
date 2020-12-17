@@ -7,7 +7,7 @@ import { actions as NotificationActions } from '../store/slices/notification'
 const DATA = [
   {
     id: 123,
-    title: "Progetto 1",
+    title: "SOW 1",
     customer: "Pippo",
     freelance: "Pluto",
     deadline: "July 12, 2020",
@@ -16,7 +16,7 @@ const DATA = [
   },
   {
     id: 456,
-    title: "Progetto 2",
+    title: "SOW 2",
     customer: "Topolino",
     freelance: "Minnie",
     deadline: "July 19, 2021",
@@ -25,7 +25,7 @@ const DATA = [
   },
   {
     id: 789,
-    title: "Progetto 3",
+    title: "SOW 3",
     customer: "Paperino",
     freelance: "Paperina",
     deadline: "January 27, 2021",
@@ -34,7 +34,7 @@ const DATA = [
   },
   {
     id: 987,
-    title: "Progetto 4",
+    title: "SOW 4",
     customer: "Buzz Lightyear",
     freelance: "Woody",
     deadline: "January 1, 2021",
@@ -43,7 +43,7 @@ const DATA = [
   },
   {
     id: 654,
-    title: "Progetto 5",
+    title: "SOW 5",
     customer: "R2-D2",
     freelance: "C-3PO",
     deadline: "January 6, 2021",
@@ -52,7 +52,7 @@ const DATA = [
   },
   {
     id: 321,
-    title: "Progetto 6",
+    title: "SOW 6",
     customer: "Thanos",
     freelance: "Iron Man",
     deadline: "January 17, 2021",
@@ -70,8 +70,8 @@ function TableData({ tabId, data }: any) {
             <tr>
               <th>ID</th>
               <th>Title</th>
-              {tabId != 1 && <th>Customer</th>}
-              {tabId != 2 && <th>Freelance</th>}
+              {tabId != 2 && <th>Customer</th>}
+              {tabId != 1 && <th>Freelance</th>}
               <th>Deadline</th>
               <th>Total</th>
               <th>Status</th>
@@ -115,9 +115,10 @@ export const HomePage = () => {
             <CardTitle tag="h2">Welcome User</CardTitle>
           </div>
           <div className="col-12 col-sm-3">
-            <Button color="primary" className="w-75 mt-sm-2 mb-2 mx-auto"
-              onClick={() => dispatch(NotificationActions.willShowNotification({ message: "Create new project", type: "info" }))}
-            >+ new project</Button>
+            {activeTab == '1' &&
+              <Button color="primary" className="w-75 mt-sm-2 mx-auto"
+                onClick={() => dispatch(NotificationActions.willShowNotification({ message: "Create State Of Work", type: "info" }))}
+              >+ new SOW</Button>}
           </div>
         </div>
         <Nav tabs>

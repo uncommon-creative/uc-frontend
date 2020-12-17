@@ -3,7 +3,7 @@ import { useParams, useHistory, Link } from 'react-router-dom';
 import { Jumbotron, Container, Button, FormGroup, Input, Label, FormFeedback, Col, Row, CardTitle, CardSubtitle } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
-import { Formik, Form, Field, ErrorMessage, setNestedObjectValues } from 'formik';
+import { Formik, Form, Field } from 'formik';
 
 import { ActivityButton } from '../components/ActivityButton'
 import { actions as AuthActions, selectors as AuthSelectors } from '../store/slices/auth'
