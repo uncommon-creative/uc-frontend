@@ -4,10 +4,8 @@ import { env } from 'process';
 import { configuration } from '../config'
 
 export const configure = () => {
-
   const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
   Amplify.configure(configuration[stage]);
-
 }
 
 export const isAuthenticated = async () => {
@@ -50,6 +48,15 @@ export const login = async (username: any, password: any) => {
     return user
   } catch (error) {
     console.log('with error: ', error)
+    throw error;
+  }
+}
+export const logout = async () => {
+  try {
+    await Auth.signOut();
+    return true
+  } catch (error) {
+    console.log('error signing out: ', error);
     throw error;
   }
 }
