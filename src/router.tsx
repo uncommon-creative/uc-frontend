@@ -9,7 +9,7 @@ import {
 import { useSelector } from "react-redux";
 import { Container } from "reactstrap";
 
-import { Header } from "./header";
+import { Header } from "./header"
 import { HomePage } from './pages/home'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'

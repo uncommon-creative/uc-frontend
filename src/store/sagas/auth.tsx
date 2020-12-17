@@ -1,4 +1,5 @@
 import { call, put, takeEvery, takeLatest, delay } from 'redux-saga/effects'
+import { Button } from 'reactstrap';
 
 import * as AuthApi from '../../api/auth'
 import { actions as AuthActions } from '../slices/auth'
@@ -14,6 +15,7 @@ export function* sagas() {
   yield takeLatest(AuthActions.willConfirmUser.type, willConfirmUser)
   yield takeLatest(AuthActions.willForgotPasswordRequest.type, willForgotPasswordRequest)
   yield takeLatest(AuthActions.willForgotPasswordConfirm.type, willForgotPasswordConfirm)
+  yield takeLatest(AuthActions.willResendSignup.type, willResendSignup)
   yield call(checkAuthentication);
   console.log('in auth saga');
 }
@@ -68,7 +70,11 @@ function* willLoginUser(action: any) {
 
     if (error.code == "UserNotConfirmedException") {
       console.log('in UserNotConfirmedException');
-      const message = <>User not Confirmed - <a className="alert-link" href="/confirm/resend">Resend confirmation Email</a></>
+      const message = <>User not Confirmed - <Button color="link" href="/signup/confirm">Resend confirmation Email</Button></>
+      localStorage.setItem('username', action.payload.email)
+      localStorage.setItem('emailConfirm', "RESEND_SIGNUP_USER")
+      // const message = <>User not Confirmed - <Button color="link" onClick={() => console.log("AAA")}>Resend confirmation Email</Button></>
+      // const message = <>User not Confirmed - <Button color="link" onClick={yield call(willResendSignup, action.payload.email)}>Resend confirmation Email</Button></>
       yield put(NotificationActions.willShowNotification({ message: message, type: "danger", delay: 10000 }));
     } else {
       yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
@@ -123,7 +129,6 @@ function* willForgotPasswordRequest(action: any) {
   yield put(UIActions.stopActivityRunning("requestNewPassword"));
 }
 
-
 function* willForgotPasswordConfirm(action: any) {
   console.log("in willForgotPasswordConfirm with ", action)
   yield put(UIActions.startActivityRunning("confirmNewPassword"));
@@ -139,4 +144,19 @@ function* willForgotPasswordConfirm(action: any) {
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning("confirmNewPassword"));
+}
+
+function* willResendSignup(action: any) {
+  console.log("in willResendSignupConfirm with ", action)
+  try {
+    yield put(UIActions.startActivityRunning("resendSignupConfirm"));
+    localStorage.setItem('username', action.payload.email)
+    localStorage.setItem('emailConfirm', "SIGNUP_USER")
+    const result = yield call(AuthApi.resendSignuUpCode, action.payload.email)
+    //Redirect to Confirm
+    action.payload.history.push('/signup/confirm')
+  } catch (error) {
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
+  }
+  yield put(UIActions.stopActivityRunning("resendSignupConfirm"));
 }

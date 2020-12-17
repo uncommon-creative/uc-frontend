@@ -3,7 +3,7 @@ import { useParams, useHistory, Link } from 'react-router-dom';
 import { Jumbotron, Container, Button, FormGroup, Input, Label, FormFeedback, Col, Row, CardTitle, CardSubtitle } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
-import { Formik, Form, Field, ErrorMessage, setNestedObjectValues } from 'formik';
+import { Formik, Form, Field } from 'formik';
 
 import { ActivityButton } from '../components/ActivityButton'
 import { actions as AuthActions, selectors as AuthSelectors } from '../store/slices/auth'
@@ -43,19 +43,21 @@ export const SignupConfirmPage = () => {
 
   let { code }: any = useParams();
   let username = localStorage.getItem('username')
-  let emailConfirmLS = localStorage.getItem('emailConfirm')
-  const [emailConfirm, setEmailConfirm] = React.useState(emailConfirmLS);
+  let emailConfirm = localStorage.getItem('emailConfirm')
   const dispatch = useDispatch();
   let history = useHistory();
 
   React.useEffect(() => {
     console.log('SignupConfirmPage with code: ', code);
     console.log('SignupConfirmPage with username: ', username);
-    console.log('SignupConfirmPage with emailConfirmLS: ', emailConfirmLS);
-    console.log('SignupConfirmPage with emailConfirm: ', emailConfirm);
+    console.log('SignupConfirmPage with emailConfirmLS: ', emailConfirm);
 
     code && username && emailConfirm == "SIGNUP_USER" &&
       dispatch(AuthActions.willConfirmUser({ username: username, code: code, history: history }));
+
+    emailConfirm == "RESEND_SIGNUP_USER" &&
+      dispatch(AuthActions.willResendSignup({ email: username, history: history }))
+
 
     return () => { }
   }, [])
@@ -102,7 +104,6 @@ export const SignupConfirmPage = () => {
                   {errors.password && touched.password ? (
                     <FormFeedback>{errors.password}</FormFeedback>
                   ) : null}
-
                 </FormGroup>
                 <FormGroup>
                   <Label for="password">Confirm Password</Label>
@@ -120,75 +121,62 @@ export const SignupConfirmPage = () => {
                     <Button color="primary" block to="/signup" outline tag={Link}>Signup</Button>
                   </Col>
                 </Row>
-                <Button color="link" block onClick={() => setEmailConfirm('SIGNUP_USER')}>Confirm signup?</Button>
+                {/* <Button color="link" block onClick={() => setEmailConfirm('SIGNUP_USER')}>Confirm signup?</Button> */}
               </Form>
             )}
           </Formik>
         </Jumbotron>
-        : emailConfirm == "SIGNUP_USER" ?
-          <Jumbotron fluid>
-            <CardTitle tag="h5" className="text-center">Confirm Signup Page</CardTitle>
-            {!code &&
-              <Container fluid className="text-center">
-                <h2>Account Created</h2>
-                <p className="lead">Check Email for account confirmation</p>
-              </Container>
-            }
-            {code && username &&
-              <Container fluid className="text-center">
-                <h2>Account Confirming</h2>
-                <p className="lead">
-                  You will be redirected to
-              <Button color="link" to="/login" block tag={Link}>Login</Button>
-                </p>
-              </Container>
-            }
-            {code && !username &&
-              <Container fluid className="text-center">
-                <h2>Insert your username/email to confirm</h2>
-                <Formik
-                  initialValues={{
-                    email: ''
-                  }}
-                  validationSchema={ConfirmSchema}
-                  validateOnBlur={true}
-                  onSubmit={values => {
-                    console.log('in onsubmit with: ', values)
-                    dispatch(AuthActions.willConfirmUser({ username: values.email, code: code, history: history }));
-                  }}
-                >
-                  {({ errors, touched, setFieldValue, values }) => (
-                    <Form>
-                      <FormGroup>
-                        <Input invalid={errors.email && touched.email ? true : false} type="text" name="email" id="email" placeholder="Email Address" tag={Field} />
-                        {errors.email && touched.email ? (
-                          <FormFeedback>{errors.email}</FormFeedback>
-                        ) : null}
-                      </FormGroup>
-                      <Row className="mt-2">
-                        <Col>
-                          <ActivityButton name="confirm" color="primary" disabled block>Confirm</ActivityButton>
-                        </Col>
-                      </Row>
-                      <Button color="link" block onClick={() => setEmailConfirm('PASSWORD_RESET')}>Confirm password?</Button>
-                    </Form>
-                  )}
-                </Formik>
-              </Container>
-            }
-          </Jumbotron>
-          :
-          <Jumbotron fluid>
-            <CardTitle tag="h5" className="text-center">Confirm Page</CardTitle>
-            <Row className="mt-2">
-              <Col>
-                <Button color="primary" block outline onClick={() => setEmailConfirm('SIGNUP_USER')}>Confirm Signup</Button>
-              </Col>
-              <Col>
-                <Button color="primary" block outline onClick={() => setEmailConfirm('PASSWORD_RESET')}>Confirm password</Button>
-              </Col>
-            </Row>
-          </Jumbotron>
+        : //emailConfirm == "SIGNUP_USER" ?
+        <Jumbotron fluid>
+          <CardTitle tag="h5" className="text-center">Confirm Signup Page</CardTitle>
+          {!code &&
+            <Container fluid className="text-center">
+              <h2>Account Created</h2>
+              <p className="lead">Check Email for account confirmation</p>
+            </Container>
+          }
+          {code && username &&
+            <Container fluid className="text-center">
+              <h2>Account Confirming</h2>
+              <p className="lead">
+                You will be redirected to
+                <Button color="link" to="/login" block tag={Link}>Login</Button>
+              </p>
+            </Container>
+          }
+          {code && !username &&
+            <Container fluid className="text-center">
+              <h2>Insert your username/email to confirm</h2>
+              <Formik
+                initialValues={{
+                  email: ''
+                }}
+                validationSchema={ConfirmSchema}
+                validateOnBlur={true}
+                onSubmit={values => {
+                  console.log('in onsubmit with: ', values)
+                  dispatch(AuthActions.willConfirmUser({ username: values.email, code: code, history: history }));
+                }}
+              >
+                {({ errors, touched, setFieldValue, values }) => (
+                  <Form>
+                    <FormGroup>
+                      <Input invalid={errors.email && touched.email ? true : false} type="text" name="email" id="email" placeholder="Email Address" tag={Field} />
+                      {errors.email && touched.email ? (
+                        <FormFeedback>{errors.email}</FormFeedback>
+                      ) : null}
+                    </FormGroup>
+                    <Row className="mt-2">
+                      <Col>
+                        <ActivityButton name="confirm" color="primary" disabled block>Confirm</ActivityButton>
+                      </Col>
+                    </Row>
+                  </Form>
+                )}
+              </Formik>
+            </Container>
+          }
+        </Jumbotron>
       }
 
     </Container>
