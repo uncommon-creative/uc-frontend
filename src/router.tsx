@@ -3,52 +3,55 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   Redirect,
+  useHistory
 } from "react-router-dom";
-import { Header } from "./header";
+import { useSelector } from "react-redux";
 import { Container } from "reactstrap";
 
-import { Home } from './pages/home'
+import { Header } from "./header";
+import { HomePage } from './pages/home'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
 import { SignupConfirmPage } from './pages/signupConfirm'
 
-import * as AuthApi from './api/auth'
+import { selectors as AuthSelectors } from './store/slices/auth'
+const PrivateRoute = ({ children, ...rest }: any) => {
 
-const PrivateRoute = ({ children: Component, ...rest }: any) => {
-
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false)
-  React.useEffect(() => {
-    AuthApi.isAuthenticated().then((result) => {
-      if (result) {
-        setIsLoggedIn(true)
-      } else {
-        setIsLoggedIn(false)
-      }
-    })
-      .catch((error) => {
-        setIsLoggedIn(false)
-      })
-    return () => { }
-  }, [])
+  let history = useHistory();
+  const isLogged = useSelector(AuthSelectors.isLogged)
+  const isChecked = useSelector(AuthSelectors.isChecked)
 
   return (
     <Route
       {...rest}
-      render={props => {
-        return (
-          isLoggedIn ? (
-            <Component {...props} />
-          ) : (
-              <Redirect to="/login" />
-            )
-        )
-      }
+      render={
+        props => {
+          console.log("isLogged: ", isLogged)
+          return (
+            <>
+              {isChecked ? (
+                <>
+                  {isLogged ? (
+                    children
+
+                  ) : (
+                      <Redirect to="/login" />
+                    )}
+                </>
+              ) : (
+                  <p>waiting</p>
+                )
+              }
+
+            </>
+          )
+        }
       }
     />
   )
 }
+
 
 export const AppRouter = () => {
   return (
@@ -64,18 +67,18 @@ export const AppRouter = () => {
           </Route>
           <Route path="/signup/confirm/:code">
             <SignupConfirmPage />
-          </Route>          
+          </Route>
           <Route path="/signup/confirm/">
             <SignupConfirmPage />
-          </Route>          
+          </Route>
           <Route path="/signup">
             <SignupPage />
-          </Route>          
-          <Route path="/users">
-            <Users />
           </Route>
-          <PrivateRoute path="/">
-            <Home />
+          <PrivateRoute path="/users">
+            <Users />
+          </PrivateRoute>
+          <PrivateRoute path="/" >
+            <HomePage />
           </PrivateRoute>
         </Switch>
       </Container>
