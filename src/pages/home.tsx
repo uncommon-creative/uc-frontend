@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Card, CardTitle, Nav, NavItem, NavLink, Table, TabContent, TabPane, Row, Col, Button } from 'reactstrap';
 
 import { actions as NotificationActions } from '../store/slices/notification'
+import { selectors as ProfileSelectors } from '../store/slices/profile'
 
 const DATA = [
   {
@@ -102,6 +103,7 @@ export const HomePage = () => {
 
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('1');
+  const userAttributes = useSelector(ProfileSelectors.getProfile)
 
   const toggle = (tab: any) => {
     if (activeTab !== tab) setActiveTab(tab);
@@ -112,7 +114,7 @@ export const HomePage = () => {
       <Card className="mt-3 mt-lg-5 rounded" outline color="primary">
         <div className="row">
           <div className="col-12 col-sm-9">
-            <CardTitle tag="h2">Welcome User</CardTitle>
+            <CardTitle tag="h2">Welcome {userAttributes.given_name}</CardTitle>
           </div>
           <div className="col-12 col-sm-3">
             <Button color="primary" className="w-75 mt-sm-2 mb-2 mx-auto"

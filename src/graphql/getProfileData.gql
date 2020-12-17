@@ -1,0 +1,19 @@
+query getProfileData{
+  given_name: getProfileData( 
+    name: "given_name"
+  ){
+    value
+  }
+
+  family_name: getProfileData( 
+    name: "family_name"
+  ){
+    value
+  }
+
+  email: getProfileData( 
+    name: "email"
+  ){
+    value
+  }  
+}

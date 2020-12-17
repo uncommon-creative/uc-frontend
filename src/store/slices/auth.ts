@@ -7,7 +7,7 @@ export const currentSlice = createSlice({
     confirmed: false,
     logged: false,
     checked: false,
-    user: {},
+    user: {} as {} | null,
     forgotPasswordRequested: false,
     error: undefined
   },
@@ -20,6 +20,8 @@ export const currentSlice = createSlice({
     didLoginUserSuccess: (state, action: PayloadAction<any>) =>  void(state.checked = true, state.logged = true as any, state.user = action.payload.user),
     didLoginUserFails: (state, action: PayloadAction<any>) =>  void(state.checked = true, state.error = action.payload),
 
+    willLogoutUser: (state, action: PayloadAction<any>) =>  state,
+    didLogoutUser: (state, action: PayloadAction<any>) =>  void(state.checked = true, state.logged = false as any, state.user = null),
     willSignupUser: (state, action: PayloadAction<any>) =>  state,
     didSignupUserSuccess: (state, action: PayloadAction<any>) =>  state,
     didSignupUserFails: (state, action: PayloadAction<any>) =>  void(state.error = action.payload),
@@ -35,7 +37,25 @@ export const currentSlice = createSlice({
 })
 
 export const { actions, reducer }: any = currentSlice
-export const { addPublicKey } = actions
+export const { 
+  willConfirmUser,
+  didConfirmUserSuccess,
+  didConfirmUserFails,
+  willLoginUser, 
+  didLoginUserSuccess,
+  didLoginUserFails,
+  willLogoutUser,
+  didLogoutUser,
+  willSignupUser,
+  didSignupUserSuccess,
+  didSignupUserFails,
+  willForgotPasswordRequest,
+  didForgotPasswordRequestSuccess,
+  didForgotPasswordRequestFails,
+  willForgotPasswordConfirm,
+  didForgotPasswordConfirmSuccess,
+  didForgotPasswordConfirmFails
+} = actions
 export const selectors = {
   isLogged: (state: any) => state.auth.logged,
   isChecked: (state: any) => state.auth.checked,
