@@ -8,6 +8,7 @@ export const currentSlice = createSlice({
     logged: false,
     checked: false,
     user: {},
+    forgotPasswordRequested: false,
     error: undefined
   },
   reducers: {
@@ -21,7 +22,15 @@ export const currentSlice = createSlice({
 
     willSignupUser: (state, action: PayloadAction<any>) =>  state,
     didSignupUserSuccess: (state, action: PayloadAction<any>) =>  state,
-    didSignupUserFails: (state, action: PayloadAction<any>) =>  void(state.error = action.payload)
+    didSignupUserFails: (state, action: PayloadAction<any>) =>  void(state.error = action.payload),
+
+    willForgotPasswordRequest: (state, action: PayloadAction<any>) =>  state,
+    didForgotPasswordRequestSuccess: (state, action: PayloadAction<any>) =>  void(state.forgotPasswordRequested = true),
+    didForgotPasswordRequestFails: (state, action: PayloadAction<any>) =>  void(state.error = action.payload),
+
+    willForgotPasswordConfirm: (state, action: PayloadAction<any>) =>  state,
+    didForgotPasswordConfirmSuccess: (state, action: PayloadAction<any>) =>  void(state.forgotPasswordRequested = false),
+    didForgotPasswordConfirmFails: (state, action: PayloadAction<any>) =>  void(state.error = action.payload)
   }
 })
 
@@ -31,5 +40,6 @@ export const selectors = {
   isLogged: (state: any) => state.auth.logged,
   isChecked: (state: any) => state.auth.checked,
   isAuthenticated: (state: any) => state.auth.logged,
-  getLoggedError: (state: any) => state.auth.error
+  getLoggedError: (state: any) => state.auth.error,
+  requestedForgotPassword: (state: any) => state.auth.forgotPasswordRequested
 }

@@ -15,11 +15,11 @@ import { Link, useHistory } from 'react-router-dom';
 import { ActivityButton } from '../components/ActivityButton'
 
 const LoginSchema = Yup.object().shape({
-  name: Yup.string()
+  givenName: Yup.string()
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
     .required('Required'),
-  surname: Yup.string()
+  familyName: Yup.string()
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
     .required('Required'),
@@ -72,8 +72,8 @@ export const SignupPage = () => {
             initialValues={{
               email: '',
               emailConfirm: '',
-              name: '',
-              surname: '',
+              familyName: '',
+              givenName: '',
               password: '',
               passwordConfirm: ''
             }}
@@ -81,23 +81,23 @@ export const SignupPage = () => {
             validateOnBlur={true}
             onSubmit={values => {
               console.log('in onsubmit with: ', values)
-              dispatch(AuthActions.willSignupUser({ email: values.email, password: values.password, history: history }));
+              dispatch(AuthActions.willSignupUser({ email: values.email, password: values.password, family_name: values.familyName, given_name: values.givenName, history: history }));
             }}
           >
             {({ errors, touched, setFieldValue, values }) => (
               <Form>
                 <FormGroup>
-                  <Label for="name">Name</Label>
-                  <Input invalid={errors.name && touched.name ? true : false} type="text" name="name" id="name" placeholder="with a placeholder" tag={Field} />
-                  {errors.name && touched.name ? (
-                    <FormFeedback>{errors.name}</FormFeedback>
+                  <Label for="givenName">Name</Label>
+                  <Input invalid={errors.givenName && touched.givenName ? true : false} type="text" name="givenName" id="givenName" placeholder="with a placeholder" tag={Field} />
+                  {errors.givenName && touched.givenName ? (
+                    <FormFeedback>{errors.givenName}</FormFeedback>
                   ) : null}
                 </FormGroup>
                 <FormGroup>
-                  <Label for="surname">Surname</Label>
-                  <Input invalid={errors.surname && touched.surname ? true : false} type="text" name="surname" id="surname" placeholder="with a placeholder" tag={Field} />
-                  {errors.surname && touched.surname ? (
-                    <FormFeedback>{errors.surname}</FormFeedback>
+                  <Label for="familyName">Surname</Label>
+                  <Input invalid={errors.familyName && touched.familyName ? true : false} type="text" name="familyName" id="familyName" placeholder="with a placeholder" tag={Field} />
+                  {errors.familyName && touched.familyName ? (
+                    <FormFeedback>{errors.familyName}</FormFeedback>
                   ) : null}
                 </FormGroup>
                 <FormGroup>
@@ -131,7 +131,7 @@ export const SignupPage = () => {
                 </FormGroup>
                 <Row>
                   <Col>
-                    <ActivityButton name="signup" color="primary" disabled block>Signup</ActivityButton>
+                    <ActivityButton type="submit" name="signup" color="primary" block>Signup</ActivityButton>
                   </Col>
                 </Row>
                 <Row>

@@ -9,6 +9,8 @@ export function* sagas() {
   yield takeLatest(AuthActions.willLoginUser.type, willLoginUser)
   yield takeLatest(AuthActions.willSignupUser.type, willSignupUser)
   yield takeLatest(AuthActions.willConfirmUser.type, willConfirmUser)
+  yield takeLatest(AuthActions.willForgotPasswordRequest.type, willForgotPasswordRequest)
+  yield takeLatest(AuthActions.willForgotPasswordConfirm.type, willForgotPasswordConfirm)
   yield call(checkAuthentication);
   console.log('in auth saga');
 }
@@ -33,6 +35,7 @@ function* willConfirmUser(action: any) {
   try {
     yield put(UIActions.startActivityRunning("confirm"));
     localStorage.removeItem('username')
+    localStorage.removeItem('emailConfirm')
 
     const result = yield call(AuthApi.confirm, action.payload.username, action.payload.code)
     console.log("willConfirmUser success result ", result)
@@ -53,7 +56,7 @@ function* willLoginUser(action: any) {
   console.log('in willLoginUser with ', action)
   yield put(UIActions.startActivityRunning("login"));
   try {
-    const result = yield call(AuthApi.login, action.payload.username, action.payload.password)
+    const result = yield call(AuthApi.login, action.payload.email, action.payload.password)
     console.log("result: ", result)
     yield put(AuthActions.didLoginUserSuccess(result));
     action.payload.history.push("/")
@@ -76,7 +79,8 @@ function* willSignupUser(action: any) {
   try {
     yield put(UIActions.startActivityRunning("signup"));
     localStorage.setItem('username', action.payload.email)
-    const result = yield call(AuthApi.signup, action.payload.email, action.payload.password, action.payload.name, action.payload.surname)
+    localStorage.setItem('emailConfirm', "SIGNUP_USER")
+    const result = yield call(AuthApi.signup, action.payload.email, action.payload.password, action.payload.given_name, action.payload.family_name)
     yield put(AuthActions.didSignupUserSuccess(result));
     //Redirect to Confirm
     action.payload.history.push('/signup/confirm')
@@ -87,6 +91,40 @@ function* willSignupUser(action: any) {
     yield delay(1000);
     yield put(UIActions.stopActivityRunning("signup"));
   }
+}
+
+function* willForgotPasswordRequest(action: any) {
+  console.log("in willForgotPasswordRequest with ", action)
+  yield put(UIActions.startActivityRunning("requestNewPassword"));
+  try {
+    localStorage.setItem('username', action.payload.email)
+    localStorage.setItem('emailConfirm', "PASSWORD_RESET")
+    const result = yield call(AuthApi.forgotPasswordRequest, action.payload.email)
+    yield put(AuthActions.didForgotPasswordRequestSuccess(result))
+    yield put(NotificationActions.willShowNotification({ message: "New password requested", type: "success" }));
+    action.payload.history.push("/signup/confirm/")
+  } catch (error) {
+    yield put(AuthActions.didForgotPasswordRequestFails(error));
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
+  }
+  yield put(UIActions.stopActivityRunning("requestNewPassword"));
+}
+
+function* willForgotPasswordConfirm(action: any) {
+  console.log("in willForgotPasswordConfirm with ", action)
+  yield put(UIActions.startActivityRunning("confirmNewPassword"));
+  try {
+    localStorage.removeItem('username')
+    localStorage.removeItem('emailConfirm')
+    const result = yield call(AuthApi.forgotPasswordConfirm, action.payload.email, action.payload.code, action.payload.password)
+    yield put(AuthActions.didForgotPasswordConfirmSuccess(result))
+    yield put(NotificationActions.willShowNotification({ message: "New password confirmed", type: "success" }));
+    action.payload.history.push('/login')
+  } catch (error) {
+    yield put(AuthActions.didForgotPasswordConfirmFails(error));
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
+  }
+  yield put(UIActions.stopActivityRunning("confirmNewPassword"));
 }
 
 function* willResendSignupConfirm(action: any) {

@@ -72,3 +72,21 @@ export const signup = async (email: any, password: any, given_name: any, family_
     throw error;
   }
 }
+
+export const forgotPasswordRequest = async (email: any) => {
+  try {
+    const request = await Auth.forgotPassword(email)
+  } catch (error) {
+    console.log('with forgotPassword error: ', error)
+    throw error;
+  }
+}
+
+export const forgotPasswordConfirm = async (email: any, code: any, password: any) => {
+  try {
+    const confirm = await Auth.forgotPasswordSubmit(email, code, password)
+  } catch (error) {
+    console.log('with forgotPasswordSubmit error: ', error)
+    throw error;
+  }
+}
