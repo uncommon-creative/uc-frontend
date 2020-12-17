@@ -1,3 +1,4 @@
+import userEvent from '@testing-library/user-event';
 import Amplify, { Auth } from 'aws-amplify';
 import { env } from 'process';
 import { configuration } from '../config'
@@ -17,6 +18,17 @@ export const isAuthenticated = async () => {
     return false;
   }
 
+}
+
+export const getAuthenticatedUser = async () => {
+  try {
+    const user = await Auth.currentAuthenticatedUser({
+      bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+    })
+    return user;
+  } catch (error) {
+    console.log('in error with getAuthenticatedUser')
+  }
 }
 
 export const confirm = async (username: any, code: any) => {
@@ -57,6 +69,24 @@ export const signup = async (email: any, password: any, given_name: any, family_
     console.log('with signup result: ', user)
   } catch (error) {
     console.log('with signup error: ', error)
+    throw error;
+  }
+}
+
+export const forgotPasswordRequest = async (email: any) => {
+  try {
+    const request = await Auth.forgotPassword(email)
+  } catch (error) {
+    console.log('with forgotPassword error: ', error)
+    throw error;
+  }
+}
+
+export const forgotPasswordConfirm = async (email: any, code: any, password: any) => {
+  try {
+    const confirm = await Auth.forgotPasswordSubmit(email, code, password)
+  } catch (error) {
+    console.log('with forgotPasswordSubmit error: ', error)
     throw error;
   }
 }

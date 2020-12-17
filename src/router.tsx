@@ -3,58 +3,50 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   Redirect,
   useHistory
 } from "react-router-dom";
-import { Header } from "./header";
+import { useSelector } from "react-redux";
 import { Container } from "reactstrap";
 
-import { HomePage } from './pages/Home'
+import { Header } from "./header";
+import { HomePage } from './pages/home'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
 import { SignupConfirmPage } from './pages/signupConfirm'
 
-import * as AuthApi from './api/auth'
-
+import { selectors as AuthSelectors } from './store/slices/auth'
 const PrivateRoute = ({ children, ...rest }: any) => {
 
   let history = useHistory();
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false)
-
-  React.useEffect(() => {
-    AuthApi.isAuthenticated().then((result) => {
-      if (result) {
-        console.log("isAuthenticated: ", result)
-        setIsLoggedIn(true)
-      } else {
-        console.log("isAuthenticated: ", result)
-        setIsLoggedIn(false)
-        history.push('/login')
-      }
-    })
-      .catch((error) => {
-        setIsLoggedIn(false)
-      })
-    return () => { }
-  }, [])
+  const isLogged = useSelector(AuthSelectors.isLogged)
+  const isChecked = useSelector(AuthSelectors.isChecked)
 
   return (
     <Route
       {...rest}
       render={
         props => {
-        console.log("isLoggedIn: ", isLoggedIn)
-        return (
-          // isLoggedIn == "LOGGED" ?
-          // <Component {...props} />
-          children
-          // : (
-          // <Redirect to="/login" />
-          // <LoginPage />
-          // )
-        )
-      }
+          console.log("isLogged: ", isLogged)
+          return (
+            <>
+              {isChecked ? (
+                <>
+                  {isLogged ? (
+                    children
+
+                  ) : (
+                      <Redirect to="/login" />
+                    )}
+                </>
+              ) : (
+                  <p>waiting</p>
+                )
+              }
+
+            </>
+          )
+        }
       }
     />
   )
