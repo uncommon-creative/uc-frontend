@@ -48,19 +48,10 @@ const SignupSchema = Yup.object().shape({
     .required('Required'),
 });
 
-const ResendEmailSchema = Yup.object().shape({
-  email: Yup.string()
-    .email()
-    .min(2, 'Too Short!')
-    .max(50, 'Too Long!')
-    .required('Required'),
-});
-
 export const SignupPage = () => {
 
   const dispatch = useDispatch();
   const loginError = useSelector(AuthSelectors.getLoggedError);
-  const [resendEmail, setResendEmail] = React.useState(false);
   let history = useHistory();
 
   React.useEffect(() => {
@@ -74,7 +65,6 @@ export const SignupPage = () => {
   return (
     <Container>
       <Card className="mt-3 mt-lg-10">
-        {!resendEmail ?
           <CardBody>
             <CardTitle tag="h5" className="text-center">Signup Page</CardTitle>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Hint: Insert Email e Password</CardSubtitle>
@@ -146,53 +136,10 @@ export const SignupPage = () => {
                   <Row className="mt-2">
                     <Col><Button color="primary" block to="/login" outline tag={Link}>Login</Button></Col>
                   </Row>
-                  <Row>
-                    <Col><Button color="link" name="resendSignupConfirm" block
-                      onClick={() => setResendEmail(true)}
-                    >Resend email confirm?</Button></Col>
-                  </Row>
                 </Form>
               )}
             </Formik>
           </CardBody>
-          :
-          <CardBody>
-            <CardTitle tag="h5" className="text-center">Resend Email Page</CardTitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Hint: Insert Email</CardSubtitle>
-            <Formik
-              initialValues={{
-                email: ''
-              }}
-              validationSchema={ResendEmailSchema}
-              validateOnBlur={true}
-              onSubmit={values => {
-                console.log('in onsubmit with: ', values)
-                dispatch(AuthActions.willResendSignup({ email: values.email, history: history }));
-              }}
-            >
-              {({ errors, touched, setFieldValue, values }) => (
-                <Form>
-                  <FormGroup>
-                    <Label for="email">Email Address</Label>
-                    <Input invalid={errors.email && touched.email ? true : false} type="text" name="email" id="email" placeholder="email" tag={Field} />
-                    {errors.email && touched.email ? (
-                      <FormFeedback>{errors.email}</FormFeedback>
-                    ) : null}
-                  </FormGroup>
-                  <Row>
-                    <Col>
-                      <ActivityButton type="submit" name="resendSignupConfirm" color="primary" block>Resend Email</ActivityButton>
-                    </Col>
-                  </Row>
-                  <Row className="mt-2">
-                    <Col><Button color="primary" block to="/login" outline tag={Link}>Login</Button></Col>
-                    <Col><Button color="primary" block outline onClick={() => setResendEmail(false)}>Signup</Button></Col>
-                  </Row>
-                </Form>
-              )}
-            </Formik>
-          </CardBody>
-        }
       </Card>
     </Container>
   )
