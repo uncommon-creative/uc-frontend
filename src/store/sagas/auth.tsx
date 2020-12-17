@@ -3,10 +3,13 @@ import { call, put, takeEvery, takeLatest, delay } from 'redux-saga/effects'
 import * as AuthApi from '../../api/auth'
 import { actions as AuthActions } from '../slices/auth'
 import { actions as NotificationActions } from '../slices/notification'
+import { actions as ProfileActions } from '../slices/profile'
+
 import { actions as UIActions } from '../slices/ui'
 
 export function* sagas() {
   yield takeLatest(AuthActions.willLoginUser.type, willLoginUser)
+  yield takeLatest(AuthActions.willLogoutUser.type, willLogoutUser)
   yield takeLatest(AuthActions.willSignupUser.type, willSignupUser)
   yield takeLatest(AuthActions.willConfirmUser.type, willConfirmUser)
   yield takeLatest(AuthActions.willForgotPasswordRequest.type, willForgotPasswordRequest)
@@ -72,6 +75,16 @@ function* willLoginUser(action: any) {
     }
   }
   yield put(UIActions.stopActivityRunning("login"));
+}
+
+function* willLogoutUser(action: any) {
+  try {
+    const result = yield call(AuthApi.logout)
+    yield put(AuthActions.didLogoutUser(result));
+    action.payload.history.push("/")
+  } catch (error) {
+    yield put(AuthActions.didLoginUserFails(error));
+  }
 }
 
 function* willSignupUser(action: any) {
