@@ -39,9 +39,10 @@ function* willRetrieveProfileData(action: any) {
 function* willAddPublicKey(action: any) {
   console.log("in willAddPublicKey with ", action)
   yield put(UIActions.startActivityRunning("savePublicAddress"));
+  const publicKey = action.payload.publicKey
 
   try {
-    const result = yield call(ServiceApi.putProfileData, "public_key", action.publicKey)
+    const result = yield call(ServiceApi.putProfileData, "public_key", publicKey)
     console.log("willAddPublicKey ", result)
     yield put(NotificationActions.willShowNotification({ message: "Public address saved", type: "success" }))
     action.payload.history.push('/')
