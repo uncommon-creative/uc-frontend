@@ -72,8 +72,6 @@ function* willLoginUser(action: any) {
       const message = <>User not Confirmed - <Button color="link" href="/signup/confirm">Resend confirmation Email</Button></>
       localStorage.setItem('username', action.payload.email)
       localStorage.setItem('emailConfirm', "RESEND_SIGNUP_USER")
-      // const message = <>User not Confirmed - <Button color="link" onClick={() => console.log("AAA")}>Resend confirmation Email</Button></>
-      // const message = <>User not Confirmed - <Button color="link" onClick={yield call(willResendSignup, action.payload.email)}>Resend confirmation Email</Button></>
       yield put(NotificationActions.willShowNotification({ message: message, type: "danger", delay: 10000 }));
     } else {
       yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));

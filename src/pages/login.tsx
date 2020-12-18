@@ -9,6 +9,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from "react-router-dom";
+import { push } from 'connected-react-router'
 
 import { actions as AuthActions, selectors as AuthSelectors } from '../store/slices/auth'
 import { ActivityButton } from '../components/ActivityButton'
@@ -88,6 +89,10 @@ export const LoginPage = () => {
                   <ActivityButton type="submit" name="login" color="primary" block>Login</ActivityButton>
                   <Button color="primary" block to="/signup" outline tag={Link}>Signup</Button>
                   <Button color="link" block onClick={() => setForgotPassword(true)}>Forgot Password?</Button>
+
+                  <Button color="danger" block  
+                  onClick={() => dispatch(push("/users"))}
+                   >connected-react-router push TEST</Button>
                 </Form>
               )}
             </Formik>
