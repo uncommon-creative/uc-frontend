@@ -23,7 +23,7 @@ export const currentSlice = createSlice({
 })
 
 export const { actions, reducer }: any = currentSlice
-export const { addPublicKey } = actions
+export const { willAddPublicKey } = actions
 export const selectors = {
   getNotification: (state: any) => state.notification,
 }

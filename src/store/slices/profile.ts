@@ -8,18 +8,23 @@ export const currentSlice = createSlice({
   name: 'profile',
   initialState: {
     publicKey: "",
-    attributes: {}
+    attributes: {},
+    algoAccount: {}
   },
   reducers: {
-    addPublicKey: (state, action: PayloadAction<any>) =>  state.publicKey = action.payload,
-    willRetrieveProfileData: (state, action: PayloadAction<any>) =>  state,
-    didRetrieveProfileData: (state, action: PayloadAction<any>) =>  void(state.attributes = action.payload)
+    willAddPublicKey: (state, action: PayloadAction<any>) => void (state.publicKey = action.payload.publicKey),
+    willRetrieveProfileData: (state, action: PayloadAction<any>) => state,
+    didRetrieveProfileData: (state, action: PayloadAction<any>) => void (state.attributes = action.payload),
+
+    willGenerateAlgoAccount: (state, action: PayloadAction<any>) => state,
+    didGenerateAlgoAccount: (state, action: PayloadAction<any>) => void (state.algoAccount = action.payload)
   }
 })
 
 export const { actions, reducer }: any = currentSlice
-export const { addPublicKey, willRetrieveProfileData, didRetrieveProfileData } = actions
+export const { willAddPublicKey, willRetrieveProfileData, didRetrieveProfileData, didGenerateAlgoAccount } = actions
 export const selectors = {
   getPublicKey: (state: any) => state.profile.publicKey,
-  getProfile: (state: any) => state.profile.attributes
+  getProfile: (state: any) => state.profile.attributes,
+  getAlgoAccount: (state: any) => state.profile.algoAccount
 }

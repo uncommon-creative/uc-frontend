@@ -1,21 +1,32 @@
-import { API } from 'aws-amplify';
+import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
-import * as _ from 'lodash'; 
+import * as _ from 'lodash';
 
 export const getProfileData = async () => {
-
   const query = loader('../graphql/getProfileData.gql');
+
   try {
-    // return await API.graphql({ query: query, variables: { name: name }});
-    const rawResult: any =  await API.graphql({ query: query });
+    const rawResult: any = await API.graphql({ query: query });
     console.log('raw result: ', rawResult);
-    const result = _.mapValues(rawResult.data, function(value: any) { 
-      return value.value; 
+    const result = _.mapValues(rawResult.data, function (value: any) {
+      return value && value.value;
     });
     console.log('with result: ', result);
     return result
 
   } catch (error) {
+    throw error
+  }
+}
+
+export const putProfileData = async (name: string, value: string) => {
+  const mutation = loader('../graphql/putProfileData.gql')
+
+  try {
+    const result = await API.graphql(graphqlOperation(mutation, { name: name, value: value }))
+    return result
+  } catch (error) {
+    console.log("putProfileData API error: ", error)
     throw error
   }
 }

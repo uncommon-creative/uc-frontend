@@ -16,4 +16,10 @@ query getProfileData{
   ){
     value
   }  
+
+  public_key: getProfileData( 
+    name: "public_key"
+  ){
+    value
+  }  
 }
