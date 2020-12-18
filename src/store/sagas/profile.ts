@@ -5,6 +5,7 @@ import { actions as AuthActions } from '../slices/auth'
 import { actions as NotificationActions } from '../slices/notification'
 import * as ServiceApi from '../../api/service'
 import { actions as UIActions } from '../slices/ui'
+import { push } from 'connected-react-router'
 
 const algosdk = require('algosdk');
 
@@ -21,10 +22,12 @@ function* willRetrieveProfileData(action: any) {
     yield put(ProfileActions.didRetrieveProfileData(result))
     if (result.public_key == null) {
       yield call(willGenerateAlgoAccount)
-      action.payload.history.push("/create-algo-account")
+      yield put(push("/create-algo-account"))
+      // action.payload.history.push("/create-algo-account")
     }
     else {
-      action.payload.history.push("/")
+      // action.payload.history.push("/")
+      yield put(push("/"))
     }
   } catch (error) {
     console.log('Error retriving profile data', error);
