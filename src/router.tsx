@@ -8,6 +8,8 @@ import {
 } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Container } from "reactstrap";
+import { history } from './store'
+import { ConnectedRouter } from 'connected-react-router'
 
 import { Header } from './header'
 import { HomePage } from './pages/home'
@@ -54,7 +56,7 @@ const PrivateRoute = ({ children, ...rest }: any) => {
 
 export const AppRouter = () => {
   return (
-    <Router>
+    <ConnectedRouter history={history}>
       <Header className="mb-3" />
       <Container fluid>
         <Switch>
@@ -84,7 +86,7 @@ export const AppRouter = () => {
           </PrivateRoute>
         </Switch>
       </Container>
-    </Router>
+    </ConnectedRouter>
   );
 }
 

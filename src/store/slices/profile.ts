@@ -8,11 +8,11 @@ export const currentSlice = createSlice({
   name: 'profile',
   initialState: {
     publicKey: "",
-    attributes: {},
+    attributes: {} as any,
     algoAccount: {}
   },
   reducers: {
-    willAddPublicKey: (state, action: PayloadAction<any>) => void (state.publicKey = action.payload.publicKey),
+    willAddPublicKey: (state, action: PayloadAction<any>) => void (state.publicKey = action.payload.publicKey, state.attributes.publicKey = action.payload.publicKey),
     willRetrieveProfileData: (state, action: PayloadAction<any>) => state,
     didRetrieveProfileData: (state, action: PayloadAction<any>) => void (state.attributes = action.payload),
 

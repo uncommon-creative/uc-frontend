@@ -11,7 +11,7 @@ export const history = createBrowserHistory()
 export const configureStore = (preloadedState: any) => {
 
   const sagaMiddleware = createSagaMiddleware()
-  const middlewares: any = [sagaMiddleware, routerMiddleware(history)]
+  const middlewares: any = [routerMiddleware(history), sagaMiddleware]
 
   const middlewareEnhancer = applyMiddleware(...middlewares)
 
