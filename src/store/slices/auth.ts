@@ -20,11 +20,12 @@ export const currentSlice = createSlice({
     didLoginUserSuccess: (state, action: PayloadAction<any>) => void (state.checked = true, state.logged = true as any, state.user = action.payload.user),
     didLoginUserFails: (state, action: PayloadAction<any>) => void (state.checked = true, state.error = action.payload),
 
-    willLogoutUser: (state, action: PayloadAction<any>) =>  state,
-    didLogoutUser: (state, action: PayloadAction<any>) =>  void(state.checked = true, state.logged = false as any, state.user = null),
-    willSignupUser: (state, action: PayloadAction<any>) =>  state,
-    didSignupUserSuccess: (state, action: PayloadAction<any>) =>  state,
-    didSignupUserFails: (state, action: PayloadAction<any>) =>  void(state.error = action.payload),
+    willLogoutUser: (state, action: PayloadAction<any>) => state,
+    didLogoutUser: (state, action: PayloadAction<any>) => void (state.checked = true, state.logged = false as any, state.user = null),
+
+    willSignupUser: (state, action: PayloadAction<any>) => state,
+    didSignupUserSuccess: (state, action: PayloadAction<any>) => state,
+    didSignupUserFails: (state, action: PayloadAction<any>) => void (state.error = action.payload),
 
     willForgotPasswordRequest: (state, action: PayloadAction<any>) => state,
     didForgotPasswordRequestSuccess: (state, action: PayloadAction<any>) => void (state.forgotPasswordRequested = true),
@@ -39,11 +40,11 @@ export const currentSlice = createSlice({
 })
 
 export const { actions, reducer }: any = currentSlice
-export const { 
+export const {
   willConfirmUser,
   didConfirmUserSuccess,
   didConfirmUserFails,
-  willLoginUser, 
+  willLoginUser,
   didLoginUserSuccess,
   didLoginUserFails,
   willLogoutUser,

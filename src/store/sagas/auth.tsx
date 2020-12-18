@@ -4,8 +4,6 @@ import { Button } from 'reactstrap';
 import * as AuthApi from '../../api/auth'
 import { actions as AuthActions } from '../slices/auth'
 import { actions as NotificationActions } from '../slices/notification'
-import { actions as ProfileActions } from '../slices/profile'
-
 import { actions as UIActions } from '../slices/ui'
 
 export function* sagas() {
@@ -63,8 +61,8 @@ function* willLoginUser(action: any) {
   try {
     const result = yield call(AuthApi.login, action.payload.email, action.payload.password)
     console.log("result: ", result)
-    yield put(AuthActions.didLoginUserSuccess(result));
-    action.payload.history.push("/")
+    yield put(AuthActions.didLoginUserSuccess({ result: result, history: action.payload.history }));
+    // action.payload.history.push("/")
   } catch (error) {
     yield put(AuthActions.didLoginUserFails(error));
 

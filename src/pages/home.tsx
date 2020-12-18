@@ -118,9 +118,9 @@ export const HomePage = () => {
           </div>
           <div className="col-12 col-sm-3">
             {activeTab == '1' &&
-              <Button color="primary" className="w-75 mt-sm-2 mx-auto"
-                onClick={() => dispatch(NotificationActions.willShowNotification({ message: "Create State Of Work", type: "info" }))}
-              >+ new SOW</Button>}
+              <Button color="primary" className=" mt-sm-2 mx-auto"
+                onClick={() => dispatch(NotificationActions.willShowNotification({ message: "Create Statement Of Work", type: "info" }))}
+              >new Statement Of Work</Button>}
           </div>
         </div>
         <Nav tabs>

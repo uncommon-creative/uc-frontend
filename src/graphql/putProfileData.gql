@@ -1,0 +1,12 @@
+mutation putProfileData(
+  $name: String, 
+  $value: String
+) {
+    putProfileData(
+      name: $name, 
+      value: $value
+    ) {
+      name
+      value
+    }
+}

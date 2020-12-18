@@ -9,11 +9,12 @@ import {
 import { useSelector } from "react-redux";
 import { Container } from "reactstrap";
 
-import { Header } from "./header"
+import { Header } from './header'
 import { HomePage } from './pages/home'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
 import { SignupConfirmPage } from './pages/signupConfirm'
+import { CreateAlgoAccountPage } from './pages/createAlgoAccount'
 
 import { selectors as AuthSelectors } from './store/slices/auth'
 const PrivateRoute = ({ children, ...rest }: any) => {
@@ -34,7 +35,6 @@ const PrivateRoute = ({ children, ...rest }: any) => {
                 <>
                   {isLogged ? (
                     children
-
                   ) : (
                       <Redirect to="/login" />
                     )}
@@ -43,7 +43,6 @@ const PrivateRoute = ({ children, ...rest }: any) => {
                   <p>waiting</p>
                 )
               }
-
             </>
           )
         }
@@ -74,8 +73,11 @@ export const AppRouter = () => {
           <Route path="/signup">
             <SignupPage />
           </Route>
-          <PrivateRoute path="/users">
+          <Route path="/users">
             <Users />
+          </Route>
+          <PrivateRoute path="/create-algo-account">
+            <CreateAlgoAccountPage />
           </PrivateRoute>
           <PrivateRoute path="/" >
             <HomePage />
