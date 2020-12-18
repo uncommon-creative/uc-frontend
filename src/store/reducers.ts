@@ -3,8 +3,10 @@ import { reducer as profileReducer } from './slices/profile'
 import { reducer as authReducer } from './slices/auth'
 import { reducer as notificationReducer } from './slices/notification'
 import { reducer as uiReducer } from './slices/ui'
+import { connectRouter } from 'connected-react-router'
 
-export const rootReducer = combineReducers({
+export const createRootReducer = (history: any) => combineReducers({
+  router: connectRouter(history),
   profile: profileReducer,
   auth: authReducer,
   notification: notificationReducer,

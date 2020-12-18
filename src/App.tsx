@@ -2,7 +2,7 @@ import React from 'react';
 import './App.scss';
 
 import { Provider } from 'react-redux'
-import { configureStore } from './store'
+import { configureStore, history } from './store'
 import { AppRouter } from './router'
 import { NotificationLayer } from './notification'
 

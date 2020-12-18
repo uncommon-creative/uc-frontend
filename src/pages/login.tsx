@@ -9,6 +9,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from "react-router-dom";
+import { push } from 'connected-react-router'
 
 import { actions as AuthActions, selectors as AuthSelectors } from '../store/slices/auth'
 import { ActivityButton } from '../components/ActivityButton'
@@ -72,14 +73,14 @@ export const LoginPage = () => {
                 <Form>
                   <FormGroup>
                     <Label for="email">Email</Label>
-                    <Input invalid={errors.email && touched.email ? true : false} type="text" name="email" id="email" placeholder="with a placeholder" autoComplete="email" tag={Field} />
+                    <Input invalid={errors.email && touched.email ? true : false} type="text" name="email" id="email" placeholder="insert email" autoComplete="email" tag={Field} />
                     {errors.email && touched.email ? (
                       <FormFeedback>{errors.email}</FormFeedback>
                     ) : null}
                   </FormGroup>
                   <FormGroup>
                     <Label for="password">Password</Label>
-                    <Input invalid={errors.password && touched.password ? true : false} type="password" name="password" id="password" placeholder="password placeholder" autoComplete="current-password" tag={Field} />
+                    <Input invalid={errors.password && touched.password ? true : false} type="password" name="password" id="password" placeholder="insert password" autoComplete="current-password" tag={Field} />
                     {errors.password && touched.password ? (
                       <FormFeedback>{errors.password}</FormFeedback>
                     ) : null}
@@ -117,14 +118,10 @@ export const LoginPage = () => {
                     ) : null}
                   </FormGroup>
                   <ActivityButton type="submit" name="requestNewPassword" color="primary" block>Request new password</ActivityButton>
-                  <Row className="mt-2">
-                    <Col>
-                      <Button color="primary" block outline onClick={() => setForgotPassword(false)}>Login</Button>
-                    </Col>
-                    <Col>
+                      <Button color="link" block onClick={() => setForgotPassword(false)}>Back to Login</Button>
+                    {/* <Col>
                       <Button color="primary" block to="/signup" outline tag={Link}>Signup</Button>
-                    </Col>
-                  </Row>
+                    </Col> */}
                 </Form>
               )}
             </Formik>

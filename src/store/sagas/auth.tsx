@@ -5,6 +5,7 @@ import * as AuthApi from '../../api/auth'
 import { actions as AuthActions } from '../slices/auth'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as UIActions } from '../slices/ui'
+import { push } from 'connected-react-router'
 
 export function* sagas() {
   yield takeLatest(AuthActions.willLoginUser.type, willLoginUser)
@@ -71,8 +72,6 @@ function* willLoginUser(action: any) {
       const message = <>User not Confirmed - <Button color="link" href="/signup/confirm">Resend confirmation Email</Button></>
       localStorage.setItem('username', action.payload.email)
       localStorage.setItem('emailConfirm', "RESEND_SIGNUP_USER")
-      // const message = <>User not Confirmed - <Button color="link" onClick={() => console.log("AAA")}>Resend confirmation Email</Button></>
-      // const message = <>User not Confirmed - <Button color="link" onClick={yield call(willResendSignup, action.payload.email)}>Resend confirmation Email</Button></>
       yield put(NotificationActions.willShowNotification({ message: message, type: "danger", delay: 10000 }));
     } else {
       yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
@@ -85,7 +84,8 @@ function* willLogoutUser(action: any) {
   try {
     const result = yield call(AuthApi.logout)
     yield put(AuthActions.didLogoutUser(result));
-    action.payload.history.push("/")
+    // action.payload.history.push("/")
+    yield put(push("/"))
   } catch (error) {
     yield put(AuthActions.didLoginUserFails(error));
   }

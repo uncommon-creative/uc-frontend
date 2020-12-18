@@ -1,12 +1,10 @@
 import * as React from 'react';
 import {
-  Card, CardBody,
+  Card, CardBody, CardText,
   CardTitle, CardSubtitle, Button,
-  Container, FormGroup, Input, Label, FormFeedback,
-  Col, Row, Jumbotron, CardText
+  Container,  Label,
+  Col, Row, Jumbotron
 } from 'reactstrap';
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory, Redirect } from "react-router-dom";
 
@@ -20,7 +18,8 @@ export const CreateAlgoAccountPage = () => {
   const dispatch = useDispatch();
   let history = useHistory();
   const algoAccount = useSelector(ProfileSelectors.getAlgoAccount)
-  const algoAccountWords = algosdk.secretKeyToMnemonic(algoAccount.sk)
+  let account = algosdk.generateAccount();
+  const algoAccountWords = algosdk.secretKeyToMnemonic(account.sk)
 
   return (
     <Container>
