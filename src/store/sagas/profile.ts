@@ -26,8 +26,9 @@ function* willRetrieveProfileData(action: any) {
       // action.payload.history.push("/create-algo-account")
     }
     else {
+      console.log('with public_key')
       // action.payload.history.push("/")
-      yield put(push("/"))
+      yield put(push("/home"))
     }
   } catch (error) {
     console.log('Error retriving profile data', error);

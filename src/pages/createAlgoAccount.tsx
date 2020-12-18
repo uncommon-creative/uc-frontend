@@ -20,7 +20,8 @@ export const CreateAlgoAccountPage = () => {
   const dispatch = useDispatch();
   let history = useHistory();
   const algoAccount = useSelector(ProfileSelectors.getAlgoAccount)
-  const algoAccountWords = algosdk.secretKeyToMnemonic(algoAccount.sk)
+  let account = algosdk.generateAccount();
+  const algoAccountWords = algosdk.secretKeyToMnemonic(account.sk)
 
   return (
     <Container>

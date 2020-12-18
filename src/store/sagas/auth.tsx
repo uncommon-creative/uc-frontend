@@ -5,6 +5,7 @@ import * as AuthApi from '../../api/auth'
 import { actions as AuthActions } from '../slices/auth'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as UIActions } from '../slices/ui'
+import { push } from 'connected-react-router'
 
 export function* sagas() {
   yield takeLatest(AuthActions.willLoginUser.type, willLoginUser)
@@ -85,7 +86,8 @@ function* willLogoutUser(action: any) {
   try {
     const result = yield call(AuthApi.logout)
     yield put(AuthActions.didLogoutUser(result));
-    action.payload.history.push("/")
+    // action.payload.history.push("/")
+    yield put(push("/"))
   } catch (error) {
     yield put(AuthActions.didLoginUserFails(error));
   }
