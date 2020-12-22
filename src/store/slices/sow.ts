@@ -6,12 +6,13 @@ export const currentSlice = createSlice({
     sow: {}
   },
   reducers: {
+    willSelectArbitrators: (state, action: PayloadAction<any>) => state,
     willCreateStatementOfWork: (state, action: PayloadAction<any>) => void (state.sow = action.payload),
   }
 })
 
 export const { actions, reducer }: any = currentSlice
-export const { willCreateStatementOfWork } = actions
+export const { willSelectArbitrators, willCreateStatementOfWork } = actions
 export const selectors = {
   getSOW: (state: any) => state.sow,
 }

@@ -12,6 +12,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 
 import { ActivityButton } from '../components/ActivityButton'
+import { SelectArbitrators } from '../components/SelectArbitrators'
 import { actions as SOWActions } from '../store/slices/sow'
 
 var DatePicker = require("reactstrap-date-picker");
@@ -67,7 +68,9 @@ export const CreateStatementOfWorkPage = () => {
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [priceCurrency, setPriceCurrency] = React.useState("ALGO");
   const [deadlineValue, setDeadlineValue] = React.useState('');
+  const [modal, setModal] = React.useState(false);
 
+  const toggle = () => setModal(!modal);
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
 
   return (
@@ -215,6 +218,10 @@ export const CreateStatementOfWorkPage = () => {
                     </Col>
                   </Row>
                 </Jumbotron>
+
+                <Button color="primary" onClick={toggle}>Select the arbitrators</Button>
+                <SelectArbitrators modal={modal} toggle={toggle} />
+
                 <FormGroup check>
                   <Label check>
                     <Input invalid={errors.termsOfService && touched.termsOfService ? true : false} name="termsOfService" id="termsOfService" type="checkbox"
@@ -239,7 +246,7 @@ export const CreateStatementOfWorkPage = () => {
                   <Col><ActivityButton type="submit" name="createSOW" color="primary" block>Create Statement Of Work</ActivityButton></Col>
                 </Row>
                 <Row className="mt-2">
-                  <Col><Button color="primary" block to="/" outline tag={Link}>Annulla</Button></Col>
+                  <Col><Button color="primary" block to="/" outline tag={Link}>Cancel</Button></Col>
                 </Row>
               </Form>
             )}

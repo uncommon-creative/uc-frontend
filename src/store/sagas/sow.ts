@@ -8,7 +8,8 @@ import { push } from 'connected-react-router'
 
 export function* sagas() {
   yield takeLatest(SOWActions.willCreateStatementOfWork.type, willCreateStatementOfWork)
-  console.log('in auth saga');
+  yield takeLatest(SOWActions.willSelectArbitrators.type, willSelectArbitrators)
+  console.log('in sow saga');
 }
 
 function* willCreateStatementOfWork(action: any) {
@@ -24,4 +25,20 @@ function* willCreateStatementOfWork(action: any) {
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
   }
   yield put(UIActions.stopActivityRunning("createSOW"));
+}
+
+function* willSelectArbitrators(action: any) {
+  console.log("in willSelectArbitrators with ", action)
+
+  yield put(UIActions.startActivityRunning("selectArbitrators"));
+
+  try {
+    yield delay(3000)
+    yield put(NotificationActions.willShowNotification({ message: "Arbitrators selected", type: "success" }));
+  } catch (error) {
+
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
+  }
+  yield put(UIActions.stopActivityRunning("selectArbitrators"));
+
 }
