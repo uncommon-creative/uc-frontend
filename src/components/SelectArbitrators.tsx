@@ -11,36 +11,42 @@ import { actions as SOWActions } from '../store/slices/sow'
 
 const ARBITRATORS = [
   {
+    id: 1,
     name: "John C.",
     tags: "graphic",
     reputation: 5,
     linkedin: "https://it.linkedin.com/"
   },
   {
+    id: 2,
     name: "Charles",
     tags: "graphic",
     reputation: 5,
     linkedin: "https://it.linkedin.com/"
   },
   {
+    id: 3,
     name: "Sabrina G.",
     tags: "graphic",
     reputation: 5,
     linkedin: "https://it.linkedin.com/"
   },
   {
+    id: 4,
     name: "Emma P.",
     tags: "graphic",
     reputation: 5,
     linkedin: "https://it.linkedin.com/"
   },
   {
+    id: 5,
     name: "Sandi",
     tags: "graphic",
     reputation: 5,
     linkedin: "https://it.linkedin.com/"
   },
   {
+    id: 6,
     name: "Himanshu",
     tags: "graphic",
     reputation: 5,
@@ -73,8 +79,6 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
   const [currentArbitrator, setCurrentArbitrator] = React.useState({} as any);
   const [selectedArbitrators, setSelectedArbitrators] = React.useState([] as any);
 
-  console.log("AAA: ", selectedArbitrators)
-
   return (
     <>
       <Modal isOpen={modal} toggle={toggle} size="lg">
@@ -83,9 +87,9 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
           <Row>
             <Col className="col-md-6 col-12">
               <ListGroup>
-                {ARBITRATORS.map((element: any) => {
+                {ARBITRATORS.map((element: any, index: any) => {
                   return (
-                    <ListGroupItem action onClick={() => setCurrentArbitrator(element)}>
+                    <ListGroupItem key={index} action onClick={() => setCurrentArbitrator(element)}>
                       <ArbitratorSummary arbitrator={element} />
                     </ListGroupItem>
                   )
@@ -99,11 +103,8 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
                     <ArbitratorDetail arbitrator={currentArbitrator} />
                     {selectedArbitrators.length < 3 ?
                       <Button color="primary" onClick={() => {
-                        console.log("AAA1: ", selectedArbitrators)
                         selectedArbitrators.push(currentArbitrator)
-                        console.log("AAA2: ", selectedArbitrators)
                         setSelectedArbitrators(selectedArbitrators)
-                        console.log("AAA3: ", selectedArbitrators)
                       }}>Add to arbitrators</Button>
                       :
                       <ListGroupItemText>You reached the max number of arbitrators</ListGroupItemText>
@@ -112,11 +113,9 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
               </Row>
               <Row>
                 {selectedArbitrators.map((element: any, index: any) => {
-                  console.log("AAA4: ", selectedArbitrators)
-                  console.log("AAA5: ", element)
                   return (
                     <Col className="col-sm-4">
-                      <ListGroupItem>
+                      <ListGroupItem key={index}>
                         <ListGroupItemHeading>
                           <Button close onClick={() => {
                             selectedArbitrators.splice(index, 1)
