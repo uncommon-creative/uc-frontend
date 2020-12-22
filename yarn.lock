@@ -11853,6 +11853,11 @@ react@^17.0.1:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
 
+reactstrap-date-picker@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/reactstrap-date-picker/-/reactstrap-date-picker-0.0.11.tgz#333328abcff2333e98c7c8d81df5bc4b0999c16c"
+  integrity sha512-9yuxNhMq4xFyn3BlNRYuZTM8kVixnWih7aIMMdWhdlHGfH9gPAPnrEGNswET+PUGu7t3T9VGh6z3VU4IsgcE/w==
+
 reactstrap@^8.7.1:
   version "8.7.1"
   resolved "https://registry.yarnpkg.com/reactstrap/-/reactstrap-8.7.1.tgz#9631db8460a83a4d40fbee61abdd577b4f1a7069"

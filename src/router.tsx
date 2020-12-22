@@ -17,6 +17,7 @@ import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
 import { SignupConfirmPage } from './pages/signupConfirm'
 import { CreateAlgoAccountPage } from './pages/createAlgoAccount'
+import { CreateStatementOfWorkPage } from './pages/createStatementOfWork'
 
 import { selectors as AuthSelectors } from './store/slices/auth'
 const PrivateRoute = ({ children, ...rest }: any) => {
@@ -80,6 +81,9 @@ export const AppRouter = () => {
           </Route>
           <PrivateRoute path="/create-algo-account">
             <CreateAlgoAccountPage />
+          </PrivateRoute>
+          <PrivateRoute path="/create-statement-of-work">
+            <CreateStatementOfWorkPage />
           </PrivateRoute>
           <PrivateRoute path="/" >
             <HomePage />

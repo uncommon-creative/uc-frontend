@@ -32,6 +32,7 @@ function* checkAuthentication() {
     yield put(AuthActions.didLoginUserFails({}));
   }
 }
+
 function* willConfirmUser(action: any) {
   console.log("in willConfirmUser with ", action)
   yield put(NotificationActions.willShowNotification({ message: "Confirming username " + action.payload.username, type: "info" }))
