@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export const currentSlice = createSlice({
   name: 'statementOfWork',
   initialState: {
-    arbitrators: [{} as any, {} as any, {} as any],
+    arbitrators: [],
     sow: {}
   },
   reducers: {

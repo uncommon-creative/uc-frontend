@@ -84,7 +84,7 @@ export const CreateStatementOfWorkPage = () => {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [priceCurrency, setPriceCurrency] = React.useState("ALGO");
   const [deadlineValue, setDeadlineValue] = React.useState('');
-  const selectedArbitrators = useSelector(SOWSelectors.getArbitrators)
+  const confirmedArbitrators = useSelector(SOWSelectors.getArbitrators)
 
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
   const toggleModal = () => setModalOpen(!modalOpen);
@@ -108,7 +108,7 @@ export const CreateStatementOfWorkPage = () => {
               numberReviews: '',
               termsOfService: false,
               codeOfConduct: false,
-              arbitrators: selectedArbitrators
+              arbitrators: confirmedArbitrators
             }}
             validationSchema={StatementOfWorkSchema}
             validateOnBlur={true}
@@ -144,7 +144,7 @@ export const CreateStatementOfWorkPage = () => {
                       ) : null}
                     </FormGroup>
                     <Row>
-                      <Col className="col-md-6 col-12">
+                      <Col className="col-md-4 col-12">
                         <FormGroup>
                           <Label for="quantity">Quantity</Label>
                           <Input invalid={errors.quantity && touched.quantity ? true : false} type="text" name="quantity" id="quantity" placeholder="quantity" tag={Field} />
@@ -153,7 +153,7 @@ export const CreateStatementOfWorkPage = () => {
                           ) : null}
                         </FormGroup>
                       </Col>
-                      <Col className="col-md-6 col-12">
+                      <Col className="col-md-4 col-12">
                         <FormGroup>
                           <Label for="price">Price</Label>
                           <InputGroup>
@@ -182,24 +182,26 @@ export const CreateStatementOfWorkPage = () => {
                           </InputGroup>
                         </FormGroup>
                       </Col>
+                      <Col className="col-md-4 col-12">
+                        <FormGroup>
+                          <Label for="deadline">Deadline</Label>
+                          <DatePicker name="deadline" id="deadline"
+                            invalid={errors.deadline && touched.deadline ? true : false}
+                            weekStartsOn={1}
+                            autoComplete={"off"}
+                            showClearButton={false}
+                            minDate={new Date().toISOString()}
+                            value={deadlineValue}
+                            onChange={(v: any, f: any) => {
+                              setFieldValue("deadline", v)
+                              setDeadlineValue(v)
+                            }} />
+                          {errors.deadline && touched.deadline ? (
+                            <FormFeedback>{errors.deadline}</FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
                     </Row>
-                    <FormGroup>
-                      <Label for="deadline">Deadline</Label>
-                      <DatePicker name="deadline" id="deadline"
-                        invalid={errors.deadline && touched.deadline ? true : false}
-                        weekStartsOn={1}
-                        autoComplete={"off"}
-                        showClearButton={false}
-                        minDate={new Date().toISOString()}
-                        value={deadlineValue}
-                        onChange={(v: any, f: any) => {
-                          setFieldValue("deadline", v)
-                          setDeadlineValue(v)
-                        }} />
-                      {errors.deadline && touched.deadline ? (
-                        <FormFeedback>{errors.deadline}</FormFeedback>
-                      ) : null}
-                    </FormGroup>
                     <FormGroup>
                       <Label for="tags">Tags</Label>
                       <Input invalid={errors.tags && touched.tags ? true : false} type="text" name="tags" id="tags" placeholder="tags" tag={Field} />
@@ -233,11 +235,12 @@ export const CreateStatementOfWorkPage = () => {
                     <FormGroup>
                       <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Arbitrators</CardSubtitle>
                       <Row name="arbitrators" id="arbitrators">
-                        {selectedArbitrators.map((element: any, index: any) => {
+                        {confirmedArbitrators.map((arbitrator: any, index: any) => {
+                          var length = Object.keys(arbitrator).length
                           return (
                             <Col>
                               <Card>
-                                <ArbitratorDetail arbitrator={element} />
+                                <ArbitratorDetail arbitrator={arbitrator} />
                               </Card>
                             </Col>
                           )
@@ -249,15 +252,10 @@ export const CreateStatementOfWorkPage = () => {
                           <Button color="primary" block onClick={toggleModal}>Select the arbitrators</Button>
                         </Col>
                       </Row>
-                      <SelectArbitrators modal={modalOpen} toggle={toggleModal} />
+                      <SelectArbitrators modal={modalOpen} toggle={toggleModal} modalOpen={modalOpen} />
                       <Input invalid={errors.arbitrators && touched.arbitrators ? true : false} name="arbitrators" id="arbitrators" placeholder="arbitrators" tag={FieldArray}
                         render={(arrayHelpers: any) => {
                           const arbs = values.arbitrators;
-                          // for (const iterator of selectedArbitrators) {
-                          //   console.log("iterator: ", iterator)
-                          //   arrayHelpers.push(iterator)
-                          // }
-                          // console.log("AAA")
                           return (
                             <>
                               {arbs && arbs.length > 0 ?
