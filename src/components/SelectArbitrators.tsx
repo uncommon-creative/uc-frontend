@@ -6,6 +6,7 @@ import {
   ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText
 } from 'reactstrap';
 import { useFormikContext } from 'formik';
+import update from 'immutability-helper';
 
 import { ActivityButton } from '../components/ActivityButton'
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
@@ -92,8 +93,7 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
                     <ArbitratorDetail arbitrator={currentArbitrator} />
                     {selectedArbitrators.length < 3 ?
                       <Button color="primary" onClick={() => {
-                        selectedArbitrators.push(currentArbitrator)
-                        setSelectedArbitrators(selectedArbitrators)
+                        setSelectedArbitrators(update(selectedArbitrators, { $push: [currentArbitrator] }))
                       }}>Add to arbitrators</Button>
                       :
                       <ListGroupItemText>You reached the max number of arbitrators</ListGroupItemText>
@@ -108,8 +108,7 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
                     <ListGroupItem key={index}>
                       <ListGroupItemHeading>
                         <Button close onClick={() => {
-                          selectedArbitrators.splice(index, 1)
-                          setSelectedArbitrators(selectedArbitrators)
+                          setSelectedArbitrators(update(selectedArbitrators, { $splice: [[index, 1]] }))
                         }} />
                       </ListGroupItemHeading>
                       <ArbitratorSummary arbitrator={element} />
