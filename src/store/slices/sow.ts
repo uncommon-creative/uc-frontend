@@ -3,16 +3,18 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export const currentSlice = createSlice({
   name: 'statementOfWork',
   initialState: {
+    arbitrators: [{} as any, {} as any, {} as any],
     sow: {}
   },
   reducers: {
-    willSelectArbitrators: (state, action: PayloadAction<any>) => state,
-    willCreateStatementOfWork: (state, action: PayloadAction<any>) => void (state.sow = action.payload),
+    willConfirmArbitrators: (state, action: PayloadAction<any>) => void (state.arbitrators = action.payload.arbitrators),
+    willCreateStatementOfWork: (state, action: PayloadAction<any>) => void (state.sow = action.payload.sow),
   }
 })
 
 export const { actions, reducer }: any = currentSlice
-export const { willSelectArbitrators, willCreateStatementOfWork } = actions
+export const { willConfirmArbitrators, willCreateStatementOfWork } = actions
 export const selectors = {
-  getSOW: (state: any) => state.sow,
+  getArbitrators: (state: any) => state.statementOfWork.arbitrators,
+  getSOW: (state: any) => state.statementOfWork.sow,
 }
