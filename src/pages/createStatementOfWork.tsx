@@ -254,7 +254,7 @@ export const CreateStatementOfWorkPage = () => {
                           <Button color="primary" block onClick={toggleModal}>Select the arbitrators</Button>
                         </Col>
                       </Row>
-                      <SelectArbitrators modal={modalOpen} toggle={toggleModal} modalOpen={modalOpen} />
+                      <SelectArbitrators modal={modalOpen} toggle={toggleModal} />
                       <Input invalid={errors.arbitrators && touched.arbitrators ? true : false} name="arbitrators" id="arbitrators" placeholder="arbitrators" tag={FieldArray}
                         render={(arrayHelpers: any) => {
                           const arbs = values.arbitrators;

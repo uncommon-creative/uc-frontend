@@ -1,6 +1,10 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Container, Button, Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, NavLink, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, NavbarText } from 'reactstrap'
+import {
+  Container, Button, Navbar, NavbarBrand, NavbarToggler, Collapse,
+  Nav, NavItem, NavLink, NavbarText,
+  UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem
+} from 'reactstrap'
 import * as AuthApi from './api/auth'
 import { selectors as AuthSelectors } from './store/slices/auth'
 import { actions as AuthActions } from './store/slices/auth'
@@ -20,7 +24,12 @@ export const Header = ({ className }: any) => {
       <NavbarBrand href="/">Uncommon Creative</NavbarBrand>
       <NavbarToggler onClick={toggle} />
       <Collapse isOpen={isOpen} navbar>
-        <Nav className="mr-auto" navbar></Nav>
+
+        <Nav className="mr-auto" navbar>
+          <NavItem>
+            <NavLink href="/arbitrators">Arbitrators</NavLink>
+          </NavItem>
+        </Nav>
         <Nav navbar>
 
           {isAuthenticated ? (
@@ -30,7 +39,7 @@ export const Header = ({ className }: any) => {
                 <DropdownItem header>AL: {userAttributes.public_key}</DropdownItem>
                 <DropdownItem header>KUDOS: 12</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem onClick={()=>{
+                <DropdownItem onClick={() => {
                   dispatch(AuthActions.willLogoutUser());
                 }}>Logout</DropdownItem>
               </DropdownMenu>

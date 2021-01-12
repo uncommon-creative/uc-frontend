@@ -57,7 +57,7 @@ const ARBITRATORS = [
   },
 ]
 
-export const SelectArbitrators = ({ modal, toggle, modalOpen }: any) => {
+export const SelectArbitrators = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
   const [currentArbitrator, setCurrentArbitrator] = React.useState({} as any);
@@ -67,9 +67,9 @@ export const SelectArbitrators = ({ modal, toggle, modalOpen }: any) => {
   const { values, setFieldValue } = useFormikContext();
 
   React.useEffect(() => {
-    modalOpen && setSelectedArbitrators(confirmedArbitrators)
-    modalOpen && setCurrentArbitrator({})
-  }, [modalOpen]);
+    modal && setSelectedArbitrators(confirmedArbitrators)
+    modal && setCurrentArbitrator({})
+  }, [modal]);
 
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl">

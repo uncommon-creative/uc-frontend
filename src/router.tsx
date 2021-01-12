@@ -18,8 +18,10 @@ import { SignupPage } from './pages/signup'
 import { SignupConfirmPage } from './pages/signupConfirm'
 import { CreateAlgoAccountPage } from './pages/createAlgoAccount'
 import { CreateStatementOfWorkPage } from './pages/createStatementOfWork'
+import { ArbitratorsList } from './pages/arbitratorsList'
 
 import { selectors as AuthSelectors } from './store/slices/auth'
+
 const PrivateRoute = ({ children, ...rest }: any) => {
 
   let history = useHistory();
@@ -78,6 +80,9 @@ export const AppRouter = () => {
           </Route>
           <Route path="/users">
             <Users />
+          </Route>
+          <Route path="/arbitrators">
+            <ArbitratorsList />
           </Route>
           <PrivateRoute path="/create-algo-account">
             <CreateAlgoAccountPage />
