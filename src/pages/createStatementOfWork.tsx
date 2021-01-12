@@ -15,6 +15,7 @@ import { ActivityButton } from '../components/ActivityButton'
 import { SelectArbitrators } from '../components/SelectArbitrators'
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
+import { DescriptionEditor } from '../components/DescriptionEditor'
 import { actions as SOWActions, selectors as SOWSelectors } from '../store/slices/sow'
 
 var DatePicker = require("reactstrap-date-picker");
@@ -138,9 +139,10 @@ export const CreateStatementOfWorkPage = () => {
                     <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Milestone 1</CardSubtitle>
                     <FormGroup>
                       <Label for="description">Description</Label>
-                      <Input invalid={errors.description && touched.description ? true : false} type="text" name="description" id="description" placeholder="description" tag={Field} />
+                      <DescriptionEditor />
+                      <Input hidden value={values.description} name={"description"} tag={Field} />
                       {errors.description && touched.description ? (
-                        <FormFeedback>{errors.description}</FormFeedback>
+                        <FormFeedback className="d-block">{errors.description}</FormFeedback>
                       ) : null}
                     </FormGroup>
                     <Row>

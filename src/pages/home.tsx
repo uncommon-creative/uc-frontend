@@ -82,7 +82,7 @@ function TableData({ tabId, data }: any) {
           <tbody>
             {data.map((element: any) => {
               return (
-                <tr>
+                <tr key={element.id}>
                   <th scope="row">{element.id}</th>
                   <td>{element.title}</td>
                   {tabId != 1 && <td>{element.customer}</td>}
@@ -127,7 +127,6 @@ export const HomePage = () => {
           <NavItem >
             <NavLink
               active={activeTab === '1'}
-              // className={ activeTab === '1' && "active"}
               onClick={() => { toggle('1'); }}
             >
               Freelance
@@ -136,7 +135,6 @@ export const HomePage = () => {
           <NavItem>
             <NavLink
               active={activeTab === '2'}
-              // className={classnames({ active: activeTab === '2' })}
               onClick={() => { toggle('2'); }}
             >
               Customer
@@ -145,7 +143,6 @@ export const HomePage = () => {
           <NavItem>
             <NavLink
               active={activeTab === '3'}
-              // className={classnames({ active: activeTab === '3' })}
               onClick={() => { toggle('3'); }}
             >
               Arbitrator
