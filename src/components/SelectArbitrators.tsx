@@ -11,6 +11,7 @@ import update from 'immutability-helper';
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
 import { actions as SOWActions, selectors as SOWSelectors } from '../store/slices/sow'
+import { ActivityButton } from './ActivityButton';
 
 const ARBITRATORS = [
   {
@@ -123,10 +124,10 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
         </Row>
       </ModalBody>
       <ModalFooter>
-        <Button disabled={selectedArbitrators.length == 3 ? false : true} name="confirmArbitrators" color="primary" onClick={() => {
+        <ActivityButton disabled={selectedArbitrators.length == 3 ? false : true} name="confirmArbitrators" color="primary" onClick={() => {
           setFieldValue('arbitrators', selectedArbitrators)
           dispatch(SOWActions.willConfirmArbitrators({ arbitrators: update(selectedArbitrators, {}), toggle: toggle }))
-        }}>Confirm arbitrators</Button>
+        }}>Confirm arbitrators</ActivityButton>
         <Button color="secondary" onClick={toggle}>Cancel</Button>
       </ModalFooter>
     </Modal>

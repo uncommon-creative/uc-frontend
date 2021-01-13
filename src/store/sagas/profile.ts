@@ -23,11 +23,9 @@ function* willRetrieveProfileData(action: any) {
     if (result.public_key == null) {
       yield call(willGenerateAlgoAccount)
       yield put(push("/create-algo-account"))
-      // action.payload.history.push("/create-algo-account")
     }
     else {
       console.log('with public_key')
-      // action.payload.history.push("/")
       yield put(push("/home"))
     }
   } catch (error) {

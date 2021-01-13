@@ -21,7 +21,7 @@ import { actions as SOWActions, selectors as SOWSelectors } from '../store/slice
 var DatePicker = require("reactstrap-date-picker");
 
 const StatementOfWorkSchema = Yup.object().shape({
-  customerEmail: Yup.string()
+  buyer: Yup.string()
     .email()
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
@@ -98,7 +98,7 @@ export const CreateStatementOfWorkPage = () => {
           <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Create a new Statement of Work</CardSubtitle>
           <Formik
             initialValues={{
-              customerEmail: '',
+              buyer: '',
               title: '',
               description: '',
               quantity: '',
@@ -123,9 +123,9 @@ export const CreateStatementOfWorkPage = () => {
                 <Form>
                   <FormGroup>
                     <Label for="email">Email Address</Label>
-                    <Input invalid={errors.customerEmail && touched.customerEmail ? true : false} type="text" name="customerEmail" id="customerEmail" placeholder="customer email" tag={Field} />
-                    {errors.customerEmail && touched.customerEmail ? (
-                      <FormFeedback>{errors.customerEmail}</FormFeedback>
+                    <Input invalid={errors.buyer && touched.buyer ? true : false} type="text" name="buyer" id="buyer" placeholder="customer email" tag={Field} />
+                    {errors.buyer && touched.buyer ? (
+                      <FormFeedback>{errors.buyer}</FormFeedback>
                     ) : null}
                   </FormGroup>
                   <FormGroup>
@@ -281,9 +281,6 @@ export const CreateStatementOfWorkPage = () => {
                       {errors.arbitrators && touched.arbitrators ? (
                         <FormFeedback className="d-block">Three arbitrators required</FormFeedback>
                       ) : null}
-                      {errors.arbitrators && console.log("errors: ", errors)}
-                      {errors.arbitrators && console.log("touched: ", touched)}
-                      {errors.arbitrators && console.log("values: ", values)}
                     </FormGroup>
                   </Jumbotron>
 

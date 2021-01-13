@@ -1,5 +1,6 @@
 import { call, put, takeEvery, takeLatest, delay } from 'redux-saga/effects'
 
+import * as SowApi from '../../api/sow'
 import { actions as SOWActions } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as UIActions } from '../slices/ui'
@@ -31,8 +32,13 @@ function* willCreateStatementOfWork(action: any) {
 
   yield put(UIActions.startActivityRunning("createSOW"));
 
+  const tagsSplitted = action.payload.sow.tags.split(" ")
+
   try {
-    yield delay(3000)
+    const result = yield call(SowApi.addStatementOfWork, action.payload.sow.arbitrators, action.payload.sow.codeOfConduct, action.payload.sow.currency, action.payload.sow.buyer, action.payload.sow.deadline, action.payload.sow.description, action.payload.sow.numberReviews, action.payload.sow.price, action.payload.sow.quantity, tagsSplitted, action.payload.sow.termsOfService, action.payload.sow.title)
+    console.log("willCreateStatementOfWork succes result: ", result)
+
+    yield put(push("/home"))
     yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
   } catch (error) {
 
@@ -40,3 +46,16 @@ function* willCreateStatementOfWork(action: any) {
   }
   yield put(UIActions.stopActivityRunning("createSOW"));
 }
+
+// function* willGetStatementOfWorkList() {
+//   console.log("in willGetStatementOfWorkList")
+
+//   try {
+//     const result = yield call(SowApi.getStatementOfWorkList);
+//     yield put(SOWActions.didGetStatementOfWorkList(result))
+
+//     console.log("result willGetStatementOfWorkList: ", result)
+//   } catch (error) {
+//     console.log("error in willGetStatementOfWorkList ", error)
+//   }
+// }
