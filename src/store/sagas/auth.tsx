@@ -32,6 +32,7 @@ function* checkAuthentication() {
     yield put(AuthActions.didLoginUserFails({}));
   }
 }
+
 function* willConfirmUser(action: any) {
   console.log("in willConfirmUser with ", action)
   yield put(NotificationActions.willShowNotification({ message: "Confirming username " + action.payload.username, type: "info" }))
@@ -63,7 +64,7 @@ function* willLoginUser(action: any) {
     const result = yield call(AuthApi.login, action.payload.email, action.payload.password)
     console.log("result: ", result)
     yield put(AuthActions.didLoginUserSuccess({ result: result, history: action.payload.history }));
-    // action.payload.history.push("/")
+    action.payload.history.push("/")
   } catch (error) {
     yield put(AuthActions.didLoginUserFails(error));
 
@@ -84,7 +85,7 @@ function* willLogoutUser(action: any) {
   try {
     const result = yield call(AuthApi.logout)
     yield put(AuthActions.didLogoutUser(result));
-    // action.payload.history.push("/")
+    action.payload.history.push("/")
     yield put(push("/"))
   } catch (error) {
     yield put(AuthActions.didLoginUserFails(error));

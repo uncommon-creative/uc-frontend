@@ -23,18 +23,14 @@ function* willRetrieveProfileData(action: any) {
     if (result.public_key == null) {
       yield call(willGenerateAlgoAccount)
       yield put(push("/create-algo-account"))
-      // action.payload.history.push("/create-algo-account")
     }
     else {
       console.log('with public_key')
-      // action.payload.history.push("/")
-      yield put(push("/home"))
     }
   } catch (error) {
     console.log('Error retriving profile data', error);
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
-
 }
 
 function* willAddPublicKey(action: any) {

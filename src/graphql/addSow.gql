@@ -1,0 +1,42 @@
+mutation addSow(
+  $arbitrators: [String],
+  $codeOfConduct: Boolean,
+  $currency: Currency,
+  $buyer: String,
+  $deadline: AWSDateTime,
+  $description: String,
+  $numberReviews: Int,
+  $price: String,
+  $quantity: Int,
+  $tags: [String],
+  $termsOfService: Boolean,
+  $title: String
+) {
+  addSow(
+    arbitrators: $arbitrators,
+    codeOfConduct: $codeOfConduct,
+    currency: $currency,
+    buyer: $buyer,
+    deadline: $deadline,
+    description: $description,
+    numberReviews: $numberReviews,
+    price: $price,
+    quantity: $quantity,
+    tags: $tags,
+    termsOfService: $termsOfService,
+    title: $title
+  ) {
+    arbitrators
+    codeOfConduct
+    currency
+    buyer
+    deadline
+    description
+    numberReviews
+    price
+    quantity
+    tags
+    termsOfService
+    title
+  }
+}

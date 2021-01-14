@@ -7,7 +7,7 @@ export const getProfileData = async () => {
 
   try {
     const rawResult: any = await API.graphql({ query: query });
-    console.log('raw result: ', rawResult);
+    console.log('getProfileData raw result: ', rawResult);
     const result = _.mapValues(rawResult.data, function (value: any) {
       return value && value.value;
     });

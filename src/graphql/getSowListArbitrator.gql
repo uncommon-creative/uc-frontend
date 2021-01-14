@@ -1,0 +1,23 @@
+query getSowListArbitrator{
+  listSowsAsArbitrator {
+    sows {
+      sow
+      arbitrators
+      codeOfConduct
+      currency
+      deadline
+      description
+      numberReviews
+      price
+      quantity
+      tags
+      termsOfService
+      title
+      status
+      buyer
+      seller
+      arbitrator
+    }
+    nextToken
+  }
+}
