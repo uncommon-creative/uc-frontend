@@ -64,7 +64,7 @@ function* willLoginUser(action: any) {
     const result = yield call(AuthApi.login, action.payload.email, action.payload.password)
     console.log("result: ", result)
     yield put(AuthActions.didLoginUserSuccess({ result: result, history: action.payload.history }));
-    // action.payload.history.push("/")
+    action.payload.history.push("/")
   } catch (error) {
     yield put(AuthActions.didLoginUserFails(error));
 

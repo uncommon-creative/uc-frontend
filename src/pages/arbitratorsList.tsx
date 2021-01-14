@@ -1,24 +1,14 @@
 import * as React from 'react';
 import {
-  Card, CardText, CardBody,
-  CardTitle, CardSubtitle, Button, Container,
-  FormText, FormGroup, Input, Label, FormFeedback,
+  Card, CardText, CardBody, CardTitle, CardSubtitle,
+  Button, Container, Col, Row,
   Modal, ModalHeader, ModalBody, ModalFooter,
-  ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText,
-  Col, Row, Jumbotron, InputGroup, InputGroupButtonDropdown,
-  DropdownToggle, DropdownMenu, DropdownItem
+  ListGroup, ListGroupItem,
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory, Redirect } from "react-router-dom";
-import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
 
-import { ActivityButton } from '../components/ActivityButton'
-import { SelectArbitrators } from '../components/SelectArbitrators'
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
-import { DescriptionEditor } from '../components/DescriptionEditor'
-import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 
 const ARBITRATORS = [
   {
@@ -72,10 +62,6 @@ export const ArbitratorsList = () => {
 
   const toggleModal = () => setModalOpen(!modalOpen);
 
-  // React.useEffect(() => {
-  //   setModalOpen(!modalOpen)
-  // }, [currentArbitrator]);
-
   return (
     <Container>
       <Card>
@@ -118,7 +104,6 @@ export const ArbitratorsList = () => {
           </Row>
         </ModalBody>
       </Modal>
-
     </Container>
   )
 }
