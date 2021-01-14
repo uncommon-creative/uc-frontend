@@ -7,7 +7,7 @@ export const currentSlice = createSlice({
   },
   reducers: {
     willGetArbitratorsList: (state, action: PayloadAction<any>) => state,
-    didGetArbitratorsList: (state, action: PayloadAction<any>) => void (state.arbitratorsList = action.payload.sows)
+    didGetArbitratorsList: (state, action: PayloadAction<any>) => void (state.arbitratorsList = action.payload.arbitrators)
   }
 })
 
