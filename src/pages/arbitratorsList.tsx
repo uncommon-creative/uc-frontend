@@ -7,6 +7,7 @@ import {
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
 
@@ -57,10 +58,17 @@ const ARBITRATORS = [
 
 export const ArbitratorsList = () => {
 
+  const dispatch = useDispatch();
   const [modalOpen, setModalOpen] = React.useState(false);
   const [currentArbitrator, setCurrentArbitrator] = React.useState({} as any);
+  const arbitratorsList = useSelector(ArbitratorSelectors.getArbitratorsList)
 
   const toggleModal = () => setModalOpen(!modalOpen);
+
+  React.useEffect(() => {
+    dispatch(ArbitratorActions.willGetArbitratorsList())
+    console.log("in ArbitratorsList: ", arbitratorsList)
+  }, []);
 
   return (
     <Container>

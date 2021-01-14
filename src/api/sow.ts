@@ -42,7 +42,7 @@ export const addStatementOfWork = async (
 }
 
 export const getSowsListSeller = async () => {
-  const query = loader('../graphql/getSowListSeller.gql');
+  const query = loader('../graphql/getSowsListSeller.gql');
 
   try {
     const rawResult: any = await API.graphql({ query: query });
@@ -55,7 +55,7 @@ export const getSowsListSeller = async () => {
 }
 
 export const getSowsListBuyer = async () => {
-  const query = loader('../graphql/getSowListBuyer.gql');
+  const query = loader('../graphql/getSowsListBuyer.gql');
 
   try {
     const rawResult: any = await API.graphql({ query: query });
@@ -68,7 +68,7 @@ export const getSowsListBuyer = async () => {
 }
 
 export const getSowsListArbitrator = async () => {
-  const query = loader('../graphql/getSowListArbitrator.gql');
+  const query = loader('../graphql/getSowsListArbitrator.gql');
 
   try {
     const rawResult: any = await API.graphql({ query: query });

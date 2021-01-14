@@ -1,10 +1,10 @@
 import { call, put, takeEvery, takeLatest, delay } from 'redux-saga/effects'
+import { push } from 'connected-react-router'
 
 import * as SowApi from '../../api/sow'
 import { actions as SowActions } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as UIActions } from '../slices/ui'
-import { push } from 'connected-react-router'
 
 export function* sagas() {
   yield takeLatest(SowActions.willCreateStatementOfWork.type, willCreateStatementOfWork)

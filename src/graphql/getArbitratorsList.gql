@@ -1,0 +1,9 @@
+query getArbitratorsList{
+  listArbitrators{
+    arbitrators {
+      name
+      value
+  }
+  nextToken
+  }
+}

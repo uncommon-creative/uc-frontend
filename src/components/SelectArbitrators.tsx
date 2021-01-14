@@ -11,6 +11,7 @@ import update from 'immutability-helper';
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
+import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { ActivityButton } from './ActivityButton';
 
 const ARBITRATORS = [
@@ -64,12 +65,17 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
   const [currentArbitrator, setCurrentArbitrator] = React.useState({} as any);
   const [selectedArbitrators, setSelectedArbitrators] = React.useState([] as any);
   const confirmedArbitrators = useSelector(SowSelectors.getArbitrators);
+  const arbitratorsList = useSelector(ArbitratorSelectors.getArbitratorsList)
 
   const { values, setFieldValue } = useFormikContext();
 
   React.useEffect(() => {
-    modal && setSelectedArbitrators(confirmedArbitrators)
-    modal && setCurrentArbitrator({})
+    if (modal) {
+      setSelectedArbitrators(confirmedArbitrators)
+      setCurrentArbitrator({})
+
+      dispatch(ArbitratorActions.willGetArbitratorsList())
+    }
   }, [modal]);
 
   return (

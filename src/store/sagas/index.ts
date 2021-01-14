@@ -3,6 +3,7 @@ import { sagas as authSagas } from './auth'
 import { sagas as notificationSagas } from './notification'
 import { sagas as profileSagas } from './profile'
 import { sagas as sowSagas } from './sow'
+import { sagas as arbitratorSagas } from './arbitrator'
 
 function* runAllSagas() {
   console.log('in root saga')
@@ -10,7 +11,8 @@ function* runAllSagas() {
     authSagas(),
     notificationSagas(),
     profileSagas(),
-    sowSagas()
+    sowSagas(),
+    arbitratorSagas()
   ])
 }
 
