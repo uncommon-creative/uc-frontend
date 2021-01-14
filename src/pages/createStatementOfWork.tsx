@@ -16,7 +16,7 @@ import { SelectArbitrators } from '../components/SelectArbitrators'
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
 import { DescriptionEditor } from '../components/DescriptionEditor'
-import { actions as SOWActions, selectors as SOWSelectors } from '../store/slices/sow'
+import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 
 var DatePicker = require("reactstrap-date-picker");
 
@@ -85,7 +85,7 @@ export const CreateStatementOfWorkPage = () => {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [priceCurrency, setPriceCurrency] = React.useState("ALGO");
   const [deadlineValue, setDeadlineValue] = React.useState('');
-  const confirmedArbitrators = useSelector(SOWSelectors.getArbitrators)
+  const confirmedArbitrators = useSelector(SowSelectors.getArbitrators)
 
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
   const toggleModal = () => setModalOpen(!modalOpen);
@@ -115,7 +115,7 @@ export const CreateStatementOfWorkPage = () => {
             validateOnBlur={true}
             onSubmit={values => {
               console.log('in onsubmit with: ', values)
-              dispatch(SOWActions.willCreateStatementOfWork({ sow: values, history: history }));
+              dispatch(SowActions.willCreateStatementOfWork({ sow: values, history: history }));
             }}
           >
             {({ errors, touched, setFieldValue, values }) => {

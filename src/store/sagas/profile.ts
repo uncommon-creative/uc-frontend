@@ -26,7 +26,7 @@ function* willRetrieveProfileData(action: any) {
     }
     else {
       console.log('with public_key')
-      yield put(push("/home"))
+      // yield put(push("/home"))
     }
   } catch (error) {
     console.log('Error retriving profile data', error);

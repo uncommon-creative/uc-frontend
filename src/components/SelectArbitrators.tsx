@@ -10,7 +10,7 @@ import update from 'immutability-helper';
 
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
-import { actions as SOWActions, selectors as SOWSelectors } from '../store/slices/sow'
+import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 import { ActivityButton } from './ActivityButton';
 
 const ARBITRATORS = [
@@ -63,7 +63,7 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
   const dispatch = useDispatch();
   const [currentArbitrator, setCurrentArbitrator] = React.useState({} as any);
   const [selectedArbitrators, setSelectedArbitrators] = React.useState([] as any);
-  const confirmedArbitrators = useSelector(SOWSelectors.getArbitrators);
+  const confirmedArbitrators = useSelector(SowSelectors.getArbitrators);
 
   const { values, setFieldValue } = useFormikContext();
 
@@ -126,7 +126,7 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
       <ModalFooter>
         <ActivityButton disabled={selectedArbitrators.length == 3 ? false : true} name="confirmArbitrators" color="primary" onClick={() => {
           setFieldValue('arbitrators', selectedArbitrators)
-          dispatch(SOWActions.willConfirmArbitrators({ arbitrators: update(selectedArbitrators, {}), toggle: toggle }))
+          dispatch(SowActions.willConfirmArbitrators({ arbitrators: update(selectedArbitrators, {}), toggle: toggle }))
         }}>Confirm arbitrators</ActivityButton>
         <Button color="secondary" onClick={toggle}>Cancel</Button>
       </ModalFooter>

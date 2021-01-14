@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from "react-router-dom";
 import { Container, Card, CardTitle, Nav, NavItem, NavLink, Table, TabContent, TabPane, Row, Col, Button } from 'reactstrap';
 
-import { actions as NotificationActions } from '../store/slices/notification'
+import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 
 const DATA = [
@@ -105,10 +105,22 @@ export const HomePage = () => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('1');
   const userAttributes = useSelector(ProfileSelectors.getProfile)
+  const sowsAsSeller = useSelector(SowSelectors.getListSowsSeller)
+  const sowsAsBuyer = useSelector(SowSelectors.getListSowsBuyer)
+  const sowsAsArbitrator = useSelector(SowSelectors.getListSowsArbitrator)
+  console.log("in home sowsAsSeller ", sowsAsSeller)
+  console.log("in home sowsAsBuyer ", sowsAsBuyer)
+  console.log("in home sowsAsArbitrator ", sowsAsArbitrator)
 
   const toggle = (tab: any) => {
     if (activeTab !== tab) setActiveTab(tab);
   }
+
+  React.useEffect(() => {
+    dispatch(SowActions.willGetSowsListSeller()) 
+    dispatch(SowActions.willGetSowsListBuyer())
+    dispatch(SowActions.willGetSowsListArbitrator())
+  }, []);
 
   return (
     <Container>

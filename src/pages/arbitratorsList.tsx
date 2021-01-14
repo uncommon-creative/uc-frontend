@@ -18,7 +18,7 @@ import { SelectArbitrators } from '../components/SelectArbitrators'
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
 import { DescriptionEditor } from '../components/DescriptionEditor'
-import { actions as SOWActions, selectors as SOWSelectors } from '../store/slices/sow'
+import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 
 const ARBITRATORS = [
   {

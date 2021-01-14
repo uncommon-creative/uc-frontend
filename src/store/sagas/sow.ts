@@ -1,14 +1,17 @@
 import { call, put, takeEvery, takeLatest, delay } from 'redux-saga/effects'
 
 import * as SowApi from '../../api/sow'
-import { actions as SOWActions } from '../slices/sow'
+import { actions as SowActions } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as UIActions } from '../slices/ui'
 import { push } from 'connected-react-router'
 
 export function* sagas() {
-  yield takeLatest(SOWActions.willCreateStatementOfWork.type, willCreateStatementOfWork)
-  yield takeLatest(SOWActions.willConfirmArbitrators.type, willConfirmArbitrators)
+  yield takeLatest(SowActions.willCreateStatementOfWork.type, willCreateStatementOfWork)
+  yield takeLatest(SowActions.willConfirmArbitrators.type, willConfirmArbitrators)
+  yield takeLatest(SowActions.willGetSowsListSeller.type, willGetSowsListSeller)
+  yield takeLatest(SowActions.willGetSowsListBuyer.type, willGetSowsListBuyer)
+  yield takeLatest(SowActions.willGetSowsListArbitrator.type, willGetSowsListArbitrator)
   console.log('in sow saga');
 }
 
@@ -47,15 +50,41 @@ function* willCreateStatementOfWork(action: any) {
   yield put(UIActions.stopActivityRunning("createSOW"));
 }
 
-// function* willGetStatementOfWorkList() {
-//   console.log("in willGetStatementOfWorkList")
+function* willGetSowsListSeller() {
+  console.log("in willGetSowsListSeller")
 
-//   try {
-//     const result = yield call(SowApi.getStatementOfWorkList);
-//     yield put(SOWActions.didGetStatementOfWorkList(result))
+  try {
+    const result = yield call(SowApi.getSowsListSeller);
+    console.log("result willGetSowsListSeller: ", result)
+    yield put(SowActions.didGetSowsListSeller(result))
 
-//     console.log("result willGetStatementOfWorkList: ", result)
-//   } catch (error) {
-//     console.log("error in willGetStatementOfWorkList ", error)
-//   }
-// }
+  } catch (error) {
+    console.log("error in willGetSowsListSeller ", error)
+  }
+}
+
+function* willGetSowsListBuyer() {
+  console.log("in willGetSowsListBuyer")
+
+  try {
+    const result = yield call(SowApi.getSowsListBuyer);
+    console.log("result willGetSowsListBuyer: ", result)
+    yield put(SowActions.didGetSowsListBuyer(result))
+
+  } catch (error) {
+    console.log("error in willGetSowsListBuyer ", error)
+  }
+}
+
+function* willGetSowsListArbitrator() {
+  console.log("in willGetSowsListArbitrator")
+
+  try {
+    const result = yield call(SowApi.getSowsListArbitrator);
+    console.log("result willGetSowsListArbitrator: ", result)
+    yield put(SowActions.didGetSowsListArbitrator(result))
+
+  } catch (error) {
+    console.log("error in willGetSowsListArbitrator ", error)
+  }
+}
