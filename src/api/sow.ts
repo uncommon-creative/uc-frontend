@@ -46,8 +46,7 @@ export const getSowsListSeller = async () => {
 
   try {
     const rawResult: any = await API.graphql({ query: query });
-
-    console.log('getSowsListSeller with rawResult: ', rawResult);
+    // console.log('getSowsListSeller with rawResult: ', rawResult);
     return rawResult.data.listSowsAsSeller
 
   } catch (error) {
@@ -60,8 +59,7 @@ export const getSowsListBuyer = async () => {
 
   try {
     const rawResult: any = await API.graphql({ query: query });
-
-    console.log('getSowsListBuyer with rawResult: ', rawResult);
+    // console.log('getSowsListBuyer with rawResult: ', rawResult);
     return rawResult.data.listSowsAsBuyer
 
   } catch (error) {
@@ -74,8 +72,7 @@ export const getSowsListArbitrator = async () => {
 
   try {
     const rawResult: any = await API.graphql({ query: query });
-
-    console.log('getSowsListArbitrator with rawResult: ', rawResult);
+    // console.log('getSowsListArbitrator with rawResult: ', rawResult);
     return rawResult.data.listSowsAsArbitrator
 
   } catch (error) {

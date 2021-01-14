@@ -63,6 +63,11 @@ const DATA = [
   },
 ]
 
+function validateEmail(email: any) {
+  var re = /\S+@\S+\.\S+/;
+  return re.test(email);
+}
+
 function TableData({ tabId, data }: any) {
   return (
     <Row>
@@ -83,12 +88,22 @@ function TableData({ tabId, data }: any) {
             {data.map((element: any) => {
               return (
                 <tr key={element.id}>
-                  <th scope="row">{element.id}</th>
+                  <th scope="row">{element.sow.substring(0, 5)}</th>
                   <td>{element.title}</td>
-                  {tabId != 1 && <td>{element.customer}</td>}
-                  {tabId != 2 && <td>{element.freelance}</td>}
-                  <td>{element.deadline}</td>
-                  <td>{element.total}</td>
+                  {tabId != 1 && <td>{
+                    validateEmail(element.seller) ?
+                      element.seller
+                      :
+                      element.seller.substring(0, 5)
+                  }</td>}
+                  {tabId != 2 && <td>{
+                    validateEmail(element.buyer) ?
+                      element.buyer
+                      :
+                      element.buyer.substring(0, 5)
+                  }</td>}
+                  <td>{new Date(element.deadline).toLocaleDateString()}</td>
+                  <td>{element.price + ' ' + element.currency}</td>
                   <td>{element.status}</td>
                 </tr>
               )
@@ -108,16 +123,13 @@ export const HomePage = () => {
   const sowsAsSeller = useSelector(SowSelectors.getListSowsSeller)
   const sowsAsBuyer = useSelector(SowSelectors.getListSowsBuyer)
   const sowsAsArbitrator = useSelector(SowSelectors.getListSowsArbitrator)
-  console.log("in home sowsAsSeller ", sowsAsSeller)
-  console.log("in home sowsAsBuyer ", sowsAsBuyer)
-  console.log("in home sowsAsArbitrator ", sowsAsArbitrator)
 
   const toggle = (tab: any) => {
     if (activeTab !== tab) setActiveTab(tab);
   }
 
   React.useEffect(() => {
-    dispatch(SowActions.willGetSowsListSeller()) 
+    dispatch(SowActions.willGetSowsListSeller())
     dispatch(SowActions.willGetSowsListBuyer())
     dispatch(SowActions.willGetSowsListArbitrator())
   }, []);
@@ -126,10 +138,10 @@ export const HomePage = () => {
     <Container>
       <Card className="mt-3 mt-lg-5 rounded" outline color="primary">
         <div className="row">
-          <div className="col-12 col-sm-9">
+          <div className="col-12 col-sm-8">
             <CardTitle tag="h2">Welcome {userAttributes.given_name}</CardTitle>
           </div>
-          <div className="col-12 col-sm-3">
+          <div className="col-12 col-sm-4">
             {activeTab == '1' &&
               <Button color="primary" className=" mt-sm-2 mx-auto" to="/create-statement-of-work" tag={Link}>new Statement Of Work</Button>
             }
@@ -163,13 +175,13 @@ export const HomePage = () => {
         </Nav>
         <TabContent activeTab={activeTab}>
           <TabPane tabId="1">
-            <TableData tabId="1" data={DATA} />
+            <TableData tabId="1" data={sowsAsSeller} />
           </TabPane>
           <TabPane tabId="2">
-            <TableData tabId="2" data={DATA} />
+            <TableData tabId="2" data={sowsAsBuyer} />
           </TabPane>
           <TabPane tabId="3">
-            <TableData tabId="3" data={DATA} />
+            <TableData tabId="3" data={sowsAsArbitrator} />
           </TabPane>
         </TabContent>
 

@@ -85,7 +85,7 @@ function* willLogoutUser(action: any) {
   try {
     const result = yield call(AuthApi.logout)
     yield put(AuthActions.didLogoutUser(result));
-    // action.payload.history.push("/")
+    action.payload.history.push("/")
     yield put(push("/"))
   } catch (error) {
     yield put(AuthActions.didLoginUserFails(error));
