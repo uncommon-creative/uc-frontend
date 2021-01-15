@@ -14,7 +14,7 @@ import * as Yup from 'yup';
 import { ActivityButton } from '../components/ActivityButton'
 import { SelectArbitrators } from '../components/SelectArbitrators'
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
-import { ArbitratorSummary } from '../components/ArbitratorSummary'
+import { SowAttachments } from '../components/SowAttachments'
 import { DescriptionEditor } from '../components/DescriptionEditor'
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 
@@ -212,7 +212,7 @@ export const CreateStatementOfWorkPage = () => {
                       ) : null}
                     </FormGroup>
                     <Row>
-                      <Col className="col-md-6 col-12">
+                      <Col className="col-12">
                         <FormGroup>
                           <Label for="numberReviews">Max number of reviews granted</Label>
                           <Input invalid={errors.numberReviews && touched.numberReviews ? true : false} type="text" name="numberReviews" id="numberReviews" placeholder="max number of reviews granted" tag={Field} />
@@ -221,14 +221,10 @@ export const CreateStatementOfWorkPage = () => {
                           ) : null}
                         </FormGroup>
                       </Col>
-                      <Col className="col-md-6 col-12">
-                        <FormGroup>
-                          <Label for="attachments">Attachments</Label>
-                          <Input type="file" name="attachments" id="attachments" />
-                          <FormText color="muted">
-                            Attachments
-                        </FormText>
-                        </FormGroup>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <SowAttachments />
                       </Col>
                     </Row>
                   </Jumbotron>
@@ -278,6 +274,7 @@ export const CreateStatementOfWorkPage = () => {
                           )
                         }}
                       />
+                      {errors.arbitrators && console.log("AAA ", values)}
                       {errors.arbitrators && touched.arbitrators ? (
                         <FormFeedback className="d-block">Three arbitrators required</FormFeedback>
                       ) : null}
