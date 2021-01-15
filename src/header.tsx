@@ -39,9 +39,12 @@ export const Header = ({ className }: any) => {
                 <DropdownItem header>AL: {userAttributes.public_key}</DropdownItem>
                 <DropdownItem header>KUDOS: 12</DropdownItem>
                 <DropdownItem divider />
+                <DropdownItem tag="a" href="/profile">Profile</DropdownItem>
+                <DropdownItem divider />
                 <DropdownItem onClick={() => {
                   dispatch(AuthActions.willLogoutUser());
                 }}>Logout</DropdownItem>
+
               </DropdownMenu>
             </UncontrolledDropdown>
           ) : (

@@ -1,5 +1,5 @@
-query getArbitratorsList{
-  listArbitrators{
+query getFullArbitratorsList{
+  listFullArbitrators{
     arbitrators {
       user
       enabled
@@ -10,6 +10,9 @@ query getArbitratorsList{
       currency
       tags
       reputation
+      given_name
+      family_name
+      public_key
     }
     nextToken
   }

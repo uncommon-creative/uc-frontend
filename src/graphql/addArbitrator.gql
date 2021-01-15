@@ -1,0 +1,18 @@
+mutation addArbitrator(
+  $fee: ArbitratorFeeInput,
+  $currency: Currency,
+  $tags: [String]
+) {
+  addArbitrator(
+    fee: $fee,
+    currency: $currency,
+    tags: $tags
+  ) {
+    fee {
+      feeType
+      value
+    }
+    currency
+    tags
+  }
+}

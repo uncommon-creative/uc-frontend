@@ -16,6 +16,7 @@ import { HomePage } from './pages/home'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
 import { SignupConfirmPage } from './pages/signupConfirm'
+import { ProfilePage } from './pages/profile'
 import { CreateAlgoAccountPage } from './pages/createAlgoAccount'
 import { CreateStatementOfWorkPage } from './pages/createStatementOfWork'
 import { ArbitratorsList } from './pages/arbitratorsList'
@@ -84,6 +85,9 @@ export const AppRouter = () => {
           <Route path="/arbitrators">
             <ArbitratorsList />
           </Route>
+          <PrivateRoute path="/profile">
+            <ProfilePage />
+          </PrivateRoute>
           <PrivateRoute path="/create-algo-account">
             <CreateAlgoAccountPage />
           </PrivateRoute>

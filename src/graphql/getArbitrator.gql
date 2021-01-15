@@ -1,6 +1,5 @@
-query getArbitratorsList{
-  listArbitrators{
-    arbitrators {
+query getArbitrator{
+  getArbitrator{
       user
       enabled
       fee {
@@ -10,7 +9,5 @@ query getArbitratorsList{
       currency
       tags
       reputation
-    }
-    nextToken
   }
 }

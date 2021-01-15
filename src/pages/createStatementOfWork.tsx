@@ -167,12 +167,18 @@ export const CreateStatementOfWorkPage = () => {
                               <DropdownMenu>
                                 <DropdownItem header>Select the currency</DropdownItem>
                                 <DropdownItem disabled={priceCurrency == "ALGO"}
-                                  onClick={() => setPriceCurrency("ALGO")}
+                                  onClick={() => {
+                                    setFieldValue('currency', "ALGO")
+                                    setPriceCurrency("ALGO")
+                                  }}
                                 >
                                   ALGO
                               </DropdownItem>
                                 <DropdownItem disabled={priceCurrency == "USDC"}
-                                  onClick={() => setPriceCurrency("USDC")}
+                                  onClick={() => {
+                                    setFieldValue('currency', "USDC")
+                                    setPriceCurrency("USDC")
+                                  }}
                                 >
                                   USDC
                               </DropdownItem>

@@ -4,6 +4,7 @@ import { reducer as authReducer } from './slices/auth'
 import { reducer as notificationReducer } from './slices/notification'
 import { reducer as uiReducer } from './slices/ui'
 import { reducer as sowReducer } from './slices/sow'
+import { reducer as arbitratorReducer } from './slices/arbitrator'
 import { connectRouter } from 'connected-react-router'
 
 export const createRootReducer = (history: any) => combineReducers({
@@ -12,5 +13,6 @@ export const createRootReducer = (history: any) => combineReducers({
   auth: authReducer,
   notification: notificationReducer,
   ui: uiReducer,
-  statementOfWork: sowReducer
+  statementOfWork: sowReducer,
+  arbitrator: arbitratorReducer
 })
