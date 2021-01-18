@@ -1,0 +1,13 @@
+query getArbitrator{
+  getArbitrator{
+      user
+      enabled
+      fee {
+        feeType
+        value
+      }
+      currency
+      tags
+      reputation
+  }
+}

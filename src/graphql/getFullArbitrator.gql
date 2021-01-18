@@ -1,6 +1,5 @@
-query getArbitratorsList{
-  listArbitrators{
-    arbitrators {
+query getFullArbitrator{
+  getFullArbitrator{
       user
       enabled
       fee {
@@ -13,7 +12,6 @@ query getArbitratorsList{
       given_name
       family_name
       public_key
-    }
-    nextToken
+      email
   }
 }
