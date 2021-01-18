@@ -61,18 +61,6 @@ const StatementOfWorkSchema = Yup.object().shape({
     .oneOf([true], "The Code of Conduct must be accepted.")
     .required('Required'),
   arbitrators: Yup.array()
-    .of(Yup.object().shape({
-      id: Yup.number()
-        .required('Required'),
-      name: Yup.string()
-        .required('Required'),
-      tags: Yup.string()
-        .required('Required'),
-      reputation: Yup.number()
-        .required('Required'),
-      linkedin: Yup.string()
-        .required('Required')
-    }))
     .length(3, 'Three arbitrators required!')
     .required('Required')
 });
@@ -284,6 +272,7 @@ export const CreateStatementOfWorkPage = () => {
                           )
                         }}
                       />
+                      {errors.arbitrators && console.log("errors ", errors)}
                       {errors.arbitrators && touched.arbitrators ? (
                         <FormFeedback className="d-block">Three arbitrators required</FormFeedback>
                       ) : null}

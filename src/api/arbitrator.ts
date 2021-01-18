@@ -16,14 +16,32 @@ export const getArbitrator = async () => {
 }
 
 export const getArbitratorsList = async () => {
-  const query = loader('../graphql/getFullArbitratorsList.gql');
+  const query = loader('../graphql/getArbitratorsList.gql');
 
   try {
     const rawResult: any = await API.graphql({ query: query });
     // console.log('getArbitratorsList with rawResult: ', rawResult);
-    return rawResult.data.listFullArbitrators
+    return rawResult.data.listArbitrators
 
   } catch (error) {
+    throw error
+  }
+}
+
+export const updateArbitrator = async (enabled: any, fee: any, currency: any, tags: any) => {
+  const mutation = loader('../graphql/updateArbitrator.gql')
+
+  try {
+    const result = await API.graphql(graphqlOperation(mutation, {
+      enabled: enabled,
+      fee: fee,
+      currency: currency,
+      tags: tags
+    }))
+    // console.log("updateArbitrator raw result ", result)
+    return result
+  } catch (error) {
+    console.log("updateArbitrator API error: ", error)
     throw error
   }
 }

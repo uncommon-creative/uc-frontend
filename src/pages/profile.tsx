@@ -37,8 +37,6 @@ export const ProfilePage = () => {
   let history = useHistory();
   const myArbitratorSettings = useSelector(ArbitratorSelectors.getMyArbitratorSettings)
   const profile = useSelector(ProfileSelectors.getProfile)
-  console.log("myArbitratorSettings in profile", myArbitratorSettings)
-  console.log("profile in profile", profile)
   const [dropdownCurrencyOpen, setDropdownCurrencyOpen] = React.useState(false);
   const [dropdownFeeTypeOpen, setDropdownFeeTypeOpen] = React.useState(false);
   const [switchEnabled, setSwitchEnabled] = React.useState(false);
@@ -65,12 +63,13 @@ export const ProfilePage = () => {
           <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Change your arbitrator settings</CardSubtitle>
 
           <Formik
+            enableReinitialize={true}
             initialValues={{
               enabled: switchEnabled,
-              fee: '',
+              fee: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.value : '',
               feeType: feeType,
               currency: feeCurrency,
-              tags: ''
+              tags: myArbitratorSettings && myArbitratorSettings.tags ? myArbitratorSettings.tags.join(' ') : ''
             }}
             validationSchema={ArbitratorSettingsSchema}
             validateOnBlur={true}
@@ -86,7 +85,7 @@ export const ProfilePage = () => {
                     <Col className="col-md-4 col-12 offset-2">
                       <FormGroup>
                         <Label for="enabled">Enabled</Label>
-                        <CustomInput  type="switch" name="enabled" id="enabled" tag={Field}
+                        <CustomInput type="switch" name="enabled" id="enabled" tag={Field}
                           onClick={(event: any) => {
                             toggleSwitchEnabled(event.target.checked)
                             setFieldValue('enabled', event.target.checked)
@@ -99,7 +98,7 @@ export const ProfilePage = () => {
                       <FormGroup>
                         <Label for="fee">Fee</Label>
                         <InputGroup>
-                        <InputGroupButtonDropdown disabled={!switchEnabled} addonType="prepend" isOpen={dropdownFeeTypeOpen} toggle={toggleDropDownFeeType}>
+                          <InputGroupButtonDropdown disabled={!switchEnabled} addonType="prepend" isOpen={dropdownFeeTypeOpen} toggle={toggleDropDownFeeType}>
                             <DropdownToggle caret>
                               {feeType}
                             </DropdownToggle>
@@ -125,7 +124,7 @@ export const ProfilePage = () => {
                           </InputGroupButtonDropdown>
 
                           <Input disabled={!switchEnabled} invalid={errors.fee && touched.fee ? true : false} type="text" name="fee" id="fee" placeholder={"fee"} tag={Field} />
-                          
+
                           <InputGroupButtonDropdown disabled={!switchEnabled} addonType="append" isOpen={dropdownCurrencyOpen} toggle={toggleDropDownCurrency}>
                             <DropdownToggle caret>
                               {feeCurrency}

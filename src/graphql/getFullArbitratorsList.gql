@@ -13,6 +13,7 @@ query getFullArbitratorsList{
       given_name
       family_name
       public_key
+      email
     }
     nextToken
   }

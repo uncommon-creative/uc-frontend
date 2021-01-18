@@ -1,8 +1,9 @@
-import { call, put, takeEvery, takeLatest, delay } from 'redux-saga/effects'
+import { call, put, takeEvery, takeLatest, delay, select } from 'redux-saga/effects'
 import { push } from 'connected-react-router'
 
 import * as ArbitratorApi from '../../api/arbitrator'
-import { actions as ArbitratorActions } from '../slices/arbitrator'
+import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../slices/arbitrator'
+import { selectors as ProfileSelectors } from '../slices/profile'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as UIActions } from '../slices/ui'
 
@@ -42,6 +43,10 @@ function* willSaveArbitratorSettings(action: any) {
   console.log("in willSaveArbitratorSettings with ", action)
   yield put(UIActions.startActivityRunning("saveArbitratorSettings"));
 
+  const profile = yield select(ProfileSelectors.getProfile)
+  const myArbitratorSettings = yield select(ArbitratorSelectors.getMyArbitratorSettings)
+
+
   const tagsSplitted = action.payload.arbitratorSettings.tags.split(" ")
   const fee = {
     feeType: action.payload.arbitratorSettings.feeType,
@@ -49,8 +54,14 @@ function* willSaveArbitratorSettings(action: any) {
   }
 
   try {
-    const result = yield call(ArbitratorApi.addArbitrator, fee, action.payload.arbitratorSettings.currency, tagsSplitted)
-    console.log("willSaveArbitratorSettings success result: ", result)
+    if (myArbitratorSettings && profile.email === myArbitratorSettings.email) {
+      const result = yield call(ArbitratorApi.updateArbitrator, action.payload.arbitratorSettings.enabled, fee, action.payload.arbitratorSettings.currency, tagsSplitted)
+      console.log("update arbitrator success result: ", result)
+    }
+    else {
+      const result = yield call(ArbitratorApi.addArbitrator, fee, action.payload.arbitratorSettings.currency, tagsSplitted)
+      console.log("add arbitrator success result: ", result)
+    }
   } catch (error) {
     console.log("error in willSaveArbitratorSettings ", error)
   }
