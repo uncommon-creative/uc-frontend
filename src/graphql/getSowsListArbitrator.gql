@@ -1,4 +1,4 @@
-query getSowListArbitrator{
+query getSowsListArbitrator{
   listSowsAsArbitrator {
     sows {
       sow

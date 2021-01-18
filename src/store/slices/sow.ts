@@ -17,10 +17,10 @@ export const currentSlice = createSlice({
     didGetSowsListSeller: (state, action: PayloadAction<any>) => void (state.sowsAsSeller = action.payload.sows),
 
     willGetSowsListBuyer: (state, action: PayloadAction<any>) => state,
-    didGetSowsListBuyer: (state, action: PayloadAction<any>) => void (void (state.sowsAsBuyer = action.payload.sows)),
+    didGetSowsListBuyer: (state, action: PayloadAction<any>) => void (state.sowsAsBuyer = action.payload.sows),
 
     willGetSowsListArbitrator: (state, action: PayloadAction<any>) => state,
-    didGetSowsListArbitrator: (state, action: PayloadAction<any>) => void (void (state.sowsAsArbitrator = action.payload.sows))
+    didGetSowsListArbitrator: (state, action: PayloadAction<any>) => void (state.sowsAsArbitrator = action.payload.sows)
   }
 })
 

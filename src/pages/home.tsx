@@ -87,7 +87,7 @@ function TableData({ tabId, data }: any) {
           <tbody>
             {data.map((element: any) => {
               return (
-                <tr key={element.id}>
+                <tr key={element.sow}>
                   <th scope="row">{element.sow.substring(0, 5)}</th>
                   <td>{element.title}</td>
                   {tabId != 1 && <td>{

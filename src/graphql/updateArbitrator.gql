@@ -1,0 +1,21 @@
+mutation updateArbitrator(
+  $enabled: Boolean,
+  $fee: ArbitratorFeeInput,
+  $currency: Currency,
+  $tags: [String]
+) {
+  updateArbitrator(
+    enabled: $enabled,
+    fee: $fee,
+    currency: $currency,
+    tags: $tags
+  ) {
+    enabled
+    fee {
+      feeType
+      value
+    }
+    currency
+    tags
+  }
+}

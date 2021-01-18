@@ -1,0 +1,19 @@
+query getArbitratorsList{
+  listArbitrators{
+    arbitrators {
+      user
+      enabled
+      fee {
+        feeType
+        value
+      }
+      currency
+      tags
+      reputation
+      given_name
+      family_name
+      public_key
+    }
+    nextToken
+  }
+}

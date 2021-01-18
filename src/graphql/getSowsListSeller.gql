@@ -1,4 +1,4 @@
-query getSowListSeller{
+query getSowsListSeller{
   listSowsAsSeller {
     sows {
       sow

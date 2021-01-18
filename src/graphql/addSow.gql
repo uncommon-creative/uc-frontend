@@ -6,7 +6,7 @@ mutation addSow(
   $deadline: AWSDateTime,
   $description: String,
   $numberReviews: Int,
-  $price: String,
+  $price: Float,
   $quantity: Int,
   $tags: [String],
   $termsOfService: Boolean,

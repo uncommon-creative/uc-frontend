@@ -1,10 +1,10 @@
 import { call, put, takeEvery, takeLatest, delay } from 'redux-saga/effects'
+import { push } from 'connected-react-router'
 
 import * as SowApi from '../../api/sow'
 import { actions as SowActions } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as UIActions } from '../slices/ui'
-import { push } from 'connected-react-router'
 
 export function* sagas() {
   yield takeLatest(SowActions.willCreateStatementOfWork.type, willCreateStatementOfWork)
@@ -39,7 +39,7 @@ function* willCreateStatementOfWork(action: any) {
 
   try {
     const result = yield call(SowApi.addStatementOfWork, action.payload.sow.arbitrators, action.payload.sow.codeOfConduct, action.payload.sow.currency, action.payload.sow.buyer, action.payload.sow.deadline, action.payload.sow.description, action.payload.sow.numberReviews, action.payload.sow.price, action.payload.sow.quantity, tagsSplitted, action.payload.sow.termsOfService, action.payload.sow.title)
-    console.log("willCreateStatementOfWork succes result: ", result)
+    console.log("willCreateStatementOfWork result: ", result)
 
     yield put(push("/home"))
     yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));

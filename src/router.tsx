@@ -16,9 +16,10 @@ import { HomePage } from './pages/home'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
 import { SignupConfirmPage } from './pages/signupConfirm'
+import { ProfilePage } from './pages/profile'
 import { CreateAlgoAccountPage } from './pages/createAlgoAccount'
 import { CreateStatementOfWorkPage } from './pages/createStatementOfWork'
-import { ArbitratorsList } from './pages/arbitratorsList'
+import { ArbitratorsListPage } from './pages/arbitratorsList'
 
 import { selectors as AuthSelectors } from './store/slices/auth'
 
@@ -82,8 +83,11 @@ export const AppRouter = () => {
             <Users />
           </Route>
           <Route path="/arbitrators">
-            <ArbitratorsList />
+            <ArbitratorsListPage />
           </Route>
+          <PrivateRoute path="/profile">
+            <ProfilePage />
+          </PrivateRoute>
           <PrivateRoute path="/create-algo-account">
             <CreateAlgoAccountPage />
           </PrivateRoute>

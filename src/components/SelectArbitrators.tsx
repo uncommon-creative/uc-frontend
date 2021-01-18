@@ -11,52 +11,8 @@ import update from 'immutability-helper';
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
+import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { ActivityButton } from './ActivityButton';
-
-const ARBITRATORS = [
-  {
-    id: 1,
-    name: "John C.",
-    tags: "graphic",
-    reputation: 5,
-    linkedin: "https://it.linkedin.com/"
-  },
-  {
-    id: 2,
-    name: "Charles",
-    tags: "graphic",
-    reputation: 5,
-    linkedin: "https://it.linkedin.com/"
-  },
-  {
-    id: 3,
-    name: "Sabrina G.",
-    tags: "graphic",
-    reputation: 5,
-    linkedin: "https://it.linkedin.com/"
-  },
-  {
-    id: 4,
-    name: "Emma P.",
-    tags: "graphic",
-    reputation: 5,
-    linkedin: "https://it.linkedin.com/"
-  },
-  {
-    id: 5,
-    name: "Sandi",
-    tags: "graphic",
-    reputation: 5,
-    linkedin: "https://it.linkedin.com/"
-  },
-  {
-    id: 6,
-    name: "Himanshu",
-    tags: "graphic",
-    reputation: 5,
-    linkedin: "https://it.linkedin.com/"
-  },
-]
 
 export const SelectArbitrators = ({ modal, toggle }: any) => {
 
@@ -64,12 +20,17 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
   const [currentArbitrator, setCurrentArbitrator] = React.useState({} as any);
   const [selectedArbitrators, setSelectedArbitrators] = React.useState([] as any);
   const confirmedArbitrators = useSelector(SowSelectors.getArbitrators);
+  const arbitratorsList = useSelector(ArbitratorSelectors.getArbitratorsList)
 
   const { values, setFieldValue } = useFormikContext();
 
   React.useEffect(() => {
-    modal && setSelectedArbitrators(confirmedArbitrators)
-    modal && setCurrentArbitrator({})
+    if (modal) {
+      setSelectedArbitrators(confirmedArbitrators)
+      setCurrentArbitrator({})
+
+      dispatch(ArbitratorActions.willGetArbitratorsList())
+    }
   }, [modal]);
 
   return (
@@ -79,7 +40,7 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
         <Row>
           <Col className="col-md-6 col-12">
             <ListGroup>
-              {ARBITRATORS.map((element: any, index: any) => {
+              {arbitratorsList.map((element: any, index: any) => {
                 return (
                   <ListGroupItem key={index} action onClick={() => setCurrentArbitrator(element)}>
                     <ArbitratorSummary arbitrator={element} />
@@ -91,7 +52,7 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
           <Col className="col-md-6 col-12">
             <Row>
               <Col className="col-12">
-                {currentArbitrator.name &&
+                {currentArbitrator.given_name &&
                   <ListGroupItem>
                     <ArbitratorDetail arbitrator={currentArbitrator} />
                     {selectedArbitrators.length < 3 ?
