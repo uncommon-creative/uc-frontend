@@ -20,6 +20,7 @@
     "@types/yup": "^0.29.10",
     "algosdk": "git+https://github.com/uncommon-creative/js-algorand-sdk.git#webapp-buffer-fix",
     "aws-amplify": "^3.3.12",
+    "axios": "^0.21.1",
     "bootstrap": "^4.5.3",
     "connected-react-router": "^6.8.0",
     "draft-js": "^0.11.7",

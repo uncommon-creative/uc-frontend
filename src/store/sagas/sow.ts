@@ -10,6 +10,7 @@ export function* sagas() {
   yield takeLatest(SowActions.willCreateStatementOfWork.type, willCreateStatementOfWork)
   yield takeLatest(SowActions.willSubmitStatementOfWork.type, willSubmitStatementOfWork)
   yield takeLatest(SowActions.willUploadAttachment.type, willUploadAttachment)
+  yield takeLatest(SowActions.willDeleteAttachment.type, willDeleteAttachment)
   yield takeLatest(SowActions.willConfirmArbitrators.type, willConfirmArbitrators)
   yield takeLatest(SowActions.willGetSowsListSeller.type, willGetSowsListSeller)
   yield takeLatest(SowActions.willGetSowsListBuyer.type, willGetSowsListBuyer)
@@ -72,15 +73,32 @@ function* willSubmitStatementOfWork(action: any) {
 
 function* willUploadAttachment(action: any) {
   console.log("in willUploadAttachment with: ", action)
+  yield put(UIActions.startActivityRunning(action.payload.attachment.name));
 
   try {
-    const result = yield call(SowApi.getUploadUrl, action.payload.sow, action.payload.attachment.name, 120)
+    const result = yield call(SowApi.getUploadUrl, action.payload.sow, action.payload.attachment.name, 600, action.payload.attachment.type)
+    console.log("in willUploadAttachment with result: ", result)
 
-    yield call(SowApi.uploadFileToS3, action.payload.attachment)
-  }catch (error) {
+    yield call(SowApi.uploadFileToS3, result, action.payload.attachment)
+  } catch (error) {
     console.log("error in willUploadAttachment ", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
   }
+  yield put(UIActions.stopActivityRunning(action.payload.attachment.name));
+}
+
+function* willDeleteAttachment(action: any) {
+  console.log("in willDeleteAttachment with: ", action)
+  yield put(UIActions.startActivityRunning(action.payload.attachment.name));
+
+  try {
+    yield call(SowApi.deleteAttachment, action.payload.attachment.name, action.payload.sow)
+    yield put(NotificationActions.willShowNotification({ message: action.payload.attachment.name + " deleted", type: "success" }));
+  } catch (error) {
+    console.log("error in willDeleteAttachment ", error)
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
+  }
+  yield put(UIActions.stopActivityRunning(action.payload.attachment.name));
 }
 
 function* willGetSowsListSeller() {

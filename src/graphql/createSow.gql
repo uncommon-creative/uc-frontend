@@ -13,5 +13,7 @@ mutation createSow{
     termsOfService
     title
     sow
+    createdAt
+    updatedAt
   }
 }

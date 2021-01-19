@@ -11,10 +11,11 @@ export const getProfileData = async () => {
     const result = _.mapValues(rawResult.data, function (value: any) {
       return value && value.value;
     });
-    console.log('with result: ', result);
+    console.log('getProfileData with result: ', result);
     return result
 
   } catch (error) {
+    console.log("getProfileData error ", error)
     throw error
   }
 }

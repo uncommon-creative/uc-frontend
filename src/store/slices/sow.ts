@@ -22,6 +22,9 @@ export const currentSlice = createSlice({
     willUploadAttachment: (state, action: PayloadAction<any>) => state,
     didUploadAttachment: (state, action: PayloadAction<any>) => void (state.attachments = action.payload),
 
+    willDeleteAttachment: (state, action: PayloadAction<any>) => state,
+    // didUploadAttachment: (state, action: PayloadAction<any>) => void (state.attachments = action.payload),
+
     willGetSowsListSeller: (state, action: PayloadAction<any>) => state,
     didGetSowsListSeller: (state, action: PayloadAction<any>) => void (state.sowsAsSeller = action.payload.sows),
 
@@ -34,7 +37,7 @@ export const currentSlice = createSlice({
 })
 
 export const { actions, reducer }: any = currentSlice
-export const { willConfirmArbitrators, willSubmitStatementOfWork, willGetSowsListSeller, didGetSowsListSeller, willGetSowsListBuyer, didGetSowsListBuyer, willGetSowsListArbitrator, didGetSowsListArbitrator } = actions
+export const { willConfirmArbitrators, willCreateStatementOfWork, didCreateStatementOfWork, willSubmitStatementOfWork, didSubmitStatementOfWork, willUploadAttachment, didUploadAttachment, willDeleteAttachment, willGetSowsListSeller, didGetSowsListSeller, willGetSowsListBuyer, didGetSowsListBuyer, willGetSowsListArbitrator, didGetSowsListArbitrator } = actions
 export const selectors = {
   getArbitrators: (state: any) => state.statementOfWork.arbitrators,
   getSOW: (state: any) => state.statementOfWork.sow,

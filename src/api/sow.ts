@@ -1,6 +1,7 @@
 import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
 import * as _ from 'lodash';
+const axios = require('axios')
 
 export const createStatementOfWork = async () => {
   const mutation = loader('../graphql/createSow.gql')
@@ -57,20 +58,41 @@ export const addStatementOfWork = async (
   }
 }
 
-export const getUploadUrl = async (sow: any, attachmentName: any, expires: any) => {
+export const getUploadUrl = async (sow: any, attachmentName: any, expires: any, fileType: any) => {
   const query = loader('../graphql/getUploadUrl.gql');
 
   try {
-    const result: any = await API.graphql(graphqlOperation(query, { sow: sow, key: attachmentName, expires: expires }));
+    const result: any = await API.graphql(graphqlOperation(query, { sow: sow, key: attachmentName, expires: expires, type: fileType }));
     console.log('getUploadUrl with result: ', result);
+    return result.data.getUploadUrl
   } catch (error) {
     throw error
   }
 }
 
-export const uploadFileToS3 = (file: any) => {
-  console.log("in uploadFileToS3")
-};
+export const uploadFileToS3 = async (url: any, file: any) => {
+  try {
+    const axiosResponse = await axios.put(url, file, {
+      headers: { 'Content-Type': file.type, 'x-amz-acl': 'private' }
+    });
+    console.log("uploadFileToS3 axiosResponse: ", axiosResponse)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const deleteAttachment = async (fileName: any, sow: any) => {
+  const mutation = loader('../graphql/deleteAttachment.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { key: fileName, sow: sow }))
+    console.log("in deleteAttachment result: ", result)
+    return result.data.deleteAttachment
+  } catch (error) {
+    console.log("deleteAttachment API error: ", error)
+    throw error
+  }
+}
 
 export const getSowsListSeller = async () => {
   const query = loader('../graphql/getSowsListSeller.gql');

@@ -41,5 +41,7 @@ mutation addSow(
     tags
     termsOfService
     title
+    createdAt
+    updatedAt
   }
 }
