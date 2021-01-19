@@ -1,0 +1,12 @@
+mutation deleteAttachment(
+  $key: String, 
+  $sow: ID
+) {
+  deleteAttachment(
+    key: $key
+    sow: $sow
+  ) {
+    deleted
+    error
+  }
+}

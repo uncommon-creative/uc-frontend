@@ -14,13 +14,15 @@ import * as Yup from 'yup';
 import { ActivityButton } from '../components/ActivityButton'
 import { SelectArbitrators } from '../components/SelectArbitrators'
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
-import { ArbitratorSummary } from '../components/ArbitratorSummary'
+import { SowAttachments } from '../components/SowAttachments'
 import { DescriptionEditor } from '../components/DescriptionEditor'
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 
 var DatePicker = require("reactstrap-date-picker");
 
 const StatementOfWorkSchema = Yup.object().shape({
+  sow: Yup.string()
+    .required('Required'),
   buyer: Yup.string()
     .email()
     .min(2, 'Too Short!')
@@ -74,6 +76,8 @@ export const CreateStatementOfWorkPage = () => {
   const [priceCurrency, setPriceCurrency] = React.useState("ALGO");
   const [deadlineValue, setDeadlineValue] = React.useState('');
   const confirmedArbitrators = useSelector(SowSelectors.getArbitrators)
+  const sow = useSelector(SowSelectors.getSOW)
+  console.log("sow in CreateStatementOfWorkPage: ", sow)
 
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
   const toggleModal = () => setModalOpen(!modalOpen);
@@ -85,7 +89,9 @@ export const CreateStatementOfWorkPage = () => {
           <CardTitle tag="h5" className="text-center">Create Statement Of Work Page</CardTitle>
           <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Create a new Statement of Work</CardSubtitle>
           <Formik
+            enableReinitialize={true}
             initialValues={{
+              sow: sow.sow,
               buyer: '',
               title: '',
               description: '',
@@ -103,12 +109,19 @@ export const CreateStatementOfWorkPage = () => {
             validateOnBlur={true}
             onSubmit={values => {
               console.log('in onsubmit with: ', values)
-              dispatch(SowActions.willCreateStatementOfWork({ sow: values, history: history }));
+              dispatch(SowActions.willSubmitStatementOfWork({ sow: values, history: history }));
             }}
           >
             {({ errors, touched, setFieldValue, values }) => {
               return (
                 <Form>
+                  <FormGroup>
+                    <Label for="sow">Sow</Label>
+                    <Input disabled invalsow={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
+                    {errors.sow && touched.sow ? (
+                      <FormFeedback>{errors.sow}</FormFeedback>
+                    ) : null}
+                  </FormGroup>
                   <FormGroup>
                     <Label for="email">Email Address</Label>
                     <Input invalid={errors.buyer && touched.buyer ? true : false} type="text" name="buyer" id="buyer" placeholder="customer email" tag={Field} />
@@ -206,7 +219,7 @@ export const CreateStatementOfWorkPage = () => {
                       ) : null}
                     </FormGroup>
                     <Row>
-                      <Col className="col-md-6 col-12">
+                      <Col className="col-12">
                         <FormGroup>
                           <Label for="numberReviews">Max number of reviews granted</Label>
                           <Input invalid={errors.numberReviews && touched.numberReviews ? true : false} type="text" name="numberReviews" id="numberReviews" placeholder="max number of reviews granted" tag={Field} />
@@ -215,14 +228,10 @@ export const CreateStatementOfWorkPage = () => {
                           ) : null}
                         </FormGroup>
                       </Col>
-                      <Col className="col-md-6 col-12">
-                        <FormGroup>
-                          <Label for="attachments">Attachments</Label>
-                          <Input type="file" name="attachments" id="attachments" />
-                          <FormText color="muted">
-                            Attachments
-                        </FormText>
-                        </FormGroup>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <SowAttachments sow={sow.sow} />
                       </Col>
                     </Row>
                   </Jumbotron>
@@ -272,7 +281,6 @@ export const CreateStatementOfWorkPage = () => {
                           )
                         }}
                       />
-                      {errors.arbitrators && console.log("errors ", errors)}
                       {errors.arbitrators && touched.arbitrators ? (
                         <FormFeedback className="d-block">Three arbitrators required</FormFeedback>
                       ) : null}
@@ -300,7 +308,7 @@ export const CreateStatementOfWorkPage = () => {
                     </Label>
                   </FormGroup>
                   <Row>
-                    <Col><ActivityButton type="submit" name="createSOW" color="primary" block>Create Statement Of Work</ActivityButton></Col>
+                    <Col><ActivityButton type="submit" name="createSOW" color="primary" block>Submit Statement Of Work</ActivityButton></Col>
                   </Row>
                   <Row className="mt-2">
                     <Col><Button color="primary" block to="/" outline tag={Link}>Cancel</Button></Col>

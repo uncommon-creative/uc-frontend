@@ -17,6 +17,8 @@ query getSowsListArbitrator{
       buyer
       seller
       arbitrator
+      createdAt
+      updatedAt
     }
     nextToken
   }

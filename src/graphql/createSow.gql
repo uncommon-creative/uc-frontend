@@ -1,0 +1,19 @@
+mutation createSow{
+  createSow {
+    arbitrators
+    codeOfConduct
+    currency
+    buyer
+    deadline
+    description
+    numberReviews
+    price
+    quantity
+    tags
+    termsOfService
+    title
+    sow
+    createdAt
+    updatedAt
+  }
+}

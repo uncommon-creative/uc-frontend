@@ -1,4 +1,5 @@
 mutation addSow(
+  $sow: ID,
   $arbitrators: [String],
   $codeOfConduct: Boolean,
   $currency: Currency,
@@ -13,6 +14,7 @@ mutation addSow(
   $title: String
 ) {
   addSow(
+    sow: $sow
     arbitrators: $arbitrators,
     codeOfConduct: $codeOfConduct,
     currency: $currency,
@@ -26,6 +28,7 @@ mutation addSow(
     termsOfService: $termsOfService,
     title: $title
   ) {
+    sow
     arbitrators
     codeOfConduct
     currency
@@ -38,5 +41,7 @@ mutation addSow(
     tags
     termsOfService
     title
+    createdAt
+    updatedAt
   }
 }
