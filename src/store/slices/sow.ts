@@ -4,6 +4,7 @@ export const currentSlice = createSlice({
   name: 'statementOfWork',
   initialState: {
     arbitrators: [],
+    attachments: [],
     sow: {},
     sowsAsSeller: [],
     sowsAsBuyer: [],
@@ -11,7 +12,15 @@ export const currentSlice = createSlice({
   },
   reducers: {
     willConfirmArbitrators: (state, action: PayloadAction<any>) => void (state.arbitrators = action.payload.arbitrators),
-    willCreateStatementOfWork: (state, action: PayloadAction<any>) => void (state.sow = action.payload.sow),
+    
+    willCreateStatementOfWork: (state, action: PayloadAction<any>) => state,
+    didCreateStatementOfWork: (state, action: PayloadAction<any>) => void (state.sow = action.payload),
+    
+    willSubmitStatementOfWork: (state, action: PayloadAction<any>) => state,
+    didSubmitStatementOfWork: (state, action: PayloadAction<any>) => void (state.sow = action.payload),
+
+    willUploadAttachment: (state, action: PayloadAction<any>) => state,
+    didUploadAttachment: (state, action: PayloadAction<any>) => void (state.attachments = action.payload),
 
     willGetSowsListSeller: (state, action: PayloadAction<any>) => state,
     didGetSowsListSeller: (state, action: PayloadAction<any>) => void (state.sowsAsSeller = action.payload.sows),
@@ -25,7 +34,7 @@ export const currentSlice = createSlice({
 })
 
 export const { actions, reducer }: any = currentSlice
-export const { willConfirmArbitrators, willCreateStatementOfWork, willGetSowsListSeller, didGetSowsListSeller, willGetSowsListBuyer, didGetSowsListBuyer, willGetSowsListArbitrator, didGetSowsListArbitrator } = actions
+export const { willConfirmArbitrators, willSubmitStatementOfWork, willGetSowsListSeller, didGetSowsListSeller, willGetSowsListBuyer, didGetSowsListBuyer, willGetSowsListArbitrator, didGetSowsListArbitrator } = actions
 export const selectors = {
   getArbitrators: (state: any) => state.statementOfWork.arbitrators,
   getSOW: (state: any) => state.statementOfWork.sow,

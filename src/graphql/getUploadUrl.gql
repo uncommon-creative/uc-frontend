@@ -1,0 +1,11 @@
+query getUploadUrl (
+  $sow: ID,
+  $key: String,
+  $expires: Int
+) {
+  getUploadUrl(
+    sow: $sow
+    key: $key
+    expires: $expires
+  )
+}

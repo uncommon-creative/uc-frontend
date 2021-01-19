@@ -5,63 +5,7 @@ import { Container, Card, CardTitle, Nav, NavItem, NavLink, Table, TabContent, T
 
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
-
-const DATA = [
-  {
-    id: 123,
-    title: "SOW 1",
-    customer: "Pippo",
-    freelance: "Pluto",
-    deadline: "July 12, 2020",
-    total: 0.09164,
-    status: "PAID"
-  },
-  {
-    id: 456,
-    title: "SOW 2",
-    customer: "Topolino",
-    freelance: "Minnie",
-    deadline: "July 19, 2021",
-    total: 0.07663,
-    status: "PAID"
-  },
-  {
-    id: 789,
-    title: "SOW 3",
-    customer: "Paperino",
-    freelance: "Paperina",
-    deadline: "January 27, 2021",
-    total: 0.08134,
-    status: "SENT"
-  },
-  {
-    id: 987,
-    title: "SOW 4",
-    customer: "Buzz Lightyear",
-    freelance: "Woody",
-    deadline: "January 1, 2021",
-    total: 0.07421,
-    status: "SENT"
-  },
-  {
-    id: 654,
-    title: "SOW 5",
-    customer: "R2-D2",
-    freelance: "C-3PO",
-    deadline: "January 6, 2021",
-    total: 0.02357,
-    status: "PAID"
-  },
-  {
-    id: 321,
-    title: "SOW 6",
-    customer: "Thanos",
-    freelance: "Iron Man",
-    deadline: "January 17, 2021",
-    total: 0.05432,
-    status: "SENT"
-  },
-]
+import { ActivityButton } from '../components/ActivityButton';
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -88,22 +32,23 @@ function TableData({ tabId, data }: any) {
             {data.map((element: any) => {
               return (
                 <tr key={element.sow}>
-                  <th scope="row">{element.sow.substring(0, 5)}</th>
-                  <td>{element.title}</td>
+                  <th scope="row">{element.sow.substring(0, 5).toUpperCase()}</th>
+                  <td>{element.title ? element.title : '-'}</td>
                   {tabId != 1 && <td>{
                     validateEmail(element.seller) ?
                       element.seller
                       :
-                      element.seller.substring(0, 5)
+                      element.seller.substring(0, 5).toUpperCase()
                   }</td>}
-                  {tabId != 2 && <td>{
+                  {tabId != 2 && <td>{element.buyer ?
                     validateEmail(element.buyer) ?
                       element.buyer
                       :
-                      element.buyer.substring(0, 5)
+                      element.buyer.substring(0, 5).toUpperCase()
+                      : '-'
                   }</td>}
-                  <td>{new Date(element.deadline).toLocaleDateString()}</td>
-                  <td>{element.price + ' ' + element.currency}</td>
+                  <td>{element.deadline ? new Date(element.deadline).toLocaleDateString() : '-'}</td>
+                  <td>{element.price ? element.price + ' ' + element.currency : '-'}</td>
                   <td>{element.status}</td>
                 </tr>
               )
@@ -118,6 +63,7 @@ function TableData({ tabId, data }: any) {
 export const HomePage = () => {
 
   const dispatch = useDispatch();
+  let history = useHistory();
   const [activeTab, setActiveTab] = useState('1');
   const userAttributes = useSelector(ProfileSelectors.getProfile)
   const sowsAsSeller = useSelector(SowSelectors.getListSowsSeller)
@@ -143,7 +89,10 @@ export const HomePage = () => {
           </div>
           <div className="col-12 col-sm-4">
             {activeTab == '1' &&
-              <Button color="primary" className=" mt-sm-2 mx-auto" to="/create-statement-of-work" tag={Link}>new Statement Of Work</Button>
+              // <Button color="primary" className=" mt-sm-2 mx-auto" to="/create-statement-of-work" tag={Link}>new Statement Of Work</Button>
+              <ActivityButton className="mt-sm-2 mx-auto" type="submit" name="createSow" color="primary"
+                onClick={() => dispatch(SowActions.willCreateStatementOfWork({ history: history }))}
+              >new Statement Of Work</ActivityButton>
             }
           </div>
         </div>

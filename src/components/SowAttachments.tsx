@@ -17,7 +17,7 @@ import { actions as SowActions, selectors as SowSelectors } from '../store/slice
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { ActivityButton } from './ActivityButton';
 
-export const SowAttachments = () => {
+export const SowAttachments = ({ sow }: any) => {
 
   const dispatch = useDispatch();
   const [fileList, setFileList] = React.useState([] as any);
@@ -33,10 +33,8 @@ export const SowAttachments = () => {
             console.log("attachments onChange", event.target.files[0])
             setFileList(update(fileList, { $push: [event.target.files[0]] }))
             setFieldValue("attachments", update(fileList, { $push: [event.target.files[0]] }))
+            dispatch(SowActions.willUploadAttachment({ sow: sow, attachment: event.target.files[0] }));
           }} />
-        {/* <FormText color="muted">
-          Attachments
-        </FormText> */}
       </FormGroup>
       {fileList.map((element: any, index: any) => {
         return (

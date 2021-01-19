@@ -8,6 +8,8 @@ import { actions as UIActions } from '../slices/ui'
 
 export function* sagas() {
   yield takeLatest(SowActions.willCreateStatementOfWork.type, willCreateStatementOfWork)
+  yield takeLatest(SowActions.willSubmitStatementOfWork.type, willSubmitStatementOfWork)
+  yield takeLatest(SowActions.willUploadAttachment.type, willUploadAttachment)
   yield takeLatest(SowActions.willConfirmArbitrators.type, willConfirmArbitrators)
   yield takeLatest(SowActions.willGetSowsListSeller.type, willGetSowsListSeller)
   yield takeLatest(SowActions.willGetSowsListBuyer.type, willGetSowsListBuyer)
@@ -24,30 +26,61 @@ function* willConfirmArbitrators(action: any) {
     yield call(action.payload.toggle)
     yield put(NotificationActions.willShowNotification({ message: "Arbitrators selected", type: "success" }));
   } catch (error) {
-
+    console.log("error in willConfirmArbitrators ", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
   }
   yield put(UIActions.stopActivityRunning("confirmArbitrators"));
 }
 
 function* willCreateStatementOfWork(action: any) {
-  console.log("in willCreateStatementOfWork with: ", action)
+  console.log("in willCreateStatementOfWork with ", action)
+
+  yield put(UIActions.startActivityRunning("createSow"));
+
+  try {
+    const result = yield call(SowApi.createStatementOfWork)
+    console.log("willCreateStatementOfWork result: ", result)
+    yield put(SowActions.didCreateStatementOfWork(result))
+    yield put(push("/create-statement-of-work"))
+  } catch (error) {
+    console.log("error in willCreateStatementOfWork ", error)
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
+  }
+  yield put(UIActions.stopActivityRunning("createSow"));
+}
+
+function* willSubmitStatementOfWork(action: any) {
+  console.log("in willSubmitStatementOfWork with: ", action)
 
   yield put(UIActions.startActivityRunning("createSOW"));
 
   const tagsSplitted = action.payload.sow.tags.split(" ")
 
   try {
-    const result = yield call(SowApi.addStatementOfWork, action.payload.sow.arbitrators, action.payload.sow.codeOfConduct, action.payload.sow.currency, action.payload.sow.buyer, action.payload.sow.deadline, action.payload.sow.description, action.payload.sow.numberReviews, action.payload.sow.price, action.payload.sow.quantity, tagsSplitted, action.payload.sow.termsOfService, action.payload.sow.title)
-    console.log("willCreateStatementOfWork result: ", result)
+    const result = yield call(SowApi.addStatementOfWork, action.payload.sow.sow, action.payload.sow.arbitrators, action.payload.sow.codeOfConduct, action.payload.sow.currency, action.payload.sow.buyer, action.payload.sow.deadline, action.payload.sow.description, action.payload.sow.numberReviews, action.payload.sow.price, action.payload.sow.quantity, tagsSplitted, action.payload.sow.termsOfService, action.payload.sow.title)
+    console.log("willSubmitStatementOfWork result: ", result)
 
+    yield put(SowActions.didSubmitStatementOfWork(result))
     yield put(push("/home"))
     yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
   } catch (error) {
-
+    console.log("error in willSubmitStatementOfWork ", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
   }
   yield put(UIActions.stopActivityRunning("createSOW"));
+}
+
+function* willUploadAttachment(action: any) {
+  console.log("in willUploadAttachment with: ", action)
+
+  try {
+    const result = yield call(SowApi.getUploadUrl, action.payload.sow, action.payload.attachment.name, 120)
+
+    yield call(SowApi.uploadFileToS3, action.payload.attachment)
+  }catch (error) {
+    console.log("error in willUploadAttachment ", error)
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
+  }
 }
 
 function* willGetSowsListSeller() {
@@ -57,7 +90,6 @@ function* willGetSowsListSeller() {
     const result = yield call(SowApi.getSowsListSeller);
     console.log("result willGetSowsListSeller: ", result)
     yield put(SowActions.didGetSowsListSeller(result))
-
   } catch (error) {
     console.log("error in willGetSowsListSeller ", error)
   }
