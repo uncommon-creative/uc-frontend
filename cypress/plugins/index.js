@@ -15,7 +15,22 @@
 /**
  * @type {Cypress.PluginConfig}
  */
+
+
+
+const path = require("path");
+const fs = require("fs-extra");
+
 module.exports = (on, config) => {
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
-}
+    
+    function getConfigurationByFile(file) {
+        const pathToConfigFile = path.resolve("cypress/config", `${file}.json`);
+
+        const result = fs.readJson(pathToConfigFile);
+        // console.log('with config result: ', pathToConfigFile, result);
+        return result;
+    }
+    const file = config.env.configFile || "local";
+
+    return getConfigurationByFile(file);
+};

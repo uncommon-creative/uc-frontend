@@ -1,0 +1,7 @@
+{
+  "env": {
+    "host": "https://app.uncommon-demo.com",
+    "description": "This is my local machine!",
+    "user": "e2e-test@radixsites.org"
+  }
+}
