@@ -28,6 +28,19 @@ export const getArbitratorsList = async () => {
   }
 }
 
+export const getFullArbitratorsList = async () => {
+  const query = loader('../graphql/getFullArbitratorsList.gql');
+
+  try {
+    const rawResult: any = await API.graphql({ query: query });
+    // console.log('getFullArbitratorsList with rawResult: ', rawResult);
+    return rawResult.data.listFullArbitrators
+
+  } catch (error) {
+    throw error
+  }
+}
+
 export const updateArbitrator = async (enabled: any, fee: any, currency: any, tags: any) => {
   const mutation = loader('../graphql/updateArbitrator.gql')
 

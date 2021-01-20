@@ -8,6 +8,7 @@ import { actions as UIActions } from '../slices/ui'
 
 export function* sagas() {
   yield takeLatest(SowActions.willCreateStatementOfWork.type, willCreateStatementOfWork)
+  yield takeLatest(SowActions.willDraftStatementOfWork.type, willDraftStatementOfWork)
   yield takeLatest(SowActions.willSubmitStatementOfWork.type, willSubmitStatementOfWork)
   yield takeLatest(SowActions.willUploadAttachment.type, willUploadAttachment)
   yield takeLatest(SowActions.willDeleteAttachment.type, willDeleteAttachment)
@@ -15,6 +16,7 @@ export function* sagas() {
   yield takeLatest(SowActions.willGetSowsListSeller.type, willGetSowsListSeller)
   yield takeLatest(SowActions.willGetSowsListBuyer.type, willGetSowsListBuyer)
   yield takeLatest(SowActions.willGetSowsListArbitrator.type, willGetSowsListArbitrator)
+  yield takeLatest(SowActions.willSelectSow.type, willSelectSow)
   console.log('in sow saga');
 }
 
@@ -50,15 +52,50 @@ function* willCreateStatementOfWork(action: any) {
   yield put(UIActions.stopActivityRunning("createSow"));
 }
 
-function* willSubmitStatementOfWork(action: any) {
-  console.log("in willSubmitStatementOfWork with: ", action)
+function* willDraftStatementOfWork(action: any) {
+  console.log("in willDraftStatementOfWork with: ", action)
 
-  yield put(UIActions.startActivityRunning("createSOW"));
+  yield put(UIActions.startActivityRunning("draftSow"));
 
   const tagsSplitted = action.payload.sow.tags.split(" ")
 
   try {
-    const result = yield call(SowApi.addStatementOfWork, action.payload.sow.sow, action.payload.sow.arbitrators, action.payload.sow.codeOfConduct, action.payload.sow.currency, action.payload.sow.buyer, action.payload.sow.deadline, action.payload.sow.description, action.payload.sow.numberReviews, action.payload.sow.price, action.payload.sow.quantity, tagsSplitted, action.payload.sow.termsOfService, action.payload.sow.title)
+    const result = yield call(
+      SowApi.draftStatementOfWork, 
+      action.payload.sow.sow, 
+      action.payload.sow.arbitrators, 
+      action.payload.sow.codeOfConduct, 
+      action.payload.sow.currency, 
+      action.payload.sow.buyer, 
+      action.payload.sow.deadline != '' ? action.payload.sow.deadline : undefined, 
+      action.payload.sow.description, 
+      action.payload.sow.numberReviews != '' ? action.payload.sow.numberReviews : undefined, 
+      action.payload.sow.price != '' ? action.payload.sow.price : undefined, 
+      action.payload.sow.quantity != '' ? action.payload.sow.quantity : undefined, 
+      tagsSplitted, 
+      action.payload.sow.termsOfService, 
+      action.payload.sow.title)
+    console.log("willDraftStatementOfWork result: ", result)
+
+    yield put(push("/home"))
+    yield put(NotificationActions.willShowNotification({ message: "Statement of work saved", type: "success" }));
+  } catch (error) {
+    console.log("error in willDraftStatementOfWork ", error)
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
+  }
+  yield put(UIActions.stopActivityRunning("draftSow"));
+}
+
+function* willSubmitStatementOfWork(action: any) {
+  console.log("in willSubmitStatementOfWork with: ", action)
+
+  yield put(UIActions.startActivityRunning("submitSow"));
+
+  const tagsSplitted = action.payload.sow.tags.split(" ")
+
+  try {
+    // yield call(SowActions.willDraftStatementOfWork, action.payload.sow)
+    const result = yield call(SowApi.submitStatementOfWork, action.payload.sow.sow, action.payload.sow.arbitrators, action.payload.sow.codeOfConduct, action.payload.sow.currency, action.payload.sow.buyer, action.payload.sow.deadline, action.payload.sow.description, action.payload.sow.numberReviews, action.payload.sow.price, action.payload.sow.quantity, tagsSplitted, action.payload.sow.termsOfService, action.payload.sow.title)
     console.log("willSubmitStatementOfWork result: ", result)
 
     yield put(SowActions.didSubmitStatementOfWork(result))
@@ -68,7 +105,7 @@ function* willSubmitStatementOfWork(action: any) {
     console.log("error in willSubmitStatementOfWork ", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
   }
-  yield put(UIActions.stopActivityRunning("createSOW"));
+  yield put(UIActions.stopActivityRunning("submitSow"));
 }
 
 function* willUploadAttachment(action: any) {
@@ -136,5 +173,17 @@ function* willGetSowsListArbitrator() {
 
   } catch (error) {
     console.log("error in willGetSowsListArbitrator ", error)
+  }
+}
+
+function* willSelectSow(action: any) {
+  console.log("in willSelectSow with: ", action)
+
+  if (action.payload.sow.status == "DRAFT") {
+    console.log("DRAFT")
+    action.payload.history.push('/create-statement-of-work')
+  }
+  else if (action.payload.sow.status == "SUBMITTED") {
+    console.log("SUBMITTED")
   }
 }

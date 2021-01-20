@@ -21,8 +21,8 @@ export const ArbitratorsListPage = () => {
   const toggleModal = () => setModalOpen(!modalOpen);
 
   React.useEffect(() => {
-    dispatch(ArbitratorActions.willGetArbitratorsList())
-    console.log("in ArbitratorsList: ", arbitratorsList)
+    dispatch(ArbitratorActions.willGetFullArbitratorsList())
+    console.log("in FullArbitratorsList: ", arbitratorsList)
   }, []);
 
   return (

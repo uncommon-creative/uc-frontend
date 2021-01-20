@@ -10,6 +10,7 @@ import { actions as UIActions } from '../slices/ui'
 export function* sagas() {
   yield takeLatest(ArbitratorActions.willGetArbitrator.type, willGetArbitrator)
   yield takeLatest(ArbitratorActions.willGetArbitratorsList.type, willGetArbitratorsList)
+  yield takeLatest(ArbitratorActions.willGetFullArbitratorsList.type, willGetFullArbitratorsList)
   yield takeLatest(ArbitratorActions.willSaveArbitratorSettings.type, willSaveArbitratorSettings)
   console.log('in arbitrator saga');
 }
@@ -39,6 +40,18 @@ function* willGetArbitratorsList() {
   }
 }
 
+function* willGetFullArbitratorsList() {
+  console.log("in willGetFullArbitratorsList")
+
+  try {
+    const result = yield call(ArbitratorApi.getFullArbitratorsList);
+    console.log("result willGetFullArbitratorsList: ", result)
+    yield put(ArbitratorActions.didGetArbitratorsList(result))
+  } catch (error) {
+    console.log("error in willGetFullArbitratorsList ", error)
+  }
+}
+
 function* willSaveArbitratorSettings(action: any) {
   console.log("in willSaveArbitratorSettings with ", action)
   yield put(UIActions.startActivityRunning("saveArbitratorSettings"));
@@ -49,8 +62,8 @@ function* willSaveArbitratorSettings(action: any) {
 
   const tagsSplitted = action.payload.arbitratorSettings.tags.split(" ")
   const fee = {
-    feeType: action.payload.arbitratorSettings.feeType,
-    value: action.payload.arbitratorSettings.fee
+    flat: action.payload.arbitratorSettings.feeFlat,
+    perc: action.payload.arbitratorSettings.feePercentage
   }
 
   try {

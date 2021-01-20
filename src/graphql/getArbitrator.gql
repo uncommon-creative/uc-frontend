@@ -3,8 +3,8 @@ query getArbitrator{
       user
       enabled
       fee {
-        feeType
-        value
+        flat
+        perc
       }
       currency
       tags

@@ -17,7 +17,7 @@ export const createStatementOfWork = async () => {
   }
 }
 
-export const addStatementOfWork = async (
+export const draftStatementOfWork = async (
   sow: any,
   arbitrators: any,
   codeOfConduct: any,
@@ -33,7 +33,7 @@ export const addStatementOfWork = async (
   title: any
 ) => {
 
-  const mutation = loader('../graphql/addSow.gql')
+  const mutation = loader('../graphql/draftSow.gql')
 
   try {
     const result: any = await API.graphql(graphqlOperation(mutation, {
@@ -51,9 +51,51 @@ export const addStatementOfWork = async (
       termsOfService: termsOfService,
       title: title
     }))
-    return result.data.addSow
+    return result.data.draftSow
   } catch (error) {
-    console.log("addSow API error: ", error)
+    console.log("draftSow API error: ", error)
+    throw error
+  }
+}
+
+export const submitStatementOfWork = async (
+  sow: any,
+  arbitrators: any,
+  codeOfConduct: any,
+  currency: any,
+  buyer: any,
+  deadline: any,
+  description: any,
+  numberReviews: any,
+  price: any,
+  quantity: any,
+  tags: any,
+  termsOfService: any,
+  title: any
+) => {
+
+  const mutation = loader('../graphql/submitSow.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, {
+      sow: sow,
+      arbitrators: arbitrators,
+      codeOfConduct: codeOfConduct,
+      currency: currency,
+      buyer: buyer,
+      deadline: deadline,
+      description: description,
+      numberReviews: numberReviews,
+      price: price,
+      quantity: quantity,
+      tags: tags,
+      termsOfService: termsOfService,
+      title: title
+    }))
+    console.log("submitSow rawResult: ", result)
+    return result.data.submitSow
+  } catch (error) {
+    console.log("submitSow API error: ", error)
     throw error
   }
 }

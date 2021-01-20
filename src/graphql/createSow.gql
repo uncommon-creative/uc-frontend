@@ -1,8 +1,10 @@
 mutation createSow{
   createSow {
     arbitrators
+    arbitrator
     codeOfConduct
     currency
+    seller
     buyer
     deadline
     description
@@ -15,5 +17,6 @@ mutation createSow{
     sow
     createdAt
     updatedAt
+    status
   }
 }

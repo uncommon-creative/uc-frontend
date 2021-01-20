@@ -36,6 +36,7 @@ export const Header = ({ className }: any) => {
             <UncontrolledDropdown nav inNavbar>
               <DropdownToggle nav caret>{userAttributes.given_name} {userAttributes.family_name}</DropdownToggle>
               <DropdownMenu right>
+                <DropdownItem header>Email: {userAttributes.email}</DropdownItem>
                 <DropdownItem header>AL: {userAttributes.public_key}</DropdownItem>
                 <DropdownItem header>KUDOS: 12</DropdownItem>
                 <DropdownItem divider />

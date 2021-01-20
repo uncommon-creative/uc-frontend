@@ -4,8 +4,8 @@ query getArbitratorsList{
       user
       enabled
       fee {
-        feeType
-        value
+        flat
+        perc
       }
       currency
       tags

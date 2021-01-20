@@ -4,8 +4,8 @@ query getFullArbitratorsList{
       user
       enabled
       fee {
-        feeType
-        value
+        flat
+        perc
       }
       currency
       tags
@@ -13,7 +13,6 @@ query getFullArbitratorsList{
       given_name
       family_name
       public_key
-      email
     }
     nextToken
   }
