@@ -12,6 +12,7 @@ import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
 import { ActivityButton } from '../components/ActivityButton'
+import { TagsInput } from '../components/TagsInput'
 import { SelectArbitrators } from '../components/SelectArbitrators'
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { SowAttachments } from '../components/SowAttachments'
@@ -46,8 +47,8 @@ const StatementOfWorkSchema = Yup.object().shape({
   deadline: Yup.date()
     .min(new Date().toISOString())
     .required('Required'),
-  tags: Yup.string()
-    .min(3, 'Too Short!')
+  tags: Yup.array()
+    .min(1, 'At least one tag required!')
     .required('Required'),
   numberReviews: Yup.number()
     .min(1, 'Too Few!')
@@ -89,14 +90,14 @@ export const CreateStatementOfWorkPage = () => {
             // enableReinitialize={false}
             initialValues={{
               sow: currentSow.sow ? currentSow.sow : '',
-              buyer: currentSow.buyer ? currentSow.buyer : '',
+              buyer: currentSow.buyer != 'not_set' ? currentSow.buyer : '',
               title: currentSow.title ? currentSow.title : '',
               description: currentSow.description ? currentSow.description : '',
               quantity: currentSow.quantity ? currentSow.quantity : '',
               price: currentSow.price ? currentSow.price : '',
               currency: priceCurrency,
               deadline: currentSow.deadline ? currentSow.deadline : '',
-              tags: currentSow.tags ? currentSow.tags.join(' ') : '',
+              tags: currentSow.tags.length ? currentSow.tags.map((tag: any) => JSON.parse(tag)) : currentSow.tags,
               numberReviews: currentSow.numberReviews ? currentSow.numberReviews : '',
               termsOfService: false,
               codeOfConduct: false,
@@ -212,9 +213,11 @@ export const CreateStatementOfWorkPage = () => {
                     </Row>
                     <FormGroup>
                       <Label for="tags">Tags *</Label>
-                      <Input invalid={errors.tags && touched.tags ? true : false} type="text" name="tags" id="tags" placeholder="tags" tag={Field} />
+                      <TagsInput tags={currentSow.tags} />
+
+                      {/* <Input invalid={errors.tags && touched.tags ? true : false} type="text" name="tags" id="tags" placeholder="tags" tag={Field} /> */}
                       {errors.tags && touched.tags ? (
-                        <FormFeedback>{errors.tags}</FormFeedback>
+                        <FormFeedback className="d-block">{errors.tags}</FormFeedback>
                       ) : null}
                     </FormGroup>
                     <Row>

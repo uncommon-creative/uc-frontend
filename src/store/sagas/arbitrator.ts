@@ -21,7 +21,7 @@ function* willGetArbitrator() {
   try {
     const result = yield call(ArbitratorApi.getArbitrator);
     console.log("result willGetArbitrator: ", result)
-    
+
     yield put(ArbitratorActions.didGetArbitrator(result))
   } catch (error) {
     console.log("error in willGetArbitrator ", error)
@@ -59,8 +59,7 @@ function* willSaveArbitratorSettings(action: any) {
   const profile = yield select(ProfileSelectors.getProfile)
   const myArbitratorSettings = yield select(ArbitratorSelectors.getMyArbitratorSettings)
 
-
-  const tagsSplitted = action.payload.arbitratorSettings.tags.split(" ")
+  const tagsParsed = action.payload.arbitratorSettings.tags.map((tag: any) => JSON.stringify(tag))
   const fee = {
     flat: action.payload.arbitratorSettings.feeFlat,
     perc: action.payload.arbitratorSettings.feePercentage
@@ -68,15 +67,17 @@ function* willSaveArbitratorSettings(action: any) {
 
   try {
     if (myArbitratorSettings && profile.email === myArbitratorSettings.email) {
-      const result = yield call(ArbitratorApi.updateArbitrator, action.payload.arbitratorSettings.enabled, fee, action.payload.arbitratorSettings.currency, tagsSplitted)
+      const result = yield call(ArbitratorApi.updateArbitrator, action.payload.arbitratorSettings.enabled, fee, action.payload.arbitratorSettings.currency, tagsParsed)
       console.log("update arbitrator success result: ", result)
     }
     else {
-      const result = yield call(ArbitratorApi.addArbitrator, fee, action.payload.arbitratorSettings.currency, tagsSplitted)
+      const result = yield call(ArbitratorApi.addArbitrator, fee, action.payload.arbitratorSettings.currency, tagsParsed)
       console.log("add arbitrator success result: ", result)
     }
+    yield put(NotificationActions.willShowNotification({ message: "Arbitrator settings saved", type: "success" }));
   } catch (error) {
     console.log("error in willSaveArbitratorSettings ", error)
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning("saveArbitratorSettings"));
 }

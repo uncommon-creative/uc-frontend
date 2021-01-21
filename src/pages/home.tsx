@@ -49,10 +49,13 @@ function TableData({ tabId, data }: any) {
                       element.seller.substring(0, 5).toUpperCase()
                   }</td>}
                   {tabId != 2 && <td>{element.buyer ?
-                    validateEmail(element.buyer) ?
-                      element.buyer
+                    element.buyer == 'not_set' ?
+                      '-'
                       :
-                      element.buyer.substring(0, 5).toUpperCase()
+                      validateEmail(element.buyer) ?
+                        element.buyer
+                        :
+                        element.buyer.substring(0, 5).toUpperCase()
                     : '-'
                   }</td>}
                   <td>{element.deadline ? new Date(element.deadline).toLocaleDateString() : '-'}</td>

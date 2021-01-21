@@ -51,6 +51,7 @@ export const draftStatementOfWork = async (
       termsOfService: termsOfService,
       title: title
     }))
+    console.log("draftSow result: ", result)
     return result.data.draftSow
   } catch (error) {
     console.log("draftSow API error: ", error)

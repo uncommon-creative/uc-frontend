@@ -5,6 +5,7 @@ import {
   Nav, NavItem, NavLink, NavbarText,
   UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem
 } from 'reactstrap'
+import { Link, useHistory, Redirect } from "react-router-dom";
 import * as AuthApi from './api/auth'
 import { selectors as AuthSelectors } from './store/slices/auth'
 import { actions as AuthActions } from './store/slices/auth'
@@ -27,7 +28,7 @@ export const Header = ({ className }: any) => {
 
         <Nav className="mr-auto" navbar>
           <NavItem>
-            <NavLink href="/arbitrators">Arbitrators</NavLink>
+            <NavLink tag={Link} to="/arbitrators">Arbitrators</NavLink>
           </NavItem>
         </Nav>
         <Nav navbar>
@@ -40,7 +41,7 @@ export const Header = ({ className }: any) => {
                 <DropdownItem header>AL: {userAttributes.public_key}</DropdownItem>
                 <DropdownItem header>KUDOS: 12</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem tag="a" href="/profile">Profile</DropdownItem>
+                <DropdownItem tag={Link} to="/profile">Profile</DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem onClick={() => {
                   dispatch(AuthActions.willLogoutUser());
@@ -50,7 +51,7 @@ export const Header = ({ className }: any) => {
             </UncontrolledDropdown>
           ) : (
               <NavItem>
-                <NavLink href="/login/">Login</NavLink>
+                <NavLink href="/login">Login</NavLink>
               </NavItem>
             )
           }

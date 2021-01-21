@@ -57,23 +57,23 @@ function* willDraftStatementOfWork(action: any) {
 
   yield put(UIActions.startActivityRunning("draftSow"));
 
-  const tagsSplitted = action.payload.sow.tags.split(" ")
+  const tagsParsed = action.payload.sow.tags.map((tag: any) => JSON.stringify(tag))
 
   try {
     const result = yield call(
-      SowApi.draftStatementOfWork, 
-      action.payload.sow.sow, 
-      action.payload.sow.arbitrators, 
-      action.payload.sow.codeOfConduct, 
-      action.payload.sow.currency, 
-      action.payload.sow.buyer, 
-      action.payload.sow.deadline != '' ? action.payload.sow.deadline : undefined, 
-      action.payload.sow.description, 
-      action.payload.sow.numberReviews != '' ? action.payload.sow.numberReviews : undefined, 
-      action.payload.sow.price != '' ? action.payload.sow.price : undefined, 
-      action.payload.sow.quantity != '' ? action.payload.sow.quantity : undefined, 
-      tagsSplitted, 
-      action.payload.sow.termsOfService, 
+      SowApi.draftStatementOfWork,
+      action.payload.sow.sow,
+      action.payload.sow.arbitrators,
+      action.payload.sow.codeOfConduct,
+      action.payload.sow.currency,
+      action.payload.sow.buyer,
+      action.payload.sow.deadline != '' ? action.payload.sow.deadline : undefined,
+      action.payload.sow.description,
+      action.payload.sow.numberReviews != '' ? action.payload.sow.numberReviews : undefined,
+      action.payload.sow.price != '' ? action.payload.sow.price : undefined,
+      action.payload.sow.quantity != '' ? action.payload.sow.quantity : undefined,
+      tagsParsed,
+      action.payload.sow.termsOfService,
       action.payload.sow.title)
     console.log("willDraftStatementOfWork result: ", result)
 
@@ -91,11 +91,11 @@ function* willSubmitStatementOfWork(action: any) {
 
   yield put(UIActions.startActivityRunning("submitSow"));
 
-  const tagsSplitted = action.payload.sow.tags.split(" ")
+  const tagsParsed = action.payload.sow.tags.map((tag: any) => JSON.stringify(tag))
 
   try {
     // yield call(SowActions.willDraftStatementOfWork, action.payload.sow)
-    const result = yield call(SowApi.submitStatementOfWork, action.payload.sow.sow, action.payload.sow.arbitrators, action.payload.sow.codeOfConduct, action.payload.sow.currency, action.payload.sow.buyer, action.payload.sow.deadline, action.payload.sow.description, action.payload.sow.numberReviews, action.payload.sow.price, action.payload.sow.quantity, tagsSplitted, action.payload.sow.termsOfService, action.payload.sow.title)
+    const result = yield call(SowApi.submitStatementOfWork, action.payload.sow.sow, action.payload.sow.arbitrators, action.payload.sow.codeOfConduct, action.payload.sow.currency, action.payload.sow.buyer, action.payload.sow.deadline, action.payload.sow.description, action.payload.sow.numberReviews, action.payload.sow.price, action.payload.sow.quantity, tagsParsed, action.payload.sow.termsOfService, action.payload.sow.title)
     console.log("willSubmitStatementOfWork result: ", result)
 
     yield put(SowActions.didSubmitStatementOfWork(result))

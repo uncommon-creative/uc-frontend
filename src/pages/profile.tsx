@@ -15,6 +15,7 @@ import * as Yup from 'yup';
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { ActivityButton } from '../components/ActivityButton'
+import { TagsInput } from '../components/TagsInput';
 
 const ArbitratorSettingsSchema = Yup.object().shape({
   enabled: Yup.bool()
@@ -26,8 +27,8 @@ const ArbitratorSettingsSchema = Yup.object().shape({
   currency: Yup.string()
     .min(3, 'Too Short!')
     .required('Required'),
-  tags: Yup.string()
-    .min(3, 'Too Short!')
+  tags: Yup.array()
+    .min(1, 'At least one tag required!')
     .required('Required')
 });
 
@@ -47,6 +48,10 @@ export const ProfilePage = () => {
     dispatch(ArbitratorActions.willGetArbitrator())
   }, []);
 
+  React.useEffect(() => {
+    setSwitchEnabled(myArbitratorSettings.enabled)
+  }, [myArbitratorSettings]);
+
   return (
     <Container>
       <Card>
@@ -65,7 +70,7 @@ export const ProfilePage = () => {
               feePercentage: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.perc : '',
               feeFlat: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.flat : '',
               currency: feeCurrency,
-              tags: myArbitratorSettings && myArbitratorSettings.tags ? myArbitratorSettings.tags.join(' ') : ''
+              tags: myArbitratorSettings && myArbitratorSettings.tags && myArbitratorSettings.tags.length ? myArbitratorSettings.tags.map((tag: any) => JSON.parse(tag)) : []
             }}
             validationSchema={ArbitratorSettingsSchema}
             validateOnBlur={true}
@@ -77,11 +82,14 @@ export const ProfilePage = () => {
             {({ errors, touched, setFieldValue, values }) => {
               return (
                 <Form>
+                  {values && console.log("values", values)}
+                  {errors && console.log("errors", errors)}
                   <Row>
                     <Col className="col-md-2 col-12">
                       <FormGroup>
                         <Label for="enabled">Enabled</Label>
                         <CustomInput type="switch" name="enabled" id="enabled" tag={Field}
+                          checked={values.enabled}
                           onClick={(event: any) => {
                             toggleSwitchEnabled(event.target.checked)
                             setFieldValue('enabled', event.target.checked)
@@ -140,9 +148,10 @@ export const ProfilePage = () => {
                   </Row>
                   <FormGroup>
                     <Label for="tags">Tags</Label>
-                    <Input disabled={!switchEnabled} invalid={errors.tags && touched.tags ? true : false} type="text" name="tags" id="tags" placeholder="tags" tag={Field} />
+                    <TagsInput disabled={!switchEnabled} tags={myArbitratorSettings && myArbitratorSettings.tags ? myArbitratorSettings.tags : []} />
+                    {/* <Input disabled={!switchEnabled} invalid={errors.tags && touched.tags ? true : false} type="text" name="tags" id="tags" placeholder="tags" tag={Field} /> */}
                     {errors.tags && touched.tags ? (
-                      <FormFeedback>{errors.tags}</FormFeedback>
+                      <FormFeedback className="d-block">{errors.tags}</FormFeedback>
                     ) : null}
                   </FormGroup>
                   <Row>
