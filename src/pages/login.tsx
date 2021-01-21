@@ -71,20 +71,20 @@ export const LoginPage = () => {
                 <Form>
                   <FormGroup>
                     <Label for="email">Email</Label>
-                    <Input invalid={errors.email && touched.email ? true : false} type="text" name="email" id="email" placeholder="insert email" autoComplete="email" tag={Field} />
+                    <Input data-cy="email" invalid={errors.email && touched.email ? true : false} type="text" name="email" id="email" placeholder="insert email" autoComplete="email" tag={Field} />
                     {errors.email && touched.email ? (
                       <FormFeedback>{errors.email}</FormFeedback>
                     ) : null}
                   </FormGroup>
                   <FormGroup>
                     <Label for="password">Password</Label>
-                    <Input invalid={errors.password && touched.password ? true : false} type="password" name="password" id="password" placeholder="insert password" autoComplete="current-password" tag={Field} />
+                    <Input data-cy="password" invalid={errors.password && touched.password ? true : false} type="password" name="password" id="password" placeholder="insert password" autoComplete="current-password" tag={Field} />
                     {errors.password && touched.password ? (
                       <FormFeedback>{errors.password}</FormFeedback>
                     ) : null}
 
                   </FormGroup>
-                  <ActivityButton type="submit" name="login" color="primary" block>Login</ActivityButton>
+                  <ActivityButton data-cy="login" type="submit" name="login" color="primary" block>Login</ActivityButton>
                   <Button color="primary" block to="/signup" outline tag={Link}>Signup</Button>
                   <Button color="link" block onClick={() => setForgotPassword(true)}>Forgot Password?</Button>
                 </Form>

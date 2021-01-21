@@ -1,0 +1,7 @@
+{
+  "env": {
+    "host": "http://localhost:3000",
+    "description": "This is my local machine!",
+    "user": "e2e-test@radixsites.org"
+  }
+}
