@@ -1,5 +1,4 @@
 import { call, put, takeEvery, takeLatest, delay, select } from 'redux-saga/effects'
-import { push } from 'connected-react-router'
 
 import * as ArbitratorApi from '../../api/arbitrator'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../slices/arbitrator'
@@ -15,14 +14,15 @@ export function* sagas() {
   console.log('in arbitrator saga');
 }
 
-function* willGetArbitrator() {
-  console.log("in willGetArbitrator")
+function* willGetArbitrator(action: any) {
+  console.log("in willGetArbitrator with: ", action)
 
   try {
-    const result = yield call(ArbitratorApi.getArbitrator);
+    const result = yield call(ArbitratorApi.getArbitrator, action.payload.user);
     console.log("result willGetArbitrator: ", result)
 
     yield put(ArbitratorActions.didGetArbitrator(result))
+    return result
   } catch (error) {
     console.log("error in willGetArbitrator ", error)
   }

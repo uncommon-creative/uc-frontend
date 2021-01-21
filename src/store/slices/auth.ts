@@ -7,7 +7,7 @@ export const currentSlice = createSlice({
     confirmed: false,
     logged: false,
     checked: false,
-    user: {} as {} | null,
+    user: {},
     forgotPasswordRequested: false,
     error: undefined
   },
@@ -21,7 +21,7 @@ export const currentSlice = createSlice({
     didLoginUserFails: (state, action: PayloadAction<any>) => void (state.checked = true, state.error = action.payload),
 
     willLogoutUser: (state, action: PayloadAction<any>) => state,
-    didLogoutUser: (state, action: PayloadAction<any>) => void (state.checked = true, state.logged = false as any, state.user = null),
+    didLogoutUser: (state, action: PayloadAction<any>) => void (state.checked = true, state.logged = false as any, state.user = {}),
 
     willSignupUser: (state, action: PayloadAction<any>) => state,
     didSignupUserSuccess: (state, action: PayloadAction<any>) => state,
@@ -64,5 +64,6 @@ export const selectors = {
   isChecked: (state: any) => state.auth.checked,
   isAuthenticated: (state: any) => state.auth.logged,
   getLoggedError: (state: any) => state.auth.error,
-  requestedForgotPassword: (state: any) => state.auth.forgotPasswordRequested
+  requestedForgotPassword: (state: any) => state.auth.forgotPasswordRequested,
+  getUser: (state: any) => state.auth.user
 }

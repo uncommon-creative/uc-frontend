@@ -1,9 +1,6 @@
 import * as React from 'react';
-import { useSelector } from 'react-redux';
-import { Button, Spinner, FormText, Row, Col } from 'reactstrap';
 import CreatableSelect from 'react-select/creatable'
 import { useFormikContext } from 'formik';
-import update from 'immutability-helper';
 
 const TAGS = [
   { value: 'graphic', label: 'graphic' },

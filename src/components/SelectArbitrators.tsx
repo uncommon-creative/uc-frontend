@@ -19,7 +19,7 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
   const dispatch = useDispatch();
   const [currentArbitrator, setCurrentArbitrator] = React.useState({} as any);
   const [selectedArbitrators, setSelectedArbitrators] = React.useState([] as any);
-  const confirmedArbitrators = useSelector(SowSelectors.getArbitrators);
+  const confirmedArbitrators = useSelector(SowSelectors.getConfirmedArbitrators);
   const arbitratorsList = useSelector(ArbitratorSelectors.getArbitratorsList)
 
   const { values, setFieldValue } = useFormikContext();

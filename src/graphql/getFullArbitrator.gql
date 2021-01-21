@@ -1,5 +1,9 @@
-query getFullArbitrator{
-  getFullArbitrator{
+query getFullArbitrator(
+  $user: String
+  ){
+    getFullArbitrator(
+      user: $user
+    ) {
       user
       enabled
       fee {
@@ -9,9 +13,5 @@ query getFullArbitrator{
       currency
       tags
       reputation
-      given_name
-      family_name
-      public_key
-      email
   }
 }

@@ -87,6 +87,7 @@ export const HomePage = () => {
   }
 
   React.useEffect(() => {
+    dispatch(SowActions.willConfirmArbitrators({ arbitrators: [], toggle: () => {} }))
     dispatch(SowActions.willGetSowsListSeller())
     dispatch(SowActions.willGetSowsListBuyer())
     dispatch(SowActions.willGetSowsListArbitrator())
@@ -101,7 +102,6 @@ export const HomePage = () => {
           </div>
           <div className="col-12 col-sm-4">
             {activeTab == '1' &&
-              // <Button color="primary" className=" mt-sm-2 mx-auto" to="/create-statement-of-work" tag={Link}>new Statement Of Work</Button>
               <ActivityButton className="mt-sm-2 mx-auto" type="submit" name="createSow" color="primary"
                 onClick={() => dispatch(SowActions.willCreateStatementOfWork({ history: history }))}
               >new Statement Of Work</ActivityButton>

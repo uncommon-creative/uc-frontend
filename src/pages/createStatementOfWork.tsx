@@ -30,6 +30,7 @@ const StatementOfWorkSchema = Yup.object().shape({
     .max(50, 'Too Long!')
     .required('Required'),
   title: Yup.string()
+    .test(`'Draft Title' is not accepted as a title!`, `'Draft Title' is not accepted as a title!`, (value) => value != 'Draft Title')
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
     .required('Required'),
@@ -75,7 +76,7 @@ export const CreateStatementOfWorkPage = () => {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [priceCurrency, setPriceCurrency] = React.useState(currentSow.currency ? currentSow.currency : "ALGO");
   const [deadlineValue, setDeadlineValue] = React.useState('');
-  const confirmedArbitrators = useSelector(SowSelectors.getArbitrators)
+  const confirmedArbitrators = useSelector(SowSelectors.getConfirmedArbitrators)
 
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
   const toggleModal = () => setModalOpen(!modalOpen);
@@ -87,7 +88,6 @@ export const CreateStatementOfWorkPage = () => {
           <CardTitle tag="h5" className="text-center">Create Statement Of Work Page</CardTitle>
           <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Create a new Statement of Work</CardSubtitle>
           <Formik
-            // enableReinitialize={false}
             initialValues={{
               sow: currentSow.sow ? currentSow.sow : '',
               buyer: currentSow.buyer != 'not_set' ? currentSow.buyer : '',
@@ -113,10 +113,9 @@ export const CreateStatementOfWorkPage = () => {
             {({ errors, touched, setFieldValue, values }) => {
               return (
                 <Form>
-                  {values && console.log("values: ", values)}
                   <FormGroup>
                     <Label for="sow">Sow</Label>
-                    <Input disabled invalsow={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
+                    <Input disabled invalid={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
                     {errors.sow && touched.sow ? (
                       <FormFeedback>{errors.sow}</FormFeedback>
                     ) : null}
@@ -243,7 +242,6 @@ export const CreateStatementOfWorkPage = () => {
                       <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Arbitrators *</CardSubtitle>
                       <Row name="arbitrators" id="arbitrators">
                         {confirmedArbitrators.map((arbitrator: any, index: any) => {
-                          var length = Object.keys(arbitrator).length
                           return (
                             <Col>
                               <Card>
@@ -256,6 +254,7 @@ export const CreateStatementOfWorkPage = () => {
                       </Row>
                       <Row className="mt-2">
                         <Col className="col-6 offset-3">
+                          {/* <Button color="primary" block onClick={() => dispatch(SowActions.willConfirmArbitrators())}>Select the arbitrators</Button> */}
                           <Button color="primary" block onClick={toggleModal}>Select the arbitrators</Button>
                         </Col>
                       </Row>
@@ -310,7 +309,7 @@ export const CreateStatementOfWorkPage = () => {
                     </Label>
                   </FormGroup>
                   <Row>
-                    <Col><ActivityButton type="submit" name="submitSOW" color="primary" block>Submit Statement Of Work</ActivityButton></Col>
+                    <Col><ActivityButton type="submit" name="submitSow" color="primary" block>Submit Statement Of Work</ActivityButton></Col>
                   </Row>
                   <Row className="mt-2">
                     <Col><Button color="primary" block outline name="draftSow" onClick={() => dispatch(SowActions.willDraftStatementOfWork({ sow: values, history: history }))}>Save draft</Button></Col>

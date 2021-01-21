@@ -5,14 +5,15 @@ import * as SowApi from '../../api/sow'
 import { actions as SowActions } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as UIActions } from '../slices/ui'
+import * as ArbitratorApi from '../../api/arbitrator'
 
 export function* sagas() {
+  yield takeLatest(SowActions.willConfirmArbitrators.type, willConfirmArbitrators)
   yield takeLatest(SowActions.willCreateStatementOfWork.type, willCreateStatementOfWork)
   yield takeLatest(SowActions.willDraftStatementOfWork.type, willDraftStatementOfWork)
   yield takeLatest(SowActions.willSubmitStatementOfWork.type, willSubmitStatementOfWork)
   yield takeLatest(SowActions.willUploadAttachment.type, willUploadAttachment)
   yield takeLatest(SowActions.willDeleteAttachment.type, willDeleteAttachment)
-  yield takeLatest(SowActions.willConfirmArbitrators.type, willConfirmArbitrators)
   yield takeLatest(SowActions.willGetSowsListSeller.type, willGetSowsListSeller)
   yield takeLatest(SowActions.willGetSowsListBuyer.type, willGetSowsListBuyer)
   yield takeLatest(SowActions.willGetSowsListArbitrator.type, willGetSowsListArbitrator)
@@ -26,11 +27,12 @@ function* willConfirmArbitrators(action: any) {
   yield put(UIActions.startActivityRunning("confirmArbitrators"));
 
   try {
-    yield call(action.payload.toggle)
-    yield put(NotificationActions.willShowNotification({ message: "Arbitrators selected", type: "success" }));
+    if (Object.keys(action.payload.arbitrators).length != 0) {
+      yield call(action.payload.toggle)
+    }
   } catch (error) {
     console.log("error in willConfirmArbitrators ", error)
-    yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning("confirmArbitrators"));
 }
@@ -47,7 +49,7 @@ function* willCreateStatementOfWork(action: any) {
     yield put(push("/create-statement-of-work"))
   } catch (error) {
     console.log("error in willCreateStatementOfWork ", error)
-    yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning("createSow"));
 }
@@ -58,12 +60,13 @@ function* willDraftStatementOfWork(action: any) {
   yield put(UIActions.startActivityRunning("draftSow"));
 
   const tagsParsed = action.payload.sow.tags.map((tag: any) => JSON.stringify(tag))
+  const arbitratorsParsed = action.payload.sow.arbitrators.map((arb: any) => arb.user)
 
   try {
     const result = yield call(
       SowApi.draftStatementOfWork,
       action.payload.sow.sow,
-      action.payload.sow.arbitrators,
+      arbitratorsParsed,
       action.payload.sow.codeOfConduct,
       action.payload.sow.currency,
       action.payload.sow.buyer,
@@ -81,7 +84,7 @@ function* willDraftStatementOfWork(action: any) {
     yield put(NotificationActions.willShowNotification({ message: "Statement of work saved", type: "success" }));
   } catch (error) {
     console.log("error in willDraftStatementOfWork ", error)
-    yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning("draftSow"));
 }
@@ -92,10 +95,25 @@ function* willSubmitStatementOfWork(action: any) {
   yield put(UIActions.startActivityRunning("submitSow"));
 
   const tagsParsed = action.payload.sow.tags.map((tag: any) => JSON.stringify(tag))
+  const arbitratorsParsed = action.payload.sow.arbitrators.map((arb: any) => arb.user)
 
   try {
-    // yield call(SowActions.willDraftStatementOfWork, action.payload.sow)
-    const result = yield call(SowApi.submitStatementOfWork, action.payload.sow.sow, action.payload.sow.arbitrators, action.payload.sow.codeOfConduct, action.payload.sow.currency, action.payload.sow.buyer, action.payload.sow.deadline, action.payload.sow.description, action.payload.sow.numberReviews, action.payload.sow.price, action.payload.sow.quantity, tagsParsed, action.payload.sow.termsOfService, action.payload.sow.title)
+    const result = yield call(
+      SowApi.submitStatementOfWork,
+      action.payload.sow.sow,
+      arbitratorsParsed,
+      action.payload.sow.codeOfConduct,
+      action.payload.sow.currency,
+      action.payload.sow.buyer,
+      action.payload.sow.deadline,
+      action.payload.sow.description,
+      action.payload.sow.numberReviews,
+      action.payload.sow.price,
+      action.payload.sow.quantity,
+      tagsParsed,
+      action.payload.sow.termsOfService,
+      action.payload.sow.title
+    )
     console.log("willSubmitStatementOfWork result: ", result)
 
     yield put(SowActions.didSubmitStatementOfWork(result))
@@ -103,7 +121,7 @@ function* willSubmitStatementOfWork(action: any) {
     yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
   } catch (error) {
     console.log("error in willSubmitStatementOfWork ", error)
-    yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning("submitSow"));
 }
@@ -119,7 +137,7 @@ function* willUploadAttachment(action: any) {
     yield call(SowApi.uploadFileToS3, result, action.payload.attachment)
   } catch (error) {
     console.log("error in willUploadAttachment ", error)
-    yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning(action.payload.attachment.name));
 }
@@ -133,7 +151,7 @@ function* willDeleteAttachment(action: any) {
     yield put(NotificationActions.willShowNotification({ message: action.payload.attachment.name + " deleted", type: "success" }));
   } catch (error) {
     console.log("error in willDeleteAttachment ", error)
-    yield put(NotificationActions.willShowNotification({ message: error.message, type: "error" }));
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning(action.payload.attachment.name));
 }
@@ -178,12 +196,21 @@ function* willGetSowsListArbitrator() {
 
 function* willSelectSow(action: any) {
   console.log("in willSelectSow with: ", action)
+  const fullArbitrators = []
+
+  if (Array.isArray(action.payload.sow.arbitrators)) {
+    for (const arb of action.payload.sow.arbitrators) {
+      fullArbitrators.push(yield call(ArbitratorApi.getArbitrator, arb))
+    }
+  }
+  console.log("in willSelectSow with fullArbitrators: ", fullArbitrators)
 
   if (action.payload.sow.status == "DRAFT") {
-    console.log("DRAFT")
+    console.log("sow DRAFT")
+    yield put(SowActions.willConfirmArbitrators({ arbitrators: fullArbitrators, toggle: () => { } }))
     action.payload.history.push('/create-statement-of-work')
   }
   else if (action.payload.sow.status == "SUBMITTED") {
-    console.log("SUBMITTED")
+    console.log("sow SUBMITTED")
   }
 }

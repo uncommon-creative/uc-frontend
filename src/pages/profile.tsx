@@ -14,6 +14,7 @@ import * as Yup from 'yup';
 
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
+import { selectors as AuthSelectors } from '../store/slices/auth'
 import { ActivityButton } from '../components/ActivityButton'
 import { TagsInput } from '../components/TagsInput';
 
@@ -37,6 +38,7 @@ export const ProfilePage = () => {
   const dispatch = useDispatch();
   let history = useHistory();
   const myArbitratorSettings = useSelector(ArbitratorSelectors.getMyArbitratorSettings)
+  const user = useSelector(AuthSelectors.getUser)
   const [dropdownCurrencyOpen, setDropdownCurrencyOpen] = React.useState(false);
   const [switchEnabled, setSwitchEnabled] = React.useState(false);
   const [feeCurrency, setFeeCurrency] = React.useState("ALGO");
@@ -45,11 +47,11 @@ export const ProfilePage = () => {
   const toggleSwitchEnabled = (switchEnabled: any) => setSwitchEnabled(switchEnabled);
 
   React.useEffect(() => {
-    dispatch(ArbitratorActions.willGetArbitrator())
+    dispatch(ArbitratorActions.willGetArbitrator({user: user.username}))
   }, []);
 
   React.useEffect(() => {
-    setSwitchEnabled(myArbitratorSettings.enabled)
+    setSwitchEnabled(myArbitratorSettings ? myArbitratorSettings.enabled : false)
   }, [myArbitratorSettings]);
 
   return (
@@ -82,8 +84,6 @@ export const ProfilePage = () => {
             {({ errors, touched, setFieldValue, values }) => {
               return (
                 <Form>
-                  {values && console.log("values", values)}
-                  {errors && console.log("errors", errors)}
                   <Row>
                     <Col className="col-md-2 col-12">
                       <FormGroup>

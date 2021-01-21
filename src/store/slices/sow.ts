@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export const currentSlice = createSlice({
   name: 'statementOfWork',
   initialState: {
-    arbitrators: [],
+    confirmedArbitrators: [],
     attachments: [],
     currentSow: {},
     sowsAsSeller: [],
@@ -11,7 +11,7 @@ export const currentSlice = createSlice({
     sowsAsArbitrator: []
   },
   reducers: {
-    willConfirmArbitrators: (state, action: PayloadAction<any>) => void (state.arbitrators = action.payload.arbitrators),
+    willConfirmArbitrators: (state, action: PayloadAction<any>) => void (state.confirmedArbitrators = action.payload.arbitrators),
 
     willCreateStatementOfWork: (state, action: PayloadAction<any>) => state,
     didCreateStatementOfWork: (state, action: PayloadAction<any>) => void (state.currentSow = action.payload),
@@ -42,13 +42,13 @@ export const currentSlice = createSlice({
 
 export const { actions, reducer }: any = currentSlice
 export const {
-  willConfirmArbitrators, willCreateStatementOfWork, didCreateStatementOfWork, willDraftStatementOfWork, willSubmitStatementOfWork, didSubmitStatementOfWork, 
+  willConfirmArbitrators, willCreateStatementOfWork, didCreateStatementOfWork, willDraftStatementOfWork, willSubmitStatementOfWork, didSubmitStatementOfWork,
   willUploadAttachment, didUploadAttachment, willDeleteAttachment,
   willGetSowsListSeller, didGetSowsListSeller, willGetSowsListBuyer, didGetSowsListBuyer, willGetSowsListArbitrator, didGetSowsListArbitrator,
   willSelectSow
 } = actions
 export const selectors = {
-  getArbitrators: (state: any) => state.statementOfWork.arbitrators,
+  getConfirmedArbitrators: (state: any) => state.statementOfWork.confirmedArbitrators,
   getCurrentSow: (state: any) => state.statementOfWork.currentSow,
   getListSowsSeller: (state: any) => state.statementOfWork.sowsAsSeller,
   getListSowsBuyer: (state: any) => state.statementOfWork.sowsAsBuyer,
