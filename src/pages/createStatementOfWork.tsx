@@ -113,7 +113,6 @@ export const CreateStatementOfWorkPage = () => {
             {({ errors, touched, setFieldValue, values }) => {
               return (
                 <Form>
-                  {values && console.log("values ", values)}
                   <FormGroup>
                     <Label for="sow">Sow</Label>
                     <Input disabled invalid={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
@@ -139,7 +138,7 @@ export const CreateStatementOfWorkPage = () => {
                     <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Milestone 1</CardSubtitle>
                     <FormGroup>
                       <Label for="description">Description *</Label>
-                      <DescriptionEditor description={currentSow.description ? currentSow.description : null} />
+                      <DescriptionEditor description={currentSow.description ? currentSow.description : ''} />
                       <Input hidden value={values.description} name={"description"} tag={Field} />
                       {errors.description && touched.description ? (
                         <FormFeedback className="d-block">{errors.description}</FormFeedback>
