@@ -54,7 +54,6 @@ function* willGenerateAlgoAccount() {
   try {
     const account = algosdk.generateAccount();
     console.log("result account: ", account)
-    // yield call(willAddPublicKey, {publicKey: account.addr})
     yield put(ProfileActions.didGenerateAlgoAccount(account));
   } catch (error) {
     console.log("willGenerateAlgoAccount error", error)

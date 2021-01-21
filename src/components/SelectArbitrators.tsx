@@ -19,7 +19,7 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
   const dispatch = useDispatch();
   const [currentArbitrator, setCurrentArbitrator] = React.useState({} as any);
   const [selectedArbitrators, setSelectedArbitrators] = React.useState([] as any);
-  const confirmedArbitrators = useSelector(SowSelectors.getArbitrators);
+  const confirmedArbitrators = useSelector(SowSelectors.getConfirmedArbitrators);
   const arbitratorsList = useSelector(ArbitratorSelectors.getArbitratorsList)
 
   const { values, setFieldValue } = useFormikContext();
@@ -42,7 +42,7 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
             <ListGroup>
               {arbitratorsList.map((element: any, index: any) => {
                 return (
-                  <ListGroupItem key={index} action onClick={() => setCurrentArbitrator(element)}>
+                  <ListGroupItem key={element.user} action onClick={() => setCurrentArbitrator(element)}>
                     <ArbitratorSummary arbitrator={element} />
                   </ListGroupItem>
                 )
@@ -55,12 +55,15 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
                 {currentArbitrator.given_name &&
                   <ListGroupItem>
                     <ArbitratorDetail arbitrator={currentArbitrator} />
-                    {selectedArbitrators.length < 3 ?
-                      <Button color="primary" onClick={() => {
-                        setSelectedArbitrators(update(selectedArbitrators, { $push: [currentArbitrator] }))
-                      }}>Add to arbitrators</Button>
+                    {selectedArbitrators.includes(currentArbitrator) ?
+                      <Button disabled block color="primary">Arbitrator added</Button>
                       :
-                      <ListGroupItemText>You reached the max number of arbitrators</ListGroupItemText>
+                      selectedArbitrators.length < 3 ?
+                        <Button block color="primary" onClick={() => {
+                          setSelectedArbitrators(update(selectedArbitrators, { $push: [currentArbitrator] }))
+                        }}>Add to arbitrators</Button>
+                        :
+                        <Button disabled block color="primary">Max number of Arbitrators selected</Button>
                     }
                   </ListGroupItem>}
               </Col>

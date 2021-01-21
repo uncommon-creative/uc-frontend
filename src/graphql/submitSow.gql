@@ -1,0 +1,47 @@
+mutation submitSow(
+  $sow: ID,
+  $arbitrators: [String],
+  $codeOfConduct: Boolean,
+  $currency: Currency,
+  $buyer: String,
+  $deadline: AWSDateTime,
+  $description: String,
+  $numberReviews: Int,
+  $price: Float,
+  $quantity: Int,
+  $tags: [String],
+  $termsOfService: Boolean,
+  $title: String
+) {
+  submitSow(
+    sow: $sow
+    arbitrators: $arbitrators,
+    codeOfConduct: $codeOfConduct,
+    currency: $currency,
+    buyer: $buyer,
+    deadline: $deadline,
+    description: $description,
+    numberReviews: $numberReviews,
+    price: $price,
+    quantity: $quantity,
+    tags: $tags,
+    termsOfService: $termsOfService,
+    title: $title
+  ) {
+    sow
+    arbitrators
+    codeOfConduct
+    currency
+    buyer
+    deadline
+    description
+    numberReviews
+    price
+    quantity
+    tags
+    termsOfService
+    title
+    createdAt
+    updatedAt
+  }
+}

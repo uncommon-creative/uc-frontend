@@ -1,13 +1,19 @@
-query getArbitrator{
-  getArbitrator{
+query getArbitrator(
+  $user: String
+  ){
+    getArbitrator(
+      user: $user
+    ) {
       user
       enabled
       fee {
-        feeType
-        value
+        flat
+        perc
       }
       currency
       tags
       reputation
+      given_name
+      family_name
   }
 }

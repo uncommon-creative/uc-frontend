@@ -15,7 +15,7 @@ export const ArbitratorDetail = ({ arbitrator }: any) => {
             <Badge pill>{arbitrator.reputation}</Badge></Col>
         </Row>
       </ListGroupItemHeading>
-      <ListGroupItemText>{arbitrator.fee.value + ' ' + arbitrator.currency + ' (' + arbitrator.fee.feeType + ')'}</ListGroupItemText>
+      <ListGroupItemText>{arbitrator.fee.flat + ' ' + arbitrator.currency + ' + ' + arbitrator.fee.perc + '%'}</ListGroupItemText>
       <Row>
         {arbitrator.tags.map((element: any, index: any) => {
           return (

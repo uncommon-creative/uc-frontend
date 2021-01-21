@@ -1,4 +1,4 @@
-mutation addSow(
+mutation draftSow(
   $sow: ID,
   $arbitrators: [String],
   $codeOfConduct: Boolean,
@@ -13,7 +13,7 @@ mutation addSow(
   $termsOfService: Boolean,
   $title: String
 ) {
-  addSow(
+  draftSow(
     sow: $sow
     arbitrators: $arbitrators,
     codeOfConduct: $codeOfConduct,
@@ -43,5 +43,6 @@ mutation addSow(
     title
     createdAt
     updatedAt
+    seller
   }
 }

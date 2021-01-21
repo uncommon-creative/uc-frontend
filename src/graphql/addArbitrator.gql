@@ -9,8 +9,8 @@ mutation addArbitrator(
     tags: $tags
   ) {
     fee {
-      feeType
-      value
+      flat
+      perc
     }
     currency
     tags

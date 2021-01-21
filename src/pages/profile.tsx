@@ -14,20 +14,22 @@ import * as Yup from 'yup';
 
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
+import { selectors as AuthSelectors } from '../store/slices/auth'
 import { ActivityButton } from '../components/ActivityButton'
+import { TagsInput } from '../components/TagsInput';
 
 const ArbitratorSettingsSchema = Yup.object().shape({
   enabled: Yup.bool()
     .required('Required'),
-  fee: Yup.number()
-    .min(1, 'Too Few!')
+  feePercentage: Yup.number()
+    .required('Required'),
+  feeFlat: Yup.number()
     .required('Required'),
   currency: Yup.string()
     .min(3, 'Too Short!')
     .required('Required'),
-  tags: Yup.string()
-    .min(3, 'Too Short!')
-    .max(50, 'Too Long!')
+  tags: Yup.array()
+    .min(1, 'At least one tag required!')
     .required('Required')
 });
 
@@ -36,20 +38,21 @@ export const ProfilePage = () => {
   const dispatch = useDispatch();
   let history = useHistory();
   const myArbitratorSettings = useSelector(ArbitratorSelectors.getMyArbitratorSettings)
-  const profile = useSelector(ProfileSelectors.getProfile)
+  const user = useSelector(AuthSelectors.getUser)
   const [dropdownCurrencyOpen, setDropdownCurrencyOpen] = React.useState(false);
-  const [dropdownFeeTypeOpen, setDropdownFeeTypeOpen] = React.useState(false);
   const [switchEnabled, setSwitchEnabled] = React.useState(false);
   const [feeCurrency, setFeeCurrency] = React.useState("ALGO");
-  const [feeType, setFeeType] = React.useState("fixed");
 
   const toggleDropDownCurrency = () => setDropdownCurrencyOpen(!dropdownCurrencyOpen);
-  const toggleDropDownFeeType = () => setDropdownFeeTypeOpen(!dropdownFeeTypeOpen);
   const toggleSwitchEnabled = (switchEnabled: any) => setSwitchEnabled(switchEnabled);
 
   React.useEffect(() => {
-    dispatch(ArbitratorActions.willGetArbitrator())
+    dispatch(ArbitratorActions.willGetArbitrator({user: user.username}))
   }, []);
+
+  React.useEffect(() => {
+    setSwitchEnabled(myArbitratorSettings ? myArbitratorSettings.enabled : false)
+  }, [myArbitratorSettings]);
 
   return (
     <Container>
@@ -65,11 +68,11 @@ export const ProfilePage = () => {
           <Formik
             enableReinitialize={true}
             initialValues={{
-              enabled: switchEnabled,
-              fee: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.value : '',
-              feeType: feeType,
+              enabled: myArbitratorSettings && myArbitratorSettings.hasOwnProperty('enabled') ? myArbitratorSettings.enabled : switchEnabled,
+              feePercentage: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.perc : '',
+              feeFlat: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.flat : '',
               currency: feeCurrency,
-              tags: myArbitratorSettings && myArbitratorSettings.tags ? myArbitratorSettings.tags.join(' ') : ''
+              tags: myArbitratorSettings && myArbitratorSettings.tags && myArbitratorSettings.tags.length ? myArbitratorSettings.tags.map((tag: any) => JSON.parse(tag)) : []
             }}
             validationSchema={ArbitratorSettingsSchema}
             validateOnBlur={true}
@@ -82,10 +85,11 @@ export const ProfilePage = () => {
               return (
                 <Form>
                   <Row>
-                    <Col className="col-md-4 col-12 offset-2">
+                    <Col className="col-md-2 col-12">
                       <FormGroup>
                         <Label for="enabled">Enabled</Label>
                         <CustomInput type="switch" name="enabled" id="enabled" tag={Field}
+                          checked={values.enabled}
                           onClick={(event: any) => {
                             toggleSwitchEnabled(event.target.checked)
                             setFieldValue('enabled', event.target.checked)
@@ -94,36 +98,11 @@ export const ProfilePage = () => {
 
                       </FormGroup>
                     </Col>
-                    <Col className="col-md-6 col-12 ">
+                    <Col className="col-md-7 col-12 ">
                       <FormGroup>
-                        <Label for="fee">Fee</Label>
+                        <Label for="feeFlat">Fee flat</Label>
                         <InputGroup>
-                          <InputGroupButtonDropdown disabled={!switchEnabled} addonType="prepend" isOpen={dropdownFeeTypeOpen} toggle={toggleDropDownFeeType}>
-                            <DropdownToggle caret>
-                              {feeType}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              <DropdownItem header>Select the fee type</DropdownItem>
-                              <DropdownItem disabled={feeType == "fixed"}
-                                onClick={() => {
-                                  setFieldValue('feeType', "fixed")
-                                  setFeeType("fixed")
-                                }}
-                              >
-                                FIXED
-                              </DropdownItem>
-                              <DropdownItem disabled={feeType == "percentage"}
-                                onClick={() => {
-                                  setFieldValue('feeType', "percentage")
-                                  setFeeType("percentage")
-                                }}
-                              >
-                                PERCENTAGE
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </InputGroupButtonDropdown>
-
-                          <Input disabled={!switchEnabled} invalid={errors.fee && touched.fee ? true : false} type="text" name="fee" id="fee" placeholder={"fee"} tag={Field} />
+                          <Input disabled={!switchEnabled} invalid={errors.feeFlat && touched.feeFlat ? true : false} type="text" name="feeFlat" id="feeFlat" placeholder={"fee flat"} tag={Field} />
 
                           <InputGroupButtonDropdown disabled={!switchEnabled} addonType="append" isOpen={dropdownCurrencyOpen} toggle={toggleDropDownCurrency}>
                             <DropdownToggle caret>
@@ -149,8 +128,19 @@ export const ProfilePage = () => {
                               </DropdownItem>
                             </DropdownMenu>
                           </InputGroupButtonDropdown>
-                          {errors.fee && touched.fee ? (
-                            <FormFeedback>{errors.fee}</FormFeedback>
+                          {errors.feeFlat && touched.feeFlat ? (
+                            <FormFeedback>{errors.feeFlat}</FormFeedback>
+                          ) : null}
+                        </InputGroup>
+                      </FormGroup>
+                    </Col>
+                    <Col className="col-md-3 col-12 ">
+                      <FormGroup>
+                        <Label for="feePercentage">Fee percentage</Label>
+                        <InputGroup>
+                          <Input disabled={!switchEnabled} invalid={errors.feePercentage && touched.feePercentage ? true : false} type="text" name="feePercentage" id="feePercentage" placeholder={"fee percentage"} tag={Field} />
+                          {errors.feePercentage && touched.feePercentage ? (
+                            <FormFeedback>{errors.feePercentage}</FormFeedback>
                           ) : null}
                         </InputGroup>
                       </FormGroup>
@@ -158,9 +148,10 @@ export const ProfilePage = () => {
                   </Row>
                   <FormGroup>
                     <Label for="tags">Tags</Label>
-                    <Input disabled={!switchEnabled} invalid={errors.tags && touched.tags ? true : false} type="text" name="tags" id="tags" placeholder="tags" tag={Field} />
+                    <TagsInput disabled={!switchEnabled} tags={myArbitratorSettings && myArbitratorSettings.tags ? myArbitratorSettings.tags : []} />
+                    {/* <Input disabled={!switchEnabled} invalid={errors.tags && touched.tags ? true : false} type="text" name="tags" id="tags" placeholder="tags" tag={Field} /> */}
                     {errors.tags && touched.tags ? (
-                      <FormFeedback>{errors.tags}</FormFeedback>
+                      <FormFeedback className="d-block">{errors.tags}</FormFeedback>
                     ) : null}
                   </FormGroup>
                   <Row>

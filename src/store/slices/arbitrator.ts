@@ -13,12 +13,19 @@ export const currentSlice = createSlice({
     willGetArbitratorsList: (state, action: PayloadAction<any>) => state,
     didGetArbitratorsList: (state, action: PayloadAction<any>) => void (state.arbitratorsList = action.payload.arbitrators),
 
+    willGetFullArbitratorsList: (state, action: PayloadAction<any>) => state,
+    didGetFullArbitratorsList: (state, action: PayloadAction<any>) => void (state.arbitratorsList = action.payload.arbitrators),
+
     willSaveArbitratorSettings: (state, action: PayloadAction<any>) => state,
   }
 })
 
 export const { actions, reducer }: any = currentSlice
-export const { willGetArbitrator, didGetArbitrator, willGetArbitratorsList, didGetArbitratorsList, willSaveArbitratorSettings } = actions
+export const {
+  willGetArbitrator, didGetArbitrator,
+  willGetArbitratorsList, didGetArbitratorsList, willGetFullArbitratorsList, didGetFullArbitratorsList,
+  willSaveArbitratorSettings
+} = actions
 export const selectors = {
   getMyArbitratorSettings: (state: any) => state.arbitrator.myArbitratorSettings,
   getArbitratorsList: (state: any) => state.arbitrator.arbitratorsList

@@ -13,6 +13,10 @@ function validateEmail(email: any) {
 }
 
 function TableData({ tabId, data }: any) {
+
+  const dispatch = useDispatch();
+  let history = useHistory();
+
   return (
     <Row>
       <Col sm="12">
@@ -25,6 +29,7 @@ function TableData({ tabId, data }: any) {
               {tabId != 1 && <th>Freelance</th>}
               <th>Deadline</th>
               <th>Total</th>
+              <th>Created at</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -32,7 +37,10 @@ function TableData({ tabId, data }: any) {
             {data.map((element: any) => {
               return (
                 <tr key={element.sow}>
-                  <th scope="row">{element.sow.substring(0, 5).toUpperCase()}</th>
+                  <th scope="row">
+                    {/* <Link to="/users" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Link> */}
+                    <Button color="link" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Button>
+                  </th>
                   <td>{element.title ? element.title : '-'}</td>
                   {tabId != 1 && <td>{
                     validateEmail(element.seller) ?
@@ -41,14 +49,18 @@ function TableData({ tabId, data }: any) {
                       element.seller.substring(0, 5).toUpperCase()
                   }</td>}
                   {tabId != 2 && <td>{element.buyer ?
-                    validateEmail(element.buyer) ?
-                      element.buyer
+                    element.buyer == 'not_set' ?
+                      '-'
                       :
-                      element.buyer.substring(0, 5).toUpperCase()
-                      : '-'
+                      validateEmail(element.buyer) ?
+                        element.buyer
+                        :
+                        element.buyer.substring(0, 5).toUpperCase()
+                    : '-'
                   }</td>}
                   <td>{element.deadline ? new Date(element.deadline).toLocaleDateString() : '-'}</td>
                   <td>{element.price ? element.price + ' ' + element.currency : '-'}</td>
+                  <td>{element.createdAt ? new Date(element.createdAt).toLocaleString() : '-'}</td>
                   <td>{element.status}</td>
                 </tr>
               )
@@ -75,6 +87,7 @@ export const HomePage = () => {
   }
 
   React.useEffect(() => {
+    dispatch(SowActions.willConfirmArbitrators({ arbitrators: [], toggle: () => {} }))
     dispatch(SowActions.willGetSowsListSeller())
     dispatch(SowActions.willGetSowsListBuyer())
     dispatch(SowActions.willGetSowsListArbitrator())
@@ -89,7 +102,6 @@ export const HomePage = () => {
           </div>
           <div className="col-12 col-sm-4">
             {activeTab == '1' &&
-              // <Button color="primary" className=" mt-sm-2 mx-auto" to="/create-statement-of-work" tag={Link}>new Statement Of Work</Button>
               <ActivityButton className="mt-sm-2 mx-auto" type="submit" name="createSow" color="primary"
                 onClick={() => dispatch(SowActions.willCreateStatementOfWork({ history: history }))}
               >new Statement Of Work</ActivityButton>

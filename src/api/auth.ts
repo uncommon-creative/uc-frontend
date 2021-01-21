@@ -70,7 +70,6 @@ export const signup = async (email: any, password: any, given_name: any, family_
         email,
         given_name,
         family_name
-        // 'custom:favorite_flavor': 'Cookie Dough'  // custom attribute, not standard
       }
     })
     console.log('with signup result: ', user)

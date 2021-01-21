@@ -12,6 +12,7 @@ import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
 import { ActivityButton } from '../components/ActivityButton'
+import { TagsInput } from '../components/TagsInput'
 import { SelectArbitrators } from '../components/SelectArbitrators'
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { SowAttachments } from '../components/SowAttachments'
@@ -29,12 +30,11 @@ const StatementOfWorkSchema = Yup.object().shape({
     .max(50, 'Too Long!')
     .required('Required'),
   title: Yup.string()
+    .test(`'Draft Title' is not accepted as a title!`, `'Draft Title' is not accepted as a title!`, (value) => value != 'Draft Title')
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
     .required('Required'),
   description: Yup.string()
-    .min(14, 'Too Short!')
-    .max(140, 'Too Long!')
     .required('Required'),
   quantity: Yup.number()
     .min(0, 'Too Few!')
@@ -48,9 +48,8 @@ const StatementOfWorkSchema = Yup.object().shape({
   deadline: Yup.date()
     .min(new Date().toISOString())
     .required('Required'),
-  tags: Yup.string()
-    .min(3, 'Too Short!')
-    .max(50, 'Too Long!')
+  tags: Yup.array()
+    .min(1, 'At least one tag required!')
     .required('Required'),
   numberReviews: Yup.number()
     .min(1, 'Too Few!')
@@ -71,13 +70,13 @@ export const CreateStatementOfWorkPage = () => {
 
   const dispatch = useDispatch();
   let history = useHistory();
+  const currentSow = useSelector(SowSelectors.getCurrentSow)
+  console.log("sow in CreateStatementOfWorkPage: ", currentSow)
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [modalOpen, setModalOpen] = React.useState(false);
-  const [priceCurrency, setPriceCurrency] = React.useState("ALGO");
-  const [deadlineValue, setDeadlineValue] = React.useState('');
-  const confirmedArbitrators = useSelector(SowSelectors.getArbitrators)
-  const sow = useSelector(SowSelectors.getSOW)
-  console.log("sow in CreateStatementOfWorkPage: ", sow)
+  const [priceCurrency, setPriceCurrency] = React.useState(currentSow.currency ? currentSow.currency : "ALGO");
+  const [deadlineValue, setDeadlineValue] = React.useState(currentSow.deadline ? currentSow.deadline : '');
+  const confirmedArbitrators = useSelector(SowSelectors.getConfirmedArbitrators)
 
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
   const toggleModal = () => setModalOpen(!modalOpen);
@@ -89,18 +88,17 @@ export const CreateStatementOfWorkPage = () => {
           <CardTitle tag="h5" className="text-center">Create Statement Of Work Page</CardTitle>
           <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Create a new Statement of Work</CardSubtitle>
           <Formik
-            enableReinitialize={true}
             initialValues={{
-              sow: sow.sow,
-              buyer: '',
-              title: '',
-              description: '',
-              quantity: '',
-              price: '',
+              sow: currentSow.sow ? currentSow.sow : '',
+              buyer: currentSow.buyer != 'not_set' ? currentSow.buyer : '',
+              title: currentSow.title ? currentSow.title : '',
+              description: currentSow.description ? currentSow.description : '',
+              quantity: currentSow.quantity ? currentSow.quantity : '',
+              price: currentSow.price ? currentSow.price : '',
               currency: priceCurrency,
-              deadline: '',
-              tags: '',
-              numberReviews: '',
+              deadline: currentSow.deadline ? currentSow.deadline : '',
+              tags: currentSow.tags.length ? currentSow.tags.map((tag: any) => JSON.parse(tag)) : currentSow.tags,
+              numberReviews: currentSow.numberReviews ? currentSow.numberReviews : '',
               termsOfService: false,
               codeOfConduct: false,
               arbitrators: confirmedArbitrators
@@ -115,22 +113,23 @@ export const CreateStatementOfWorkPage = () => {
             {({ errors, touched, setFieldValue, values }) => {
               return (
                 <Form>
+                  {values && console.log("values ", values)}
                   <FormGroup>
                     <Label for="sow">Sow</Label>
-                    <Input disabled invalsow={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
+                    <Input disabled invalid={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
                     {errors.sow && touched.sow ? (
                       <FormFeedback>{errors.sow}</FormFeedback>
                     ) : null}
                   </FormGroup>
                   <FormGroup>
-                    <Label for="email">Email Address</Label>
+                    <Label for="email">Email Address *</Label>
                     <Input invalid={errors.buyer && touched.buyer ? true : false} type="text" name="buyer" id="buyer" placeholder="customer email" tag={Field} />
                     {errors.buyer && touched.buyer ? (
                       <FormFeedback>{errors.buyer}</FormFeedback>
                     ) : null}
                   </FormGroup>
                   <FormGroup>
-                    <Label for="givenName">Title</Label>
+                    <Label for="givenName">Title *</Label>
                     <Input invalid={errors.title && touched.title ? true : false} type="text" name="title" id="title" placeholder="title" tag={Field} />
                     {errors.title && touched.title ? (
                       <FormFeedback>{errors.title}</FormFeedback>
@@ -139,8 +138,8 @@ export const CreateStatementOfWorkPage = () => {
                   <Jumbotron>
                     <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Milestone 1</CardSubtitle>
                     <FormGroup>
-                      <Label for="description">Description</Label>
-                      <DescriptionEditor />
+                      <Label for="description">Description *</Label>
+                      <DescriptionEditor description={currentSow.description ? currentSow.description : null} />
                       <Input hidden value={values.description} name={"description"} tag={Field} />
                       {errors.description && touched.description ? (
                         <FormFeedback className="d-block">{errors.description}</FormFeedback>
@@ -158,7 +157,7 @@ export const CreateStatementOfWorkPage = () => {
                       </Col>
                       <Col className="col-md-4 col-12">
                         <FormGroup>
-                          <Label for="price">Price</Label>
+                          <Label for="price">Price *</Label>
                           <InputGroup>
                             <Input invalid={errors.price && touched.price ? true : false} type="text" name="price" id="price" placeholder="price" tag={Field} />
                             <InputGroupButtonDropdown addonType="append" isOpen={dropdownOpen} toggle={toggleDropDown}>
@@ -193,7 +192,7 @@ export const CreateStatementOfWorkPage = () => {
                       </Col>
                       <Col className="col-md-4 col-12">
                         <FormGroup>
-                          <Label for="deadline">Deadline</Label>
+                          <Label for="deadline">Deadline *</Label>
                           <DatePicker name="deadline" id="deadline"
                             invalid={errors.deadline && touched.deadline ? true : false}
                             weekStartsOn={1}
@@ -204,7 +203,8 @@ export const CreateStatementOfWorkPage = () => {
                             onChange={(v: any, f: any) => {
                               setFieldValue("deadline", v)
                               setDeadlineValue(v)
-                            }} />
+                            }}
+                          />
                           {errors.deadline && touched.deadline ? (
                             <FormFeedback>{errors.deadline}</FormFeedback>
                           ) : null}
@@ -212,16 +212,18 @@ export const CreateStatementOfWorkPage = () => {
                       </Col>
                     </Row>
                     <FormGroup>
-                      <Label for="tags">Tags</Label>
-                      <Input invalid={errors.tags && touched.tags ? true : false} type="text" name="tags" id="tags" placeholder="tags" tag={Field} />
+                      <Label for="tags">Tags *</Label>
+                      <TagsInput tags={currentSow.tags} />
+
+                      {/* <Input invalid={errors.tags && touched.tags ? true : false} type="text" name="tags" id="tags" placeholder="tags" tag={Field} /> */}
                       {errors.tags && touched.tags ? (
-                        <FormFeedback>{errors.tags}</FormFeedback>
+                        <FormFeedback className="d-block">{errors.tags}</FormFeedback>
                       ) : null}
                     </FormGroup>
                     <Row>
                       <Col className="col-12">
                         <FormGroup>
-                          <Label for="numberReviews">Max number of reviews granted</Label>
+                          <Label for="numberReviews">Max number of reviews granted *</Label>
                           <Input invalid={errors.numberReviews && touched.numberReviews ? true : false} type="text" name="numberReviews" id="numberReviews" placeholder="max number of reviews granted" tag={Field} />
                           {errors.numberReviews && touched.numberReviews ? (
                             <FormFeedback>{errors.numberReviews}</FormFeedback>
@@ -231,17 +233,16 @@ export const CreateStatementOfWorkPage = () => {
                     </Row>
                     <Row>
                       <Col>
-                        <SowAttachments sow={sow.sow} />
+                        <SowAttachments sow={currentSow.sow} />
                       </Col>
                     </Row>
                   </Jumbotron>
 
                   <Jumbotron>
                     <FormGroup>
-                      <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Arbitrators</CardSubtitle>
+                      <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Arbitrators *</CardSubtitle>
                       <Row name="arbitrators" id="arbitrators">
                         {confirmedArbitrators.map((arbitrator: any, index: any) => {
-                          var length = Object.keys(arbitrator).length
                           return (
                             <Col>
                               <Card>
@@ -254,6 +255,7 @@ export const CreateStatementOfWorkPage = () => {
                       </Row>
                       <Row className="mt-2">
                         <Col className="col-6 offset-3">
+                          {/* <Button color="primary" block onClick={() => dispatch(SowActions.willConfirmArbitrators())}>Select the arbitrators</Button> */}
                           <Button color="primary" block onClick={toggleModal}>Select the arbitrators</Button>
                         </Col>
                       </Row>
@@ -282,7 +284,7 @@ export const CreateStatementOfWorkPage = () => {
                         }}
                       />
                       {errors.arbitrators && touched.arbitrators ? (
-                        <FormFeedback className="d-block">Three arbitrators required</FormFeedback>
+                        <FormFeedback className="d-block">{errors.arbitrators}</FormFeedback>
                       ) : null}
                     </FormGroup>
                   </Jumbotron>
@@ -291,8 +293,8 @@ export const CreateStatementOfWorkPage = () => {
                     <Label check>
                       <Input invalid={errors.termsOfService && touched.termsOfService ? true : false} name="termsOfService" id="termsOfService" type="checkbox"
                         onChange={(event) => setFieldValue("termsOfService", event.target.checked)}
-                      />Terms of Service
-                    {errors.termsOfService && touched.termsOfService ? (
+                      />Terms of Service *
+                      {errors.termsOfService && touched.termsOfService ? (
                         <FormFeedback>{errors.termsOfService}</FormFeedback>
                       ) : null}
                     </Label>
@@ -301,16 +303,17 @@ export const CreateStatementOfWorkPage = () => {
                     <Label check>
                       <Input invalid={errors.codeOfConduct && touched.codeOfConduct ? true : false} name="codeOfConduct" id="codeOfConduct" type="checkbox"
                         onChange={(event) => setFieldValue("codeOfConduct", event.target.checked)}
-                      />Code of Conduct
-                    {errors.codeOfConduct && touched.codeOfConduct ? (
+                      />Code of Conduct *
+                      {errors.codeOfConduct && touched.codeOfConduct ? (
                         <FormFeedback>{errors.codeOfConduct}</FormFeedback>
                       ) : null}
                     </Label>
                   </FormGroup>
                   <Row>
-                    <Col><ActivityButton type="submit" name="createSOW" color="primary" block>Submit Statement Of Work</ActivityButton></Col>
+                    <Col><ActivityButton type="submit" name="submitSow" color="primary" block>Submit Statement Of Work</ActivityButton></Col>
                   </Row>
                   <Row className="mt-2">
+                    <Col><Button color="primary" block outline name="draftSow" onClick={() => dispatch(SowActions.willDraftStatementOfWork({ sow: values, history: history }))}>Save draft</Button></Col>
                     <Col><Button color="primary" block to="/" outline tag={Link}>Cancel</Button></Col>
                   </Row>
                 </Form>

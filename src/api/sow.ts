@@ -17,7 +17,7 @@ export const createStatementOfWork = async () => {
   }
 }
 
-export const addStatementOfWork = async (
+export const draftStatementOfWork = async (
   sow: any,
   arbitrators: any,
   codeOfConduct: any,
@@ -33,7 +33,7 @@ export const addStatementOfWork = async (
   title: any
 ) => {
 
-  const mutation = loader('../graphql/addSow.gql')
+  const mutation = loader('../graphql/draftSow.gql')
 
   try {
     const result: any = await API.graphql(graphqlOperation(mutation, {
@@ -51,9 +51,52 @@ export const addStatementOfWork = async (
       termsOfService: termsOfService,
       title: title
     }))
-    return result.data.addSow
+    // console.log("draftSow result: ", result)
+    return result.data.draftSow
   } catch (error) {
-    console.log("addSow API error: ", error)
+    console.log("draftSow API error: ", error)
+    throw error
+  }
+}
+
+export const submitStatementOfWork = async (
+  sow: any,
+  arbitrators: any,
+  codeOfConduct: any,
+  currency: any,
+  buyer: any,
+  deadline: any,
+  description: any,
+  numberReviews: any,
+  price: any,
+  quantity: any,
+  tags: any,
+  termsOfService: any,
+  title: any
+) => {
+
+  const mutation = loader('../graphql/submitSow.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, {
+      sow: sow,
+      arbitrators: arbitrators,
+      codeOfConduct: codeOfConduct,
+      currency: currency,
+      buyer: buyer,
+      deadline: deadline,
+      description: description,
+      numberReviews: numberReviews,
+      price: price,
+      quantity: quantity,
+      tags: tags,
+      termsOfService: termsOfService,
+      title: title
+    }))
+    // console.log("submitSow rawResult: ", result)
+    return result.data.submitSow
+  } catch (error) {
+    console.log("submitSow API error: ", error)
     throw error
   }
 }
@@ -63,7 +106,7 @@ export const getUploadUrl = async (sow: any, attachmentName: any, expires: any, 
 
   try {
     const result: any = await API.graphql(graphqlOperation(query, { sow: sow, key: attachmentName, expires: expires, type: fileType }));
-    console.log('getUploadUrl with result: ', result);
+    // console.log('getUploadUrl with result: ', result);
     return result.data.getUploadUrl
   } catch (error) {
     throw error
@@ -75,7 +118,7 @@ export const uploadFileToS3 = async (url: any, file: any) => {
     const axiosResponse = await axios.put(url, file, {
       headers: { 'Content-Type': file.type, 'x-amz-acl': 'private' }
     });
-    console.log("uploadFileToS3 axiosResponse: ", axiosResponse)
+    // console.log("uploadFileToS3 axiosResponse: ", axiosResponse)
   } catch (error) {
     console.log(error)
   }
@@ -86,7 +129,7 @@ export const deleteAttachment = async (fileName: any, sow: any) => {
 
   try {
     const result: any = await API.graphql(graphqlOperation(mutation, { key: fileName, sow: sow }))
-    console.log("in deleteAttachment result: ", result)
+    // console.log("in deleteAttachment result: ", result)
     return result.data.deleteAttachment
   } catch (error) {
     console.log("deleteAttachment API error: ", error)

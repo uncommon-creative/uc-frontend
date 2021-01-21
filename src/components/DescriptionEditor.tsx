@@ -1,15 +1,23 @@
 import * as React from 'react';
 import { useFormikContext } from 'formik';
 import { Editor } from 'react-draft-wysiwyg';
-import { EditorState, convertToRaw } from 'draft-js';
+import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 var _ = require('lodash');
 
-export const DescriptionEditor = () => {
+export const DescriptionEditor = ({ description }: any) => {
 
-  const [editorState, setEditorState] = React.useState(EditorState.createEmpty())
+  let editorStateCB = EditorState.createEmpty()
+  const contentBlock = htmlToDraft(description);
+  if (contentBlock) {
+    const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
+    editorStateCB = EditorState.createWithContent(contentState);
+  }
+
+  const [editorState, setEditorState] = React.useState(editorStateCB)
 
   const { values, setFieldValue } = useFormikContext();
 

@@ -27,7 +27,7 @@ function* checkAuthentication() {
   console.log('in check auth onLoad: ', result);
   if (result) {
     const user = yield call(AuthApi.getAuthenticatedUser);
-    yield put(AuthActions.didLoginUserSuccess(user));
+    yield put(AuthActions.didLoginUserSuccess({user: user}));
   } else {
     yield put(AuthActions.didLoginUserFails({}));
   }
@@ -63,7 +63,7 @@ function* willLoginUser(action: any) {
   try {
     const result = yield call(AuthApi.login, action.payload.email, action.payload.password)
     console.log("result: ", result)
-    yield put(AuthActions.didLoginUserSuccess({ result: result, history: action.payload.history }));
+    yield put(AuthActions.didLoginUserSuccess({ user: result, history: action.payload.history }));
     action.payload.history.push("/")
   } catch (error) {
     yield put(AuthActions.didLoginUserFails(error));

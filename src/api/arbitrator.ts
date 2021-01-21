@@ -1,14 +1,15 @@
 import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
 import * as _ from 'lodash';
+const axios = require('axios')
 
-export const getArbitrator = async () => {
-  const query = loader('../graphql/getFullArbitrator.gql');
+export const getArbitrator = async (user: any) => {
+  const query = loader('../graphql/getArbitrator.gql');
 
   try {
-    const rawResult: any = await API.graphql({ query: query });
-    // console.log('getArbitrator with rawResult: ', rawResult);
-    return rawResult.data.getFullArbitrator
+    const rawResult: any = await API.graphql(graphqlOperation(query, { user: user }));
+    console.log('getArbitrator with rawResult: ', rawResult);
+    return rawResult.data.getArbitrator
 
   } catch (error) {
     throw error
@@ -25,6 +26,17 @@ export const getArbitratorsList = async () => {
 
   } catch (error) {
     throw error
+  }
+}
+
+export const getFullArbitratorsList = async () => {
+  const url = "https://dbyc3f5xvj.execute-api.eu-west-1.amazonaws.com/dev/arbitrators"
+  try {
+    const axiosResponse = await axios.get(url);
+    // console.log("getFullArbitratorsList axiosResponse: ", axiosResponse)
+    return axiosResponse.data.arbitratorsList
+  } catch (error) {
+    console.log(error)
   }
 }
 
