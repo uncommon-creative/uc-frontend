@@ -75,7 +75,7 @@ export const CreateStatementOfWorkPage = () => {
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [priceCurrency, setPriceCurrency] = React.useState(currentSow.currency ? currentSow.currency : "ALGO");
-  const [deadlineValue, setDeadlineValue] = React.useState('');
+  const [deadlineValue, setDeadlineValue] = React.useState(currentSow.deadline ? currentSow.deadline : '');
   const confirmedArbitrators = useSelector(SowSelectors.getConfirmedArbitrators)
 
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
@@ -113,6 +113,7 @@ export const CreateStatementOfWorkPage = () => {
             {({ errors, touched, setFieldValue, values }) => {
               return (
                 <Form>
+                  {values && console.log("values ", values)}
                   <FormGroup>
                     <Label for="sow">Sow</Label>
                     <Input disabled invalid={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
@@ -138,7 +139,7 @@ export const CreateStatementOfWorkPage = () => {
                     <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Milestone 1</CardSubtitle>
                     <FormGroup>
                       <Label for="description">Description *</Label>
-                      <DescriptionEditor />
+                      <DescriptionEditor description={currentSow.description ? currentSow.description : null} />
                       <Input hidden value={values.description} name={"description"} tag={Field} />
                       {errors.description && touched.description ? (
                         <FormFeedback className="d-block">{errors.description}</FormFeedback>
