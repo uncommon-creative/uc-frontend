@@ -10,6 +10,7 @@ var _ = require('lodash');
 
 export const DescriptionEditor = ({ description }: any) => {
 
+
   let editorStateCB = EditorState.createEmpty()
   const contentBlock = htmlToDraft(description);
   if (contentBlock) {
