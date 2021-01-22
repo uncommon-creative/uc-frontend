@@ -175,3 +175,16 @@ export const getSowsListArbitrator = async () => {
     throw error
   }
 }
+
+export const getSowAttachmentsList = async (sow: any) => {
+  const query = loader('../graphql/listSowAttachments.gql');
+  console.log("in getSowAttachmentsList sow: ", sow)
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(query, { sow: sow }));
+    console.log('listSowAttachments with result: ', result);
+    return result.data.listSowAttachments.attachments
+  } catch (error) {
+    throw error
+  }
+}

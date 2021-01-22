@@ -37,6 +37,9 @@ export const currentSlice = createSlice({
     didGetSowsListArbitrator: (state, action: PayloadAction<any>) => void (state.sowsAsArbitrator = action.payload.sows),
 
     willSelectSow: (state, action: PayloadAction<any>) => void (state.currentSow = action.payload.sow),
+
+    willGetSowAttachmentsList: (state, action: PayloadAction<any>) => state,
+    didGetSowAttachmentsList: (state, action: PayloadAction<any>) => void (state.attachments = action.payload),
   }
 })
 
@@ -45,12 +48,13 @@ export const {
   willConfirmArbitrators, willCreateStatementOfWork, didCreateStatementOfWork, willDraftStatementOfWork, willSubmitStatementOfWork, didSubmitStatementOfWork,
   willUploadAttachment, didUploadAttachment, willDeleteAttachment,
   willGetSowsListSeller, didGetSowsListSeller, willGetSowsListBuyer, didGetSowsListBuyer, willGetSowsListArbitrator, didGetSowsListArbitrator,
-  willSelectSow
+  willSelectSow, willGetSowAttachmentsList, didGetSowAttachmentsList
 } = actions
 export const selectors = {
   getConfirmedArbitrators: (state: any) => state.statementOfWork.confirmedArbitrators,
   getCurrentSow: (state: any) => state.statementOfWork.currentSow,
   getListSowsSeller: (state: any) => state.statementOfWork.sowsAsSeller,
   getListSowsBuyer: (state: any) => state.statementOfWork.sowsAsBuyer,
-  getListSowsArbitrator: (state: any) => state.statementOfWork.sowsAsArbitrator
+  getListSowsArbitrator: (state: any) => state.statementOfWork.sowsAsArbitrator,
+  getAttachments: (state: any) => state.statementOfWork.attachments
 }
