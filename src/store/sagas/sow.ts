@@ -18,6 +18,7 @@ export function* sagas() {
   yield takeLatest(SowActions.willGetSowsListBuyer.type, willGetSowsListBuyer)
   yield takeLatest(SowActions.willGetSowsListArbitrator.type, willGetSowsListArbitrator)
   yield takeLatest(SowActions.willSelectSow.type, willSelectSow)
+  yield takeLatest(SowActions.willGetSowAttachmentsList.type, willGetSowAttachmentsList)
   console.log('in sow saga');
 }
 
@@ -204,13 +205,32 @@ function* willSelectSow(action: any) {
     }
   }
   console.log("in willSelectSow with fullArbitrators: ", fullArbitrators)
+  yield put(SowActions.willConfirmArbitrators({ arbitrators: fullArbitrators, toggle: () => { } }))
+
+
+  let attachments = yield call(SowApi.getSowAttachmentsList, action.payload.sow.sow);
+  attachments = attachments.map((attachment: any) => attachment.key.split('/'))
+  yield put(SowActions.didGetSowAttachmentsList(attachments))
 
   if (action.payload.sow.status == "DRAFT") {
     console.log("sow DRAFT")
-    yield put(SowActions.willConfirmArbitrators({ arbitrators: fullArbitrators, toggle: () => { } }))
     action.payload.history.push('/create-statement-of-work')
   }
   else if (action.payload.sow.status == "SUBMITTED") {
     console.log("sow SUBMITTED")
+    action.payload.history.push('/statement-of-work')
+  }
+}
+
+function* willGetSowAttachmentsList(action: any) {
+  console.log("in willGetSowAttachmentsList with: ", action)
+
+  try {
+    const result = yield call(SowApi.getSowAttachmentsList, action.payload.sow);
+    console.log("result willGetSowAttachmentsList: ", result)
+    yield put(SowActions.didGetSowAttachmentsList(result))
+
+  } catch (error) {
+    console.log("error in willGetSowAttachmentsList ", error)
   }
 }

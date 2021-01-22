@@ -19,6 +19,7 @@ import { SignupConfirmPage } from './pages/signupConfirm'
 import { ProfilePage } from './pages/profile'
 import { CreateAlgoAccountPage } from './pages/createAlgoAccount'
 import { CreateStatementOfWorkPage } from './pages/createStatementOfWork'
+import { StatementOfWorkPage } from './pages/statementOfWork'
 import { ArbitratorsListPage } from './pages/arbitratorsList'
 
 import { selectors as AuthSelectors } from './store/slices/auth'
@@ -93,6 +94,9 @@ export const AppRouter = () => {
           </PrivateRoute>
           <PrivateRoute path="/create-statement-of-work">
             <CreateStatementOfWorkPage />
+          </PrivateRoute>
+          <PrivateRoute path="/statement-of-work">
+            <StatementOfWorkPage />
           </PrivateRoute>
           <PrivateRoute path="/" >
             <HomePage />

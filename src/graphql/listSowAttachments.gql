@@ -1,0 +1,13 @@
+query listSowAttachments(
+  $sow: ID
+){
+  listSowAttachments(
+    sow: $sow
+  ){
+    attachments {
+      key
+      size
+    }
+    nextToken
+  }
+}
