@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
+import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { ChatSow } from '../components/ChatSow'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
@@ -124,17 +125,21 @@ export const StatementOfWorkPage = () => {
                     {currentSow.seller == user.username ?
                       <Button block color="primary" onClick={() => {
                         console.log("Claim milestone met")
+                        dispatch(ChatActions.willSendCommandChat({ values: "Claim milestone met", sow: currentSow.sow }));
                       }}>Claim milestone met</Button>
                       :
                       <>
                         <Button block color="primary" onClick={() => {
                           console.log("Require review")
+                          dispatch(ChatActions.willSendCommandChat({ values: "Require review", sow: currentSow.sow }));
                         }}>Require review</Button>
                         <Button block color="primary" onClick={() => {
                           console.log("Reject")
+                          dispatch(ChatActions.willSendCommandChat({ values: "Reject", sow: currentSow.sow }));
                         }}>Reject</Button>
                         <Button block color="primary" onClick={() => {
                           console.log("Accept milestone")
+                          dispatch(ChatActions.willSendCommandChat({ values: "Accept milestone", sow: currentSow.sow }));
                         }}>Accept milestone</Button>
                       </>
                     }
@@ -149,7 +154,6 @@ export const StatementOfWorkPage = () => {
                       return (
                         <ListGroupItem key={index}>
                           <ListGroupItemHeading>
-
                             <UploadFileButton name={attachment[1]} />
                           </ListGroupItemHeading>
                         </ListGroupItem>

@@ -1,3 +1,4 @@
+import { useDispatch, useSelector } from "react-redux";
 import {
   ListGroupItemHeading, ListGroupItem, ListGroupItemText, Badge,
   Row, Col, Card, CardText,
@@ -8,6 +9,9 @@ import * as Yup from 'yup';
 
 import { ActivityButton } from '../components/ActivityButton'
 import { SowAttachments } from '../components/SowAttachments'
+import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
+import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
+import { selectors as AuthSelectors } from '../store/slices/auth'
 
 const MessageSchema = Yup.object().shape({
   message: Yup.string()
@@ -17,6 +21,10 @@ const MessageSchema = Yup.object().shape({
 export const ChatSow = ({ currentSow }: any) => {
 
   console.log("in ChatSow sow: ", currentSow)
+
+  const dispatch = useDispatch()
+  const user = useSelector(AuthSelectors.getUser)
+
   return (
     <>
       <Card>
@@ -32,7 +40,7 @@ export const ChatSow = ({ currentSow }: any) => {
         validateOnBlur={true}
         onSubmit={values => {
           console.log('in onsubmit with: ', values)
-          // dispatch(SowActions.willSubmitStatementOfWork({ sow: values, history: history }));
+          dispatch(ChatActions.willSendTextChat({ values: values, sow: currentSow.sow }));
         }}
       >
         {({ errors, touched, setFieldValue, values }) => {
@@ -46,7 +54,7 @@ export const ChatSow = ({ currentSow }: any) => {
                 ) : null}
               </FormGroup>
               <Row>
-                <Col><ActivityButton type="submit" name="sendMessage" color="primary" block>Send message</ActivityButton></Col>
+                <Col><ActivityButton type="submit" name="sendMessageChat" color="primary" block>Send message</ActivityButton></Col>
               </Row>
               {/* <SowAttachments sow={currentSow.sow} /> */}
             </Form>

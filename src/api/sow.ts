@@ -178,7 +178,6 @@ export const getSowsListArbitrator = async () => {
 
 export const getSowAttachmentsList = async (sow: any) => {
   const query = loader('../graphql/listSowAttachments.gql');
-  console.log("in getSowAttachmentsList sow: ", sow)
 
   try {
     const result: any = await API.graphql(graphqlOperation(query, { sow: sow }));
