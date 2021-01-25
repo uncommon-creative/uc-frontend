@@ -5,6 +5,7 @@ import { reducer as notificationReducer } from './slices/notification'
 import { reducer as uiReducer } from './slices/ui'
 import { reducer as sowReducer } from './slices/sow'
 import { reducer as arbitratorReducer } from './slices/arbitrator'
+import { reducer as chatReducer } from './slices/chat'
 import { connectRouter } from 'connected-react-router'
 
 export const createRootReducer = (history: any) => combineReducers({
@@ -14,5 +15,6 @@ export const createRootReducer = (history: any) => combineReducers({
   notification: notificationReducer,
   ui: uiReducer,
   statementOfWork: sowReducer,
-  arbitrator: arbitratorReducer
+  arbitrator: arbitratorReducer,
+  chat: chatReducer
 })

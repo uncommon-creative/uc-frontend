@@ -4,6 +4,7 @@ import { push } from 'connected-react-router'
 import * as SowApi from '../../api/sow'
 import { actions as SowActions } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
+import { actions as ChatActions } from '../slices/chat'
 import { actions as UIActions } from '../slices/ui'
 import * as ArbitratorApi from '../../api/arbitrator'
 
@@ -218,6 +219,9 @@ function* willSelectSow(action: any) {
   }
   else if (action.payload.sow.status == "SUBMITTED") {
     console.log("sow SUBMITTED")
+
+    // yield put(ChatActions.willReadSowChat, action.payload.sow.sow)
+    
     action.payload.history.push('/statement-of-work')
   }
 }
