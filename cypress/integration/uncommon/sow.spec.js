@@ -1,12 +1,6 @@
-describe('Open site', () => {
-  it('Visits the Site', () => {
-    cy.visit(Cypress.env('host'))
-  })
-})
-
-describe('User Mng', () => {
+describe('Create sow', () => {
   it('Login User on the site', () => {
-    // cy.visit(Cypress.env('host'))
+    cy.visit(Cypress.env('host'))
 
     // Get an input, type into it and verify that the value has been updated
     cy.get('[data-cy=email]')
@@ -23,5 +17,17 @@ describe('User Mng', () => {
     assert.exists(cy.contains("Welcome"), 'user logged successfully')
   })
 
+  it('Create sow', () => {
+    cy.wait(2000)
+    cy.get('[data-cy=createSow]').contains('new Statement Of Work').click()
 
+    cy.wait(2000)
+
+    cy.get('[data-cy="inputSowID"]')
+      .should('not.be.empty')
+
+    cy.get('[data-cy=inputSowTitle]')
+    .should('have.value', 'Draft Title')
+    // assert.exists(cy.contains("Welcome"), 'user logged successfully')
+  })
 })

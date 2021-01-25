@@ -102,7 +102,7 @@ export const HomePage = () => {
           </div>
           <div className="col-12 col-sm-4">
             {activeTab == '1' &&
-              <ActivityButton className="mt-sm-2 mx-auto" type="submit" name="createSow" color="primary"
+              <ActivityButton data-cy="createSow" className="mt-sm-2 mx-auto" type="submit" name="createSow" color="primary"
                 onClick={() => dispatch(SowActions.willCreateStatementOfWork({ history: history }))}
               >new Statement Of Work</ActivityButton>
             }
