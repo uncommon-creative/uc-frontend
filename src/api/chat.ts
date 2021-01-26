@@ -8,7 +8,7 @@ export const listSowChatMessages = async (sow: any) => {
 
   try {
     const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow }))
-    console.log("listSowChatMessages result: ", result)
+    // console.log("listSowChatMessages result: ", result)
     return result.data.listSowChatMessages
   } catch (error) {
     console.log("listSowChatMessages API error: ", error)
