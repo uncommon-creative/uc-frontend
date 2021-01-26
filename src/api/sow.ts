@@ -5,6 +5,7 @@ const axios = require('axios')
 
 export const createStatementOfWork = async () => {
   const mutation = loader('../graphql/createSow.gql')
+  console.log("createSow API mutation: ", mutation)
 
   try {
     const result: any = await API.graphql(graphqlOperation(mutation))

@@ -21,7 +21,7 @@ describe('Create sow', () => {
     cy.wait(2000)
     cy.get('[data-cy=createSow]').contains('new Statement Of Work').click()
 
-    cy.wait(2000)
+    // cy.wait(2000)
 
     cy.get('[data-cy="inputSowID"]')
       .should('not.be.empty')
