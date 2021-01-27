@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   ListGroupItemHeading, ListGroupItem, ListGroupItemText, Badge,
-  Row, Col, Card, CardText,
+  Row, Col, Card, CardText, Container,
   FormText, FormGroup, Input, Label, FormFeedback,
 } from 'reactstrap';
 import * as Yup from 'yup';
@@ -29,38 +29,42 @@ export const ChatSow = ({ currentSow }: any) => {
 
   return (
     <>
-      <Card>
-        {
-          messages.map((msg: any, index: any) => {
-            return (
-              <>
-                {/* <Avatar
+      <Row style={{ overflow: 'scroll', height: '500px' }}>
+        <Col className="col-12">
+          <Card >
+            {
+              messages.map((msg: any, index: any) => {
+                return (
+                  <>
+                    {/* <Avatar
                   src={'https://facebook.github.io/react/img/logo.svg'}
                   alt={msg.from == currentSow.seller ? 'S' : msg.from == currentSow.buyer ? 'B' : msg.from == currentSow.arbitrator && 'A'}
                   size="small"
                   type="circle flexible" /> */}
 
-                <MessageBox
-                  data-cy='messageChat21981'
-                  className='chatMessage'
-                  title={msg.from}
-                  position={user.username == msg.from ? 'right' : 'left'}
-                  type={msg.type == 'TEXT' && 'text'}
-                  text={msg.textMessage && msg.textMessage.message}
-                  date={new Date(msg.createdAt)}
-                  data={{
-                    status: {
-                      click: false,
-                      loading: 0,
-                    }
-                  }}
-                />
-              </>
-            )
-          }
-          )
-        }
-      </Card>
+                    <MessageBox
+                      data-cy='messageChat21981'
+                      className='chatMessage'
+                      title={msg.from}
+                      position={user.username == msg.from ? 'right' : 'left'}
+                      type={msg.type == 'TEXT' && 'text'}
+                      text={msg.textMessage && msg.textMessage.message}
+                      date={new Date(msg.createdAt)}
+                      data={{
+                        status: {
+                          click: false,
+                          loading: 0,
+                        }
+                      }}
+                    />
+                  </>
+                )
+              }
+              )
+            }
+          </Card>
+        </Col>
+      </Row>
 
       <Row>
         <Col className="col-10">
