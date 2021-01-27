@@ -16,15 +16,28 @@ export const listSowChatMessages = async (sow: any) => {
   }
 }
 
-export const sendMessageChat = async (message: any, sow: any, type: any) => {
+export const sendTextChat = async (message: any, sow: any, type: any) => {
   const mutation = loader('../graphql/sendSowChatMessage.gql')
 
   try {
     const result: any = await API.graphql(graphqlOperation(mutation, { textMessage: { message: message }, sow: sow, type: type }))
-    // console.log("sendMessageChat result: ", result)
+    // console.log("sendTextChat result: ", result)
     return result.data.sendSowChatMessage
   } catch (error) {
-    console.log("sendMessageChat API error: ", error)
+    console.log("sendTextChat API error: ", error)
+    throw error
+  }
+}
+
+export const sendCommandChat = async (command: any, sow: any, type: any) => {
+  const mutation = loader('../graphql/sendSowChatMessage.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { commandMessage: { command: command }, sow: sow, type: type }))
+    console.log("sendCommandChat result: ", result)
+    return result.data.sendSowChatMessage
+  } catch (error) {
+    console.log("sendCommandChat API error: ", error)
     throw error
   }
 }

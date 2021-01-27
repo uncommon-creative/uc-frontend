@@ -45,8 +45,8 @@ export const ChatSow = ({ currentSow }: any) => {
                   className='chatMessage'
                   title={msg.from}
                   position={user.username == msg.from ? 'right' : 'left'}
-                  type={msg.type == 'TEXT' && 'text'}
-                  text={msg.textMessage && msg.textMessage.message}
+                  type={(msg.type == 'TEXT' || msg.type == 'COMMAND') && 'text'}
+                  text={msg.textMessage ? msg.textMessage.message : msg.commandMessage && msg.commandMessage.command}
                   date={new Date(msg.createdAt)}
                   data={{
                     status: {

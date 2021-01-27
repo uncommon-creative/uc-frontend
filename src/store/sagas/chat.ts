@@ -30,7 +30,7 @@ function* willSendTextChat(action: any) {
   console.log("in willSendTextChat with: ", action)
 
   try {
-    const result = yield call(ChatApi.sendMessageChat, action.payload.values.message, action.payload.sow.sow, 'TEXT');
+    const result = yield call(ChatApi.sendTextChat, action.payload.values.message, action.payload.sow.sow, 'TEXT');
     console.log("result willSendTextChat: ", result)
 
     yield call(willReadSowChat, { payload: action.payload })
@@ -43,15 +43,15 @@ function* willSendTextChat(action: any) {
 
 function* willSendCommandChat(action: any) {
   console.log("in willSendCommandChat with: ", action)
-  yield put(UIActions.startActivityRunning('sendMessageChat'));
+  yield put(UIActions.startActivityRunning(action.payload.values.command));
 
   try {
-    const result = yield call(ChatApi.sendMessageChat, action.payload.values.message, action.payload.sow, 'TEXT');
+    const result = yield call(ChatApi.sendCommandChat, action.payload.values.command, action.payload.sow, 'COMMAND');
     console.log("result willSendCommandChat: ", result)
 
 
   } catch (error) {
     console.log("error in willSendCommandChat ", error)
   }
-  yield put(UIActions.stopActivityRunning('sendMessageChat'));
+  yield put(UIActions.stopActivityRunning(action.payload.values.command));
 }

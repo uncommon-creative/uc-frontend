@@ -217,7 +217,7 @@ function* willSelectSow(action: any) {
     console.log("sow DRAFT")
     action.payload.history.push('/create-statement-of-work')
   }
-  else if (action.payload.sow.status == "SUBMITTED") {
+  else/*  if (action.payload.sow.status == "SUBMITTED") */ {
     console.log("sow SUBMITTED")
 
     // yield put(ChatActions.willReadSowChat, action.payload.sow.sow)

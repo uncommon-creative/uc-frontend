@@ -114,6 +114,14 @@ export const StatementOfWorkPage = () => {
                         <CardText color="primary">{new Date(currentSow.updatedAt).toLocaleDateString()}</CardText>
                       </Col>
                     </Row>
+                    <Row>
+                      <Col className="col-12 col-lg-4">
+                        <CardText>Status:</CardText>
+                      </Col>
+                      <Col className="col-12 col-lg-8 text-lg-right">
+                        <CardText color="primary">{currentSow.status}</CardText>
+                      </Col>
+                    </Row>
 
                   </Jumbotron>
                 </Col>
@@ -123,23 +131,23 @@ export const StatementOfWorkPage = () => {
                   <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Special commands</CardSubtitle>
                   <Jumbotron>
                     {currentSow.seller == user.username ?
-                      <Button block color="primary" onClick={() => {
+                      <Button block color="primary" name="CLAIM_MILESTONE_MET" onClick={() => {
                         console.log("Claim milestone met")
-                        dispatch(ChatActions.willSendCommandChat({ values: "Claim milestone met", sow: currentSow.sow }));
+                        dispatch(ChatActions.willSendCommandChat({ values: { command: "CLAIM_MILESTONE_MET" }, sow: currentSow.sow }));
                       }}>Claim milestone met</Button>
                       :
                       <>
-                        <Button block color="primary" onClick={() => {
+                        <Button block color="primary" name="REQUIRE_REVIEW" onClick={() => {
                           console.log("Require review")
-                          dispatch(ChatActions.willSendCommandChat({ values: "Require review", sow: currentSow.sow }));
+                          dispatch(ChatActions.willSendCommandChat({ values: { command: "REQUIRE_REVIEW" }, sow: currentSow.sow }));
                         }}>Require review</Button>
-                        <Button block color="primary" onClick={() => {
+                        <Button block color="primary" name="REJECT" onClick={() => {
                           console.log("Reject")
-                          dispatch(ChatActions.willSendCommandChat({ values: "Reject", sow: currentSow.sow }));
+                          dispatch(ChatActions.willSendCommandChat({ values: { command: "REJECT" }, sow: currentSow.sow }));
                         }}>Reject</Button>
-                        <Button block color="primary" onClick={() => {
+                        <Button block color="primary" name="ACCEPT_MILESTONE" onClick={() => {
                           console.log("Accept milestone")
-                          dispatch(ChatActions.willSendCommandChat({ values: "Accept milestone", sow: currentSow.sow }));
+                          dispatch(ChatActions.willSendCommandChat({ values: { command: "ACCEPT_MILESTONE" }, sow: currentSow.sow }));
                         }}>Accept milestone</Button>
                       </>
                     }
