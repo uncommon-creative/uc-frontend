@@ -7,7 +7,7 @@ import {
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
+import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
@@ -131,24 +131,40 @@ export const StatementOfWorkPage = () => {
                   <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Special commands</CardSubtitle>
                   <Jumbotron>
                     {currentSow.seller == user.username ?
-                      <Button block color="primary" name="CLAIM_MILESTONE_MET" onClick={() => {
-                        console.log("Claim milestone met")
-                        dispatch(ChatActions.willSendCommandChat({ values: { command: "CLAIM_MILESTONE_MET" }, sow: currentSow.sow }));
-                      }}>Claim milestone met</Button>
+                      <>
+                        {(currentSow.status == SowStatus.ACCEPTED_PAID || currentSow.status == SowStatus.REVIEW_REQUIRED) &&
+                          <Button block color="primary" name={SowCommands.CLAIM_MILESTONE_MET} onClick={() => {
+                            console.log("Claim milestone met")
+                            dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: currentSow }));
+                          }}>Claim milestone met</Button>
+                        }
+                      </>
                       :
                       <>
-                        <Button block color="primary" name="REQUIRE_REVIEW" onClick={() => {
-                          console.log("Require review")
-                          dispatch(ChatActions.willSendCommandChat({ values: { command: "REQUIRE_REVIEW" }, sow: currentSow.sow }));
-                        }}>Require review</Button>
-                        <Button block color="primary" name="REJECT" onClick={() => {
-                          console.log("Reject")
-                          dispatch(ChatActions.willSendCommandChat({ values: { command: "REJECT" }, sow: currentSow.sow }));
-                        }}>Reject</Button>
-                        <Button block color="primary" name="ACCEPT_MILESTONE" onClick={() => {
-                          console.log("Accept milestone")
-                          dispatch(ChatActions.willSendCommandChat({ values: { command: "ACCEPT_MILESTONE" }, sow: currentSow.sow }));
-                        }}>Accept milestone</Button>
+                        {currentSow.status == SowStatus.SUBMITTED &&
+                          <Button block color="primary" name={SowCommands.ACCEPT_AND_PAY} onClick={() => {
+                            console.log("Accept and pay")
+                            dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_AND_PAY }, sow: currentSow }));
+                          }}>Accept and pay</Button>
+                        }
+                        {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
+                          <Button block color="primary" name={SowCommands.REQUEST_REVIEW} onClick={() => {
+                            console.log("Request review")
+                            dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REQUEST_REVIEW }, sow: currentSow }));
+                          }}>Request review</Button>
+                        }
+                        {(currentSow.status == SowStatus.SUBMITTED || currentSow.status == SowStatus.MILESTONE_CLAIMED)&&
+                          <Button block color="primary" name={SowCommands.REJECT} onClick={() => {
+                            console.log("Reject")
+                            dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REJECT }, sow: currentSow }));
+                          }}>Reject</Button>
+                        }
+                        {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
+                          <Button block color="primary" name={SowCommands.ACCEPT_MILESTONE} onClick={() => {
+                            console.log("Accept milestone")
+                            dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_MILESTONE }, sow: currentSow }));
+                          }}>Accept milestone</Button>
+                        }
                       </>
                     }
                   </Jumbotron>

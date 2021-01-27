@@ -20,6 +20,7 @@ export function* sagas() {
   yield takeLatest(SowActions.willGetSowsListArbitrator.type, willGetSowsListArbitrator)
   yield takeLatest(SowActions.willSelectSow.type, willSelectSow)
   yield takeLatest(SowActions.willGetSowAttachmentsList.type, willGetSowAttachmentsList)
+  yield takeLatest(SowActions.willGetSow.type, willGetSow)
   console.log('in sow saga');
 }
 
@@ -236,5 +237,18 @@ function* willGetSowAttachmentsList(action: any) {
 
   } catch (error) {
     console.log("error in willGetSowAttachmentsList ", error)
+  }
+}
+
+function* willGetSow(action: any) {
+  console.log("in willGetSow with: ", action)
+
+  try {
+    const result = yield call(SowApi.getSow, action.payload.sow);
+    console.log("result willGetSow: ", result)
+    yield put(SowActions.didGetSow(result))
+
+  } catch (error) {
+    console.log("error in willGetSow ", error)
   }
 }

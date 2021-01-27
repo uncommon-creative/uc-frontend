@@ -46,10 +46,12 @@ function* willSendCommandChat(action: any) {
   yield put(UIActions.startActivityRunning(action.payload.values.command));
 
   try {
-    const result = yield call(ChatApi.sendCommandChat, action.payload.values.command, action.payload.sow, 'COMMAND');
+    const result = yield call(ChatApi.sendCommandChat, action.payload.values.command, action.payload.sow.sow, 'COMMAND');
     console.log("result willSendCommandChat: ", result)
 
+    yield call(willReadSowChat, { payload: action.payload })
 
+    yield put(SowActions.willGetSow({ sow: action.payload.sow.sow }))
   } catch (error) {
     console.log("error in willSendCommandChat ", error)
   }

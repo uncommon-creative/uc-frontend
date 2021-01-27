@@ -40,6 +40,9 @@ export const currentSlice = createSlice({
 
     willGetSowAttachmentsList: (state, action: PayloadAction<any>) => state,
     didGetSowAttachmentsList: (state, action: PayloadAction<any>) => void (state.attachments = action.payload),
+
+    willGetSow: (state, action: PayloadAction<any>) => state,
+    didGetSow: (state, action: PayloadAction<any>) => void (state.currentSow = action.payload),
   }
 })
 
@@ -48,7 +51,7 @@ export const {
   willConfirmArbitrators, willCreateStatementOfWork, didCreateStatementOfWork, willDraftStatementOfWork, willSubmitStatementOfWork, didSubmitStatementOfWork,
   willUploadAttachment, didUploadAttachment, willDeleteAttachment,
   willGetSowsListSeller, didGetSowsListSeller, willGetSowsListBuyer, didGetSowsListBuyer, willGetSowsListArbitrator, didGetSowsListArbitrator,
-  willSelectSow, willGetSowAttachmentsList, didGetSowAttachmentsList
+  willSelectSow, willGetSowAttachmentsList, didGetSowAttachmentsList, willGetSow, didGetSow
 } = actions
 export const selectors = {
   getConfirmedArbitrators: (state: any) => state.statementOfWork.confirmedArbitrators,
@@ -57,4 +60,23 @@ export const selectors = {
   getListSowsBuyer: (state: any) => state.statementOfWork.sowsAsBuyer,
   getListSowsArbitrator: (state: any) => state.statementOfWork.sowsAsArbitrator,
   getAttachments: (state: any) => state.statementOfWork.attachments
+}
+
+export enum SowStatus {
+  DRAFT = 'DRAFT',
+  SUBMITTED = 'SUBMITTED',
+  MILESTONE_ACCEPTED = 'MILESTONE_ACCEPTED',
+  MILESTONE_CLAIMED = 'MILESTONE_CLAIMED',
+  REJECTED = 'REJECTED',
+  REVIEW_REQUIRED = 'REVIEW_REQUIRED',
+  DISPUTED = 'DISPUTED',
+  ACCEPTED_PAID = 'ACCEPTED_PAID'
+}
+
+export enum SowCommands {
+  ACCEPT_MILESTONE = 'ACCEPT_MILESTONE',
+  CLAIM_MILESTONE_MET = 'CLAIM_MILESTONE_MET',
+  REJECT = 'REJECT',
+  REQUEST_REVIEW = 'REQUEST_REVIEW',
+  ACCEPT_AND_PAY = 'ACCEPT_AND_PAY'
 }

@@ -182,8 +182,21 @@ export const getSowAttachmentsList = async (sow: any) => {
 
   try {
     const result: any = await API.graphql(graphqlOperation(query, { sow: sow }));
-    console.log('listSowAttachments with result: ', result);
+    // console.log('listSowAttachments with result: ', result);
     return result.data.listSowAttachments.attachments
+  } catch (error) {
+    throw error
+  }
+}
+
+
+export const getSow = async (sow: any) => {
+  const query = loader('../graphql/getSow.gql');
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(query, { sow: sow }));
+    // console.log('getSow with result: ', result);
+    return result.data.getSow
   } catch (error) {
     throw error
   }
