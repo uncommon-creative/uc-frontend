@@ -39,7 +39,7 @@ function TableData({ tabId, data }: any) {
                 <tr key={element.sow}>
                   <th scope="row">
                     {/* <Link to="/users" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Link> */}
-                    <Button color="link" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Button>
+                    <Button data-cy='submittedSow21981' color="link" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Button>
                   </th>
                   <td>{element.title ? element.title : '-'}</td>
                   {tabId != 1 && <td>{
@@ -61,7 +61,7 @@ function TableData({ tabId, data }: any) {
                   <td>{element.deadline ? new Date(element.deadline).toLocaleDateString() : '-'}</td>
                   <td>{element.price ? element.price + ' ' + element.currency : '-'}</td>
                   <td>{element.createdAt ? new Date(element.createdAt).toLocaleString() : '-'}</td>
-                  <td>{element.status}</td>
+                  <td data-cy='submittedSowStatus21981'>{element.status}</td>
                 </tr>
               )
             })}
@@ -102,7 +102,7 @@ export const HomePage = () => {
           </div>
           <div className="col-12 col-sm-4">
             {activeTab == '1' &&
-              <ActivityButton className="mt-sm-2 mx-auto" type="submit" name="createSow" color="primary"
+              <ActivityButton data-cy="createSow" className="mt-sm-2 mx-auto" type="submit" name="createSow" color="primary"
                 onClick={() => dispatch(SowActions.willCreateStatementOfWork({ history: history }))}
               >new Statement Of Work</ActivityButton>
             }

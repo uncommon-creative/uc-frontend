@@ -1,6 +1,6 @@
 {
   "env": {
-    "host": "http://localhost:3000",
+    "host": "http://localhost:9200",
     "description": "This is my local machine!",
     "user": "e2e-test@radixsites.org"
   }

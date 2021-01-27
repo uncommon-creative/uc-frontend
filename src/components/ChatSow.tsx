@@ -1,58 +1,90 @@
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   ListGroupItemHeading, ListGroupItem, ListGroupItemText, Badge,
   Row, Col, Card, CardText,
   FormText, FormGroup, Input, Label, FormFeedback,
 } from 'reactstrap';
-import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import 'react-chat-elements/dist/main.css';
+import { MessageBox, MessageList, Input as InputChatElements, Button, Avatar } from 'react-chat-elements';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
+
 
 import { ActivityButton } from '../components/ActivityButton'
 import { SowAttachments } from '../components/SowAttachments'
-
-const MessageSchema = Yup.object().shape({
-  message: Yup.string()
-    .required('Required')
-});
+import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
+import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
+import { selectors as AuthSelectors } from '../store/slices/auth'
 
 export const ChatSow = ({ currentSow }: any) => {
 
   console.log("in ChatSow sow: ", currentSow)
+
+  const dispatch = useDispatch()
+  const message = useSelector(ChatSelectors.getMessage)
+  const user = useSelector(AuthSelectors.getUser)
+  const messages = useSelector(ChatSelectors.getMessages)
+
   return (
     <>
       <Card>
-        <CardText name="sow">message one</CardText>
-        <CardText name="sow">message two</CardText>
-        <CardText name="sow">message three</CardText>
-      </Card>
-      <Formik
-        initialValues={{
-          message: ''
-        }}
-        validationSchema={MessageSchema}
-        validateOnBlur={true}
-        onSubmit={values => {
-          console.log('in onsubmit with: ', values)
-          // dispatch(SowActions.willSubmitStatementOfWork({ sow: values, history: history }));
-        }}
-      >
-        {({ errors, touched, setFieldValue, values }) => {
-          return (
-            <Form>
-              <FormGroup>
-                {/* <Label for="message">Message</Label> */}
-                <Input invalid={errors.message && touched.message ? true : false} type="text" name="message" id="message" placeholder="message" tag={Field} />
-                {errors.message && touched.message ? (
-                  <FormFeedback>{errors.message}</FormFeedback>
-                ) : null}
-              </FormGroup>
-              <Row>
-                <Col><ActivityButton type="submit" name="sendMessage" color="primary" block>Send message</ActivityButton></Col>
-              </Row>
-              {/* <SowAttachments sow={currentSow.sow} /> */}
-            </Form>
+        {
+          messages.map((msg: any, index: any) => {
+            return (
+              <>
+                {/* <Avatar
+                  src={'https://facebook.github.io/react/img/logo.svg'}
+                  alt={msg.from == currentSow.seller ? 'S' : msg.from == currentSow.buyer ? 'B' : msg.from == currentSow.arbitrator && 'A'}
+                  size="small"
+                  type="circle flexible" /> */}
+
+                <MessageBox
+                  data-cy='messageChat21981'
+                  className='chatMessage'
+                  title={msg.from}
+                  position={user.username == msg.from ? 'right' : 'left'}
+                  type={msg.type == 'TEXT' && 'text'}
+                  text={msg.textMessage && msg.textMessage.message}
+                  date={new Date(msg.createdAt)}
+                  data={{
+                    status: {
+                      click: false,
+                      loading: 0,
+                    }
+                  }}
+                />
+              </>
+            )
+          }
           )
-        }}
-      </Formik>
+        }
+      </Card>
+
+      <Row>
+        <Col className="col-10">
+          <Input
+            data-cy='messageInput21981'
+            value={message}
+            placeholder="Type here..."
+            multiline={true}
+            onChange={(event: any) => {
+              dispatch(ChatActions.willWriteMessage(event.target.value))
+            }}
+          />
+        </Col>
+        <Col className="col-2">
+          <ActivityButton data-cy='sendMessage21981' type="submit" name="sendMessageChat" color="primary" block
+            onClick={() => {
+              console.log('in onsubmit with: ', message)
+              dispatch(ChatActions.willSendTextChat({ values: { message: message }, sow: currentSow }));
+            }}
+          >
+            <FontAwesomeIcon icon={faPaperPlane} />
+          </ActivityButton>
+        </Col>
+      </Row>
     </>
   )
 }

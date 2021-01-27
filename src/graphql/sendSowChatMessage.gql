@@ -1,0 +1,17 @@
+mutation sendSowChatMessage(
+  $sow: ID
+  $textMessage: TextMessageInput
+  $attachmentMessage: SowAttachMessageInput
+  $commandMessage: SowCommandMessageInput
+  $type: SowChatMessageType
+  $modified: Boolean
+) {
+  sendSowChatMessage(
+    sow: $sow,
+    textMessage: $textMessage,
+    attachmentMessage: $attachmentMessage,
+    commandMessage: $commandMessage,
+    type: $type,
+    modified: $modified,
+  ) 
+}

@@ -1,0 +1,27 @@
+query listSowChatMessages(
+  $sow: ID
+){
+  listSowChatMessages(
+    sow: $sow
+  ){
+    messages {
+      createdAt
+      sow
+      messageId
+      textMessage {
+        message
+      }
+      attachmentMessage {
+        key
+        size
+      }
+      commandMessage {
+        command
+      }
+      type
+      modified
+      from
+    }
+    nextToken
+  }
+}

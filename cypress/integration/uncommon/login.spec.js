@@ -6,7 +6,6 @@ describe('Open site', () => {
 
 describe('User Mng', () => {
   it('Login User on the site', () => {
-    cy.visit(Cypress.env('host'))
 
     // Get an input, type into it and verify that the value has been updated
     cy.get('[data-cy=email]')
