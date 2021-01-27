@@ -18,6 +18,11 @@ import { actions as SowActions, selectors as SowSelectors } from '../store/slice
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 
+function updateScroll() {
+  var element: any = document.getElementById("chatMessages");
+  element.scrollTop = element.scrollHeight;
+}
+
 export const ChatSow = ({ currentSow }: any) => {
 
   console.log("in ChatSow sow: ", currentSow)
@@ -27,9 +32,13 @@ export const ChatSow = ({ currentSow }: any) => {
   const user = useSelector(AuthSelectors.getUser)
   const messages = useSelector(ChatSelectors.getMessages)
 
+  React.useEffect(() => {
+    updateScroll()
+  }, [messages]);
+
   return (
     <>
-      <Row style={{ overflow: 'scroll', height: '500px' }}>
+      <Row id='chatMessages' style={{ overflow: 'scroll', height: '500px' }}>
         <Col className="col-12">
           <Card >
             {
