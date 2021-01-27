@@ -4,7 +4,7 @@ describe('Chat', () => {
     cy.login()
     cy.wait(2000)
 
-    cy.get('[data-cy=submittedSowStatus21981]').contains('SUBMITTED')
+    cy.get('[data-cy=submittedSowStatus21981]').not('DRAFT')
     cy.get('[data-cy=submittedSow21981]').contains('21981').click()
 
     cy.get('[data-cy=messageInput21981]')

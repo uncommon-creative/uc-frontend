@@ -28,10 +28,6 @@ export const StatementOfWorkPage = () => {
   const attachments = useSelector(SowSelectors.getAttachments);
   const user = useSelector(AuthSelectors.getUser)
 
-  React.useEffect(() => {
-
-  }, []);
-
   return (
     <Container>
       <Card>

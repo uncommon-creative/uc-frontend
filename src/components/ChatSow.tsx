@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   ListGroupItemHeading, ListGroupItem, ListGroupItemText, Badge,
-  Row, Col, Card, CardText,
+  Row, Col, Card, CardText, Container,
   FormText, FormGroup, Input, Label, FormFeedback,
 } from 'reactstrap';
 import * as Yup from 'yup';
@@ -18,6 +18,11 @@ import { actions as SowActions, selectors as SowSelectors } from '../store/slice
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 
+function updateScroll() {
+  var element: any = document.getElementById("chatMessages");
+  element.scrollTop = element.scrollHeight;
+}
+
 export const ChatSow = ({ currentSow }: any) => {
 
   console.log("in ChatSow sow: ", currentSow)
@@ -27,40 +32,48 @@ export const ChatSow = ({ currentSow }: any) => {
   const user = useSelector(AuthSelectors.getUser)
   const messages = useSelector(ChatSelectors.getMessages)
 
+  React.useEffect(() => {
+    updateScroll()
+  }, [messages]);
+
   return (
     <>
-      <Card>
-        {
-          messages.map((msg: any, index: any) => {
-            return (
-              <>
-                {/* <Avatar
+      <Row id='chatMessages' style={{ overflow: 'scroll', height: '500px' }}>
+        <Col className="col-12">
+          <Card >
+            {
+              messages.map((msg: any, index: any) => {
+                return (
+                  <>
+                    {/* <Avatar
                   src={'https://facebook.github.io/react/img/logo.svg'}
                   alt={msg.from == currentSow.seller ? 'S' : msg.from == currentSow.buyer ? 'B' : msg.from == currentSow.arbitrator && 'A'}
                   size="small"
                   type="circle flexible" /> */}
 
-                <MessageBox
-                  data-cy='messageChat21981'
-                  className='chatMessage'
-                  title={msg.from}
-                  position={user.username == msg.from ? 'right' : 'left'}
-                  type={(msg.type == 'TEXT' || msg.type == 'COMMAND') && 'text'}
-                  text={msg.textMessage ? msg.textMessage.message : msg.commandMessage && msg.commandMessage.command}
-                  date={new Date(msg.createdAt)}
-                  data={{
-                    status: {
-                      click: false,
-                      loading: 0,
-                    }
-                  }}
-                />
-              </>
-            )
-          }
-          )
-        }
-      </Card>
+                    <MessageBox
+                      data-cy='messageChat21981'
+                      className='chatMessage'
+                      title={msg.from}
+                      position={user.username == msg.from ? 'right' : 'left'}
+                      type={(msg.type == 'TEXT' || msg.type == 'COMMAND') && 'text'}
+                      text={msg.textMessage ? msg.textMessage.message : msg.commandMessage && msg.commandMessage.command}
+                      date={new Date(msg.createdAt)}
+                      data={{
+                        status: {
+                          click: false,
+                          loading: 0,
+                        }
+                      }}
+                    />
+                  </>
+                )
+              }
+              )
+            }
+          </Card>
+        </Col>
+      </Row>
 
       <Row>
         <Col className="col-10">
