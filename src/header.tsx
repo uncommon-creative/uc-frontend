@@ -20,6 +20,7 @@ export const Header = ({ className }: any) => {
   const isAuthenticated = useSelector(AuthSelectors.isAuthenticated);
   const userAttributes = useSelector(ProfileSelectors.getProfile)
   const dispatch = useDispatch()
+  
   return (
     <Navbar className={className} color="primary" light expand="md">
       <NavbarBrand href="/">Uncommon Creative</NavbarBrand>

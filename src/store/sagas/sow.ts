@@ -4,6 +4,7 @@ import { push } from 'connected-react-router'
 import * as SowApi from '../../api/sow'
 import { actions as SowActions } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
+import { actions as ChatActions } from '../slices/chat'
 import { actions as UIActions } from '../slices/ui'
 import * as ArbitratorApi from '../../api/arbitrator'
 
@@ -50,7 +51,7 @@ function* willCreateStatementOfWork(action: any) {
     yield put(push("/create-statement-of-work"))
   } catch (error) {
     console.log("error in willCreateStatementOfWork ", error)
-    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
+    yield put(NotificationActions.willShowNotification({ message: error, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning("createSow"));
 }
@@ -216,8 +217,11 @@ function* willSelectSow(action: any) {
     console.log("sow DRAFT")
     action.payload.history.push('/create-statement-of-work')
   }
-  else if (action.payload.sow.status == "SUBMITTED") {
+  else /* if (action.payload.sow.status == "SUBMITTED") */ {
     console.log("sow SUBMITTED")
+
+    // yield put(ChatActions.willReadSowChat, action.payload.sow.sow)
+    
     action.payload.history.push('/statement-of-work')
   }
 }

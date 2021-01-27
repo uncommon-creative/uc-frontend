@@ -115,7 +115,7 @@ export const CreateStatementOfWorkPage = () => {
                 <Form>
                   <FormGroup>
                     <Label for="sow">Sow</Label>
-                    <Input disabled invalid={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
+                    <Input data-cy="inputSowID" disabled invalid={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
                     {errors.sow && touched.sow ? (
                       <FormFeedback>{errors.sow}</FormFeedback>
                     ) : null}
@@ -129,7 +129,7 @@ export const CreateStatementOfWorkPage = () => {
                   </FormGroup>
                   <FormGroup>
                     <Label for="givenName">Title *</Label>
-                    <Input invalid={errors.title && touched.title ? true : false} type="text" name="title" id="title" placeholder="title" tag={Field} />
+                    <Input data-cy="inputSowTitle" invalid={errors.title && touched.title ? true : false} type="text" name="title" id="title" placeholder="title" tag={Field} />
                     {errors.title && touched.title ? (
                       <FormFeedback>{errors.title}</FormFeedback>
                     ) : null}
