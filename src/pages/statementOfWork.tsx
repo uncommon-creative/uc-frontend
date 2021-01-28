@@ -7,7 +7,7 @@ import {
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
+import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
@@ -110,6 +110,14 @@ export const StatementOfWorkPage = () => {
                         <CardText color="primary">{new Date(currentSow.updatedAt).toLocaleDateString()}</CardText>
                       </Col>
                     </Row>
+                    <Row>
+                      <Col className="col-12 col-lg-4">
+                        <CardText>Status:</CardText>
+                      </Col>
+                      <Col className="col-12 col-lg-8 text-lg-right">
+                        <CardText color="primary">{currentSow.status}</CardText>
+                      </Col>
+                    </Row>
 
                   </Jumbotron>
                 </Col>
@@ -118,25 +126,42 @@ export const StatementOfWorkPage = () => {
                 <Col className="col-12">
                   <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Special commands</CardSubtitle>
                   <Jumbotron>
-                    {currentSow.seller == user.username ?
-                      <Button block color="primary" onClick={() => {
-                        console.log("Claim milestone met")
-                        dispatch(ChatActions.willSendCommandChat({ values: "Claim milestone met", sow: currentSow.sow }));
-                      }}>Claim milestone met</Button>
-                      :
+                    {currentSow.seller == user.username &&
                       <>
-                        <Button block color="primary" onClick={() => {
-                          console.log("Require review")
-                          dispatch(ChatActions.willSendCommandChat({ values: "Require review", sow: currentSow.sow }));
-                        }}>Require review</Button>
-                        <Button block color="primary" onClick={() => {
-                          console.log("Reject")
-                          dispatch(ChatActions.willSendCommandChat({ values: "Reject", sow: currentSow.sow }));
-                        }}>Reject</Button>
-                        <Button block color="primary" onClick={() => {
-                          console.log("Accept milestone")
-                          dispatch(ChatActions.willSendCommandChat({ values: "Accept milestone", sow: currentSow.sow }));
-                        }}>Accept milestone</Button>
+                        {(currentSow.status == SowStatus.ACCEPTED_PAID || currentSow.status == SowStatus.REVIEW_REQUIRED) &&
+                          <Button data-cy={SowCommands.CLAIM_MILESTONE_MET} block color="primary" name={SowCommands.CLAIM_MILESTONE_MET} onClick={() => {
+                            console.log("Claim milestone met")
+                            dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: currentSow }));
+                          }}>Claim milestone met</Button>
+                        }
+                      </>
+                    }
+                    {currentSow.buyer == user.username &&
+                      <>
+                        {currentSow.status == SowStatus.SUBMITTED &&
+                          <Button data-cy={SowCommands.ACCEPT_AND_PAY} block color="primary" name={SowCommands.ACCEPT_AND_PAY} onClick={() => {
+                            console.log("Accept and pay")
+                            dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_AND_PAY }, sow: currentSow }));
+                          }}>Accept and pay</Button>
+                        }
+                        {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
+                          <Button data-cy={SowCommands.REQUEST_REVIEW} block color="primary" name={SowCommands.REQUEST_REVIEW} onClick={() => {
+                            console.log("Request review")
+                            dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REQUEST_REVIEW }, sow: currentSow }));
+                          }}>Request review</Button>
+                        }
+                        {(currentSow.status == SowStatus.SUBMITTED || currentSow.status == SowStatus.MILESTONE_CLAIMED) &&
+                          <Button data-cy={SowCommands.REJECT} block color="primary" name={SowCommands.REJECT} onClick={() => {
+                            console.log("Reject")
+                            dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REJECT }, sow: currentSow }));
+                          }}>Reject</Button>
+                        }
+                        {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
+                          <Button data-cy={SowCommands.ACCEPT_MILESTONE} block color="primary" name={SowCommands.ACCEPT_MILESTONE} onClick={() => {
+                            console.log("Accept milestone")
+                            dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_MILESTONE }, sow: currentSow }));
+                          }}>Accept milestone</Button>
+                        }
                       </>
                     }
                   </Jumbotron>

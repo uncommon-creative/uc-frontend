@@ -51,9 +51,11 @@ export const ProfilePage = () => {
   }, []);
 
   React.useEffect(() => {
+    console.log("in useEffect myArbitratorSettings: ", myArbitratorSettings)
     setSwitchEnabled(myArbitratorSettings ? myArbitratorSettings.enabled : false)
   }, [myArbitratorSettings]);
 
+  console.log("not in useEffect myArbitratorSettings: ", myArbitratorSettings)
   return (
     <Container>
       <Card>

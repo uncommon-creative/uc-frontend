@@ -9,8 +9,8 @@ describe('User Mng', () => {
 
     // Get an input, type into it and verify that the value has been updated
     cy.get('[data-cy=email]')
-      .type(Cypress.env('user'))
-      .should('have.value', Cypress.env('user'))
+      .type(Cypress.env('userSeller'))
+      .should('have.value', Cypress.env('userSeller'))
 
     // Get an input, type into it and verify that the value has been updated
     cy.get('[data-cy=password]')

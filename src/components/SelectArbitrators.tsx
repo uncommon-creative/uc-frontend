@@ -59,7 +59,7 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
                       <Button disabled block color="primary">Arbitrator added</Button>
                       :
                       selectedArbitrators.length < 3 ?
-                        <Button block color="primary" onClick={() => {
+                        <Button data-cy='inputSowArbitratorsAdd' block color="primary" onClick={() => {
                           setSelectedArbitrators(update(selectedArbitrators, { $push: [currentArbitrator] }))
                         }}>Add to arbitrators</Button>
                         :
@@ -88,7 +88,7 @@ export const SelectArbitrators = ({ modal, toggle }: any) => {
         </Row>
       </ModalBody>
       <ModalFooter>
-        <ActivityButton disabled={selectedArbitrators.length == 3 ? false : true} name="confirmArbitrators" color="primary" onClick={() => {
+        <ActivityButton data-cy='inputSowArbitratorsConfirm' disabled={selectedArbitrators.length == 3 ? false : true} name="confirmArbitrators" color="primary" onClick={() => {
           setFieldValue('arbitrators', selectedArbitrators)
           dispatch(SowActions.willConfirmArbitrators({ arbitrators: update(selectedArbitrators, {}), toggle: toggle }))
         }}>Confirm arbitrators</ActivityButton>

@@ -10,13 +10,13 @@
 //
 //
 // -- This is a parent command --
-Cypress.Commands.add("login", () => {
+Cypress.Commands.add("login", (user) => {
   cy.visit(Cypress.env('host'))
 
   // Get an input, type into it and verify that the value has been updated
   cy.get('[data-cy=email]')
-    .type(Cypress.env('user'))
-    .should('have.value', Cypress.env('user'))
+    .type(user)
+    .should('have.value', user)
 
   // Get an input, type into it and verify that the value has been updated
   cy.get('[data-cy=password]')
@@ -26,6 +26,15 @@ Cypress.Commands.add("login", () => {
   cy.get('[data-cy=login]').contains('Login').click()
 
   assert.exists(cy.contains("Welcome"), 'user logged successfully')
+})
+
+Cypress.Commands.add("logout", () => {
+
+  cy.get('[data-cy=headerProfileToggler]').click()
+  cy.wait(1000)
+  cy.get('[data-cy=logout]').contains('Logout').click()
+
+  assert.exists(cy.contains("Login Page"), 'user logged out successfully')
 })
 //
 //

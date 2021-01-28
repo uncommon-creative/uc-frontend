@@ -1,0 +1,26 @@
+query getSow(
+  $sow: ID
+){
+  getSow(
+    sow: $sow
+  ) {
+    sow
+    arbitrators
+    codeOfConduct
+    currency
+    deadline
+    description
+    numberReviews
+    price
+    quantity
+    tags
+    termsOfService
+    title
+    status
+    buyer
+    seller
+    arbitrator
+    createdAt
+    updatedAt
+  }
+}
