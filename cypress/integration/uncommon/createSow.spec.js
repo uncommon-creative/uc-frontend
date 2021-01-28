@@ -1,7 +1,7 @@
 describe('Statement of Work', () => {
 
   it('Create sow', () => {
-    cy.login(Cypress.env('user'))
+    cy.login(Cypress.env('userSeller'))
     cy.wait(2000)
 
     cy.get('[data-cy=createSow]').contains('new Statement Of Work').click()
