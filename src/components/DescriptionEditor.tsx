@@ -34,6 +34,7 @@ export const DescriptionEditor = ({ description }: any) => {
 
   return (
     <Editor
+      data-cy="inputSowDescription" 
       wrapperStyle={{ border: "1px solid #ced4da", borderRadius: '0.25rem' }}
       toolbarStyle={{ borderTop: 0, borderLeft: 0, borderRight: 0 }}
       editorStyle={{ padding: "0.375rem 0.75rem", height: 200 }}

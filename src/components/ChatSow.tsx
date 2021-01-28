@@ -52,7 +52,7 @@ export const ChatSow = ({ currentSow }: any) => {
                   type="circle flexible" /> */}
 
                     <MessageBox
-                      data-cy='messageChat21981'
+                      data-cy='messageChat'
                       className='chatMessage'
                       title={msg.from}
                       position={user.username == msg.from ? 'right' : 'left'}
@@ -78,7 +78,7 @@ export const ChatSow = ({ currentSow }: any) => {
       <Row>
         <Col className="col-10">
           <Input
-            data-cy='messageInput21981'
+            data-cy='messageInput'
             value={message}
             placeholder="Type here..."
             multiline={true}
@@ -88,7 +88,7 @@ export const ChatSow = ({ currentSow }: any) => {
           />
         </Col>
         <Col className="col-2">
-          <ActivityButton data-cy='sendMessage21981' type="submit" name="sendMessageChat" color="primary" block
+          <ActivityButton data-cy='sendMessage' type="submit" name="sendMessageChat" color="primary" block
             onClick={() => {
               console.log('in onsubmit with: ', message)
               dispatch(ChatActions.willSendTextChat({ values: { message: message }, sow: currentSow }));

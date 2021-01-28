@@ -8,7 +8,7 @@ export const ArbitratorSummary = ({ arbitrator }: any) => {
     <>
       <ListGroupItemHeading>
         <Row>
-          <Col className="col-md-9 col-12">
+          <Col data-cy='inputSowArbitratorsSelect' className="col-md-9 col-12">
             {arbitrator.given_name} {arbitrator.family_name}
           </Col>
           <Col className="col-md-3 col-12">

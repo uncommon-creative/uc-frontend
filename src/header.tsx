@@ -36,7 +36,7 @@ export const Header = ({ className }: any) => {
 
           {isAuthenticated ? (
             <UncontrolledDropdown nav inNavbar>
-              <DropdownToggle nav caret>{userAttributes.given_name} {userAttributes.family_name}</DropdownToggle>
+              <DropdownToggle data-cy='headerProfileToggler' nav caret>{userAttributes.given_name} {userAttributes.family_name}</DropdownToggle>
               <DropdownMenu right>
                 <DropdownItem header>Email: {userAttributes.email}</DropdownItem>
                 <DropdownItem header>AL: {userAttributes.public_key}</DropdownItem>
@@ -44,7 +44,7 @@ export const Header = ({ className }: any) => {
                 <DropdownItem divider />
                 <DropdownItem tag={Link} to="/profile">Profile</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem onClick={() => {
+                <DropdownItem data-cy='logout' onClick={() => {
                   dispatch(AuthActions.willLogoutUser());
                 }}>Logout</DropdownItem>
 

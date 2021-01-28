@@ -39,7 +39,7 @@ function TableData({ tabId, data }: any) {
                 <tr key={element.sow}>
                   <th scope="row">
                     {/* <Link to="/users" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Link> */}
-                    <Button data-cy='submittedSow21981' color="link" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Button>
+                    <Button data-cy='submittedSow' color="link" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Button>
                   </th>
                   <td>{element.title ? element.title : '-'}</td>
                   {tabId != 1 && <td>{
@@ -61,7 +61,7 @@ function TableData({ tabId, data }: any) {
                   <td>{element.deadline ? new Date(element.deadline).toLocaleDateString() : '-'}</td>
                   <td>{element.price ? element.price + ' ' + element.currency : '-'}</td>
                   <td>{element.createdAt ? new Date(element.createdAt).toLocaleString() : '-'}</td>
-                  <td data-cy='submittedSowStatus21981'>{element.status}</td>
+                  <td data-cy='submittedSowStatus'>{element.status}</td>
                 </tr>
               )
             })}
@@ -87,7 +87,7 @@ export const HomePage = () => {
   }
 
   React.useEffect(() => {
-    dispatch(SowActions.willConfirmArbitrators({ arbitrators: [], toggle: () => {} }))
+    dispatch(SowActions.willConfirmArbitrators({ arbitrators: [], toggle: () => { } }))
     dispatch(SowActions.willGetSowsListSeller())
     dispatch(SowActions.willGetSowsListBuyer())
     dispatch(SowActions.willGetSowsListArbitrator())
@@ -119,6 +119,7 @@ export const HomePage = () => {
           </NavItem>
           <NavItem>
             <NavLink
+              data-cy='customerTab'
               active={activeTab === '2'}
               onClick={() => { toggle('2'); }}
             >

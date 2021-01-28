@@ -113,6 +113,7 @@ export const CreateStatementOfWorkPage = () => {
             {({ errors, touched, setFieldValue, values }) => {
               return (
                 <Form>
+                  {values && console.log("values: ", values)}
                   <FormGroup>
                     <Label for="sow">Sow</Label>
                     <Input data-cy="inputSowID" disabled invalid={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
@@ -122,7 +123,7 @@ export const CreateStatementOfWorkPage = () => {
                   </FormGroup>
                   <FormGroup>
                     <Label for="email">Email Address *</Label>
-                    <Input invalid={errors.buyer && touched.buyer ? true : false} type="text" name="buyer" id="buyer" placeholder="customer email" tag={Field} />
+                    <Input data-cy="inputSowBuyer" invalid={errors.buyer && touched.buyer ? true : false} type="text" name="buyer" id="buyer" placeholder="customer email" tag={Field} />
                     {errors.buyer && touched.buyer ? (
                       <FormFeedback>{errors.buyer}</FormFeedback>
                     ) : null}
@@ -148,7 +149,7 @@ export const CreateStatementOfWorkPage = () => {
                       <Col className="col-md-4 col-12">
                         <FormGroup>
                           <Label for="quantity">Quantity</Label>
-                          <Input invalid={errors.quantity && touched.quantity ? true : false} type="text" name="quantity" id="quantity" placeholder="quantity" tag={Field} />
+                          <Input data-cy="inputSowQuantity" invalid={errors.quantity && touched.quantity ? true : false} type="text" name="quantity" id="quantity" placeholder="quantity" tag={Field} />
                           {errors.quantity && touched.quantity ? (
                             <FormFeedback>{errors.quantity}</FormFeedback>
                           ) : null}
@@ -158,7 +159,7 @@ export const CreateStatementOfWorkPage = () => {
                         <FormGroup>
                           <Label for="price">Price *</Label>
                           <InputGroup>
-                            <Input invalid={errors.price && touched.price ? true : false} type="text" name="price" id="price" placeholder="price" tag={Field} />
+                            <Input data-cy="inputSowPrice" invalid={errors.price && touched.price ? true : false} type="text" name="price" id="price" placeholder="price" tag={Field} />
                             <InputGroupButtonDropdown addonType="append" isOpen={dropdownOpen} toggle={toggleDropDown}>
                               <DropdownToggle caret>
                                 {priceCurrency}
@@ -192,7 +193,7 @@ export const CreateStatementOfWorkPage = () => {
                       <Col className="col-md-4 col-12">
                         <FormGroup>
                           <Label for="deadline">Deadline *</Label>
-                          <DatePicker name="deadline" id="deadline"
+                          <DatePicker data-cy="inputSowDeadline" name="deadline" id="deadline"
                             invalid={errors.deadline && touched.deadline ? true : false}
                             weekStartsOn={1}
                             autoComplete={"off"}
@@ -210,7 +211,7 @@ export const CreateStatementOfWorkPage = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                    <FormGroup>
+                    <FormGroup data-cy="inputSowTags" >
                       <Label for="tags">Tags *</Label>
                       <TagsInput tags={currentSow.tags} />
 
@@ -223,7 +224,7 @@ export const CreateStatementOfWorkPage = () => {
                       <Col className="col-12">
                         <FormGroup>
                           <Label for="numberReviews">Max number of reviews granted *</Label>
-                          <Input invalid={errors.numberReviews && touched.numberReviews ? true : false} type="text" name="numberReviews" id="numberReviews" placeholder="max number of reviews granted" tag={Field} />
+                          <Input data-cy="inputSowNumberReviews" invalid={errors.numberReviews && touched.numberReviews ? true : false} type="text" name="numberReviews" id="numberReviews" placeholder="max number of reviews granted" tag={Field} />
                           {errors.numberReviews && touched.numberReviews ? (
                             <FormFeedback>{errors.numberReviews}</FormFeedback>
                           ) : null}
@@ -255,7 +256,7 @@ export const CreateStatementOfWorkPage = () => {
                       <Row className="mt-2">
                         <Col className="col-6 offset-3">
                           {/* <Button color="primary" block onClick={() => dispatch(SowActions.willConfirmArbitrators())}>Select the arbitrators</Button> */}
-                          <Button color="primary" block onClick={toggleModal}>Select the arbitrators</Button>
+                          <Button data-cy="inputSowArbitratorsModal" color="primary" block onClick={toggleModal}>Select the arbitrators</Button>
                         </Col>
                       </Row>
                       <SelectArbitrators modal={modalOpen} toggle={toggleModal} />
@@ -290,7 +291,7 @@ export const CreateStatementOfWorkPage = () => {
 
                   <FormGroup check>
                     <Label check>
-                      <Input invalid={errors.termsOfService && touched.termsOfService ? true : false} name="termsOfService" id="termsOfService" type="checkbox"
+                      <Input data-cy="inputSowTermsOfService" invalid={errors.termsOfService && touched.termsOfService ? true : false} name="termsOfService" id="termsOfService" type="checkbox"
                         onChange={(event) => setFieldValue("termsOfService", event.target.checked)}
                       />Terms of Service *
                       {errors.termsOfService && touched.termsOfService ? (
@@ -300,7 +301,7 @@ export const CreateStatementOfWorkPage = () => {
                   </FormGroup>
                   <FormGroup check>
                     <Label check>
-                      <Input invalid={errors.codeOfConduct && touched.codeOfConduct ? true : false} name="codeOfConduct" id="codeOfConduct" type="checkbox"
+                      <Input data-cy="inputSowCodeOfConduct" invalid={errors.codeOfConduct && touched.codeOfConduct ? true : false} name="codeOfConduct" id="codeOfConduct" type="checkbox"
                         onChange={(event) => setFieldValue("codeOfConduct", event.target.checked)}
                       />Code of Conduct *
                       {errors.codeOfConduct && touched.codeOfConduct ? (
@@ -309,7 +310,7 @@ export const CreateStatementOfWorkPage = () => {
                     </Label>
                   </FormGroup>
                   <Row>
-                    <Col><ActivityButton type="submit" name="submitSow" color="primary" block>Submit Statement Of Work</ActivityButton></Col>
+                    <Col><ActivityButton data-cy="inputSowSubmit" type="submit" name="submitSow" color="primary" block>Submit Statement Of Work</ActivityButton></Col>
                   </Row>
                   <Row className="mt-2">
                     <Col><Button color="primary" block outline name="draftSow" onClick={() => dispatch(SowActions.willDraftStatementOfWork({ sow: values, history: history }))}>Save draft</Button></Col>
