@@ -3,6 +3,7 @@ import { call, put, takeEvery, takeLatest, delay, select } from 'redux-saga/effe
 import * as ArbitratorApi from '../../api/arbitrator'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../slices/arbitrator'
 import { selectors as ProfileSelectors } from '../slices/profile'
+import { selectors as AuthSelectors } from '../slices/auth'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as UIActions } from '../slices/ui'
 
@@ -56,8 +57,8 @@ function* willSaveArbitratorSettings(action: any) {
   console.log("in willSaveArbitratorSettings with ", action)
   yield put(UIActions.startActivityRunning("saveArbitratorSettings"));
 
-  const profile = yield select(ProfileSelectors.getProfile)
   const myArbitratorSettings = yield select(ArbitratorSelectors.getMyArbitratorSettings)
+  const user = yield select(AuthSelectors.getUser)
 
   const tagsParsed = action.payload.arbitratorSettings.tags.map((tag: any) => JSON.stringify(tag))
   const fee = {
@@ -66,7 +67,7 @@ function* willSaveArbitratorSettings(action: any) {
   }
 
   try {
-    if (myArbitratorSettings && profile.email === myArbitratorSettings.email) {
+    if (myArbitratorSettings && user.username === myArbitratorSettings.user) {
       const result = yield call(ArbitratorApi.updateArbitrator, action.payload.arbitratorSettings.enabled, fee, action.payload.arbitratorSettings.currency, tagsParsed)
       console.log("update arbitrator success result: ", result)
     }
