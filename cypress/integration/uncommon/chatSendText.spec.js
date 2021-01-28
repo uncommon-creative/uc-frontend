@@ -102,7 +102,7 @@ describe('Chat', () => {
 
       cy.wait(5000)
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
-      cy.get('[data-cy=messageInput]')
+      cy.get('[class="rce-input rce-input-textarea"]')
         .type('test cypress invio messaggio')
         .should('have.value', 'test cypress invio messaggio')
 

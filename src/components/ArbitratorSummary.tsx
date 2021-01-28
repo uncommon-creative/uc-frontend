@@ -12,7 +12,7 @@ export const ArbitratorSummary = ({ arbitrator }: any) => {
             {arbitrator.given_name} {arbitrator.family_name}
           </Col>
           <Col className="col-md-3 col-12">
-            <Badge pill>{arbitrator.reputation}</Badge></Col>
+            <Badge pill color="primary">{arbitrator.reputation}</Badge></Col>
         </Row>
       </ListGroupItemHeading>
     </>

@@ -1,6 +1,6 @@
 import {
-  ListGroupItemHeading, ListGroupItem, ListGroupItemText, Badge,
-  Row, Col
+  ListGroupItemHeading, ListGroupItem, ListGroupItemText,
+  Badge, Row, Col
 } from 'reactstrap';
 
 export const ArbitratorDetail = ({ arbitrator }: any) => {
@@ -12,15 +12,16 @@ export const ArbitratorDetail = ({ arbitrator }: any) => {
             {arbitrator.given_name} {arbitrator.family_name}
           </Col>
           <Col className="col-md-3 col-12">
-            <Badge pill>{arbitrator.reputation}</Badge></Col>
+            <Badge pill color="primary">{arbitrator.reputation}</Badge>
+          </Col>
         </Row>
       </ListGroupItemHeading>
       <ListGroupItemText>{arbitrator.fee.flat + ' ' + arbitrator.currency + ' + ' + arbitrator.fee.perc + '%'}</ListGroupItemText>
       <Row>
-        {arbitrator.tags.map((element: any, index: any) => {
+        {arbitrator.tags.map((tag: any, index: any) => {
           return (
             <Col>
-              <ListGroupItemText>{element}</ListGroupItemText>
+              <Badge color="primary">{JSON.parse(tag).label}</Badge>
             </Col>
           )
         })}

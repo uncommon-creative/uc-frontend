@@ -31,9 +31,12 @@ export const ChatSow = ({ currentSow }: any) => {
   const message = useSelector(ChatSelectors.getMessage)
   const user = useSelector(AuthSelectors.getUser)
   const messages = useSelector(ChatSelectors.getMessages)
+  let inputRef: any = React.createRef();
 
   React.useEffect(() => {
     updateScroll()
+
+    inputRef.value = ''
   }, [messages]);
 
   return (
@@ -76,26 +79,27 @@ export const ChatSow = ({ currentSow }: any) => {
       </Row>
 
       <Row>
-        <Col className="col-10">
-          <Input
-            data-cy='messageInput'
+        <Col className="col-12">
+          <InputChatElements
             value={message}
             placeholder="Type here..."
             multiline={true}
             onChange={(event: any) => {
+              console.log("AAA event: ", event)
               dispatch(ChatActions.willWriteMessage(event.target.value))
             }}
+            inputRef={(ref: any) => inputRef = ref}
+            rightButtons={
+              <ActivityButton data-cy='sendMessage' type="submit" name="sendMessageChat" color="primary" block
+                onClick={() => {
+                  console.log('in onsubmit with: ', message)
+                  message.trim() != "" && dispatch(ChatActions.willSendTextChat({ values: { message: message.trim() }, sow: currentSow }));
+                }}
+              >
+                <FontAwesomeIcon icon={faPaperPlane} />
+              </ActivityButton>
+            }
           />
-        </Col>
-        <Col className="col-2">
-          <ActivityButton data-cy='sendMessage' type="submit" name="sendMessageChat" color="primary" block
-            onClick={() => {
-              console.log('in onsubmit with: ', message)
-              dispatch(ChatActions.willSendTextChat({ values: { message: message }, sow: currentSow }));
-            }}
-          >
-            <FontAwesomeIcon icon={faPaperPlane} />
-          </ActivityButton>
         </Col>
       </Row>
     </>
