@@ -41,3 +41,16 @@ export const sendCommandChat = async (command: any, sow: any, type: any) => {
     throw error
   }
 }
+
+export const sendAttachmentChat = async (key: any, sow: any, type: any) => {
+  const mutation = loader('../graphql/sendSowChatMessage.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { attachmentMessage: { key: key }, sow: sow, type: type }))
+    console.log("sendAttachmentChat result: ", result)
+    return result.data.sendSowChatMessage
+  } catch (error) {
+    console.log("sendAttachmentChat API error: ", error)
+    throw error
+  }
+}

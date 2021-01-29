@@ -5,6 +5,7 @@ import {
   Row, Col, Card, CardText, Container,
   FormText, FormGroup, Input, Label, FormFeedback,
 } from 'reactstrap';
+import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import 'react-chat-elements/dist/main.css';
 import { MessageBox, MessageList, Input as InputChatElements, Button, Avatar } from 'react-chat-elements';
@@ -41,7 +42,7 @@ export const ChatSow = ({ currentSow }: any) => {
 
   return (
     <>
-      <Row id='chatMessages' style={{ overflow: 'scroll', height: '500px' }}>
+      <Row id='chatMessages' style={{ overflow: 'scroll', minHeight: '200px', maxHeight: '500px' }}>
         <Col className="col-12">
           <Card >
             {
@@ -59,8 +60,8 @@ export const ChatSow = ({ currentSow }: any) => {
                       className='chatMessage'
                       title={msg.from}
                       position={user.username == msg.from ? 'right' : 'left'}
-                      type={(msg.type == 'TEXT' || msg.type == 'COMMAND') && 'text'}
-                      text={msg.textMessage ? msg.textMessage.message : msg.commandMessage && msg.commandMessage.command}
+                      type={(msg.type == 'TEXT' || msg.type == 'COMMAND' || msg.type == 'ATTACHMENT') && 'text'}
+                      text={msg.textMessage ? msg.textMessage.message : msg.commandMessage ? msg.commandMessage.command : msg.attachmentMessage && msg.attachmentMessage.key}
                       date={new Date(msg.createdAt)}
                       data={{
                         status: {
@@ -102,6 +103,16 @@ export const ChatSow = ({ currentSow }: any) => {
           />
         </Col>
       </Row>
+      <Formik
+        initialValues={{}}
+        onSubmit={() => { }}
+      >
+        <Row>
+          <Col>
+            <SowAttachments currentSow={currentSow} />
+          </Col>
+        </Row>
+      </Formik>
     </>
   )
 }

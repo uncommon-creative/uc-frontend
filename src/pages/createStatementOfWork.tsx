@@ -234,7 +234,7 @@ export const CreateStatementOfWorkPage = () => {
                     </Row>
                     <Row>
                       <Col>
-                        <SowAttachments sow={currentSow.sow} />
+                        <SowAttachments currentSow={currentSow} />
                       </Col>
                     </Row>
                   </Jumbotron>
