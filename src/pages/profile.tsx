@@ -22,15 +22,30 @@ const ArbitratorSettingsSchema = Yup.object().shape({
   enabled: Yup.bool()
     .required('Required'),
   feePercentage: Yup.number()
-    .required('Required'),
+    .when("enabled", {
+      is: true,
+      then: Yup.number()
+        .required('Required')
+    }),
   feeFlat: Yup.number()
-    .required('Required'),
+    .when("enabled", {
+      is: true,
+      then: Yup.number()
+        .required('Required')
+    }),
   currency: Yup.string()
     .min(3, 'Too Short!')
     .required('Required'),
   tags: Yup.array()
-    .min(1, 'At least one tag required!')
-    .required('Required')
+    .when("enabled", {
+      is: true,
+      then: Yup.array()
+        .min(1, 'At least one tag required!')
+        .required('Required')
+    }),
+
+
+
 });
 
 export const ProfilePage = () => {
@@ -47,7 +62,7 @@ export const ProfilePage = () => {
   const toggleSwitchEnabled = (switchEnabled: any) => setSwitchEnabled(switchEnabled);
 
   React.useEffect(() => {
-    dispatch(ArbitratorActions.willGetArbitrator({user: user.username}))
+    dispatch(ArbitratorActions.willGetArbitrator({ user: user.username }))
   }, []);
 
   React.useEffect(() => {
@@ -55,7 +70,6 @@ export const ProfilePage = () => {
     setSwitchEnabled(myArbitratorSettings ? myArbitratorSettings.enabled : false)
   }, [myArbitratorSettings]);
 
-  console.log("not in useEffect myArbitratorSettings: ", myArbitratorSettings)
   return (
     <Container>
       <Card>
@@ -86,6 +100,7 @@ export const ProfilePage = () => {
             {({ errors, touched, setFieldValue, values }) => {
               return (
                 <Form>
+                  {values && console.log("values: ", values)}
                   <Row>
                     <Col className="col-md-2 col-12">
                       <FormGroup>
