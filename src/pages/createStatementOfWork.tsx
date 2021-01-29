@@ -35,6 +35,7 @@ const StatementOfWorkSchema = Yup.object().shape({
     .max(50, 'Too Long!')
     .required('Required'),
   description: Yup.string()
+    .max(10000, 'Too Many!')
     .required('Required'),
   quantity: Yup.number()
     .min(0, 'Too Few!')
@@ -93,7 +94,7 @@ export const CreateStatementOfWorkPage = () => {
               buyer: currentSow.buyer != 'not_set' ? currentSow.buyer : '',
               title: currentSow.title ? currentSow.title : '',
               description: currentSow.description ? currentSow.description : '',
-              quantity: currentSow.quantity ? currentSow.quantity : '',
+              quantity: currentSow.quantity ? currentSow.quantity : '1',
               price: currentSow.price ? currentSow.price : '',
               currency: priceCurrency,
               deadline: currentSow.deadline ? currentSow.deadline : '',
