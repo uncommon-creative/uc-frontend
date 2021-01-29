@@ -24,6 +24,11 @@ function updateScroll() {
   element.scrollTop = element.scrollHeight;
 }
 
+function getLast(array: any) {
+  const length = array.length
+
+}
+
 export const ChatSow = ({ currentSow }: any) => {
 
   console.log("in ChatSow sow: ", currentSow)
@@ -61,7 +66,7 @@ export const ChatSow = ({ currentSow }: any) => {
                       title={msg.from}
                       position={user.username == msg.from ? 'right' : 'left'}
                       type={(msg.type == 'TEXT' || msg.type == 'COMMAND' || msg.type == 'ATTACHMENT') && 'text'}
-                      text={msg.textMessage ? msg.textMessage.message : msg.commandMessage ? msg.commandMessage.command : msg.attachmentMessage && msg.attachmentMessage.key}
+                      text={msg.textMessage ? msg.textMessage.message : msg.commandMessage ? msg.commandMessage.command : msg.attachmentMessage && msg.attachmentMessage.key.split('/').pop()}
                       date={new Date(msg.createdAt)}
                       data={{
                         status: {
