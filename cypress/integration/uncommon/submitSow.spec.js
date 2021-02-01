@@ -25,6 +25,7 @@ describe('Statement of Work', () => {
       .contains('cypress: chat commands description')
 
     cy.get('[data-cy=inputSowQuantity]')
+      .clear()
       .type(3)
       .should('have.value', 3)
 

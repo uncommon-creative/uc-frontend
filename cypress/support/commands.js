@@ -9,6 +9,8 @@
 // ***********************************************
 //
 //
+import 'cypress-file-upload';
+
 // -- This is a parent command --
 Cypress.Commands.add("login", (user) => {
   cy.visit(Cypress.env('host'))

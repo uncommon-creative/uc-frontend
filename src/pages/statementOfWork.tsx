@@ -26,6 +26,7 @@ export const StatementOfWorkPage = () => {
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   const confirmedArbitrators = useSelector(SowSelectors.getConfirmedArbitrators);
   const attachments = useSelector(SowSelectors.getAttachments);
+  const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const user = useSelector(AuthSelectors.getUser)
 
   return (
@@ -171,13 +172,40 @@ export const StatementOfWorkPage = () => {
                 <Col className="col-12">
                   <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Attachments</CardSubtitle>
                   <Jumbotron>
-                    {attachments.map((attachment: any, index: any) => {
+                    {newAttachments.map((attachment: any, index: any) => {
                       return (
+                        attachment.owner === currentSow.sow &&
                         <ListGroupItem key={index}>
                           <ListGroupItemHeading>
-                            <UploadFileButton name={attachment[1]} />
+                            <UploadFileButton file={attachment} />
                           </ListGroupItemHeading>
                         </ListGroupItem>
+                      )
+                    })}
+
+                    <CardText>Seller's:</CardText>
+                    {newAttachments.map((attachment: any, index: any) => {
+                      return (attachment.owner === currentSow.seller &&
+                        <>
+                          <ListGroupItem key={index}>
+                            <ListGroupItemHeading>
+                              <UploadFileButton file={attachment} />
+                            </ListGroupItemHeading>
+                          </ListGroupItem>
+                        </>
+                      )
+                    })}
+
+                    <CardText>Buyer's:</CardText>
+                    {newAttachments.map((attachment: any, index: any) => {
+                      return (attachment.owner === currentSow.buyer &&
+                        <>
+                          <ListGroupItem key={index}>
+                            <ListGroupItemHeading>
+                              <UploadFileButton file={attachment} />
+                            </ListGroupItemHeading>
+                          </ListGroupItem>
+                        </>
                       )
                     })}
                   </Jumbotron>

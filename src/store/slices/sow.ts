@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import update from 'immutability-helper';
 
 export const currentSlice = createSlice({
   name: 'statementOfWork',
   initialState: {
     confirmedArbitrators: [],
     attachments: [],
+    newAttachments: [],
     currentSow: {},
     sowsAsSeller: [],
     sowsAsBuyer: [],
@@ -21,11 +23,11 @@ export const currentSlice = createSlice({
     willSubmitStatementOfWork: (state, action: PayloadAction<any>) => state,
     didSubmitStatementOfWork: (state, action: PayloadAction<any>) => void (state.currentSow = action.payload),
 
-    willUploadAttachment: (state, action: PayloadAction<any>) => state,
-    didUploadAttachment: (state, action: PayloadAction<any>) => void (state.attachments = action.payload),
+    willPrepareUploadAttachment: (state, action: PayloadAction<any>) => state,
+    didPrepareUploadAttachment: (state, action: PayloadAction<any>) => void (state.newAttachments = action.payload),
 
     willDeleteAttachment: (state, action: PayloadAction<any>) => state,
-    // didUploadAttachment: (state, action: PayloadAction<any>) => void (state.attachments = action.payload),
+    // didDeleteAttachment: (state, action: PayloadAction<any>) => void (state.attachments = action.payload),
 
     willGetSowsListSeller: (state, action: PayloadAction<any>) => state,
     didGetSowsListSeller: (state, action: PayloadAction<any>) => void (state.sowsAsSeller = action.payload.sows),
@@ -39,7 +41,7 @@ export const currentSlice = createSlice({
     willSelectSow: (state, action: PayloadAction<any>) => void (state.currentSow = action.payload.sow),
 
     willGetSowAttachmentsList: (state, action: PayloadAction<any>) => state,
-    didGetSowAttachmentsList: (state, action: PayloadAction<any>) => void (state.attachments = action.payload),
+    didGetSowAttachmentsList: (state, action: PayloadAction<any>) => void (state.attachments = action.payload, state.newAttachments = action.payload),
 
     willGetSow: (state, action: PayloadAction<any>) => state,
     didGetSow: (state, action: PayloadAction<any>) => void (state.currentSow = action.payload),
@@ -49,7 +51,7 @@ export const currentSlice = createSlice({
 export const { actions, reducer }: any = currentSlice
 export const {
   willConfirmArbitrators, willCreateStatementOfWork, didCreateStatementOfWork, willDraftStatementOfWork, willSubmitStatementOfWork, didSubmitStatementOfWork,
-  willUploadAttachment, didUploadAttachment, willDeleteAttachment,
+  willPrepareUploadAttachment, didPrepareUploadAttachment, willDeleteAttachment,
   willGetSowsListSeller, didGetSowsListSeller, willGetSowsListBuyer, didGetSowsListBuyer, willGetSowsListArbitrator, didGetSowsListArbitrator,
   willSelectSow, willGetSowAttachmentsList, didGetSowAttachmentsList, willGetSow, didGetSow
 } = actions
@@ -59,7 +61,8 @@ export const selectors = {
   getListSowsSeller: (state: any) => state.statementOfWork.sowsAsSeller,
   getListSowsBuyer: (state: any) => state.statementOfWork.sowsAsBuyer,
   getListSowsArbitrator: (state: any) => state.statementOfWork.sowsAsArbitrator,
-  getAttachments: (state: any) => state.statementOfWork.attachments
+  getAttachments: (state: any) => state.statementOfWork.attachments,
+  getNewAttachments: (state: any) => state.statementOfWork.newAttachments
 }
 
 export enum SowStatus {

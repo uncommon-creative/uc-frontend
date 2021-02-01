@@ -1,4 +1,4 @@
-describe('Chat', () => {
+describe('Attachment', () => {
 
   before(() => {
     cy.login(Cypress.env('userSeller'))
@@ -94,66 +94,33 @@ describe('Chat', () => {
 
     assert.exists(cy.contains("Welcome"), 'user submitted sow successfully')
 
-    cy.logout()
   })
 
-  it('Send commands', () => {
+  it('Upload attachment in sow', () => {
 
     cy.get('@sowID').then((sowID) => {
       cy.log("sowID: ", sowID)
 
-      // buyer ACCEPT_AND_PAY
+      // seller attachment upload
+      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
+      cy.get('[data-cy=inputAttachment]')
+        .attachFile('attachmentCypressSeller.txt');
+      cy.wait(1000)
+      cy.get('[data-cy=attachment')
+        .contains('attachmentCypressSeller.txt')
+      cy.logout()
+
+      // buyer attachment upload
       cy.login(Cypress.env('userBuyer'))
       cy.wait(2000)
       cy.get('[data-cy=customerTab]').click()
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
-      cy.get('[data-cy=ACCEPT_AND_PAY]').click()
-      cy.wait(5000)
-      cy.get('[class=rce-mbox-text]')
-        .contains('ACCEPT_AND_PAY')
-      cy.logout()
 
-      // seller CLAIM_MILESTONE_MET
-      cy.login(Cypress.env('userSeller'))
-      cy.wait(2000)
-      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
-      cy.get('[data-cy=CLAIM_MILESTONE_MET]').click()
-      cy.wait(5000)
-      cy.get('[class=rce-mbox-text]')
-        .contains('CLAIM_MILESTONE_MET')
-      cy.logout()
-
-      // buyer REQUEST_REVIEW
-      cy.login(Cypress.env('userBuyer'))
-      cy.wait(2000)
-      cy.get('[data-cy=customerTab]').click()
-      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
-      cy.get('[data-cy=REQUEST_REVIEW]').click()
-      cy.wait(5000)
-      cy.get('[class=rce-mbox-text]')
-        .contains('REQUEST_REVIEW')
-      cy.logout()
-
-      // seller CLAIM_MILESTONE_MET
-      cy.login(Cypress.env('userSeller'))
-      cy.wait(2000)
-      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
-      cy.get('[data-cy=CLAIM_MILESTONE_MET]').click()
-      cy.wait(5000)
-      cy.get('[class=rce-mbox-text]')
-        .contains('CLAIM_MILESTONE_MET')
-      cy.logout()
-
-      // buyer ACCEPT_MILESTONE
-      cy.login(Cypress.env('userBuyer'))
-      cy.wait(2000)
-      cy.get('[data-cy=customerTab]').click()
-      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
-      cy.get('[data-cy=ACCEPT_MILESTONE]').click()
-      cy.wait(5000)
-      cy.get('[class=rce-mbox-text]')
-        .contains('ACCEPT_MILESTONE')
-      cy.logout()
+      cy.get('[data-cy=inputAttachment]')
+        .attachFile('attachmentCypressBuyer.txt');
+      cy.wait(1000)
+      cy.get('[data-cy=attachment')
+        .contains('attachmentCypressBuyer.txt')
     })
   })
 })

@@ -62,8 +62,8 @@ function* willSaveArbitratorSettings(action: any) {
 
   const tagsParsed = action.payload.arbitratorSettings.tags.map((tag: any) => JSON.stringify(tag))
   const fee = {
-    flat: action.payload.arbitratorSettings.feeFlat,
-    perc: action.payload.arbitratorSettings.feePercentage
+    flat: action.payload.arbitratorSettings.feeFlat != '' ? action.payload.arbitratorSettings.feeFlat : 0,
+    perc: action.payload.arbitratorSettings.feePercentage != '' ? action.payload.arbitratorSettings.feePercentage : 0
   }
 
   try {

@@ -15,6 +15,7 @@ export const currentSlice = createSlice({
     willSendTextChat: (state, action: PayloadAction<any>) => state,
     didSendTextChat: (state, action: PayloadAction<any>) => void (state.message = ''),
     willSendCommandChat: (state, action: PayloadAction<any>) => state,
+    willSendAttachmentChat: (state, action: PayloadAction<any>) => state,
   }
 })
 
@@ -22,7 +23,7 @@ export const { actions, reducer }: any = currentSlice
 export const {
   willWriteMessage,
   willReadSowChat, didReadSowChat,
-  willSendTextChat, didSendTextChat, willSendCommandChat
+  willSendTextChat, didSendTextChat, willSendCommandChat, willSendAttachmentChat
 } = actions
 export const selectors = {
   getMessages: (state: any) => state.chat.messages,

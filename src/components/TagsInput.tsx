@@ -23,9 +23,18 @@ export const TagsInput = ({ tags, disabled }: any) => {
   };
 
   React.useEffect(() => {
-    setNewTags(tags.map((tag: any) => JSON.parse(tag)))
+    // setNewTags(tags.map((tag: any) => JSON.parse(tag)))
     setIsDisabled(disabled)
-  }, [tags, disabled]);
+
+    
+  }, [disabled]);
+
+  React.useEffect(() => {
+    setNewTags(tags.map((tag: any) => JSON.parse(tag)))
+    // setIsDisabled(disabled)
+
+    
+  }, [tags]);
 
   return (
     <>

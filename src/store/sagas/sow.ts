@@ -1,8 +1,9 @@
 import { call, put, takeEvery, takeLatest, delay } from 'redux-saga/effects'
 import { push } from 'connected-react-router'
+import update from 'immutability-helper';
 
 import * as SowApi from '../../api/sow'
-import { actions as SowActions } from '../slices/sow'
+import { actions as SowActions, SowStatus, SowCommands } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as ChatActions } from '../slices/chat'
 import { actions as UIActions } from '../slices/ui'
@@ -13,7 +14,7 @@ export function* sagas() {
   yield takeLatest(SowActions.willCreateStatementOfWork.type, willCreateStatementOfWork)
   yield takeLatest(SowActions.willDraftStatementOfWork.type, willDraftStatementOfWork)
   yield takeLatest(SowActions.willSubmitStatementOfWork.type, willSubmitStatementOfWork)
-  yield takeLatest(SowActions.willUploadAttachment.type, willUploadAttachment)
+  yield takeLatest(SowActions.willPrepareUploadAttachment.type, willPrepareUploadAttachment)
   yield takeLatest(SowActions.willDeleteAttachment.type, willDeleteAttachment)
   yield takeLatest(SowActions.willGetSowsListSeller.type, willGetSowsListSeller)
   yield takeLatest(SowActions.willGetSowsListBuyer.type, willGetSowsListBuyer)
@@ -129,34 +130,71 @@ function* willSubmitStatementOfWork(action: any) {
   yield put(UIActions.stopActivityRunning("submitSow"));
 }
 
-function* willUploadAttachment(action: any) {
-  console.log("in willUploadAttachment with: ", action)
-  yield put(UIActions.startActivityRunning(action.payload.attachment.name));
+function* willPrepareUploadAttachment(action: any) {
+  console.log("in willPrepareUploadAttachment with: ", action)
+
+  let tmpFileList = [] as any
+  let tmpAttachment = {} as any
+  const key = action.payload.sow.status == SowStatus.DRAFT ?
+    action.payload.attachment.name
+    : action.payload.username + '/' + action.payload.attachment.name
+  const owner = action.payload.sow.status == SowStatus.DRAFT ?
+    action.payload.sow.sow
+    : action.payload.username
+
+  yield put(UIActions.startActivityRunning(key));
+
+  tmpAttachment = {
+    'sow': action.payload.sow.sow,
+    'owner': owner,
+    'filename': action.payload.attachment.name,
+    'key': key
+  }
+  const index = action.payload.newAttachments.findIndex((e: any) => e.key === tmpAttachment.key);
+  console.log("index: ", index)
+
+  if (index === -1) {
+    tmpFileList = action.payload.newAttachments.concat([tmpAttachment])
+  } else {
+    tmpFileList = action.payload.newAttachments.concat([tmpAttachment])
+    tmpFileList.splice(index, 1);
+  }
+  console.log("tmpFileList: ", tmpFileList)
+
+  yield put(SowActions.didPrepareUploadAttachment(tmpFileList))
+
 
   try {
-    const result = yield call(SowApi.getUploadUrl, action.payload.sow, action.payload.attachment.name, 600, action.payload.attachment.type)
-    console.log("in willUploadAttachment with result: ", result)
+    const result = yield call(SowApi.getUploadUrl, action.payload.sow.sow, key, 600, action.payload.attachment.type)
+    console.log("in willPrepareUploadAttachment with result: ", result)
 
     yield call(SowApi.uploadFileToS3, result, action.payload.attachment)
+    yield put(ChatActions.willSendAttachmentChat({ values: { key: key }, sow: action.payload.sow }))
+    yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow.sow } });
   } catch (error) {
-    console.log("error in willUploadAttachment ", error)
+    console.log("error in willPrepareUploadAttachment ", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
-  yield put(UIActions.stopActivityRunning(action.payload.attachment.name));
+  yield put(UIActions.stopActivityRunning(key));
 }
 
 function* willDeleteAttachment(action: any) {
   console.log("in willDeleteAttachment with: ", action)
-  yield put(UIActions.startActivityRunning(action.payload.attachment.name));
+  yield put(UIActions.startActivityRunning(action.payload.attachment.key));
+
+  const fileToDelete =
+    action.payload.attachment.owner == action.payload.attachment.sow ? action.payload.attachment.filename
+      : action.payload.attachment.owner + '/' + action.payload.attachment.filename
 
   try {
-    yield call(SowApi.deleteAttachment, action.payload.attachment.name, action.payload.sow)
-    yield put(NotificationActions.willShowNotification({ message: action.payload.attachment.name + " deleted", type: "success" }));
+    yield call(SowApi.deleteAttachment, fileToDelete, action.payload.sow.sow)
+    yield put(NotificationActions.willShowNotification({ message: action.payload.attachment.key + " deleted", type: "success" }));
+    yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow.sow } });
   } catch (error) {
     console.log("error in willDeleteAttachment ", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
-  yield put(UIActions.stopActivityRunning(action.payload.attachment.name));
+  yield put(UIActions.stopActivityRunning(action.payload.attachment.key));
 }
 
 function* willGetSowsListSeller() {
@@ -209,10 +247,7 @@ function* willSelectSow(action: any) {
   console.log("in willSelectSow with fullArbitrators: ", fullArbitrators)
   yield put(SowActions.willConfirmArbitrators({ arbitrators: fullArbitrators, toggle: () => { } }))
 
-
-  let attachments = yield call(SowApi.getSowAttachmentsList, action.payload.sow.sow);
-  attachments = attachments.map((attachment: any) => attachment.key.split('/'))
-  yield put(SowActions.didGetSowAttachmentsList(attachments))
+  yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow.sow } });
 
   if (action.payload.sow.status == "DRAFT") {
     console.log("sow DRAFT")
@@ -222,7 +257,7 @@ function* willSelectSow(action: any) {
     console.log("sow SUBMITTED")
 
     // yield put(ChatActions.willReadSowChat, action.payload.sow.sow)
-    
+
     action.payload.history.push('/statement-of-work')
   }
 }
@@ -233,7 +268,18 @@ function* willGetSowAttachmentsList(action: any) {
   try {
     const result = yield call(SowApi.getSowAttachmentsList, action.payload.sow);
     console.log("result willGetSowAttachmentsList: ", result)
-    yield put(SowActions.didGetSowAttachmentsList(result))
+    const attachmentsSplitted = result.map((attachment: any) => {
+      let tmp = attachment.key.split('/')
+      return {
+        'sow': tmp[0],
+        'owner': tmp[2] ? tmp[1] : tmp[0],
+        'filename': tmp[2] ? tmp[2] : tmp[1],
+        'key': attachment.key
+      }
+    }
+    )
+    console.log("attachmentsSplitted: ", attachmentsSplitted)
+    yield put(SowActions.didGetSowAttachmentsList(attachmentsSplitted))
 
   } catch (error) {
     console.log("error in willGetSowAttachmentsList ", error)
