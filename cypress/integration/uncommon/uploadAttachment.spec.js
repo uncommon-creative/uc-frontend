@@ -47,7 +47,7 @@ describe('Attachment', () => {
 
     cy.get('[data-cy=inputSowTags]')
       .click()
-      .get('[id=react-select-3-input]')
+      .get('[data-cy=inputSowTags] input')
       .type('cypress{enter}')
       .get('[class=css-1rhbuit-multiValue]')
       .contains('cypress')
