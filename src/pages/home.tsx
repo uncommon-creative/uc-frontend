@@ -43,14 +43,14 @@ function TableData({ tabId, data }: any) {
               return (
                 <tr key={element.sow}>
                   <td>
-                    {tabId == 1 && <Badge pill color="primary">{element.messagesToReadSeller}</Badge>}
-                    {tabId == 2 && <Badge pill color="primary">{element.messagesToReadBuyer}</Badge>}
-                    {tabId == 3 && <Badge pill color="primary">{element.messagesToReadArbitrator}</Badge>}
+                    {tabId == 1 && <Badge pill color={element.messagesToReadSeller == 0 ? "secondary" : "primary"}>{element.messagesToReadSeller}</Badge>}
+                    {tabId == 2 && <Badge pill color={element.messagesToReadBuyer == 0 ? "secondary" : "primary"}>{element.messagesToReadBuyer}</Badge>}
+                    {tabId == 3 && <Badge pill color={element.messagesToReadArbitrator == 0 ? "secondary" : "primary"}>{element.messagesToReadArbitrator}</Badge>}
                   </td>
-                  <th scope="row">
+                  <td scope="row">
                     {/* <Link to="/users" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Link> */}
                     <Button data-cy='submittedSow' color="link" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Button>
-                  </th>
+                  </td>
                   <td>{element.title ? element.title : '-'}</td>
                   {tabId != 1 && <td>{
                     validateEmail(element.seller) ?
