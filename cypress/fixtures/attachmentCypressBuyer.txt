@@ -1,0 +1,1 @@
+Cypress test: buyer: attachment upload

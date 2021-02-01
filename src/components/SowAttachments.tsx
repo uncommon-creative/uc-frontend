@@ -27,7 +27,7 @@ export const SowAttachments = ({ currentSow }: any) => {
     <>
       <FormGroup>
         <Label for="attachments">Attachments</Label>
-        <Input type="file" name="attachments" id="attachments"
+        <Input data-cy="inputAttachment" type="file" name="attachments" id="attachments"
           onChange={(event: any) => {
             console.log("event.target.files: ", event.target.files)
             if (event.target.files.length) {

@@ -14,7 +14,7 @@ export const UploadFileButton = ({ file, disabled, children, ...rest }: any) => 
         isActivityRunning ? (
           <FormText color="muted">
             <Row>
-              <Col className="col-11">
+              <Col data-cy="attachment" className="col-11">
                 {file.filename}
               </Col>
               <Col className="col-1">
@@ -25,7 +25,7 @@ export const UploadFileButton = ({ file, disabled, children, ...rest }: any) => 
         ) : (
             <FormText color="muted">
               <Row>
-                <Col>{file.filename}</Col>
+                <Col data-cy="attachment" >{file.filename}</Col>
               </Row>
             </FormText>
           )
