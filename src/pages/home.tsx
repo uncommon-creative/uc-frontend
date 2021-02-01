@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from "react-router-dom";
-import { Container, Card, CardTitle, Nav, NavItem, NavLink, Table, TabContent, TabPane, Row, Col, Button } from 'reactstrap';
+import {
+  Container, Card, CardTitle, Nav, NavItem, NavLink,
+  Table, TabContent, TabPane, Row, Col, Button, Badge
+} from 'reactstrap';
 
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
+import { selectors as ChatSelectors } from '../store/slices/chat'
 import { ActivityButton } from '../components/ActivityButton';
 
 function validateEmail(email: any) {
@@ -23,6 +27,7 @@ function TableData({ tabId, data }: any) {
         <Table striped borderless responsive>
           <thead>
             <tr>
+              <th>Unread</th>
               <th>ID</th>
               <th>Title</th>
               {tabId != 2 && <th>Customer</th>}
@@ -37,6 +42,11 @@ function TableData({ tabId, data }: any) {
             {data.map((element: any) => {
               return (
                 <tr key={element.sow}>
+                  <td>
+                    {tabId == 1 && <Badge pill color="primary">{element.messagesToReadSeller}</Badge>}
+                    {tabId == 2 && <Badge pill color="primary">{element.messagesToReadBuyer}</Badge>}
+                    {tabId == 3 && <Badge pill color="primary">{element.messagesToReadArbitrator}</Badge>}
+                  </td>
                   <th scope="row">
                     {/* <Link to="/users" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Link> */}
                     <Button data-cy='submittedSow' color="link" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Button>
@@ -81,6 +91,7 @@ export const HomePage = () => {
   const sowsAsSeller = useSelector(SowSelectors.getListSowsSeller)
   const sowsAsBuyer = useSelector(SowSelectors.getListSowsBuyer)
   const sowsAsArbitrator = useSelector(SowSelectors.getListSowsArbitrator)
+  const unreadMessages = useSelector(ChatSelectors.getUnreadMessages)
 
   const toggle = (tab: any) => {
     if (activeTab !== tab) setActiveTab(tab);
@@ -115,6 +126,7 @@ export const HomePage = () => {
               onClick={() => { toggle('1'); }}
             >
               Freelance
+              <Badge pill color={unreadMessages.asSeller == 0 ? "secondary" : "primary"}>{unreadMessages.asSeller}</Badge>
             </NavLink>
           </NavItem>
           <NavItem>
@@ -124,6 +136,7 @@ export const HomePage = () => {
               onClick={() => { toggle('2'); }}
             >
               Customer
+              <Badge pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
             </NavLink>
           </NavItem>
           <NavItem>
@@ -132,6 +145,7 @@ export const HomePage = () => {
               onClick={() => { toggle('3'); }}
             >
               Arbitrator
+              <Badge pill color={unreadMessages.asArbitrator == 0 ? "secondary" : "primary"}>{unreadMessages.asArbitrator}</Badge>
             </NavLink>
           </NavItem>
         </Nav>

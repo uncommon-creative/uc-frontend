@@ -4,7 +4,12 @@ export const currentSlice = createSlice({
   name: 'chat',
   initialState: {
     messages: [],
-    message: ''
+    message: '',
+    unreadMessages: {
+      asSeller: 0,
+      asBuyer: 0,
+      asArbitrator: 0,
+    }
   },
   reducers: {
     willWriteMessage: (state, action: PayloadAction<any>) => void (state.message = action.payload),
@@ -16,6 +21,10 @@ export const currentSlice = createSlice({
     didSendTextChat: (state, action: PayloadAction<any>) => void (state.message = ''),
     willSendCommandChat: (state, action: PayloadAction<any>) => state,
     willSendAttachmentChat: (state, action: PayloadAction<any>) => state,
+
+    didCountUnreadMessagesSeller: (state, action: PayloadAction<any>) => void (state.unreadMessages.asSeller = action.payload),
+    didCountUnreadMessagesBuyer: (state, action: PayloadAction<any>) => void (state.unreadMessages.asBuyer = action.payload),
+    didCountUnreadMessagesArbitrator: (state, action: PayloadAction<any>) => void (state.unreadMessages.asArbitrator = action.payload),
   }
 })
 
@@ -28,4 +37,5 @@ export const {
 export const selectors = {
   getMessages: (state: any) => state.chat.messages,
   getMessage: (state: any) => state.chat.message,
+  getUnreadMessages: (state: any) => state.chat.unreadMessages,
 }

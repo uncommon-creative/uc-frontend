@@ -19,6 +19,9 @@ query getSowsListArbitrator{
       arbitrator
       createdAt
       updatedAt
+      messagesToReadBuyer
+      messagesToReadSeller
+      messagesToReadArbitrator
     }
     nextToken
   }
