@@ -114,7 +114,6 @@ export const CreateStatementOfWorkPage = () => {
             {({ errors, touched, setFieldValue, values }) => {
               return (
                 <Form>
-                  {values && console.log("values: ", values)}
                   <FormGroup>
                     <Label for="sow">Sow</Label>
                     <Input data-cy="inputSowID" disabled invalid={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />

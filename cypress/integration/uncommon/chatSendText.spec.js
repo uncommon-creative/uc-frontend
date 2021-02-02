@@ -95,7 +95,6 @@ describe('Chat', () => {
 
   })
 
-
   it('Send message as seller', () => {
 
     cy.get('@sowID').then((sowID) => {
@@ -118,18 +117,10 @@ describe('Chat', () => {
       cy.login(Cypress.env('userBuyer'))
       cy.wait(5000)
 
-      // cy.get('[data-cy=unreadMessagesBuyer]')
-      //   .contains('1')
-
       cy.get('[data-cy=customerTab]').click()
-
-
-
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).parents('tr').within(() => {
         cy.get('[data-cy=unreadMessagesSowBuyer]').contains(1)
       })
-
-
 
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
       cy.get('[class="rce-mbox-text"]')
@@ -155,11 +146,7 @@ describe('Chat', () => {
       cy.login(Cypress.env('userSeller'))
       cy.wait(5000)
 
-      // cy.get('[data-cy=unreadMessagesSeller]')
-      //   .contains('2')
-
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
-
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).parents('tr').within(() => {
         cy.get('[data-cy=unreadMessagesSowSeller]').contains(2)
       })

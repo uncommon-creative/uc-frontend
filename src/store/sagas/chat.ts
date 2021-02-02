@@ -1,5 +1,6 @@
 import { call, put, takeEvery, takeLatest, delay } from 'redux-saga/effects'
 import { push } from 'connected-react-router'
+import update from 'immutability-helper';
 
 import * as ChatApi from '../../api/chat'
 import { actions as ChatActions } from '../slices/chat'
@@ -7,6 +8,7 @@ import { actions as SowActions } from '../slices/sow'
 import { actions as UIActions } from '../slices/ui'
 
 export function* sagas() {
+  yield takeLatest(ChatActions.willRefreshSowChat.type, willRefreshSowChat)
   yield takeLatest(SowActions.willSelectSow.type, willReadSowChat)
   yield takeLatest(ChatActions.willSendTextChat.type, willSendTextChat)
   yield takeLatest(ChatActions.willSendCommandChat.type, willSendCommandChat)
@@ -14,11 +16,27 @@ export function* sagas() {
   console.log('in sow saga');
 }
 
+function* willRefreshSowChat(action: any) {
+  console.log("in willRefreshSowChat with: ", action)
+
+  try {
+    const lastTimestamp = action.payload.messages.length ? action.payload.messages[action.payload.messages.length - 1].createdAt : null
+    const result = yield call(ChatApi.listSowChatMessages, action.payload.sow, lastTimestamp);
+    console.log("result willRefreshSowChat: ", result)
+
+    const refreshedMessages = action.payload.messages.concat(result.messages)
+
+    yield put(ChatActions.didRefreshSowChat(refreshedMessages))
+  } catch (error) {
+    console.log("error in willRefreshSowChat ", error)
+  }
+}
+
 function* willReadSowChat(action: any) {
   console.log("in willReadSowChat with: ", action)
 
   try {
-    const result = yield call(ChatApi.listSowChatMessages, action.payload.sow.sow);
+    const result = yield call(ChatApi.listSowChatMessages, action.payload.sow.sow, null);
     console.log("result willReadSowChat: ", result)
 
     yield put(ChatActions.didReadSowChat(result.messages))
@@ -29,6 +47,7 @@ function* willReadSowChat(action: any) {
 
 function* willSendTextChat(action: any) {
   console.log("in willSendTextChat with: ", action)
+  yield put(UIActions.startActivityRunning('sendMessageChat'));
 
   try {
     const result = yield call(ChatApi.sendTextChat, action.payload.values.message, action.payload.sow.sow, 'TEXT');
@@ -40,6 +59,7 @@ function* willSendTextChat(action: any) {
   } catch (error) {
     console.log("error in willSendTextChat ", error)
   }
+  yield put(UIActions.stopActivityRunning('sendMessageChat'));
 }
 
 function* willSendCommandChat(action: any) {

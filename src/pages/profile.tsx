@@ -100,7 +100,6 @@ export const ProfilePage = () => {
             {({ errors, touched, setFieldValue, values }) => {
               return (
                 <Form>
-                  {values && console.log("values: ", values)}
                   <Row>
                     <Col className="col-md-2 col-12">
                       <FormGroup>

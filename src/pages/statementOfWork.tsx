@@ -13,6 +13,7 @@ import { actions as ChatActions, selectors as ChatSelectors } from '../store/sli
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { ChatSow } from '../components/ChatSow'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
+import { ActivityButton } from '../components/ActivityButton'
 import { UploadFileButton } from '../components/UploadFileButton';
 
 function validateEmail(email: any) {
@@ -140,28 +141,28 @@ export const StatementOfWorkPage = () => {
                     {currentSow.buyer == user.username &&
                       <>
                         {currentSow.status == SowStatus.SUBMITTED &&
-                          <Button data-cy={SowCommands.ACCEPT_AND_PAY} block color="primary" name={SowCommands.ACCEPT_AND_PAY} onClick={() => {
+                          <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} block color="primary" name={SowCommands.ACCEPT_AND_PAY} onClick={() => {
                             console.log("Accept and pay")
                             dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_AND_PAY }, sow: currentSow }));
-                          }}>Accept and pay</Button>
+                          }}>Accept and pay</ActivityButton>
                         }
                         {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
-                          <Button data-cy={SowCommands.REQUEST_REVIEW} block color="primary" name={SowCommands.REQUEST_REVIEW} onClick={() => {
+                          <ActivityButton data-cy={SowCommands.REQUEST_REVIEW} block color="primary" name={SowCommands.REQUEST_REVIEW} onClick={() => {
                             console.log("Request review")
                             dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REQUEST_REVIEW }, sow: currentSow }));
-                          }}>Request review</Button>
+                          }}>Request review</ActivityButton>
                         }
                         {(currentSow.status == SowStatus.SUBMITTED || currentSow.status == SowStatus.MILESTONE_CLAIMED) &&
-                          <Button data-cy={SowCommands.REJECT} block color="primary" name={SowCommands.REJECT} onClick={() => {
+                          <ActivityButton data-cy={SowCommands.REJECT} block color="primary" name={SowCommands.REJECT} onClick={() => {
                             console.log("Reject")
                             dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REJECT }, sow: currentSow }));
-                          }}>Reject</Button>
+                          }}>Reject</ActivityButton>
                         }
                         {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
-                          <Button data-cy={SowCommands.ACCEPT_MILESTONE} block color="primary" name={SowCommands.ACCEPT_MILESTONE} onClick={() => {
+                          <ActivityButton data-cy={SowCommands.ACCEPT_MILESTONE} block color="primary" name={SowCommands.ACCEPT_MILESTONE} onClick={() => {
                             console.log("Accept milestone")
                             dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_MILESTONE }, sow: currentSow }));
-                          }}>Accept milestone</Button>
+                          }}>Accept milestone</ActivityButton>
                         }
                       </>
                     }

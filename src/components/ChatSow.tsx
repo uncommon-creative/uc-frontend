@@ -12,7 +12,6 @@ import { MessageBox, MessageList, Input as InputChatElements, Button, Avatar } f
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 
-
 import { ActivityButton } from '../components/ActivityButton'
 import { SowAttachments } from '../components/SowAttachments'
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
@@ -40,9 +39,16 @@ export const ChatSow = ({ currentSow }: any) => {
   let inputRef: any = React.createRef();
 
   React.useEffect(() => {
+    setInterval(() => {
+      dispatch(ChatActions.willRefreshSowChat({ messages: messages, sow: currentSow.sow }))
+    }, 30000);
+
+  }, []);
+
+  React.useEffect(() => {
     updateScroll()
 
-    inputRef.value = ''
+    // inputRef.value = ''
   }, [messages]);
 
   return (
@@ -91,7 +97,6 @@ export const ChatSow = ({ currentSow }: any) => {
             placeholder="Type here..."
             multiline={true}
             onChange={(event: any) => {
-              console.log("AAA event: ", event)
               dispatch(ChatActions.willWriteMessage(event.target.value))
             }}
             inputRef={(ref: any) => inputRef = ref}
@@ -100,6 +105,7 @@ export const ChatSow = ({ currentSow }: any) => {
                 onClick={() => {
                   console.log('in onsubmit with: ', message)
                   message.trim() != "" && dispatch(ChatActions.willSendTextChat({ values: { message: message.trim() }, sow: currentSow }));
+                  inputRef.value = ''
                 }}
               >
                 <FontAwesomeIcon icon={faPaperPlane} />

@@ -1,8 +1,10 @@
 query listSowChatMessages(
   $sow: ID
+  $after: AWSDateTime
 ){
   listSowChatMessages(
     sow: $sow
+    after: $after
   ){
     messages {
       createdAt

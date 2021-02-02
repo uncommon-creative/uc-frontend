@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import update from 'immutability-helper';
 
 export const currentSlice = createSlice({
   name: 'chat',
@@ -12,6 +13,11 @@ export const currentSlice = createSlice({
     }
   },
   reducers: {
+    willRefreshSowChat: (state, action: PayloadAction<any>) => state,
+    didRefreshSowChat: (state, action: PayloadAction<any>) => void (state.messages = action.payload),
+    // didRefreshSowChat: (state, action: PayloadAction<any>) => update(state.messages, { $push: [action.payload] }),
+    
+
     willWriteMessage: (state, action: PayloadAction<any>) => void (state.message = action.payload),
 
     willReadSowChat: (state, action: PayloadAction<any>) => state,
@@ -30,7 +36,7 @@ export const currentSlice = createSlice({
 
 export const { actions, reducer }: any = currentSlice
 export const {
-  willWriteMessage,
+  willRefreshSowChat, willWriteMessage,
   willReadSowChat, didReadSowChat,
   willSendTextChat, didSendTextChat, willSendCommandChat, willSendAttachmentChat
 } = actions
