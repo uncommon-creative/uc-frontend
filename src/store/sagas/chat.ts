@@ -20,7 +20,8 @@ function* willRefreshSowChat(action: any) {
   console.log("in willRefreshSowChat with: ", action)
 
   try {
-    const result = yield call(ChatApi.listSowChatMessages, action.payload.sow, action.payload.messages[action.payload.messages.length - 1].createdAt);
+    const lastTimestamp = action.payload.messages.length ? action.payload.messages[action.payload.messages.length - 1].createdAt : null
+    const result = yield call(ChatApi.listSowChatMessages, action.payload.sow, lastTimestamp);
     console.log("result willRefreshSowChat: ", result)
 
     const refreshedMessages = action.payload.messages.concat(result.messages)
