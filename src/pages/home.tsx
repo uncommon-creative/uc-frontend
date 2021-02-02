@@ -43,9 +43,9 @@ function TableData({ tabId, data }: any) {
               return (
                 <tr key={element.sow}>
                   <td>
-                    {tabId == 1 && <Badge pill color={element.messagesToReadSeller == 0 ? "secondary" : "primary"}>{element.messagesToReadSeller}</Badge>}
-                    {tabId == 2 && <Badge pill color={element.messagesToReadBuyer == 0 ? "secondary" : "primary"}>{element.messagesToReadBuyer}</Badge>}
-                    {tabId == 3 && <Badge pill color={element.messagesToReadArbitrator == 0 ? "secondary" : "primary"}>{element.messagesToReadArbitrator}</Badge>}
+                    {tabId == 1 && <Badge data-cy='unreadMessagesSowSeller' pill color={element.messagesToReadSeller == 0 ? "secondary" : "primary"}>{element.messagesToReadSeller}</Badge>}
+                    {tabId == 2 && <Badge data-cy='unreadMessagesSowBuyer' pill color={element.messagesToReadBuyer == 0 ? "secondary" : "primary"}>{element.messagesToReadBuyer}</Badge>}
+                    {tabId == 3 && <Badge data-cy='unreadMessagesSowArbitrator' pill color={element.messagesToReadArbitrator == 0 ? "secondary" : "primary"}>{element.messagesToReadArbitrator}</Badge>}
                   </td>
                   <td scope="row">
                     {/* <Link to="/users" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Link> */}
@@ -126,7 +126,7 @@ export const HomePage = () => {
               onClick={() => { toggle('1'); }}
             >
               Freelance
-              <Badge pill color={unreadMessages.asSeller == 0 ? "secondary" : "primary"}>{unreadMessages.asSeller}</Badge>
+              <Badge data-cy='unreadMessagesSeller' pill color={unreadMessages.asSeller == 0 ? "secondary" : "primary"}>{unreadMessages.asSeller}</Badge>
             </NavLink>
           </NavItem>
           <NavItem>
@@ -136,7 +136,7 @@ export const HomePage = () => {
               onClick={() => { toggle('2'); }}
             >
               Customer
-              <Badge pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
+              <Badge data-cy='unreadMessagesBuyer' pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
             </NavLink>
           </NavItem>
           <NavItem>
@@ -145,7 +145,7 @@ export const HomePage = () => {
               onClick={() => { toggle('3'); }}
             >
               Arbitrator
-              <Badge pill color={unreadMessages.asArbitrator == 0 ? "secondary" : "primary"}>{unreadMessages.asArbitrator}</Badge>
+              <Badge data-cy='unreadMessagesArbitrator' pill color={unreadMessages.asArbitrator == 0 ? "secondary" : "primary"}>{unreadMessages.asArbitrator}</Badge>
             </NavLink>
           </NavItem>
         </Nav>
