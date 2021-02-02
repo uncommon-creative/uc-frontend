@@ -97,7 +97,6 @@ export const ChatSow = ({ currentSow }: any) => {
             placeholder="Type here..."
             multiline={true}
             onChange={(event: any) => {
-              console.log("AAA event: ", event)
               dispatch(ChatActions.willWriteMessage(event.target.value))
             }}
             inputRef={(ref: any) => inputRef = ref}
