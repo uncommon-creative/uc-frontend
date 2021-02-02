@@ -22,5 +22,8 @@ query getSow(
     arbitrator
     createdAt
     updatedAt
+    messagesToReadBuyer
+    messagesToReadSeller
+    messagesToReadArbitrator
   }
 }

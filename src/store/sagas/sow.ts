@@ -204,6 +204,13 @@ function* willGetSowsListSeller() {
     const result = yield call(SowApi.getSowsListSeller);
     console.log("result willGetSowsListSeller: ", result)
     yield put(SowActions.didGetSowsListSeller(result))
+
+    const totalUnreadMessagesSeller = result.sows.reduce((a: any, b: any) => {
+      return a + b['messagesToReadSeller']
+    }, 0)
+
+    yield put(ChatActions.didCountUnreadMessagesSeller(totalUnreadMessagesSeller))
+
   } catch (error) {
     console.log("error in willGetSowsListSeller ", error)
   }
@@ -217,6 +224,12 @@ function* willGetSowsListBuyer() {
     console.log("result willGetSowsListBuyer: ", result)
     yield put(SowActions.didGetSowsListBuyer(result))
 
+    const totalUnreadMessagesBuyer = result.sows.reduce((a: any, b: any) => {
+      return a + b['messagesToReadBuyer']
+    }, 0)
+
+    yield put(ChatActions.didCountUnreadMessagesBuyer(totalUnreadMessagesBuyer))
+
   } catch (error) {
     console.log("error in willGetSowsListBuyer ", error)
   }
@@ -229,6 +242,12 @@ function* willGetSowsListArbitrator() {
     const result = yield call(SowApi.getSowsListArbitrator);
     console.log("result willGetSowsListArbitrator: ", result)
     yield put(SowActions.didGetSowsListArbitrator(result))
+
+    const totalUnreadMessagesArbitrator = result.sows.reduce((a: any, b: any) => {
+      return a + b['messagesToReadArbitrator']
+    }, 0)
+
+    yield put(ChatActions.didCountUnreadMessagesArbitrator(totalUnreadMessagesArbitrator))
 
   } catch (error) {
     console.log("error in willGetSowsListArbitrator ", error)

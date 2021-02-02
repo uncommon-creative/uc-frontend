@@ -108,7 +108,7 @@ describe('Chat', () => {
       cy.get('[data-cy=customerTab]').click()
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
       cy.get('[data-cy=REJECT]').click()
-      cy.wait(2000)
+      cy.wait(5000)
       cy.get('[class=rce-mbox-text]')
         .contains('REJECT')
       cy.logout()

@@ -96,7 +96,7 @@ describe('Chat', () => {
   })
 
 
-  it('Send message', () => {
+  it('Send message as seller', () => {
 
     cy.get('@sowID').then((sowID) => {
       cy.log("sowID: ", sowID)
@@ -104,15 +104,68 @@ describe('Chat', () => {
       cy.wait(5000)
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
       cy.get('[class="rce-input rce-input-textarea"]')
-        .type('test cypress invio messaggio')
-        .should('have.value', 'test cypress invio messaggio')
+        .type('test cypress invio messaggio seller')
+        .should('have.value', 'test cypress invio messaggio seller')
 
       cy.get('[data-cy=sendMessage]').click()
 
-      cy.wait(2000)
+      cy.wait(5000)
 
       cy.get('[class=rce-mbox-text]')
-        .contains('test cypress invio messaggio')
+        .contains('test cypress invio messaggio seller')
+
+      cy.logout()
+      cy.login(Cypress.env('userBuyer'))
+      cy.wait(5000)
+
+      // cy.get('[data-cy=unreadMessagesBuyer]')
+      //   .contains('1')
+
+      cy.get('[data-cy=customerTab]').click()
+
+
+
+      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).parents('tr').within(() => {
+        cy.get('[data-cy=unreadMessagesSowBuyer]').contains(1)
+      })
+
+
+
+      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
+      cy.get('[class="rce-mbox-text"]')
+        .contains('test cypress invio messaggio seller')
+
+      cy.get('[class="rce-input rce-input-textarea"]')
+        .type('test cypress invio messaggio buyer UNO')
+        .should('have.value', 'test cypress invio messaggio buyer UNO')
+      cy.get('[data-cy=sendMessage]').click()
+      cy.wait(5000)
+      cy.get('[class=rce-mbox-text]')
+        .contains('test cypress invio messaggio buyer UNO')
+
+      cy.get('[class="rce-input rce-input-textarea"]')
+        .type('test cypress invio messaggio buyer DUE')
+        .should('have.value', 'test cypress invio messaggio buyer DUE')
+      cy.get('[data-cy=sendMessage]').click()
+      cy.wait(5000)
+      cy.get('[class=rce-mbox-text]')
+        .contains('test cypress invio messaggio buyer DUE')
+
+      cy.logout()
+      cy.login(Cypress.env('userSeller'))
+      cy.wait(5000)
+
+      // cy.get('[data-cy=unreadMessagesSeller]')
+      //   .contains('2')
+
+      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
+
+      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).parents('tr').within(() => {
+        cy.get('[data-cy=unreadMessagesSowSeller]').contains(2)
+      })
+
+      cy.get('[class="rce-mbox-text"]')
+        .contains('test cypress invio messaggio buyer DUE')
     })
   })
 })
