@@ -3,11 +3,10 @@ import { loader } from 'graphql.macro';
 import * as _ from 'lodash';
 const axios = require('axios')
 
-export const listSowChatMessages = async (sow: any) => {
+export const listSowChatMessages = async (sow: any, after: any) => {
   const mutation = loader('../graphql/listSowChatMessages.gql')
-
   try {
-    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow }))
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, after: after }))
     // console.log("listSowChatMessages result: ", result)
     return result.data.listSowChatMessages
   } catch (error) {
