@@ -69,12 +69,14 @@ function* willSendTextChat(action: any) {
 function* willSendCommandChat(action: any) {
   console.log("in willSendCommandChat with: ", action)
   yield put(UIActions.startActivityRunning(action.payload.values.command));
+  const messages = yield select(ChatSelectors.getMessages)
 
   try {
     const result = yield call(ChatApi.sendCommandChat, action.payload.values.command, action.payload.sow.sow, 'COMMAND');
     console.log("result willSendCommandChat: ", result)
 
-    yield call(willReadSowChat, { payload: action.payload })
+    // yield call(willReadSowChat, { payload: action.payload })
+    yield call(willRefreshSowChat, { payload: { messages: messages, sow: action.payload.sow.sow } })
 
     yield put(SowActions.willGetSow({ sow: action.payload.sow.sow }))
   } catch (error) {
@@ -86,12 +88,14 @@ function* willSendCommandChat(action: any) {
 function* willSendAttachmentChat(action: any) {
   console.log("in willSendAttachmentChat with: ", action)
   yield put(UIActions.startActivityRunning(action.payload.values.key));
+  const messages = yield select(ChatSelectors.getMessages)
 
   try {
     const result = yield call(ChatApi.sendAttachmentChat, action.payload.values.key, action.payload.sow.sow, 'ATTACHMENT');
     console.log("result willSendAttachmentChat: ", result)
 
-    yield call(willReadSowChat, { payload: action.payload })
+    // yield call(willReadSowChat, { payload: action.payload })
+    yield call(willRefreshSowChat, { payload: { messages: messages, sow: action.payload.sow.sow } })
 
     yield put(SowActions.willGetSow({ sow: action.payload.sow.sow }))
   } catch (error) {
