@@ -314,13 +314,14 @@ function* willGetSowAttachmentsList(action: any) {
 
 function* willGetSow(action: any) {
   console.log("in willGetSow with: ", action)
-  yield put(UIActions.startLoading())
+  // yield put(UIActions.startLoading())
 
   try {
     const result = yield call(SowApi.getSow, action.payload.sow);
     console.log("result willGetSow: ", result)
     yield put(SowActions.didGetSow(result))
     yield put(ChatActions.willReadSowChat(action.payload))
+    yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow } });
 
     yield put(UIActions.stopLoading())
   } catch (error) {
