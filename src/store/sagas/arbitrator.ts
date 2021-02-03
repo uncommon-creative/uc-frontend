@@ -17,12 +17,15 @@ export function* sagas() {
 
 function* willGetArbitrator(action: any) {
   console.log("in willGetArbitrator with: ", action)
+  yield put(UIActions.startLoading())
 
   try {
     const result = yield call(ArbitratorApi.getArbitrator, action.payload.user);
     console.log("result willGetArbitrator: ", result)
 
     yield put(ArbitratorActions.didGetArbitrator(result))
+
+    yield put(UIActions.stopLoading())
     return result
   } catch (error) {
     console.log("error in willGetArbitrator ", error)
@@ -43,11 +46,14 @@ function* willGetArbitratorsList() {
 
 function* willGetFullArbitratorsList() {
   console.log("in willGetFullArbitratorsList")
+  yield put(UIActions.startLoading())
 
   try {
     const result = yield call(ArbitratorApi.getFullArbitratorsList);
     console.log("result willGetFullArbitratorsList: ", result)
     yield put(ArbitratorActions.didGetArbitratorsList(result))
+
+    yield put(UIActions.stopLoading())
   } catch (error) {
     console.log("error in willGetFullArbitratorsList ", error)
   }

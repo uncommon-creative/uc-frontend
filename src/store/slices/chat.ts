@@ -4,7 +4,7 @@ import update from 'immutability-helper';
 export const currentSlice = createSlice({
   name: 'chat',
   initialState: {
-    messages: [],
+    messages: [] as any,
     message: '',
     unreadMessages: {
       asSeller: 0,
@@ -14,9 +14,7 @@ export const currentSlice = createSlice({
   },
   reducers: {
     willRefreshSowChat: (state, action: PayloadAction<any>) => state,
-    didRefreshSowChat: (state, action: PayloadAction<any>) => void (state.messages = action.payload),
-    // didRefreshSowChat: (state, action: PayloadAction<any>) => update(state.messages, { $push: [action.payload] }),
-    
+    didRefreshSowChat: (state, action: PayloadAction<any>) => void (state.messages = state.messages.concat(action.payload)),    
 
     willWriteMessage: (state, action: PayloadAction<any>) => void (state.message = action.payload),
 

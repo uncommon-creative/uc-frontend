@@ -23,11 +23,6 @@ function updateScroll() {
   element.scrollTop = element.scrollHeight;
 }
 
-function getLast(array: any) {
-  const length = array.length
-
-}
-
 export const ChatSow = ({ currentSow }: any) => {
 
   console.log("in ChatSow sow: ", currentSow)
@@ -39,16 +34,18 @@ export const ChatSow = ({ currentSow }: any) => {
   let inputRef: any = React.createRef();
 
   React.useEffect(() => {
-    setInterval(() => {
+    // dispatch(ChatActions.willReadSowChat({ sow: currentSow.sow }))
+    const refreshChat = setInterval(() => {
+
+      console.log("in refresh: ", currentSow.sow)
       dispatch(ChatActions.willRefreshSowChat({ messages: messages, sow: currentSow.sow }))
     }, 30000);
 
+    return () => clearInterval(refreshChat)
   }, []);
 
   React.useEffect(() => {
     updateScroll()
-
-    // inputRef.value = ''
   }, [messages]);
 
   return (

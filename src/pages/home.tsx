@@ -10,6 +10,7 @@ import { actions as SowActions, selectors as SowSelectors } from '../store/slice
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as ChatSelectors } from '../store/slices/chat'
 import { ActivityButton } from '../components/ActivityButton';
+import { selectors as UISelectors } from '../store/slices/ui'
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -85,6 +86,7 @@ function TableData({ tabId, data }: any) {
 export const HomePage = () => {
 
   const dispatch = useDispatch();
+  const isLoading = useSelector(UISelectors.isLoading)
   let history = useHistory();
   const [activeTab, setActiveTab] = useState('1');
   const userAttributes = useSelector(ProfileSelectors.getProfile)
@@ -105,64 +107,67 @@ export const HomePage = () => {
   }, []);
 
   return (
-    <Container>
-      <Card className="mt-3 mt-lg-5 rounded" outline color="primary">
-        <div className="row">
-          <div className="col-12 col-sm-8">
-            <CardTitle tag="h2">Welcome {userAttributes.given_name}</CardTitle>
-          </div>
-          <div className="col-12 col-sm-4">
-            {activeTab == '1' &&
-              <ActivityButton data-cy="createSow" className="mt-sm-2 mx-auto" type="submit" name="createSow" color="primary"
-                onClick={() => dispatch(SowActions.willCreateStatementOfWork({ history: history }))}
-              >new Statement Of Work</ActivityButton>
-            }
-          </div>
-        </div>
-        <Nav tabs>
-          <NavItem >
-            <NavLink
-              active={activeTab === '1'}
-              onClick={() => { toggle('1'); }}
-            >
-              Freelance
+    <>
+      {!isLoading &&
+        <Container>
+          <Card className="mt-3 mt-lg-5 rounded" outline color="primary">
+            <div className="row">
+              <div className="col-12 col-sm-8">
+                <CardTitle tag="h2">Welcome {userAttributes.given_name}</CardTitle>
+              </div>
+              <div className="col-12 col-sm-4">
+                {activeTab == '1' &&
+                  <ActivityButton data-cy="createSow" className="mt-sm-2 mx-auto" type="submit" name="createSow" color="primary"
+                    onClick={() => dispatch(SowActions.willCreateStatementOfWork({ history: history }))}
+                  >new Statement Of Work</ActivityButton>
+                }
+              </div>
+            </div>
+            <Nav tabs>
+              <NavItem >
+                <NavLink
+                  active={activeTab === '1'}
+                  onClick={() => { toggle('1'); }}
+                >
+                  Freelance
               <Badge data-cy='unreadMessagesSeller' pill color={unreadMessages.asSeller == 0 ? "secondary" : "primary"}>{unreadMessages.asSeller}</Badge>
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              data-cy='customerTab'
-              active={activeTab === '2'}
-              onClick={() => { toggle('2'); }}
-            >
-              Customer
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  data-cy='customerTab'
+                  active={activeTab === '2'}
+                  onClick={() => { toggle('2'); }}
+                >
+                  Customer
               <Badge data-cy='unreadMessagesBuyer' pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              active={activeTab === '3'}
-              onClick={() => { toggle('3'); }}
-            >
-              Arbitrator
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  active={activeTab === '3'}
+                  onClick={() => { toggle('3'); }}
+                >
+                  Arbitrator
               <Badge data-cy='unreadMessagesArbitrator' pill color={unreadMessages.asArbitrator == 0 ? "secondary" : "primary"}>{unreadMessages.asArbitrator}</Badge>
-            </NavLink>
-          </NavItem>
-        </Nav>
-        <TabContent activeTab={activeTab}>
-          <TabPane tabId="1">
-            <TableData tabId="1" data={sowsAsSeller} />
-          </TabPane>
-          <TabPane tabId="2">
-            <TableData tabId="2" data={sowsAsBuyer} />
-          </TabPane>
-          <TabPane tabId="3">
-            <TableData tabId="3" data={sowsAsArbitrator} />
-          </TabPane>
-        </TabContent>
+                </NavLink>
+              </NavItem>
+            </Nav>
+            <TabContent activeTab={activeTab}>
+              <TabPane tabId="1">
+                <TableData tabId="1" data={sowsAsSeller} />
+              </TabPane>
+              <TabPane tabId="2">
+                <TableData tabId="2" data={sowsAsBuyer} />
+              </TabPane>
+              <TabPane tabId="3">
+                <TableData tabId="3" data={sowsAsArbitrator} />
+              </TabPane>
+            </TabContent>
 
-      </Card>
-    </Container >
-
+          </Card>
+        </Container>
+      }
+    </>
   )
 }

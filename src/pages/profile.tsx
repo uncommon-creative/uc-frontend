@@ -17,6 +17,7 @@ import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { ActivityButton } from '../components/ActivityButton'
 import { TagsInput } from '../components/TagsInput';
+import { selectors as UISelectors } from '../store/slices/ui'
 
 const ArbitratorSettingsSchema = Yup.object().shape({
   enabled: Yup.bool()
@@ -51,6 +52,7 @@ const ArbitratorSettingsSchema = Yup.object().shape({
 export const ProfilePage = () => {
 
   const dispatch = useDispatch();
+  const isLoading = useSelector(UISelectors.isLoading)
   let history = useHistory();
   const myArbitratorSettings = useSelector(ArbitratorSelectors.getMyArbitratorSettings)
   const user = useSelector(AuthSelectors.getUser)
@@ -66,119 +68,122 @@ export const ProfilePage = () => {
   }, []);
 
   React.useEffect(() => {
-    console.log("in useEffect myArbitratorSettings: ", myArbitratorSettings)
     setSwitchEnabled(myArbitratorSettings ? myArbitratorSettings.enabled : false)
   }, [myArbitratorSettings]);
 
   return (
-    <Container>
-      <Card>
-        <CardBody>
-          <CardTitle tag="h5" className="text-center">Profile</CardTitle>
-        </CardBody>
+    <>
+      {!isLoading &&
+        <Container>
+          <Card>
+            <CardBody>
+              <CardTitle tag="h5" className="text-center">Profile</CardTitle>
+            </CardBody>
 
-        <Jumbotron>
-          <CardTitle tag="h6" className="text-center">Arbitrator Settings</CardTitle>
-          <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Change your arbitrator settings</CardSubtitle>
+            <Jumbotron>
+              <CardTitle tag="h6" className="text-center">Arbitrator Settings</CardTitle>
+              <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Change your arbitrator settings</CardSubtitle>
 
-          <Formik
-            enableReinitialize={true}
-            initialValues={{
-              enabled: myArbitratorSettings && myArbitratorSettings.hasOwnProperty('enabled') ? myArbitratorSettings.enabled : switchEnabled,
-              feePercentage: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.perc : '',
-              feeFlat: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.flat : '',
-              currency: feeCurrency,
-              tags: myArbitratorSettings && myArbitratorSettings.tags && myArbitratorSettings.tags.length ? myArbitratorSettings.tags.map((tag: any) => JSON.parse(tag)) : []
-            }}
-            validationSchema={ArbitratorSettingsSchema}
-            validateOnBlur={true}
-            onSubmit={values => {
-              console.log('in onsubmit with: ', values)
-              dispatch(ArbitratorActions.willSaveArbitratorSettings({ arbitratorSettings: values, history: history }));
-            }}
-          >
-            {({ errors, touched, setFieldValue, values }) => {
-              return (
-                <Form>
-                  <Row>
-                    <Col className="col-md-2 col-12">
-                      <FormGroup>
-                        <Label for="enabled">Enabled</Label>
-                        <CustomInput type="switch" name="enabled" id="enabled" tag={Field}
-                          checked={values.enabled}
-                          onClick={(event: any) => {
-                            toggleSwitchEnabled(event.target.checked)
-                            setFieldValue('enabled', event.target.checked)
-                          }}
-                        />
+              <Formik
+                enableReinitialize={true}
+                initialValues={{
+                  enabled: myArbitratorSettings && myArbitratorSettings.hasOwnProperty('enabled') ? myArbitratorSettings.enabled : switchEnabled,
+                  feePercentage: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.perc : '',
+                  feeFlat: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.flat : '',
+                  currency: feeCurrency,
+                  tags: myArbitratorSettings && myArbitratorSettings.tags && myArbitratorSettings.tags.length ? myArbitratorSettings.tags.map((tag: any) => JSON.parse(tag)) : []
+                }}
+                validationSchema={ArbitratorSettingsSchema}
+                validateOnBlur={true}
+                onSubmit={values => {
+                  console.log('in onsubmit with: ', values)
+                  dispatch(ArbitratorActions.willSaveArbitratorSettings({ arbitratorSettings: values, history: history }));
+                }}
+              >
+                {({ errors, touched, setFieldValue, values }) => {
+                  return (
+                    <Form>
+                      <Row>
+                        <Col className="col-md-2 col-12">
+                          <FormGroup>
+                            <Label for="enabled">Enabled</Label>
+                            <CustomInput type="switch" name="enabled" id="enabled" tag={Field}
+                              checked={values.enabled}
+                              onClick={(event: any) => {
+                                toggleSwitchEnabled(event.target.checked)
+                                setFieldValue('enabled', event.target.checked)
+                              }}
+                            />
 
-                      </FormGroup>
-                    </Col>
-                    <Col className="col-md-7 col-12 ">
-                      <FormGroup>
-                        <Label for="feeFlat">Fee flat</Label>
-                        <InputGroup>
-                          <Input disabled={!switchEnabled} invalid={errors.feeFlat && touched.feeFlat ? true : false} type="text" name="feeFlat" id="feeFlat" placeholder={"fee flat"} tag={Field} />
+                          </FormGroup>
+                        </Col>
+                        <Col className="col-md-7 col-12 ">
+                          <FormGroup>
+                            <Label for="feeFlat">Fee flat</Label>
+                            <InputGroup>
+                              <Input disabled={!switchEnabled} invalid={errors.feeFlat && touched.feeFlat ? true : false} type="text" name="feeFlat" id="feeFlat" placeholder={"fee flat"} tag={Field} />
 
-                          <InputGroupButtonDropdown disabled={!switchEnabled} addonType="append" isOpen={dropdownCurrencyOpen} toggle={toggleDropDownCurrency}>
-                            <DropdownToggle caret>
-                              {feeCurrency}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              <DropdownItem header>Select the currency</DropdownItem>
-                              <DropdownItem disabled={feeCurrency == "ALGO"}
-                                onClick={() => {
-                                  setFieldValue('currency', "ALGO")
-                                  setFeeCurrency("ALGO")
-                                }}
-                              >
-                                ALGO
+                              <InputGroupButtonDropdown disabled={!switchEnabled} addonType="append" isOpen={dropdownCurrencyOpen} toggle={toggleDropDownCurrency}>
+                                <DropdownToggle caret>
+                                  {feeCurrency}
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                  <DropdownItem header>Select the currency</DropdownItem>
+                                  <DropdownItem disabled={feeCurrency == "ALGO"}
+                                    onClick={() => {
+                                      setFieldValue('currency', "ALGO")
+                                      setFeeCurrency("ALGO")
+                                    }}
+                                  >
+                                    ALGO
                               </DropdownItem>
-                              <DropdownItem disabled={feeCurrency == "USDC"}
-                                onClick={() => {
-                                  setFieldValue('currency', "USDC")
-                                  setFeeCurrency("USDC")
-                                }}
-                              >
-                                USDC
+                                  <DropdownItem disabled={feeCurrency == "USDC"}
+                                    onClick={() => {
+                                      setFieldValue('currency', "USDC")
+                                      setFeeCurrency("USDC")
+                                    }}
+                                  >
+                                    USDC
                               </DropdownItem>
-                            </DropdownMenu>
-                          </InputGroupButtonDropdown>
-                          {errors.feeFlat && touched.feeFlat ? (
-                            <FormFeedback>{errors.feeFlat}</FormFeedback>
-                          ) : null}
-                        </InputGroup>
-                      </FormGroup>
-                    </Col>
-                    <Col className="col-md-3 col-12 ">
+                                </DropdownMenu>
+                              </InputGroupButtonDropdown>
+                              {errors.feeFlat && touched.feeFlat ? (
+                                <FormFeedback>{errors.feeFlat}</FormFeedback>
+                              ) : null}
+                            </InputGroup>
+                          </FormGroup>
+                        </Col>
+                        <Col className="col-md-3 col-12 ">
+                          <FormGroup>
+                            <Label for="feePercentage">Fee percentage</Label>
+                            <InputGroup>
+                              <Input disabled={!switchEnabled} invalid={errors.feePercentage && touched.feePercentage ? true : false} type="text" name="feePercentage" id="feePercentage" placeholder={"fee percentage"} tag={Field} />
+                              {errors.feePercentage && touched.feePercentage ? (
+                                <FormFeedback>{errors.feePercentage}</FormFeedback>
+                              ) : null}
+                            </InputGroup>
+                          </FormGroup>
+                        </Col>
+                      </Row>
                       <FormGroup>
-                        <Label for="feePercentage">Fee percentage</Label>
-                        <InputGroup>
-                          <Input disabled={!switchEnabled} invalid={errors.feePercentage && touched.feePercentage ? true : false} type="text" name="feePercentage" id="feePercentage" placeholder={"fee percentage"} tag={Field} />
-                          {errors.feePercentage && touched.feePercentage ? (
-                            <FormFeedback>{errors.feePercentage}</FormFeedback>
-                          ) : null}
-                        </InputGroup>
+                        <Label for="tags">Tags</Label>
+                        <TagsInput disabled={!switchEnabled} tags={myArbitratorSettings && myArbitratorSettings.tags ? myArbitratorSettings.tags : []} />
+                        {/* <Input disabled={!switchEnabled} invalid={errors.tags && touched.tags ? true : false} type="text" name="tags" id="tags" placeholder="tags" tag={Field} /> */}
+                        {errors.tags && touched.tags ? (
+                          <FormFeedback className="d-block">{errors.tags}</FormFeedback>
+                        ) : null}
                       </FormGroup>
-                    </Col>
-                  </Row>
-                  <FormGroup>
-                    <Label for="tags">Tags</Label>
-                    <TagsInput disabled={!switchEnabled} tags={myArbitratorSettings && myArbitratorSettings.tags ? myArbitratorSettings.tags : []} />
-                    {/* <Input disabled={!switchEnabled} invalid={errors.tags && touched.tags ? true : false} type="text" name="tags" id="tags" placeholder="tags" tag={Field} /> */}
-                    {errors.tags && touched.tags ? (
-                      <FormFeedback className="d-block">{errors.tags}</FormFeedback>
-                    ) : null}
-                  </FormGroup>
-                  <Row>
-                    <Col><ActivityButton type="submit" name="saveArbitratorSettings" color="primary" block>Save arbitrator settings</ActivityButton></Col>
-                  </Row>
-                </Form>
-              )
-            }}
-          </Formik>
-        </Jumbotron>
-      </Card>
-    </Container>
+                      <Row>
+                        <Col><ActivityButton type="submit" name="saveArbitratorSettings" color="primary" block>Save arbitrator settings</ActivityButton></Col>
+                      </Row>
+                    </Form>
+                  )
+                }}
+              </Formik>
+            </Jumbotron>
+          </Card>
+        </Container>
+      }
+    </>
   )
 }

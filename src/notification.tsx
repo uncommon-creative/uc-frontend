@@ -11,7 +11,7 @@ export const NotificationLayer = ({ children, ...rest }: any) => {
   console.log('notification: ', notification);
   return (
     <>
-      { children}
+      {children}
       {notification.visible &&
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, zIndex: 10 }}>
           <Container>

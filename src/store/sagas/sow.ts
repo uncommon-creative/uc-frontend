@@ -43,6 +43,7 @@ function* willConfirmArbitrators(action: any) {
 
 function* willCreateStatementOfWork(action: any) {
   console.log("in willCreateStatementOfWork with ", action)
+  yield put(UIActions.startLoading())
 
   yield put(UIActions.startActivityRunning("createSow"));
 
@@ -51,6 +52,8 @@ function* willCreateStatementOfWork(action: any) {
     console.log("willCreateStatementOfWork result: ", result)
     yield put(SowActions.didCreateStatementOfWork(result))
     yield put(push("/create-statement-of-work"))
+
+    yield put(UIActions.stopLoading())
   } catch (error) {
     console.log("error in willCreateStatementOfWork ", error)
     yield put(NotificationActions.willShowNotification({ message: error, type: "danger" }));
@@ -199,6 +202,7 @@ function* willDeleteAttachment(action: any) {
 
 function* willGetSowsListSeller() {
   console.log("in willGetSowsListSeller")
+  yield put(UIActions.startLoading())
 
   try {
     const result = yield call(SowApi.getSowsListSeller);
@@ -211,6 +215,8 @@ function* willGetSowsListSeller() {
 
     yield put(ChatActions.didCountUnreadMessagesSeller(totalUnreadMessagesSeller))
 
+    yield put(UIActions.stopLoading())
+
   } catch (error) {
     console.log("error in willGetSowsListSeller ", error)
   }
@@ -218,6 +224,7 @@ function* willGetSowsListSeller() {
 
 function* willGetSowsListBuyer() {
   console.log("in willGetSowsListBuyer")
+  yield put(UIActions.startLoading())
 
   try {
     const result = yield call(SowApi.getSowsListBuyer);
@@ -230,6 +237,8 @@ function* willGetSowsListBuyer() {
 
     yield put(ChatActions.didCountUnreadMessagesBuyer(totalUnreadMessagesBuyer))
 
+    yield put(UIActions.stopLoading())
+
   } catch (error) {
     console.log("error in willGetSowsListBuyer ", error)
   }
@@ -237,6 +246,7 @@ function* willGetSowsListBuyer() {
 
 function* willGetSowsListArbitrator() {
   console.log("in willGetSowsListArbitrator")
+  yield put(UIActions.startLoading())
 
   try {
     const result = yield call(SowApi.getSowsListArbitrator);
@@ -248,6 +258,8 @@ function* willGetSowsListArbitrator() {
     }, 0)
 
     yield put(ChatActions.didCountUnreadMessagesArbitrator(totalUnreadMessagesArbitrator))
+
+    yield put(UIActions.stopLoading())
 
   } catch (error) {
     console.log("error in willGetSowsListArbitrator ", error)
@@ -269,15 +281,10 @@ function* willSelectSow(action: any) {
   yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow.sow } });
 
   if (action.payload.sow.status == "DRAFT") {
-    console.log("sow DRAFT")
     action.payload.history.push('/create-statement-of-work')
   }
-  else/*  if (action.payload.sow.status == "SUBMITTED") */ {
-    console.log("sow SUBMITTED")
-
-    // yield put(ChatActions.willReadSowChat, action.payload.sow.sow)
-
-    action.payload.history.push('/statement-of-work')
+  else {
+    action.payload.history.push('/statement-of-work/' + action.payload.sow.sow)
   }
 }
 
@@ -307,12 +314,15 @@ function* willGetSowAttachmentsList(action: any) {
 
 function* willGetSow(action: any) {
   console.log("in willGetSow with: ", action)
+  yield put(UIActions.startLoading())
 
   try {
     const result = yield call(SowApi.getSow, action.payload.sow);
     console.log("result willGetSow: ", result)
     yield put(SowActions.didGetSow(result))
+    yield put(ChatActions.willReadSowChat(action.payload))
 
+    yield put(UIActions.stopLoading())
   } catch (error) {
     console.log("error in willGetSow ", error)
   }

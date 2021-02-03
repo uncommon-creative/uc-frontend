@@ -7,7 +7,7 @@ import {
   useHistory
 } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Container } from "reactstrap";
+import { Container, Spinner } from "reactstrap";
 import { history } from './store'
 import { ConnectedRouter } from 'connected-react-router'
 
@@ -38,15 +38,22 @@ const PrivateRoute = ({ children, ...rest }: any) => {
           console.log("isLogged: ", isLogged)
           return (
             <>
-              {isChecked ? (
-                <>
-                  {isLogged ? (
-                    children
-                  ) : (
+              {isChecked ?
+                (
+                  <>
+                    {isLogged ?
+
+                      (
+                        children
+                      )
+                      :
                       <Redirect to="/login" />
-                    )}
-                </>
-              ) : (
+
+                    }
+                  </>
+                )
+                :
+                (
                   <p>waiting</p>
                 )
               }
@@ -95,9 +102,12 @@ export const AppRouter = () => {
           <PrivateRoute path="/create-statement-of-work">
             <CreateStatementOfWorkPage />
           </PrivateRoute>
-          <PrivateRoute path="/statement-of-work">
+          <PrivateRoute path="/statement-of-work/:code">
             <StatementOfWorkPage />
           </PrivateRoute>
+          {/* <PrivateRoute path="/statement-of-work">
+            <StatementOfWorkPage />
+          </PrivateRoute> */}
           <PrivateRoute path="/" >
             <HomePage />
           </PrivateRoute>
