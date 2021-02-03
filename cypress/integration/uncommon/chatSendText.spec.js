@@ -105,11 +105,8 @@ describe('Chat', () => {
       cy.get('[class="rce-input rce-input-textarea"]')
         .type('test cypress invio messaggio seller')
         .should('have.value', 'test cypress invio messaggio seller')
-
       cy.get('[data-cy=sendMessage]').click()
-
       cy.wait(5000)
-
       cy.get('[class=rce-mbox-text]')
         .contains('test cypress invio messaggio seller')
 

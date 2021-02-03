@@ -5,12 +5,15 @@ import { Provider } from 'react-redux'
 import { configureStore, history } from './store'
 import { AppRouter } from './router'
 import { NotificationLayer } from './notification'
+import { LoadingLayer } from './loading'
 
 function App() {
   return (
     <Provider store={configureStore({})}>
       <NotificationLayer>
-        <AppRouter />
+        <LoadingLayer>
+          <AppRouter />
+        </LoadingLayer>
       </NotificationLayer>
     </Provider>
   );

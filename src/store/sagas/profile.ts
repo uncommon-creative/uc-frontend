@@ -17,6 +17,8 @@ export function* sagas() {
 
 function* willRetrieveProfileData(action: any) {
   console.log('in willRetrieveProfileData with ', action);
+  // yield put(UIActions.startLoading())
+  
   try {
     const result = yield call(ServiceApi.getProfileData);
     yield put(ProfileActions.didRetrieveProfileData(result))
@@ -27,6 +29,8 @@ function* willRetrieveProfileData(action: any) {
     else {
       console.log('with public_key')
     }
+
+    // yield put(UIActions.stopLoading())
   } catch (error) {
     console.log('Error retriving profile data', error);
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
