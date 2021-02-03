@@ -25,11 +25,19 @@ var DatePicker = require("reactstrap-date-picker");
 const StatementOfWorkSchema = Yup.object().shape({
   sow: Yup.string()
     .required('Required'),
-  buyer: Yup.string()
-    .email()
-    .min(2, 'Too Short!')
-    .max(50, 'Too Long!')
-    .required('Required'),
+  // buyer: Yup.string()
+  //   .email()
+  //   .min(2, 'Too Short!')
+  //   .max(50, 'Too Long!')
+  //   .required('Required'),
+  buyer: Yup.string().when('status', {
+    is: 'DRAFT',
+    then: Yup.string()
+      .email()
+      .min(2, 'Too Short!')
+      .max(50, 'Too Long!')
+      .required('Required')
+  }),
   title: Yup.string()
     .test(`'Draft Title' is not accepted as a title!`, `'Draft Title' is not accepted as a title!`, (value) => value != 'Draft Title')
     .min(2, 'Too Short!')
@@ -95,6 +103,7 @@ export const CreateStatementOfWorkPage = () => {
               <Formik
                 initialValues={{
                   sow: currentSow.sow ? currentSow.sow : '',
+                  status: currentSow.status,
                   buyer: currentSow.buyer != 'not_set' ? currentSow.buyer : '',
                   title: currentSow.title ? currentSow.title : '',
                   description: currentSow.description ? currentSow.description : '',
@@ -126,8 +135,15 @@ export const CreateStatementOfWorkPage = () => {
                         ) : null}
                       </FormGroup>
                       <FormGroup>
+                        {/* <Label for="status">Status</Label> */}
+                        <Input data-cy="inputSowStatus" hidden disabled invalid={errors.status && touched.status ? true : false} type="text" name="status" id="status" placeholder="status" tag={Field} />
+                        {errors.status && touched.status ? (
+                          <FormFeedback>{errors.status}</FormFeedback>
+                        ) : null}
+                      </FormGroup>
+                      <FormGroup>
                         <Label for="email">Email Address *</Label>
-                        <Input data-cy="inputSowBuyer" disabled={currentSow.status==SowStatus.SUBMITTED} invalid={errors.buyer && touched.buyer ? true : false} type="text" name="buyer" id="buyer" placeholder="customer email" tag={Field} />
+                        <Input data-cy="inputSowBuyer" disabled={currentSow.status == SowStatus.SUBMITTED} invalid={errors.buyer && touched.buyer ? true : false} type="text" name="buyer" id="buyer" placeholder="customer email" tag={Field} />
                         {errors.buyer && touched.buyer ? (
                           <FormFeedback>{errors.buyer}</FormFeedback>
                         ) : null}
