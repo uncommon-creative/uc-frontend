@@ -11,12 +11,12 @@ import { Link, useParams, useHistory } from "react-router-dom";
 import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
-import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { ChatSow } from '../components/ChatSow'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
 import { ActivityButton } from '../components/ActivityButton'
 import { UploadFileButton } from '../components/UploadFileButton';
 import { selectors as UISelectors } from '../store/slices/ui'
+import { ArbitratorDetail } from '../components/ArbitratorDetail';
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -29,10 +29,11 @@ export const StatementOfWorkPage = () => {
   const dispatch = useDispatch();
   const isLoading = useSelector(UISelectors.isLoading)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
-  const confirmedArbitrators = useSelector(SowSelectors.getConfirmedArbitrators);
+  const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators);
   const attachments = useSelector(SowSelectors.getAttachments);
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const user = useSelector(AuthSelectors.getUser)
+  const [selectedArbitrator, setSelectedArbitrator] = React.useState('');
 
   React.useEffect(() => {
     console.log("in statementOfWorkPage")
@@ -140,6 +141,25 @@ export const StatementOfWorkPage = () => {
                       </Jumbotron>
                     </Col>
                   </Row>
+                  {currentSow.status == SowStatus.SUBMITTED && currentSow.buyer == user.username &&
+                    <Row>
+                      <Col className="col-12">
+                        <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Arbitrators</CardSubtitle>
+                        <Jumbotron>
+                          {currentArbitrators.map((element: any, index: any) => {
+                            return (
+                              <ListGroupItem className={selectedArbitrator == element.user ? 'border border-primary' : 'border'} /* active={selectedArbitrator == element.user} */ key={index}
+                                onClick={() => {
+                                  console.log("selecting arbitrator: ", element)
+                                  setSelectedArbitrator(element.user)
+                                }}>
+                                <ArbitratorSummary arbitrator={element} size='h6' />
+                              </ListGroupItem>
+                            )
+                          })}
+                        </Jumbotron>
+                      </Col>
+                    </Row>}
                   <Row>
                     <Col className="col-12">
                       <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Special commands</CardSubtitle>
@@ -157,10 +177,10 @@ export const StatementOfWorkPage = () => {
                         {currentSow.buyer == user.username &&
                           <>
                             {currentSow.status == SowStatus.SUBMITTED &&
-                              <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} block color="primary" name={SowCommands.ACCEPT_AND_PAY} onClick={() => {
+                              <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={selectedArbitrator == ''} block color="primary" name={SowCommands.ACCEPT_AND_PAY} onClick={() => {
                                 console.log("Accept and pay")
                                 dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_AND_PAY }, sow: currentSow }));
-                              }}>Accept and pay</ActivityButton>
+                              }}>{selectedArbitrator == '' ? "Select an arbitrator" : "Accept and pay"}</ActivityButton>
                             }
                             {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
                               <ActivityButton data-cy={SowCommands.REQUEST_REVIEW} block color="primary" name={SowCommands.REQUEST_REVIEW} onClick={() => {

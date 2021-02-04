@@ -25,11 +25,11 @@ function* willGetArbitrator(action: any) {
 
     yield put(ArbitratorActions.didGetArbitrator(result))
 
-    yield put(UIActions.stopLoading())
     return result
   } catch (error) {
     console.log("error in willGetArbitrator ", error)
   }
+  yield put(UIActions.stopLoading())
 }
 
 function* willGetArbitratorsList() {

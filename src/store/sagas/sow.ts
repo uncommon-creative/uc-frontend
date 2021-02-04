@@ -323,6 +323,15 @@ function* willGetSow(action: any) {
     yield put(ChatActions.willReadSowChat(action.payload))
     yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow } });
 
+    const fullArbitrators = []
+    if (Array.isArray(result.arbitrators)) {
+      for (const arb of result.arbitrators) {
+        fullArbitrators.push(yield call(ArbitratorApi.getArbitrator, arb))
+      }
+    }
+    console.log("in willGetSow with fullArbitrators: ", fullArbitrators)
+    yield put(SowActions.willConfirmArbitrators({ arbitrators: fullArbitrators, toggle: () => { } }))
+
     yield put(UIActions.stopLoading())
   } catch (error) {
     console.log("error in willGetSow ", error)

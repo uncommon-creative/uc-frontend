@@ -4,7 +4,7 @@ import update from 'immutability-helper';
 export const currentSlice = createSlice({
   name: 'statementOfWork',
   initialState: {
-    confirmedArbitrators: [],
+    currentArbitrators: [],
     attachments: [],
     newAttachments: [],
     currentSow: {},
@@ -13,7 +13,7 @@ export const currentSlice = createSlice({
     sowsAsArbitrator: []
   },
   reducers: {
-    willConfirmArbitrators: (state, action: PayloadAction<any>) => void (state.confirmedArbitrators = action.payload.arbitrators),
+    willConfirmArbitrators: (state, action: PayloadAction<any>) => void (state.currentArbitrators = action.payload.arbitrators),
 
     willCreateStatementOfWork: (state, action: PayloadAction<any>) => state,
     didCreateStatementOfWork: (state, action: PayloadAction<any>) => void (state.currentSow = action.payload),
@@ -56,7 +56,7 @@ export const {
   willSelectSow, willGetSowAttachmentsList, didGetSowAttachmentsList, willGetSow, didGetSow
 } = actions
 export const selectors = {
-  getConfirmedArbitrators: (state: any) => state.statementOfWork.confirmedArbitrators,
+  getCurrentArbitrators: (state: any) => state.statementOfWork.currentArbitrators,
   getCurrentSow: (state: any) => state.statementOfWork.currentSow,
   getListSowsSeller: (state: any) => state.statementOfWork.sowsAsSeller,
   getListSowsBuyer: (state: any) => state.statementOfWork.sowsAsBuyer,
