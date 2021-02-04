@@ -15,25 +15,17 @@ export const TagsInput = ({ tags, disabled }: any) => {
   const [isDisabled, setIsDisabled] = React.useState(disabled);
 
   const handleChange = (newValue: any, actionMeta: any) => {
-    // console.log('tags changed newValue', newValue);
-    // console.log('tags changed actionMeta', actionMeta);
 
     setFieldValue('tags', newValue ? newValue : [])
     setNewTags(newValue)
   };
 
   React.useEffect(() => {
-    // setNewTags(tags.map((tag: any) => JSON.parse(tag)))
     setIsDisabled(disabled)
-
-    
   }, [disabled]);
 
   React.useEffect(() => {
     setNewTags(tags.map((tag: any) => JSON.parse(tag)))
-    // setIsDisabled(disabled)
-
-    
   }, [tags]);
 
   return (

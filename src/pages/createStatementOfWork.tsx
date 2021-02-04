@@ -87,7 +87,7 @@ export const CreateStatementOfWorkPage = () => {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [priceCurrency, setPriceCurrency] = React.useState(currentSow.currency ? currentSow.currency : "ALGO");
   const [deadlineValue, setDeadlineValue] = React.useState(currentSow.deadline ? currentSow.deadline : '');
-  const confirmedArbitrators = useSelector(SowSelectors.getConfirmedArbitrators)
+  const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators)
 
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
   const toggleModal = () => setModalOpen(!modalOpen);
@@ -115,7 +115,7 @@ export const CreateStatementOfWorkPage = () => {
                   numberReviews: currentSow.numberReviews ? currentSow.numberReviews : '',
                   termsOfService: false,
                   codeOfConduct: false,
-                  arbitrators: confirmedArbitrators
+                  arbitrators: currentArbitrators
                 }}
                 validationSchema={StatementOfWorkSchema}
                 validateOnBlur={true}
@@ -262,7 +262,7 @@ export const CreateStatementOfWorkPage = () => {
                         <FormGroup>
                           <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Arbitrators *</CardSubtitle>
                           <Row name="arbitrators" id="arbitrators">
-                            {confirmedArbitrators.map((arbitrator: any, index: any) => {
+                            {currentArbitrators.map((arbitrator: any, index: any) => {
                               return (
                                 <Col>
                                   <Card>
