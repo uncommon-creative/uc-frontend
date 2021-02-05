@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import update from 'immutability-helper';
 
 export const currentSlice = createSlice({
   name: 'statementOfWork',
@@ -7,7 +6,7 @@ export const currentSlice = createSlice({
     currentArbitrators: [],
     attachments: [],
     newAttachments: [],
-    currentSow: {},
+    currentSow: {} as any,
     sowsAsSeller: [],
     sowsAsBuyer: [],
     sowsAsArbitrator: []
@@ -45,6 +44,8 @@ export const currentSlice = createSlice({
 
     willGetSow: (state, action: PayloadAction<any>) => state,
     didGetSow: (state, action: PayloadAction<any>) => void (state.currentSow = action.payload),
+
+    willSelectArbitrator: (state, action: PayloadAction<any>) => void (state.currentSow.arbitrator = action.payload),
   }
 })
 
@@ -53,7 +54,7 @@ export const {
   willConfirmArbitrators, willCreateStatementOfWork, didCreateStatementOfWork, willDraftStatementOfWork, willSubmitStatementOfWork, didSubmitStatementOfWork,
   willPrepareUploadAttachment, didPrepareUploadAttachment, willDeleteAttachment,
   willGetSowsListSeller, didGetSowsListSeller, willGetSowsListBuyer, didGetSowsListBuyer, willGetSowsListArbitrator, didGetSowsListArbitrator,
-  willSelectSow, willGetSowAttachmentsList, didGetSowAttachmentsList, willGetSow, didGetSow
+  willSelectSow, willGetSowAttachmentsList, didGetSowAttachmentsList, willGetSow, didGetSow, willSelectArbitrator
 } = actions
 export const selectors = {
   getCurrentArbitrators: (state: any) => state.statementOfWork.currentArbitrators,

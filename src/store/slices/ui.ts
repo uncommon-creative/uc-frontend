@@ -4,7 +4,7 @@ export const currentSlice = createSlice({
   name: 'ui',
   initialState: {
     activitiesRunning: {} as any,
-    loading: true
+    loading: false
   },
   reducers: {
     startActivityRunning: (state, action: PayloadAction<string>) => void (state.activitiesRunning[action.payload] = true),

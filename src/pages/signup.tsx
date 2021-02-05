@@ -60,7 +60,7 @@ export const SignupPage = () => {
   }, [loginError])
 
   React.useEffect(() => {
-    dispatch(UIActions.stopLoading())
+    // dispatch(UIActions.stopLoading())
   }, [])
 
   return (

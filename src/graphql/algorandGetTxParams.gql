@@ -1,0 +1,11 @@
+query algorandGetTxParams{
+  algorandGetTxParams {
+    flatFee
+    fee
+    firstRound
+    lastRound
+    genesisID
+    genesisHash
+    error
+  }
+}

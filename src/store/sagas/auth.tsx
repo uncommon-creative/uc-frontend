@@ -36,7 +36,7 @@ function* checkAuthentication() {
 function* willConfirmUser(action: any) {
   console.log("in willConfirmUser with ", action)
   yield put(NotificationActions.willShowNotification({ message: "Confirming username " + action.payload.username, type: "info" }))
-  yield put(UIActions.startLoading())
+  // yield put(UIActions.startLoading())
 
   try {
     yield put(UIActions.startActivityRunning("confirm"));
@@ -48,7 +48,7 @@ function* willConfirmUser(action: any) {
     yield put(AuthActions.didConfirmUserSuccess(result));
 
     yield put(NotificationActions.willShowNotification({ message: result, type: "success" }));
-    yield put(UIActions.stopLoading())
+    // yield put(UIActions.stopLoading())
     action.payload.history.push('/login')
     yield put(UIActions.stopActivityRunning("confirm"));
   } catch (error) {

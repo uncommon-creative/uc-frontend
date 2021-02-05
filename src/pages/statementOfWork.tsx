@@ -13,10 +13,11 @@ import { selectors as AuthSelectors } from '../store/slices/auth'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { ChatSow } from '../components/ChatSow'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
+import { ArbitratorDetail } from '../components/ArbitratorDetail';
 import { ActivityButton } from '../components/ActivityButton'
 import { UploadFileButton } from '../components/UploadFileButton';
 import { selectors as UISelectors } from '../store/slices/ui'
-import { ArbitratorDetail } from '../components/ArbitratorDetail';
+import { AcceptSow } from '../components/AcceptSow'
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -29,11 +30,15 @@ export const StatementOfWorkPage = () => {
   const dispatch = useDispatch();
   const isLoading = useSelector(UISelectors.isLoading)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
+  console.log("in statementOfWorkPage currentSow: ", currentSow)
   const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators);
   const attachments = useSelector(SowSelectors.getAttachments);
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const user = useSelector(AuthSelectors.getUser)
   const [selectedArbitrator, setSelectedArbitrator] = React.useState('');
+  const [modalOpen, setModalOpen] = React.useState(false);
+
+  const toggleModal = () => setModalOpen(!modalOpen);
 
   React.useEffect(() => {
     console.log("in statementOfWorkPage")
@@ -44,7 +49,8 @@ export const StatementOfWorkPage = () => {
 
   return (
     <>
-      {!isLoading &&
+      {/* {!isLoading && */}
+      {Object.keys(currentSow).length &&
         <Container>
           <Card>
             <CardBody>
@@ -148,10 +154,11 @@ export const StatementOfWorkPage = () => {
                         <Jumbotron>
                           {currentArbitrators.map((element: any, index: any) => {
                             return (
-                              <ListGroupItem data-cy={`selectArbitrator${element.given_name}`} className={selectedArbitrator == element.user ? 'border border-primary' : 'border'} /* active={selectedArbitrator == element.user} */ key={index}
+                              <ListGroupItem data-cy={`selectArbitrator${element.given_name}`} className={currentSow.arbitrator == element.user ? 'border border-primary' : 'border'} /* active={currentSow.arbitrator == element.user} */ key={index}
                                 onClick={() => {
                                   console.log("selecting arbitrator: ", element)
-                                  setSelectedArbitrator(element.user)
+                                  dispatch(SowActions.willSelectArbitrator(element.user))
+                                  // setSelectedArbitrator(element.user)
                                 }}>
                                 <ArbitratorSummary arbitrator={element} size='h6' />
                               </ListGroupItem>
@@ -177,10 +184,9 @@ export const StatementOfWorkPage = () => {
                         {currentSow.buyer == user.username &&
                           <>
                             {currentSow.status == SowStatus.SUBMITTED &&
-                              <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={selectedArbitrator == ''} block color="primary" name={SowCommands.ACCEPT_AND_PAY} onClick={() => {
-                                console.log("Accept and pay")
-                                dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_AND_PAY }, sow: currentSow }));
-                              }}>{selectedArbitrator == '' ? "Select an arbitrator" : "Accept and pay"}</ActivityButton>
+                              <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={currentSow.arbitrator == null} block color="primary" name={SowCommands.ACCEPT_AND_PAY}
+                                onClick={toggleModal}
+                              >{currentSow.arbitrator == null ? "Select an arbitrator" : "Accept and pay"}</ActivityButton>
                             }
                             {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
                               <ActivityButton data-cy={SowCommands.REQUEST_REVIEW} block color="primary" name={SowCommands.REQUEST_REVIEW} onClick={() => {
@@ -252,6 +258,8 @@ export const StatementOfWorkPage = () => {
               </Row>
             </CardBody>
           </Card>
+
+          <AcceptSow modal={modalOpen} toggle={toggleModal} />
         </Container>
       }
     </>

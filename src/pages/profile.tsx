@@ -103,6 +103,7 @@ export const ProfilePage = () => {
                 {({ errors, touched, setFieldValue, values }) => {
                   return (
                     <Form>
+                      {values && console.log("values: ", values)}
                       <Row>
                         <Col className="col-md-2 col-12">
                           <FormGroup>
@@ -168,7 +169,6 @@ export const ProfilePage = () => {
                       <FormGroup>
                         <Label for="tags">Tags</Label>
                         <TagsInput disabled={!switchEnabled} tags={myArbitratorSettings && myArbitratorSettings.tags ? myArbitratorSettings.tags : []} />
-                        {/* <Input disabled={!switchEnabled} invalid={errors.tags && touched.tags ? true : false} type="text" name="tags" id="tags" placeholder="tags" tag={Field} /> */}
                         {errors.tags && touched.tags ? (
                           <FormFeedback className="d-block">{errors.tags}</FormFeedback>
                         ) : null}

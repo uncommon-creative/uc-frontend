@@ -6,6 +6,7 @@ import { reducer as uiReducer } from './slices/ui'
 import { reducer as sowReducer } from './slices/sow'
 import { reducer as arbitratorReducer } from './slices/arbitrator'
 import { reducer as chatReducer } from './slices/chat'
+import { reducer as transactionReducer } from './slices/transaction'
 import { connectRouter } from 'connected-react-router'
 
 export const createRootReducer = (history: any) => combineReducers({
@@ -16,5 +17,6 @@ export const createRootReducer = (history: any) => combineReducers({
   ui: uiReducer,
   statementOfWork: sowReducer,
   arbitrator: arbitratorReducer,
-  chat: chatReducer
+  chat: chatReducer,
+  transaction: transactionReducer
 })
