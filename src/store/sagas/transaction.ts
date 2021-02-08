@@ -14,10 +14,14 @@ export function* sagas() {
   console.log('in sow saga');
 }
 
-function* willGetParams() {
+function* willGetParams(action: any) {
   console.log("in willGetParams")
 
   try {
+    yield put(ProfileActions.willGetUserProfile({ user: action.payload.seller }))
+    yield put(ProfileActions.willGetUserProfile({ user: action.payload.buyer }))
+    yield put(ProfileActions.willGetUserProfile({ user: action.payload.arbitrator }))
+
     const result = yield call(TransactionApi.algorandGetTxParams);
     console.log("result willGetParams: ", result)
     yield put(TransactionActions.didGetParams(result))
@@ -31,9 +35,9 @@ function* willCreateMultiSigAddress(action: any) {
   console.log("in willCreateMultiSigAddress with: ", action)
   yield put(UIActions.startActivityRunning('continueTransaction'));
 
-  yield put(ProfileActions.willGetUserProfile({ user: action.payload.seller }))
-  yield put(ProfileActions.willGetUserProfile({ user: action.payload.buyer }))
-  yield put(ProfileActions.willGetUserProfile({ user: action.payload.arbitrator }))
+  // yield put(ProfileActions.willGetUserProfile({ user: action.payload.seller }))
+  // yield put(ProfileActions.willGetUserProfile({ user: action.payload.buyer }))
+  // yield put(ProfileActions.willGetUserProfile({ user: action.payload.arbitrator }))
 
   const users = yield select(ProfileSelectors.getUsers)
 

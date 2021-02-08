@@ -34,10 +34,7 @@ export const ChatSow = ({ currentSow }: any) => {
   let inputRef: any = React.createRef();
 
   React.useEffect(() => {
-    // dispatch(ChatActions.willReadSowChat({ sow: currentSow.sow }))
     const refreshChat = setInterval(() => {
-
-      console.log("in refresh: ", currentSow.sow)
       dispatch(ChatActions.willRefreshSowChat({ messages: messages, sow: currentSow.sow }))
     }, 30000);
 

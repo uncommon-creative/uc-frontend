@@ -23,7 +23,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   const params = useSelector(TransactionSelectors.getParams)
 
   React.useEffect(() => {
-    modal && dispatch(TransactionActions.willGetParams())
+    modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
   }, [modal])
 
   return (

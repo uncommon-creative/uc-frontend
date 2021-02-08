@@ -9,7 +9,7 @@ export const currentSlice = createSlice({
     completedTransaction: {} as any
   },
   reducers: {
-    willGetParams: (state, action: PayloadAction<any>) => state,
+    willGetParams: (state, action: PayloadAction<any>) => void (state.transactionPage = 1),
     didGetParams: (state, action: PayloadAction<any>) => void (state.params = action.payload),
 
     willCreateMultiSigAddress: (state, action: PayloadAction<any>) => state,
