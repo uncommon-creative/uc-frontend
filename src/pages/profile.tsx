@@ -57,19 +57,11 @@ export const ProfilePage = () => {
   const myArbitratorSettings = useSelector(ArbitratorSelectors.getMyArbitratorSettings)
   const user = useSelector(AuthSelectors.getUser)
   const [dropdownCurrencyOpen, setDropdownCurrencyOpen] = React.useState(false);
-  const [switchEnabled, setSwitchEnabled] = React.useState(false);
+  const [switchEnabled, setSwitchEnabled] = React.useState(myArbitratorSettings ? myArbitratorSettings.enabled : false);
   const [feeCurrency, setFeeCurrency] = React.useState("ALGO");
 
   const toggleDropDownCurrency = () => setDropdownCurrencyOpen(!dropdownCurrencyOpen);
   const toggleSwitchEnabled = (switchEnabled: any) => setSwitchEnabled(switchEnabled);
-
-  React.useEffect(() => {
-    dispatch(ArbitratorActions.willGetArbitrator({ user: user.username }))
-  }, []);
-
-  React.useEffect(() => {
-    setSwitchEnabled(myArbitratorSettings ? myArbitratorSettings.enabled : false)
-  }, [myArbitratorSettings]);
 
   return (
     <>

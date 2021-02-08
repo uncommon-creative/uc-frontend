@@ -13,6 +13,8 @@ export const currentSlice = createSlice({
     users: []
   },
   reducers: {
+    willGoToProfile: (state, action: PayloadAction<any>) => state,
+
     willAddPublicKey: (state, action: PayloadAction<any>) => void (state.publicKey = action.payload.publicKey, state.attributes.publicKey = action.payload.publicKey),
     willRetrieveProfileData: (state, action: PayloadAction<any>) => state,
     didRetrieveProfileData: (state, action: PayloadAction<any>) => void (state.attributes = action.payload),
@@ -27,6 +29,7 @@ export const currentSlice = createSlice({
 
 export const { actions, reducer }: any = currentSlice
 export const {
+  willGoToProfile, 
   willAddPublicKey, willRetrieveProfileData, didRetrieveProfileData, didGenerateAlgoAccount,
   willGetUserProfile, didGetUserProfile
 } = actions

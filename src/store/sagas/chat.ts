@@ -75,7 +75,6 @@ function* willSendCommandChat(action: any) {
     const result = yield call(ChatApi.sendCommandChat, action.payload.values.command, action.payload.sow.sow, 'COMMAND');
     console.log("result willSendCommandChat: ", result)
 
-    // yield call(willReadSowChat, { payload: action.payload })
     yield call(willRefreshSowChat, { payload: { messages: messages, sow: action.payload.sow.sow } })
 
     yield put(SowActions.willGetSow({ sow: action.payload.sow.sow }))
@@ -94,7 +93,6 @@ function* willSendAttachmentChat(action: any) {
     const result = yield call(ChatApi.sendAttachmentChat, action.payload.values.key, action.payload.sow.sow, 'ATTACHMENT');
     console.log("result willSendAttachmentChat: ", result)
 
-    // yield call(willReadSowChat, { payload: action.payload })
     yield call(willRefreshSowChat, { payload: { messages: messages, sow: action.payload.sow.sow } })
 
     yield put(SowActions.willGetSow({ sow: action.payload.sow.sow }))
