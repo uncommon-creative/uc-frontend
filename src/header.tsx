@@ -44,7 +44,7 @@ export const Header = ({ className }: any) => {
                 <DropdownItem header>AL: {userAttributes.public_key}</DropdownItem>
                 <DropdownItem header>KUDOS: 12</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem onClick={() => {
+                <DropdownItem data-cy='profile' onClick={() => {
                   dispatch(ProfileActions.willGoToProfile({ user: user.username, history: history }));
                 }}>Profile</DropdownItem>
                 <DropdownItem divider />
