@@ -42,7 +42,7 @@ export const LoginPage = () => {
   let history = useHistory();
 
   React.useEffect(() => {
-    dispatch(UIActions.stopLoading())
+    // dispatch(UIActions.stopLoading())
   }, [])
 
   return (

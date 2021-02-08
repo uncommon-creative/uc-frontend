@@ -1,23 +1,27 @@
-query getProfileData{
+query getProfileData($user: ID){
   given_name: getProfileData( 
+    user: $user
     name: "given_name"
   ){
     value
   }
 
   family_name: getProfileData( 
+    user: $user
     name: "family_name"
   ){
     value
   }
 
   email: getProfileData( 
+    user: $user
     name: "email"
   ){
     value
   }  
 
   public_key: getProfileData( 
+    user: $user
     name: "public_key"
   ){
     value

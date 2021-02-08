@@ -20,8 +20,7 @@ export const CreateAlgoAccountPage = () => {
   const isLoading = useSelector(UISelectors.isLoading)
   let history = useHistory();
   const algoAccount = useSelector(ProfileSelectors.getAlgoAccount)
-  let account = algosdk.generateAccount();
-  const algoAccountWords = algosdk.secretKeyToMnemonic(account.sk)
+  const algoAccountWords = algosdk.secretKeyToMnemonic(algoAccount.sk)
 
   return (
     <>

@@ -59,7 +59,7 @@ export const SignupConfirmPage = () => {
 
     if (emailConfirm == "RESEND_SIGNUP_USER") {
       dispatch(AuthActions.willResendSignup({ email: username, history: history }))
-      dispatch(UIActions.stopLoading())
+      // dispatch(UIActions.stopLoading())
     }
 
     return () => { }

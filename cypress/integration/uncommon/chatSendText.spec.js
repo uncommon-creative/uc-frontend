@@ -1,7 +1,7 @@
 describe('Chat', () => {
   before(() => {
     cy.login(Cypress.env('userSeller'))
-    cy.wait(2000)
+    cy.wait(10000)
     cy.get('[data-cy=createSow]').contains('new Statement Of Work').click()
 
     cy.get('[data-cy="inputSowID"]')
@@ -120,6 +120,7 @@ describe('Chat', () => {
       })
 
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
+      cy.wait(5000)
       cy.get('[class="rce-mbox-text"]')
         .contains('test cypress invio messaggio seller')
 

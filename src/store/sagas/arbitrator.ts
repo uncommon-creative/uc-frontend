@@ -17,7 +17,7 @@ export function* sagas() {
 
 function* willGetArbitrator(action: any) {
   console.log("in willGetArbitrator with: ", action)
-  yield put(UIActions.startLoading())
+  // yield put(UIActions.startLoading())
 
   try {
     const result = yield call(ArbitratorApi.getArbitrator, action.payload.user);
@@ -29,7 +29,7 @@ function* willGetArbitrator(action: any) {
   } catch (error) {
     console.log("error in willGetArbitrator ", error)
   }
-  yield put(UIActions.stopLoading())
+  // yield put(UIActions.stopLoading())
 }
 
 function* willGetArbitratorsList() {
@@ -46,14 +46,14 @@ function* willGetArbitratorsList() {
 
 function* willGetFullArbitratorsList() {
   console.log("in willGetFullArbitratorsList")
-  yield put(UIActions.startLoading())
+  // yield put(UIActions.startLoading())
 
   try {
     const result = yield call(ArbitratorApi.getFullArbitratorsList);
     console.log("result willGetFullArbitratorsList: ", result)
     yield put(ArbitratorActions.didGetArbitratorsList(result))
 
-    yield put(UIActions.stopLoading())
+    // yield put(UIActions.stopLoading())
   } catch (error) {
     console.log("error in willGetFullArbitratorsList ", error)
   }
