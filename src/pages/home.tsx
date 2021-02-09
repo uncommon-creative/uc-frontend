@@ -21,6 +21,7 @@ function TableData({ tabId, data }: any) {
 
   const dispatch = useDispatch();
   let history = useHistory();
+  const users = useSelector(ProfileSelectors.getUsers)
 
   return (
     <Row>
@@ -57,7 +58,7 @@ function TableData({ tabId, data }: any) {
                     validateEmail(element.seller) ?
                       element.seller
                       :
-                      element.seller.substring(0, 5).toUpperCase()
+                      users[element.seller].given_name + ' ' + users[element.seller].family_name
                   }</td>}
                   {tabId != 2 && <td>{element.buyer ?
                     element.buyer == 'not_set' ?
@@ -66,7 +67,7 @@ function TableData({ tabId, data }: any) {
                       validateEmail(element.buyer) ?
                         element.buyer
                         :
-                        element.buyer.substring(0, 5).toUpperCase()
+                        users[element.buyer].given_name + ' ' + users[element.buyer].family_name
                     : '-'
                   }</td>}
                   <td>{element.deadline ? new Date(element.deadline).toLocaleDateString() : '-'}</td>

@@ -10,7 +10,7 @@ export const currentSlice = createSlice({
     publicKey: "",
     attributes: {} as any,
     algoAccount: {},
-    users: []
+    users: {}
   },
   reducers: {
     willGoToProfile: (state, action: PayloadAction<any>) => state,
@@ -23,13 +23,17 @@ export const currentSlice = createSlice({
     didGenerateAlgoAccount: (state, action: PayloadAction<any>) => void (state.algoAccount = action.payload),
 
     willGetUserProfile: (state, action: PayloadAction<any>) => state,
-    didGetUserProfile: (state, action: PayloadAction<any>) => void (state.users = state.users.concat(action.payload)),
+    // didGetUserProfile: (state, action: PayloadAction<any>) => void (state.users = state.users.concat(action.payload)),
+    didGetUserProfile: (state: any, action: PayloadAction<any>) => {
+      console.log("in didGetUserProfile with ", action)
+      void (state.users[action.payload.userID] = action.payload.userData)
+    },
   }
 })
 
 export const { actions, reducer }: any = currentSlice
 export const {
-  willGoToProfile, 
+  willGoToProfile,
   willAddPublicKey, willRetrieveProfileData, didRetrieveProfileData, didGenerateAlgoAccount,
   willGetUserProfile, didGetUserProfile
 } = actions

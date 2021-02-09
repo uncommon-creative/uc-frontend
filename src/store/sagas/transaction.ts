@@ -6,6 +6,7 @@ import { actions as ProfileActions, selectors as ProfileSelectors } from '../sli
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../slices/transaction'
 import { actions as UIActions } from '../slices/ui'
 import * as TransactionApi from '../../api/transaction'
+import { willGetUserProfile } from '../sagas/profile'
 
 export function* sagas() {
   yield takeLatest(TransactionActions.willGetParams.type, willGetParams)
@@ -18,9 +19,9 @@ function* willGetParams(action: any) {
   console.log("in willGetParams")
 
   try {
-    yield put(ProfileActions.willGetUserProfile({ user: action.payload.seller }))
-    yield put(ProfileActions.willGetUserProfile({ user: action.payload.buyer }))
-    yield put(ProfileActions.willGetUserProfile({ user: action.payload.arbitrator }))
+    yield call(willGetUserProfile, { user: action.payload.seller })
+    yield call(willGetUserProfile, { user: action.payload.buyer })
+    yield call(willGetUserProfile, { user: action.payload.arbitrator })
 
     const result = yield call(TransactionApi.algorandGetTxParams);
     console.log("result willGetParams: ", result)
@@ -35,15 +36,11 @@ function* willCreateMultiSigAddress(action: any) {
   console.log("in willCreateMultiSigAddress with: ", action)
   yield put(UIActions.startActivityRunning('continueTransaction'));
 
-  // yield put(ProfileActions.willGetUserProfile({ user: action.payload.seller }))
-  // yield put(ProfileActions.willGetUserProfile({ user: action.payload.buyer }))
-  // yield put(ProfileActions.willGetUserProfile({ user: action.payload.arbitrator }))
-
   const users = yield select(ProfileSelectors.getUsers)
 
-  const sellerData = users.find((user: any) => user.user == action.payload.seller)
-  const buyerData = users.find((user: any) => user.user == action.payload.buyer)
-  const arbitratorData = users.find((user: any) => user.user == action.payload.arbitrator)
+  const sellerData = users[action.payload.seller].public_key
+  const buyerData = users[action.payload.buyer].public_key
+  const arbitratorData = users[action.payload.arbitrator].public_key
   const backup = "T7AVQFK7NJFFBPBZR5YPCI7KMFUPRHBOL4AV5RADWHPWC4VBVVE6PSVJXQ"
 
   try {

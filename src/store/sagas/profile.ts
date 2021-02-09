@@ -81,24 +81,18 @@ function* willGenerateAlgoAccount() {
   }
 }
 
-function* willGetUserProfile(action: any) {
+export function* willGetUserProfile(action: any) {
   console.log("in willGetUserProfile with ", action)
   const users = yield select(ProfileSelectors.getUsers)
 
   try {
-    const existingUser = users.find((user: any) => user.user == action.payload.user)
-
-    if (!existingUser) {
-      const result = yield call(ServiceApi.getProfileData, action.payload.user);
+    if (!users[action.user]) {
+      const result = yield call(ServiceApi.getProfileData, action.user);
       console.log("in willGetUserProfile result ", result)
 
-      const newUser = result
-      newUser['user'] = action.payload.user
-
-      yield put(ProfileActions.didGetUserProfile([newUser]))
-      return newUser
+      yield put(ProfileActions.didGetUserProfile({ userID: action.user, userData: result }))
     }
   } catch (error) {
-
+    console.log("error willGetUserProfile: ", error)
   }
 }
