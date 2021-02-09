@@ -10,17 +10,19 @@ import * as AuthApi from './api/auth'
 import { selectors as AuthSelectors } from './store/slices/auth'
 import { actions as AuthActions } from './store/slices/auth'
 
-import { selectors as ProfileSelectors } from './store/slices/profile'
+import { selectors as ProfileSelectors, actions as ProfileActions } from './store/slices/profile'
 import { Breadcrumb, BreadcrumbItem } from 'reactstrap';
 
 export const Header = ({ className }: any) => {
 
+  let history = useHistory();
   const [isOpen, setIsOpen] = React.useState(false);
   const toggle = () => setIsOpen(!isOpen);
   const isAuthenticated = useSelector(AuthSelectors.isAuthenticated);
   const userAttributes = useSelector(ProfileSelectors.getProfile)
+  const user = useSelector(AuthSelectors.getUser)
   const dispatch = useDispatch()
-  
+
   return (
     <Navbar className={className} color="primary" light expand="md">
       <NavbarBrand href="/">Uncommon Creative</NavbarBrand>
@@ -42,7 +44,9 @@ export const Header = ({ className }: any) => {
                 <DropdownItem header>AL: {userAttributes.public_key}</DropdownItem>
                 <DropdownItem header>KUDOS: 12</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem tag={Link} to="/profile">Profile</DropdownItem>
+                <DropdownItem data-cy='profile' onClick={() => {
+                  dispatch(ProfileActions.willGoToProfile({ user: user.username, history: history }));
+                }}>Profile</DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem data-cy='logout' onClick={() => {
                   dispatch(AuthActions.willLogoutUser());

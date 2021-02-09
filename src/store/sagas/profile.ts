@@ -2,6 +2,8 @@ import { call, put, takeEvery, takeLatest, delay, select } from 'redux-saga/effe
 
 import { actions as ProfileActions, selectors as ProfileSelectors } from '../slices/profile'
 import { actions as AuthActions } from '../slices/auth'
+import * as ArbitratorApi from '../../api/arbitrator'
+import { actions as ArbitratorActions } from '../slices/arbitrator'
 import { actions as NotificationActions } from '../slices/notification'
 import * as ServiceApi from '../../api/service'
 import { actions as UIActions } from '../slices/ui'
@@ -9,10 +11,25 @@ import { push } from 'connected-react-router'
 const algosdk = require('algosdk');
 
 export function* sagas() {
+  yield takeLatest(ProfileActions.willGoToProfile.type, willGoToProfile)
   yield takeLatest(ProfileActions.willRetrieveProfileData.type, willRetrieveProfileData)
   yield takeLatest(ProfileActions.willAddPublicKey.type, willAddPublicKey)
   yield takeLatest(AuthActions.didLoginUserSuccess.type, willRetrieveProfileData)
   yield takeEvery(ProfileActions.willGetUserProfile.type, willGetUserProfile)
+}
+
+function* willGoToProfile(action: any) {
+  console.log("in willGoToProfile with: ", action)
+
+  try {
+    const result = yield call(ArbitratorApi.getArbitrator, action.payload.user);
+    console.log("result willGetArbitrator: ", result)
+    yield put(ArbitratorActions.didGetArbitrator(result))
+
+    action.payload.history.push('/profile')
+  } catch (error) {
+    console.log('error in willGoToProfile ', error)
+  }
 }
 
 function* willRetrieveProfileData(action: any) {

@@ -8,7 +8,7 @@ export const getArbitrator = async (user: any) => {
 
   try {
     const rawResult: any = await API.graphql(graphqlOperation(query, { user: user }));
-    console.log('getArbitrator with rawResult: ', rawResult);
+    // console.log('getArbitrator with rawResult: ', rawResult);
     return rawResult.data.getArbitrator
 
   } catch (error) {

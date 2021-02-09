@@ -16,11 +16,9 @@ export const TagsInput = ({ tags, disabled }: any) => {
   const { values, setFieldValue } = useFormikContext();
   const [newTags, setNewTags] = React.useState(tags.map((tag: any) => JSON.parse(tag)));
   const [isDisabled, setIsDisabled] = React.useState(disabled);
-  const myArbitratorSettings = useSelector(ArbitratorSelectors.getMyArbitratorSettings)
 
   const handleChange = (newValue: any, actionMeta: any) => {
-    console.log("in profile newValue: ", newValue)
-    newValue ? console.log("1") : console.log("2")
+    console.log("in TagsInput newValue: ", newValue)
     setFieldValue('tags', newValue ? newValue : [])
     setNewTags(newValue)
   };
@@ -28,14 +26,6 @@ export const TagsInput = ({ tags, disabled }: any) => {
   React.useEffect(() => {
     setIsDisabled(disabled)
   }, [disabled]);
-
-  React.useEffect(() => {
-    setNewTags(tags.map((tag: any) => JSON.parse(tag)))
-  }, [tags]);
-
-  React.useEffect(() => {
-    myArbitratorSettings && myArbitratorSettings.tags && setNewTags(myArbitratorSettings.tags.map((tag: any) => JSON.parse(tag)))
-  }, [myArbitratorSettings]);
 
   return (
     <>

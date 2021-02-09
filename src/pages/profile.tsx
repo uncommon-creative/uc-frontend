@@ -57,19 +57,11 @@ export const ProfilePage = () => {
   const myArbitratorSettings = useSelector(ArbitratorSelectors.getMyArbitratorSettings)
   const user = useSelector(AuthSelectors.getUser)
   const [dropdownCurrencyOpen, setDropdownCurrencyOpen] = React.useState(false);
-  const [switchEnabled, setSwitchEnabled] = React.useState(false);
+  const [switchEnabled, setSwitchEnabled] = React.useState(myArbitratorSettings ? myArbitratorSettings.enabled : false);
   const [feeCurrency, setFeeCurrency] = React.useState("ALGO");
 
   const toggleDropDownCurrency = () => setDropdownCurrencyOpen(!dropdownCurrencyOpen);
   const toggleSwitchEnabled = (switchEnabled: any) => setSwitchEnabled(switchEnabled);
-
-  React.useEffect(() => {
-    dispatch(ArbitratorActions.willGetArbitrator({ user: user.username }))
-  }, []);
-
-  React.useEffect(() => {
-    setSwitchEnabled(myArbitratorSettings ? myArbitratorSettings.enabled : false)
-  }, [myArbitratorSettings]);
 
   return (
     <>
@@ -108,7 +100,7 @@ export const ProfilePage = () => {
                         <Col className="col-md-2 col-12">
                           <FormGroup>
                             <Label for="enabled">Enabled</Label>
-                            <CustomInput type="switch" name="enabled" id="enabled" tag={Field}
+                            <CustomInput data-cy='arbitratorSettingsEnabled' type="switch" name="enabled" id="enabled" tag={Field}
                               checked={values.enabled}
                               onClick={(event: any) => {
                                 toggleSwitchEnabled(event.target.checked)
@@ -122,7 +114,7 @@ export const ProfilePage = () => {
                           <FormGroup>
                             <Label for="feeFlat">Fee flat</Label>
                             <InputGroup>
-                              <Input disabled={!switchEnabled} invalid={errors.feeFlat && touched.feeFlat ? true : false} type="text" name="feeFlat" id="feeFlat" placeholder={"fee flat"} tag={Field} />
+                              <Input data-cy='arbitratorSettingsFeeFlat' disabled={!switchEnabled} invalid={errors.feeFlat && touched.feeFlat ? true : false} type="text" name="feeFlat" id="feeFlat" placeholder={"fee flat"} tag={Field} />
 
                               <InputGroupButtonDropdown disabled={!switchEnabled} addonType="append" isOpen={dropdownCurrencyOpen} toggle={toggleDropDownCurrency}>
                                 <DropdownToggle caret>
@@ -158,7 +150,7 @@ export const ProfilePage = () => {
                           <FormGroup>
                             <Label for="feePercentage">Fee percentage</Label>
                             <InputGroup>
-                              <Input disabled={!switchEnabled} invalid={errors.feePercentage && touched.feePercentage ? true : false} type="text" name="feePercentage" id="feePercentage" placeholder={"fee percentage"} tag={Field} />
+                              <Input data-cy='arbitratorSettingsFeePercentage' disabled={!switchEnabled} invalid={errors.feePercentage && touched.feePercentage ? true : false} type="text" name="feePercentage" id="feePercentage" placeholder={"fee percentage"} tag={Field} />
                               {errors.feePercentage && touched.feePercentage ? (
                                 <FormFeedback>{errors.feePercentage}</FormFeedback>
                               ) : null}
@@ -166,7 +158,7 @@ export const ProfilePage = () => {
                           </FormGroup>
                         </Col>
                       </Row>
-                      <FormGroup>
+                      <FormGroup data-cy='arbitratorSettingsTags'>
                         <Label for="tags">Tags</Label>
                         <TagsInput disabled={!switchEnabled} tags={myArbitratorSettings && myArbitratorSettings.tags ? myArbitratorSettings.tags : []} />
                         {errors.tags && touched.tags ? (
@@ -174,7 +166,9 @@ export const ProfilePage = () => {
                         ) : null}
                       </FormGroup>
                       <Row>
-                        <Col><ActivityButton type="submit" name="saveArbitratorSettings" color="primary" block>Save arbitrator settings</ActivityButton></Col>
+                        <Col>
+                          <ActivityButton data-cy='arbitratorSettingsSubmit'type="submit" name="saveArbitratorSettings" color="primary" block>Save arbitrator settings</ActivityButton>
+                        </Col>
                       </Row>
                     </Form>
                   )
