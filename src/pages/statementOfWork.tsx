@@ -10,6 +10,7 @@ import { Link, useParams, useHistory } from "react-router-dom";
 
 import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
+import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { ChatSow } from '../components/ChatSow'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
@@ -35,6 +36,7 @@ export const StatementOfWorkPage = () => {
   const attachments = useSelector(SowSelectors.getAttachments);
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const user = useSelector(AuthSelectors.getUser)
+  const users = useSelector(ProfileSelectors.getUsers)
   const [selectedArbitrator, setSelectedArbitrator] = React.useState('');
   const [modalOpen, setModalOpen] = React.useState(false);
 
@@ -42,7 +44,7 @@ export const StatementOfWorkPage = () => {
 
   React.useEffect(() => {
     console.log("in statementOfWorkPage")
-    console.log("in statementOfWorkPage isLoading: ", isLoading)
+    // console.log("in statementOfWorkPage isLoading: ", isLoading)
     console.log("in statementOfWorkPage currentSow: ", currentSow)
     dispatch(SowActions.willGetSow({ sow: code }))
   }, [])
@@ -84,7 +86,8 @@ export const StatementOfWorkPage = () => {
                                 {validateEmail(currentSow.buyer) ?
                                   currentSow.buyer
                                   :
-                                  currentSow.buyer.substring(0, 5).toUpperCase()}
+                                  users[currentSow.buyer].given_name + ' ' + users[currentSow.buyer].family_name
+                                }
                               </CardText>
                             </Col>
                           </Row>
@@ -98,7 +101,8 @@ export const StatementOfWorkPage = () => {
                                 {validateEmail(currentSow.seller) ?
                                   currentSow.seller
                                   :
-                                  currentSow.seller.substring(0, 5).toUpperCase()}
+                                  users[currentSow.seller].given_name + ' ' + users[currentSow.seller].family_name
+                                }
                               </CardText>
                             </Col>
                           </Row>

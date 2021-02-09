@@ -6,8 +6,10 @@ import * as SowApi from '../../api/sow'
 import { actions as SowActions, SowStatus, SowCommands } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as ChatActions } from '../slices/chat'
+import { actions as ProfileActions } from '../slices/profile'
 import { actions as UIActions } from '../slices/ui'
 import * as ArbitratorApi from '../../api/arbitrator'
+import { willGetUserProfile } from '../sagas/profile'
 
 export function* sagas() {
   yield takeLatest(SowActions.willConfirmArbitrators.type, willConfirmArbitrators)
@@ -207,6 +209,10 @@ function* willGetSowsListSeller() {
   try {
     const result = yield call(SowApi.getSowsListSeller);
     console.log("result willGetSowsListSeller: ", result)
+    for (const sow of result.sows) {
+      yield call(willGetUserProfile, { user: sow.seller })
+      sow.buyer != 'not_set' && (yield call(willGetUserProfile, { user: sow.buyer }))
+    }
     yield put(SowActions.didGetSowsListSeller(result))
 
     const totalUnreadMessagesSeller = result.sows.reduce((a: any, b: any) => {
@@ -229,6 +235,10 @@ function* willGetSowsListBuyer() {
   try {
     const result = yield call(SowApi.getSowsListBuyer);
     console.log("result willGetSowsListBuyer: ", result)
+    for (const sow of result.sows) {
+      yield call(willGetUserProfile, { user: sow.seller })
+      sow.buyer != 'not_set' && (yield call(willGetUserProfile, { user: sow.buyer }))
+    }
     yield put(SowActions.didGetSowsListBuyer(result))
 
     const totalUnreadMessagesBuyer = result.sows.reduce((a: any, b: any) => {
@@ -251,6 +261,10 @@ function* willGetSowsListArbitrator() {
   try {
     const result = yield call(SowApi.getSowsListArbitrator);
     console.log("result willGetSowsListArbitrator: ", result)
+    for (const sow of result.sows) {
+      yield call(willGetUserProfile, { user: sow.seller })
+      yield call(willGetUserProfile, { user: sow.buyer })
+    }
     yield put(SowActions.didGetSowsListArbitrator(result))
 
     const totalUnreadMessagesArbitrator = result.sows.reduce((a: any, b: any) => {
@@ -319,6 +333,8 @@ function* willGetSow(action: any) {
   try {
     const result = yield call(SowApi.getSow, action.payload.sow);
     console.log("result willGetSow: ", result)
+    yield call(willGetUserProfile, { user: result.seller })
+    yield call(willGetUserProfile, { user: result.buyer })
     yield put(SowActions.didGetSow(result))
     yield put(ChatActions.willReadSowChat(action.payload))
     yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow } });

@@ -5,7 +5,7 @@ import {
   Row, Col, Card, CardText, Container,
   FormText, FormGroup, Input, Label, FormFeedback,
 } from 'reactstrap';
-import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 import 'react-chat-elements/dist/main.css';
 import { MessageBox, MessageList, Input as InputChatElements, Button, Avatar } from 'react-chat-elements';
@@ -14,7 +14,7 @@ import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 
 import { ActivityButton } from '../components/ActivityButton'
 import { SowAttachments } from '../components/SowAttachments'
-import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
+import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 
@@ -30,6 +30,7 @@ export const ChatSow = ({ currentSow }: any) => {
   const dispatch = useDispatch()
   const message = useSelector(ChatSelectors.getMessage)
   const user = useSelector(AuthSelectors.getUser)
+  const users = useSelector(ProfileSelectors.getUsers)
   const messages = useSelector(ChatSelectors.getMessages)
   let inputRef: any = React.createRef();
 
@@ -63,7 +64,7 @@ export const ChatSow = ({ currentSow }: any) => {
                     <MessageBox
                       data-cy='messageChat'
                       className='chatMessage'
-                      title={msg.from}
+                      title={users[msg.from].given_name + ' ' + users[msg.from].family_name}
                       position={user.username == msg.from ? 'right' : 'left'}
                       type={(msg.type == 'TEXT' || msg.type == 'COMMAND' || msg.type == 'ATTACHMENT') && 'text'}
                       text={msg.textMessage ? msg.textMessage.message : msg.commandMessage ? msg.commandMessage.command : msg.attachmentMessage && msg.attachmentMessage.key.split('/').pop()}

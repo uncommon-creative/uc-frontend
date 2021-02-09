@@ -18,18 +18,18 @@ import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { SowAttachments } from '../components/SowAttachments'
 import { DescriptionEditor } from '../components/DescriptionEditor'
 import { actions as SowActions, selectors as SowSelectors, SowStatus } from '../store/slices/sow'
+import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as UISelectors } from '../store/slices/ui'
 
 var DatePicker = require("reactstrap-date-picker");
 
+function validateEmail(email: any) {
+  var re = /\S+@\S+\.\S+/;
+  return re.test(email);
+}
 const StatementOfWorkSchema = Yup.object().shape({
   sow: Yup.string()
     .required('Required'),
-  // buyer: Yup.string()
-  //   .email()
-  //   .min(2, 'Too Short!')
-  //   .max(50, 'Too Long!')
-  //   .required('Required'),
   buyer: Yup.string().when('status', {
     is: 'DRAFT',
     then: Yup.string()
@@ -88,6 +88,7 @@ export const CreateStatementOfWorkPage = () => {
   const [priceCurrency, setPriceCurrency] = React.useState(currentSow.currency ? currentSow.currency : "ALGO");
   const [deadlineValue, setDeadlineValue] = React.useState(currentSow.deadline ? currentSow.deadline : '');
   const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators)
+  const users = useSelector(ProfileSelectors.getUsers)
 
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
   const toggleModal = () => setModalOpen(!modalOpen);
@@ -104,7 +105,10 @@ export const CreateStatementOfWorkPage = () => {
                 initialValues={{
                   sow: currentSow.sow ? currentSow.sow : '',
                   status: currentSow.status,
-                  buyer: currentSow.buyer != 'not_set' ? currentSow.buyer : '',
+                  buyer:
+                    validateEmail(currentSow.buyer) ? currentSow.buyer
+                      : currentSow.buyer != 'not_set' ? users[currentSow.buyer].given_name + ' ' + users[currentSow.buyer].family_name
+                        : '',
                   title: currentSow.title ? currentSow.title : '',
                   description: currentSow.description ? currentSow.description : '',
                   quantity: currentSow.quantity ? currentSow.quantity : '1',
