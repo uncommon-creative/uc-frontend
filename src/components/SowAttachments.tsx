@@ -38,7 +38,7 @@ export const SowAttachments = ({ currentSow }: any) => {
       {currentSow.status == SowStatus.DRAFT && newAttachments.map((element: any, index: any) => {
         console.log("in the fileList element: ", element)
         return (
-          <ListGroupItem key={index}>
+          <ListGroupItem data-cy="attachmentsSow" key={index}>
             <ListGroupItemHeading>
               <Button close onClick={() => {
                 dispatch(SowActions.willDeleteAttachment({ sow: currentSow, attachment: element }))

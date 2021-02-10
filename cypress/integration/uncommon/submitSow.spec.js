@@ -30,8 +30,8 @@ describe('Statement of Work', () => {
       .should('have.value', 3)
 
     cy.get('[data-cy=inputSowPrice]')
-      .type(20)
-      .should('have.value', 20)
+      .type(1)
+      .should('have.value', 1)
 
     cy.get('[id=rdp-form-control-deadline]')
       .click()

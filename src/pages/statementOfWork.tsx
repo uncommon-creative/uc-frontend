@@ -230,7 +230,7 @@ export const StatementOfWorkPage = () => {
                         {newAttachments.map((attachment: any, index: any) => {
                           return (
                             attachment.owner === currentSow.sow &&
-                            <ListGroupItem key={index}>
+                            <ListGroupItem data-cy="attachmentsSow" key={index}>
                               <FileButton file={attachment} />
                             </ListGroupItem>
                           )
@@ -240,7 +240,7 @@ export const StatementOfWorkPage = () => {
                         {newAttachments.map((attachment: any, index: any) => {
                           return (attachment.owner === currentSow.seller &&
                             <>
-                              <ListGroupItem key={index} >
+                              <ListGroupItem data-cy="attachmentsSeller" key={index} >
                                 <FileButton file={attachment} />
                               </ListGroupItem>
                             </>
@@ -251,7 +251,7 @@ export const StatementOfWorkPage = () => {
                         {newAttachments.map((attachment: any, index: any) => {
                           return (attachment.owner === currentSow.buyer &&
                             <>
-                              <ListGroupItem key={index}>
+                              <ListGroupItem data-cy="attachmentsBuyer" key={index}>
                                 <FileButton file={attachment} />
                               </ListGroupItem>
                             </>
