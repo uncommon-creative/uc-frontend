@@ -11,7 +11,8 @@ mutation submitSow(
   $quantity: Int,
   $tags: [String],
   $termsOfService: Boolean,
-  $title: String
+  $title: String,
+  $sowExpiration: Int
 ) {
   submitSow(
     sow: $sow
@@ -26,7 +27,8 @@ mutation submitSow(
     quantity: $quantity,
     tags: $tags,
     termsOfService: $termsOfService,
-    title: $title
+    title: $title,
+    sowExpiration: $sowExpiration
   ) {
     sow
     arbitrators
@@ -43,5 +45,7 @@ mutation submitSow(
     title
     createdAt
     updatedAt
+    sowExpiration
+    submittedDate
   }
 }

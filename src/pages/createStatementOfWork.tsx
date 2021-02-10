@@ -4,7 +4,7 @@ import {
   CardTitle, CardSubtitle, Button, Container,
   FormText, FormGroup, Input, Label, FormFeedback,
   Col, Row, Jumbotron, InputGroup, InputGroupButtonDropdown,
-  DropdownToggle, DropdownMenu, DropdownItem
+  DropdownToggle, DropdownMenu, DropdownItem, CustomInput
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory, Redirect } from "react-router-dom";
@@ -73,7 +73,10 @@ const StatementOfWorkSchema = Yup.object().shape({
     .required('Required'),
   arbitrators: Yup.array()
     .length(3, 'Three arbitrators required!')
-    .required('Required')
+    .required('Required'),
+  sowExpiration: Yup.number()
+    .min(1, 'Select expiration')
+    .required('Required'),
 });
 
 export const CreateStatementOfWorkPage = () => {
@@ -119,7 +122,8 @@ export const CreateStatementOfWorkPage = () => {
                   numberReviews: currentSow.numberReviews ? currentSow.numberReviews : '',
                   termsOfService: false,
                   codeOfConduct: false,
-                  arbitrators: currentArbitrators
+                  arbitrators: currentArbitrators,
+                  sowExpiration: currentSow.sowExpiration ? currentSow.sowExpiration : 0
                 }}
                 validationSchema={StatementOfWorkSchema}
                 validateOnBlur={true}
@@ -131,6 +135,7 @@ export const CreateStatementOfWorkPage = () => {
                 {({ errors, touched, setFieldValue, values }) => {
                   return (
                     <Form>
+                      {values && console.log("values: ", values)}
                       <FormGroup>
                         <Label for="sow">Sow</Label>
                         <Input data-cy="inputSowID" disabled invalid={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
@@ -312,13 +317,34 @@ export const CreateStatementOfWorkPage = () => {
                           ) : null}
                         </FormGroup>
                       </Jumbotron>
-
+                      <Col className="col-md-4 col-12">
+                        <FormGroup>
+                          <Label for="sowExpiration">Expiration *</Label>
+                          <CustomInput data-cy="inputSowExpiration" type="select" name="sowExpiration" id="sowExpiration"
+                            onChange={(event) => {
+                              console.log("event.target.value: ", event.target.value)
+                              setFieldValue("sowExpiration", parseInt(event.target.value, 10))
+                            }}
+                          >
+                            <option value={0}>Select...</option>
+                            <option value={86400}>1 day</option>
+                            <option value={604800}>1 week</option>
+                            <option value={2628000}>1 month</option>
+                            <option value={7884000}>3 months</option>
+                            <option value={15768000}>6 months</option>
+                            <option value={31536000}>1 year</option>
+                          </CustomInput>
+                          {errors.sowExpiration && touched.sowExpiration ? (
+                            <FormFeedback className="d-block">{errors.sowExpiration}</FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
                       <FormGroup check>
                         <Label check>
                           <Input data-cy="inputSowTermsOfService" invalid={errors.termsOfService && touched.termsOfService ? true : false} name="termsOfService" id="termsOfService" type="checkbox"
                             onChange={(event) => setFieldValue("termsOfService", event.target.checked)}
                           />Terms of Service *
-                      {errors.termsOfService && touched.termsOfService ? (
+                          {errors.termsOfService && touched.termsOfService ? (
                             <FormFeedback>{errors.termsOfService}</FormFeedback>
                           ) : null}
                         </Label>
@@ -328,7 +354,7 @@ export const CreateStatementOfWorkPage = () => {
                           <Input data-cy="inputSowCodeOfConduct" invalid={errors.codeOfConduct && touched.codeOfConduct ? true : false} name="codeOfConduct" id="codeOfConduct" type="checkbox"
                             onChange={(event) => setFieldValue("codeOfConduct", event.target.checked)}
                           />Code of Conduct *
-                      {errors.codeOfConduct && touched.codeOfConduct ? (
+                          {errors.codeOfConduct && touched.codeOfConduct ? (
                             <FormFeedback>{errors.codeOfConduct}</FormFeedback>
                           ) : null}
                         </Label>

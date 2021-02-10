@@ -86,7 +86,9 @@ function* willDraftStatementOfWork(action: any) {
       action.payload.sow.quantity != '' ? action.payload.sow.quantity : undefined,
       tagsParsed,
       action.payload.sow.termsOfService,
-      action.payload.sow.title)
+      action.payload.sow.title,
+      action.payload.sow.sowExpiration
+    )
     console.log("willDraftStatementOfWork result: ", result)
 
     yield put(push("/home"))
@@ -121,10 +123,12 @@ function* willSubmitStatementOfWork(action: any) {
       action.payload.sow.quantity,
       tagsParsed,
       action.payload.sow.termsOfService,
-      action.payload.sow.title
+      action.payload.sow.title,
+      action.payload.sow.sowExpiration
     )
     console.log("willSubmitStatementOfWork result: ", result)
 
+    yield call(willGetUserProfile, { user: result.buyer })
     yield put(SowActions.didSubmitStatementOfWork(result))
     yield put(push("/home"))
     yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));

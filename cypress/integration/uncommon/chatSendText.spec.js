@@ -22,12 +22,12 @@ describe('Chat', () => {
 
     cy.get('[data-cy=inputSowTitle]')
       .clear()
-      .type('cypress: chat commands')
-      .should('have.value', 'cypress: chat commands')
+      .type('cypress')
+      .should('have.value', 'cypress')
 
     cy.get('[aria-label=rdw-editor]')
-      .type('cypress: chat commands description')
-      .contains('cypress: chat commands description')
+      .type('cypress description')
+      .contains('cypress description')
 
     cy.get('[data-cy=inputSowQuantity]')
       .clear()
@@ -79,6 +79,9 @@ describe('Chat', () => {
     cy.get('[data-cy=inputSowArbitratorsConfirm]')
       .contains('Confirm arbitrators')
       .click()
+
+    cy.get('[data-cy=inputSowExpiration]')
+      .select('3 months')
 
     cy.get('[data-cy=inputSowTermsOfService]')
       .check()
