@@ -308,16 +308,20 @@ function* willGetSowAttachmentsList(action: any) {
   try {
     const result = yield call(SowApi.getSowAttachmentsList, action.payload.sow);
     console.log("result willGetSowAttachmentsList: ", result)
-    const attachmentsSplitted = result.map((attachment: any) => {
+    const attachmentsSplitted = [] as any
+    for (const attachment of result) {
       let tmp = attachment.key.split('/')
-      return {
-        'sow': tmp[0],
-        'owner': tmp[2] ? tmp[1] : tmp[0],
-        'filename': tmp[2] ? tmp[2] : tmp[1],
-        'key': attachment.key
-      }
+      const downloadUrl = yield call(SowApi.getDownloadUrl, tmp[0], attachment.key, 600)
+      attachmentsSplitted.push(
+        {
+          'sow': tmp[0],
+          'owner': tmp[2] ? tmp[1] : tmp[0],
+          'filename': tmp[2] ? tmp[2] : tmp[1],
+          'key': attachment.key,
+          'downloadUrl': downloadUrl
+        }
+      )
     }
-    )
     console.log("attachmentsSplitted: ", attachmentsSplitted)
     yield put(SowActions.didGetSowAttachmentsList(attachmentsSplitted))
 

@@ -110,7 +110,19 @@ export const getUploadUrl = async (sow: any, attachmentName: any, expires: any, 
     // console.log('getUploadUrl with result: ', result);
     return result.data.getUploadUrl
   } catch (error) {
-    throw error
+    console.log("getUploadUrl API error: ", error)
+  }
+}
+
+export const getDownloadUrl = async (sow: any, attachmentName: any, expires: any) => {
+  const query = loader('../graphql/getDownloadUrl.gql');
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(query, { sow: sow, key: attachmentName, expires: expires }));
+    // console.log('getDownloadUrl with result: ', result);
+    return result.data.getDownloadUrl
+  } catch (error) {
+    console.log("getDownloadUrl API error: ", error)
   }
 }
 
