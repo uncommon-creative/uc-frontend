@@ -22,6 +22,8 @@ query getSowsListSeller{
       messagesToReadBuyer
       messagesToReadSeller
       messagesToReadArbitrator
+      sowExpiration
+      submittedDate
     }
     nextToken
   }

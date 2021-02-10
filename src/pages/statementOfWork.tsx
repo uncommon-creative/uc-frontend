@@ -141,6 +141,14 @@ export const StatementOfWorkPage = () => {
                         </Row>
                         <Row>
                           <Col className="col-12 col-lg-4">
+                            <CardText>Expiration:</CardText>
+                          </Col>
+                          <Col className="col-12 col-lg-8 text-lg-right">
+                            <CardText color="primary">{new Date(currentSow.sowExpiration).toLocaleDateString()}</CardText>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col className="col-12 col-lg-4">
                             <CardText>Status:</CardText>
                           </Col>
                           <Col className="col-12 col-lg-8 text-lg-right">
