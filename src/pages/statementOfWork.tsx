@@ -16,7 +16,7 @@ import { ChatSow } from '../components/ChatSow'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
 import { ArbitratorDetail } from '../components/ArbitratorDetail';
 import { ActivityButton } from '../components/ActivityButton'
-import { UploadFileButton } from '../components/UploadFileButton';
+import { FileButton } from '../components/FileButton';
 import { selectors as UISelectors } from '../store/slices/ui'
 import { AcceptSow } from '../components/AcceptSow'
 
@@ -141,6 +141,14 @@ export const StatementOfWorkPage = () => {
                         </Row>
                         <Row>
                           <Col className="col-12 col-lg-4">
+                            <CardText>Expiration:</CardText>
+                          </Col>
+                          <Col className="col-12 col-lg-8 text-lg-right">
+                            <CardText color="primary">{new Date(currentSow.sowExpiration).toLocaleDateString()}</CardText>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col className="col-12 col-lg-4">
                             <CardText>Status:</CardText>
                           </Col>
                           <Col className="col-12 col-lg-8 text-lg-right">
@@ -222,10 +230,8 @@ export const StatementOfWorkPage = () => {
                         {newAttachments.map((attachment: any, index: any) => {
                           return (
                             attachment.owner === currentSow.sow &&
-                            <ListGroupItem key={index}>
-                              <ListGroupItemHeading>
-                                <UploadFileButton file={attachment} />
-                              </ListGroupItemHeading>
+                            <ListGroupItem data-cy="attachmentsSow" key={index}>
+                              <FileButton file={attachment} />
                             </ListGroupItem>
                           )
                         })}
@@ -234,10 +240,8 @@ export const StatementOfWorkPage = () => {
                         {newAttachments.map((attachment: any, index: any) => {
                           return (attachment.owner === currentSow.seller &&
                             <>
-                              <ListGroupItem key={index}>
-                                <ListGroupItemHeading>
-                                  <UploadFileButton file={attachment} />
-                                </ListGroupItemHeading>
+                              <ListGroupItem data-cy="attachmentsSeller" key={index} >
+                                <FileButton file={attachment} />
                               </ListGroupItem>
                             </>
                           )
@@ -247,10 +251,8 @@ export const StatementOfWorkPage = () => {
                         {newAttachments.map((attachment: any, index: any) => {
                           return (attachment.owner === currentSow.buyer &&
                             <>
-                              <ListGroupItem key={index}>
-                                <ListGroupItemHeading>
-                                  <UploadFileButton file={attachment} />
-                                </ListGroupItemHeading>
+                              <ListGroupItem data-cy="attachmentsBuyer" key={index}>
+                                <FileButton file={attachment} />
                               </ListGroupItem>
                             </>
                           )

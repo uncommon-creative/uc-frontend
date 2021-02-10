@@ -13,7 +13,7 @@ import update from 'immutability-helper';
 
 import { actions as SowActions, selectors as SowSelectors, SowStatus } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
-import { UploadFileButton } from './UploadFileButton';
+import { FileButton } from './FileButton';
 
 export const SowAttachments = ({ currentSow }: any) => {
 
@@ -38,12 +38,12 @@ export const SowAttachments = ({ currentSow }: any) => {
       {currentSow.status == SowStatus.DRAFT && newAttachments.map((element: any, index: any) => {
         console.log("in the fileList element: ", element)
         return (
-          <ListGroupItem key={index}>
+          <ListGroupItem data-cy="attachmentsSow" key={index}>
             <ListGroupItemHeading>
               <Button close onClick={() => {
                 dispatch(SowActions.willDeleteAttachment({ sow: currentSow, attachment: element }))
               }} />
-              <UploadFileButton file={element} />
+              <FileButton file={element} />
             </ListGroupItemHeading>
           </ListGroupItem>
         )

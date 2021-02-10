@@ -17,12 +17,12 @@ describe('Statement of Work', () => {
 
     cy.get('[data-cy=inputSowTitle]')
       .clear()
-      .type('cypress: chat commands')
-      .should('have.value', 'cypress: chat commands')
+      .type('cypress')
+      .should('have.value', 'cypress')
 
     cy.get('[aria-label=rdw-editor]')
-      .type('cypress: chat commands description')
-      .contains('cypress: chat commands description')
+      .type('cypress description')
+      .contains('cypress description')
 
     cy.get('[data-cy=inputSowQuantity]')
       .clear()
@@ -30,8 +30,8 @@ describe('Statement of Work', () => {
       .should('have.value', 3)
 
     cy.get('[data-cy=inputSowPrice]')
-      .type(20)
-      .should('have.value', 20)
+      .type(1)
+      .should('have.value', 1)
 
     cy.get('[id=rdp-form-control-deadline]')
       .click()
@@ -74,6 +74,9 @@ describe('Statement of Work', () => {
     cy.get('[data-cy=inputSowArbitratorsConfirm]')
       .contains('Confirm arbitrators')
       .click()
+
+    cy.get('[data-cy=inputSowExpiration]')
+      .select('3 months')
 
     cy.get('[data-cy=inputSowTermsOfService]')
       .check()

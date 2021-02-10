@@ -25,5 +25,7 @@ query getSow(
     messagesToReadBuyer
     messagesToReadSeller
     messagesToReadArbitrator
+    sowExpiration
+    submittedDate
   }
 }

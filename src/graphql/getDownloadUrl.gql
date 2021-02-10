@@ -1,0 +1,11 @@
+query getDownloadUrl (
+  $sow: ID,
+  $key: String,
+  $expires: Int
+) {
+  getDownloadUrl(
+    sow: $sow
+    key: $key
+    expires: $expires
+  )
+}

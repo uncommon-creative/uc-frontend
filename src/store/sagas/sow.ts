@@ -86,7 +86,9 @@ function* willDraftStatementOfWork(action: any) {
       action.payload.sow.quantity != '' ? action.payload.sow.quantity : undefined,
       tagsParsed,
       action.payload.sow.termsOfService,
-      action.payload.sow.title)
+      action.payload.sow.title,
+      action.payload.sow.sowExpiration
+    )
     console.log("willDraftStatementOfWork result: ", result)
 
     yield put(push("/home"))
@@ -121,10 +123,12 @@ function* willSubmitStatementOfWork(action: any) {
       action.payload.sow.quantity,
       tagsParsed,
       action.payload.sow.termsOfService,
-      action.payload.sow.title
+      action.payload.sow.title,
+      action.payload.sow.sowExpiration
     )
     console.log("willSubmitStatementOfWork result: ", result)
 
+    yield call(willGetUserProfile, { user: result.buyer })
     yield put(SowActions.didSubmitStatementOfWork(result))
     yield put(push("/home"))
     yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
@@ -308,16 +312,20 @@ function* willGetSowAttachmentsList(action: any) {
   try {
     const result = yield call(SowApi.getSowAttachmentsList, action.payload.sow);
     console.log("result willGetSowAttachmentsList: ", result)
-    const attachmentsSplitted = result.map((attachment: any) => {
+    const attachmentsSplitted = [] as any
+    for (const attachment of result) {
       let tmp = attachment.key.split('/')
-      return {
-        'sow': tmp[0],
-        'owner': tmp[2] ? tmp[1] : tmp[0],
-        'filename': tmp[2] ? tmp[2] : tmp[1],
-        'key': attachment.key
-      }
+      const downloadUrl = yield call(SowApi.getDownloadUrl, tmp[0], attachment.key, 600)
+      attachmentsSplitted.push(
+        {
+          'sow': tmp[0],
+          'owner': tmp[2] ? tmp[1] : tmp[0],
+          'filename': tmp[2] ? tmp[2] : tmp[1],
+          'key': attachment.key,
+          'downloadUrl': downloadUrl
+        }
+      )
     }
-    )
     console.log("attachmentsSplitted: ", attachmentsSplitted)
     yield put(SowActions.didGetSowAttachmentsList(attachmentsSplitted))
 

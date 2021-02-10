@@ -121,12 +121,6 @@ export const SignupConfirmPage = () => {
                         </FormGroup>
                         <ActivityButton type="submit" name="confirmNewPassword" color="primary" block>Confirm new password</ActivityButton>
                         <Row className="mt-2">
-                          {/* <Col>
-                        <Button color="link" block to="/login" tag={Link}>Login</Button>
-                      </Col> */}
-                          {/* <Col>
-                        <Button color="primary" block to="/signup" outline tag={Link}>Signup</Button>
-                      </Col> */}
                         </Row>
                       </Form>
                     )}

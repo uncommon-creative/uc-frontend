@@ -23,12 +23,12 @@ describe('Attachment', () => {
 
     cy.get('[data-cy=inputSowTitle]')
       .clear()
-      .type('cypress: chat commands')
-      .should('have.value', 'cypress: chat commands')
+      .type('cypress')
+      .should('have.value', 'cypress')
 
     cy.get('[aria-label=rdw-editor]')
-      .type('cypress: chat commands description')
-      .contains('cypress: chat commands description')
+      .type('cypress description')
+      .contains('cypress description')
 
     cy.get('[data-cy=inputSowQuantity]')
       .clear()
@@ -36,8 +36,8 @@ describe('Attachment', () => {
       .should('have.value', 3)
 
     cy.get('[data-cy=inputSowPrice]')
-      .type(20)
-      .should('have.value', 20)
+      .type(1)
+      .should('have.value', 1)
 
     cy.get('[id=rdp-form-control-deadline]')
       .click()
@@ -81,11 +81,21 @@ describe('Attachment', () => {
       .contains('Confirm arbitrators')
       .click()
 
+    cy.get('[data-cy=inputSowExpiration]')
+      .select('3 months')
+
     cy.get('[data-cy=inputSowTermsOfService]')
       .check()
 
     cy.get('[data-cy=inputSowCodeOfConduct]')
       .check()
+
+    cy.get('[data-cy=inputAttachment]')
+      .attachFile('attachmentCypressSow.txt');
+    cy.wait(1000)
+    cy.get('[data-cy=attachmentsSow]')
+      .get('[data-cy=attachment] a')
+      .contains('attachmentCypressSow.txt')
 
     cy.get('[data-cy=inputSowSubmit]')
       .click()
@@ -101,25 +111,37 @@ describe('Attachment', () => {
     cy.get('@sowID').then((sowID) => {
       cy.log("sowID: ", sowID)
 
-      // seller attachment upload
+      // seller
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
+      // seller test sow attachment
+      cy.get('[data-cy=attachmentsSow]')
+        .get('[data-cy=attachment] a')
+        .contains('attachmentCypressSow.txt')
+      // seller attachment upload
       cy.get('[data-cy=inputAttachment]')
         .attachFile('attachmentCypressSeller.txt');
       cy.wait(1000)
-      cy.get('[data-cy=attachment')
+      cy.get('[data-cy=attachmentsSeller]')
+        .get('[data-cy=attachment] a')
         .contains('attachmentCypressSeller.txt')
       cy.logout()
 
-      // buyer attachment upload
+
+      // buyer
       cy.login(Cypress.env('userBuyer'))
       cy.wait(2000)
       cy.get('[data-cy=customerTab]').click()
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
-
+      // buyer test sow attachment
+      cy.get('[data-cy=attachmentsSow]')
+        .get('[data-cy=attachment] a')
+        .contains('attachmentCypressSow.txt')
+      // buyer attachment upload
       cy.get('[data-cy=inputAttachment]')
         .attachFile('attachmentCypressBuyer.txt');
       cy.wait(1000)
-      cy.get('[data-cy=attachment')
+      cy.get('[data-cy=attachmentsBuyer]')
+        .get('[data-cy=attachment] a')
         .contains('attachmentCypressBuyer.txt')
     })
   })
