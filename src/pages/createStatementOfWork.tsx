@@ -320,7 +320,7 @@ export const CreateStatementOfWorkPage = () => {
                       <Col className="col-md-4 col-12">
                         <FormGroup>
                           <Label for="sowExpiration">Expiration *</Label>
-                          <CustomInput type="select" name="sowExpiration" id="sowExpiration"
+                          <CustomInput data-cy="inputSowExpiration" type="select" name="sowExpiration" id="sowExpiration"
                             onChange={(event) => {
                               console.log("event.target.value: ", event.target.value)
                               setFieldValue("sowExpiration", parseInt(event.target.value, 10))
@@ -334,6 +334,9 @@ export const CreateStatementOfWorkPage = () => {
                             <option value={15768000}>6 months</option>
                             <option value={31536000}>1 year</option>
                           </CustomInput>
+                          {errors.sowExpiration && touched.sowExpiration ? (
+                            <FormFeedback className="d-block">{errors.sowExpiration}</FormFeedback>
+                          ) : null}
                         </FormGroup>
                       </Col>
                       <FormGroup check>

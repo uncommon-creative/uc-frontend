@@ -128,6 +128,7 @@ function* willSubmitStatementOfWork(action: any) {
     )
     console.log("willSubmitStatementOfWork result: ", result)
 
+    yield call(willGetUserProfile, { user: result.buyer })
     yield put(SowActions.didSubmitStatementOfWork(result))
     yield put(push("/home"))
     yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
