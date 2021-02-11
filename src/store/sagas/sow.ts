@@ -18,6 +18,7 @@ export function* sagas() {
   yield takeLatest(SowActions.willSubmitStatementOfWork.type, willSubmitStatementOfWork)
   yield takeLatest(SowActions.willPrepareUploadAttachment.type, willPrepareUploadAttachment)
   yield takeLatest(SowActions.willDeleteAttachment.type, willDeleteAttachment)
+  yield takeLatest(SowActions.willGetSowsList.type, willGetSowsList)
   yield takeLatest(SowActions.willGetSowsListSeller.type, willGetSowsListSeller)
   yield takeLatest(SowActions.willGetSowsListBuyer.type, willGetSowsListBuyer)
   yield takeLatest(SowActions.willGetSowsListArbitrator.type, willGetSowsListArbitrator)
@@ -206,6 +207,19 @@ function* willDeleteAttachment(action: any) {
   yield put(UIActions.stopActivityRunning(action.payload.attachment.key));
 }
 
+function* willGetSowsList() {
+  console.log("in willGetSowsList")
+  yield put(UIActions.startActivityRunning("getSowsList"));
+  try {
+    yield call(willGetSowsListSeller)
+    yield call(willGetSowsListBuyer)
+    yield call(willGetSowsListArbitrator)
+  } catch (error) {
+    console.log("error in willGetSowsList ", error)
+  }
+  yield put(UIActions.stopActivityRunning("getSowsList"));
+}
+
 function* willGetSowsListSeller() {
   console.log("in willGetSowsListSeller")
   // yield put(UIActions.startLoading())
@@ -336,6 +350,7 @@ function* willGetSowAttachmentsList(action: any) {
 
 function* willGetSow(action: any) {
   console.log("in willGetSow with: ", action)
+  yield put(UIActions.startActivityRunning("getSow"));
   // yield put(UIActions.startLoading())
 
   try {
@@ -360,4 +375,5 @@ function* willGetSow(action: any) {
   } catch (error) {
     console.log("error in willGetSow ", error)
   }
+  yield put(UIActions.stopActivityRunning("getSow"));
 }

@@ -10,6 +10,7 @@ import { actions as SowActions, selectors as SowSelectors } from '../store/slice
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as ChatSelectors } from '../store/slices/chat'
 import { ActivityButton } from '../components/ActivityButton';
+import { RefreshButton } from '../components/RefreshButton'
 import { selectors as UISelectors } from '../store/slices/ui'
 
 function validateEmail(email: any) {
@@ -102,9 +103,7 @@ export const HomePage = () => {
 
   React.useEffect(() => {
     dispatch(SowActions.willConfirmArbitrators({ arbitrators: [], toggle: () => { } }))
-    dispatch(SowActions.willGetSowsListSeller())
-    dispatch(SowActions.willGetSowsListBuyer())
-    dispatch(SowActions.willGetSowsListArbitrator())
+    dispatch(SowActions.willGetSowsList())
   }, []);
 
   return (
@@ -116,12 +115,18 @@ export const HomePage = () => {
               <div className="col-12 col-sm-8">
                 <CardTitle tag="h2">Welcome {userAttributes.given_name}</CardTitle>
               </div>
-              <div className="col-12 col-sm-4">
+              <div className="col-12 col-sm-4 mt-sm-2 mx-auto">
                 {activeTab == '1' &&
-                  <ActivityButton data-cy="createSow" className="mt-sm-2 mx-auto" type="submit" name="createSow" color="primary"
+                  <ActivityButton data-cy="createSow" type="submit" name="createSow" color="primary"
                     onClick={() => dispatch(SowActions.willCreateStatementOfWork({ history: history }))}
                   >new Statement Of Work</ActivityButton>
                 }
+                <RefreshButton data-cy='getSowsList' type="submit" name="getSowsList" color="primary"
+                  onClick={() => {
+                    console.log('in refreshSowsList')
+                    dispatch(SowActions.willGetSowsList())
+                  }}
+                />
               </div>
             </div>
             <Nav tabs>

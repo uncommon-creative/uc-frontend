@@ -110,6 +110,10 @@ export const CreateStatementOfWorkPage = () => {
                   status: currentSow.status,
                   buyer:
                     validateEmail(currentSow.buyer) ? currentSow.buyer
+                      : currentSow.buyer != 'not_set' ? currentSow.buyer
+                        : '',
+                  buyerName:
+                    validateEmail(currentSow.buyer) ? currentSow.buyer
                       : currentSow.buyer != 'not_set' ? users[currentSow.buyer].given_name + ' ' + users[currentSow.buyer].family_name
                         : '',
                   title: currentSow.title ? currentSow.title : '',
@@ -150,13 +154,21 @@ export const CreateStatementOfWorkPage = () => {
                           <FormFeedback>{errors.status}</FormFeedback>
                         ) : null}
                       </FormGroup>
-                      <FormGroup>
-                        <Label for="email">Email Address *</Label>
-                        <Input data-cy="inputSowBuyer" disabled={currentSow.status == SowStatus.SUBMITTED} invalid={errors.buyer && touched.buyer ? true : false} type="text" name="buyer" id="buyer" placeholder="customer email" tag={Field} />
+                      {currentSow.status == SowStatus.DRAFT &&
+                        <FormGroup>
+                        <Label for="buyer">Buyer (email address) *</Label>
+                        <Input data-cy="inputSowBuyer" disabled={currentSow.status == SowStatus.SUBMITTED} invalid={errors.buyer && touched.buyer ? true : false} type="text" name="buyer" id="buyer" placeholder="buyer email" tag={Field} />
                         {errors.buyer && touched.buyer ? (
                           <FormFeedback>{errors.buyer}</FormFeedback>
                         ) : null}
                       </FormGroup>
+                      }
+                      {currentSow.status == SowStatus.SUBMITTED &&
+                        <FormGroup>
+                        <Label for="buyerName">Buyer</Label>
+                        <Input data-cy="inputSowBuyerName" disabled={currentSow.status == SowStatus.SUBMITTED} type="text" name="buyerName" id="buyerName" placeholder="buyer" tag={Field} />
+                      </FormGroup>
+                      }
                       <FormGroup>
                         <Label for="givenName">Title *</Label>
                         <Input data-cy="inputSowTitle" invalid={errors.title && touched.title ? true : false} type="text" name="title" id="title" placeholder="title" tag={Field} />
