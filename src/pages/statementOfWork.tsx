@@ -16,6 +16,7 @@ import { ChatSow } from '../components/ChatSow'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
 import { ArbitratorDetail } from '../components/ArbitratorDetail';
 import { ActivityButton } from '../components/ActivityButton'
+import { RefreshButton } from '../components/RefreshButton'
 import { FileButton } from '../components/FileButton';
 import { selectors as UISelectors } from '../store/slices/ui'
 import { AcceptSow } from '../components/AcceptSow'
@@ -56,10 +57,21 @@ export const StatementOfWorkPage = () => {
         <Container>
           <Card>
             <CardBody>
-              <CardTitle tag="h5" className="text-center">Statement of Work</CardTitle>
-              <CardSubtitle tag="h5" className="mb-2 text-muted text-center">{currentSow.title}</CardSubtitle>
-              <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{currentSow.sow}</CardSubtitle>
-
+              <Row>
+                <Col className="col-11">
+                  <CardTitle tag="h5" className="text-center">Statement of Work</CardTitle>
+                  <CardSubtitle tag="h5" className="mb-2 text-muted text-center">{currentSow.title}</CardSubtitle>
+                  <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{currentSow.sow}</CardSubtitle>
+                </Col>
+                <Col className="col-1">
+                  <RefreshButton data-cy='getSow' type="submit" name="getSow" color="primary"
+                    onClick={() => {
+                      console.log('in refreshSow with code: ', code)
+                      dispatch(SowActions.willGetSow({ sow: code }))
+                    }}
+                  />
+                </Col>
+              </Row>
               <Row>
                 <Col className="col-md-8 col-12">
                   <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Chat</CardSubtitle>

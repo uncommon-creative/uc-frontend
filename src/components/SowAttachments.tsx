@@ -36,7 +36,6 @@ export const SowAttachments = ({ currentSow }: any) => {
           }} />
       </FormGroup>
       {currentSow.status == SowStatus.DRAFT && newAttachments.map((element: any, index: any) => {
-        console.log("in the fileList element: ", element)
         return (
           <ListGroupItem data-cy="attachmentsSow" key={index}>
             <ListGroupItemHeading>
