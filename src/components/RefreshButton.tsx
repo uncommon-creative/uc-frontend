@@ -14,9 +14,9 @@ export const RefreshButton = ({ name, disabled, children, ...rest }: any) => {
     <>
       {
         isActivityRunning ? (
-          <Button disabled {...rest}><Spinner size="sm" color="light" /></Button >
+          <Button disabled {...rest} outline><Spinner size="sm" color="primary" /></Button >
         ) : (
-            <Button disabled={disabled} {...rest}><FontAwesomeIcon icon={faRedo} /></Button >
+            <Button disabled={disabled} {...rest} outline><FontAwesomeIcon icon={faRedo} /></Button >
           )
       }
     </>

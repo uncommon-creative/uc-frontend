@@ -127,7 +127,7 @@ export const CreateStatementOfWorkPage = () => {
                   termsOfService: false,
                   codeOfConduct: false,
                   arbitrators: currentArbitrators,
-                  sowExpiration: currentSow.sowExpiration ? currentSow.sowExpiration : 0
+                  sowExpiration: 0
                 }}
                 validationSchema={StatementOfWorkSchema}
                 validateOnBlur={true}
