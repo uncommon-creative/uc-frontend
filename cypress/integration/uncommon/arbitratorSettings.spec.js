@@ -32,6 +32,8 @@ describe('Chat', () => {
     cy.get('[data-cy=arbitratorSettingsSubmit]')
       .click()
 
+    cy.wait(1000)
+
     // check arbitrator settings
     cy.visit(Cypress.env('host'))
     cy.get('[data-cy=headerProfileToggler]').click()
