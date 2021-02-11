@@ -41,11 +41,12 @@ export const sendCommandChat = async (command: any, sow: any, type: any) => {
   }
 }
 
-export const sendAttachmentChat = async (key: any, sow: any, type: any) => {
+export const sendAttachmentChat = async (attachmentMessage: any, sow: any, type: any) => {
   const mutation = loader('../graphql/sendSowChatMessage.gql')
+  console.log("in sendAttachmentChat attachmentMessage:", attachmentMessage)
 
   try {
-    const result: any = await API.graphql(graphqlOperation(mutation, { attachmentMessage: { key: key }, sow: sow, type: type }))
+    const result: any = await API.graphql(graphqlOperation(mutation, { attachmentMessage: attachmentMessage, sow: sow, type: type }))
     console.log("sendAttachmentChat result: ", result)
     return result.data.sendSowChatMessage
   } catch (error) {

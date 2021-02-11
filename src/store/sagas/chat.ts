@@ -6,6 +6,7 @@ import * as ChatApi from '../../api/chat'
 import { actions as ChatActions, selectors as ChatSelectors } from '../slices/chat'
 import { actions as SowActions } from '../slices/sow'
 import { actions as UIActions } from '../slices/ui'
+import * as SowApi from '../../api/sow'
 
 export function* sagas() {
   yield takeLatest(ChatActions.willRefreshSowChat.type, willRefreshSowChat)
@@ -25,8 +26,6 @@ function* willRefreshSowChat(action: any) {
     const result = yield call(ChatApi.listSowChatMessages, action.payload.sow, lastTimestamp);
     console.log("result willRefreshSowChat: ", result)
 
-    const refreshedMessages = action.payload.messages.concat(result.messages)
-
     yield put(ChatActions.didRefreshSowChat(result.messages))
   } catch (error) {
     console.log("error in willRefreshSowChat ", error)
@@ -37,8 +36,17 @@ function* willReadSowChat(action: any) {
   console.log("in willReadSowChat with: ", action)
 
   try {
-    const result = yield call(ChatApi.listSowChatMessages, action.payload.sow, null);
+    var result = yield call(ChatApi.listSowChatMessages, action.payload.sow, null);
     console.log("result willReadSowChat: ", result)
+
+    for (var msg of result.messages) {
+      if (msg.attachmentMessage) {
+        let tmp = msg.attachmentMessage.key.split('/')
+        const downloadUrl = yield call(SowApi.getDownloadUrl, tmp[0], msg.attachmentMessage.key, 600)
+
+        msg.attachmentMessage['downloadUrl'] = downloadUrl
+      }
+    }
 
     yield put(ChatActions.didReadSowChat(result.messages))
   } catch (error) {
@@ -90,7 +98,7 @@ function* willSendAttachmentChat(action: any) {
   const messages = yield select(ChatSelectors.getMessages)
 
   try {
-    const result = yield call(ChatApi.sendAttachmentChat, action.payload.values.key, action.payload.sow.sow, 'ATTACHMENT');
+    const result = yield call(ChatApi.sendAttachmentChat, { key: action.payload.values.key, size: action.payload.values.size, type: action.payload.values.type }, action.payload.sow.sow, 'ATTACHMENT');
     console.log("result willSendAttachmentChat: ", result)
 
     yield call(willRefreshSowChat, { payload: { messages: messages, sow: action.payload.sow.sow } })

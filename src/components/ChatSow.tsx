@@ -66,14 +66,18 @@ export const ChatSow = ({ currentSow }: any) => {
                       className='chatMessage'
                       title={users[msg.from].given_name + ' ' + users[msg.from].family_name}
                       position={user.username == msg.from ? 'right' : 'left'}
-                      type={(msg.type == 'TEXT' || msg.type == 'COMMAND' || msg.type == 'ATTACHMENT') && 'text'}
+                      type={(msg.type == 'TEXT' || msg.type == 'COMMAND') ? 'text' : msg.type == 'ATTACHMENT' && 'file'}
                       text={msg.textMessage ? msg.textMessage.message : msg.commandMessage ? msg.commandMessage.command : msg.attachmentMessage && msg.attachmentMessage.key.split('/').pop()}
                       date={new Date(msg.createdAt)}
                       data={{
+                        uri: msg.attachmentMessage.downloadUrl,
                         status: {
-                          click: false,
+                          click: true,
                           loading: 0,
                         }
+                      }}
+                      onDownload={(event: any) => {
+                        window.open(msg.attachmentMessage.downloadUrl);
                       }}
                     />
                   </>

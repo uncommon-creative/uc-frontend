@@ -146,8 +146,8 @@ function* willPrepareUploadAttachment(action: any) {
   let tmpFileList = [] as any
   let tmpAttachment = {} as any
   const key = action.payload.sow.status == SowStatus.DRAFT ?
-    action.payload.attachment.name
-    : action.payload.username + '/' + action.payload.attachment.name
+    action.payload.sow.sow + '/' + action.payload.attachment.name
+    : action.payload.sow.sow + '/' + action.payload.username + '/' + action.payload.attachment.name
   const owner = action.payload.sow.status == SowStatus.DRAFT ?
     action.payload.sow.sow
     : action.payload.username
@@ -158,7 +158,9 @@ function* willPrepareUploadAttachment(action: any) {
     'sow': action.payload.sow.sow,
     'owner': owner,
     'filename': action.payload.attachment.name,
-    'key': key
+    'key': key,
+    'size': action.payload.attachment.size,
+    'type': action.payload.attachment.type
   }
   const index = action.payload.newAttachments.findIndex((e: any) => e.key === tmpAttachment.key);
   console.log("index: ", index)
@@ -173,13 +175,13 @@ function* willPrepareUploadAttachment(action: any) {
 
   yield put(SowActions.didPrepareUploadAttachment(tmpFileList))
 
-
   try {
     const result = yield call(SowApi.getUploadUrl, action.payload.sow.sow, key, 600, action.payload.attachment.type)
     console.log("in willPrepareUploadAttachment with result: ", result)
 
+    console.log("AAA: ", action.payload.attachment)
     yield call(SowApi.uploadFileToS3, result, action.payload.attachment)
-    yield put(ChatActions.willSendAttachmentChat({ values: { key: key }, sow: action.payload.sow }))
+    yield put(ChatActions.willSendAttachmentChat({ values: { key: key, size: action.payload.attachment.size, type: action.payload.attachment.type }, sow: action.payload.sow }))
     yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow.sow } });
   } catch (error) {
     console.log("error in willPrepareUploadAttachment ", error)
@@ -193,8 +195,8 @@ function* willDeleteAttachment(action: any) {
   yield put(UIActions.startActivityRunning(action.payload.attachment.key));
 
   const fileToDelete =
-    action.payload.attachment.owner == action.payload.attachment.sow ? action.payload.attachment.filename
-      : action.payload.attachment.owner + '/' + action.payload.attachment.filename
+    action.payload.attachment.owner == action.payload.attachment.sow ? action.payload.attachment.sow + '/' + action.payload.attachment.filename
+      : action.payload.attachment.sow + '/' + action.payload.attachment.owner + '/' + action.payload.attachment.filename
 
   try {
     yield call(SowApi.deleteAttachment, fileToDelete, action.payload.sow.sow)
@@ -336,7 +338,9 @@ function* willGetSowAttachmentsList(action: any) {
           'owner': tmp[2] ? tmp[1] : tmp[0],
           'filename': tmp[2] ? tmp[2] : tmp[1],
           'key': attachment.key,
-          'downloadUrl': downloadUrl
+          'downloadUrl': downloadUrl,
+          'size': attachment.size,
+          'type': attachment.type
         }
       )
     }
