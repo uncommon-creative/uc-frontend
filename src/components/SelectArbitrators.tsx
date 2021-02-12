@@ -7,6 +7,7 @@ import {
 } from 'reactstrap';
 import { useFormikContext } from 'formik';
 import update from 'immutability-helper';
+import { useTranslation } from 'react-i18next';
 
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
@@ -17,6 +18,7 @@ import { ActivityButton } from './ActivityButton';
 export const SelectArbitrators = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const [currentArbitrator, setCurrentArbitrator] = React.useState({} as any);
   const [selectedArbitrators, setSelectedArbitrators] = React.useState([] as any);
   const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators);

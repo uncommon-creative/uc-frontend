@@ -7,6 +7,7 @@ import {
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams, useHistory } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
@@ -30,6 +31,7 @@ export const StatementOfWorkPage = () => {
 
   let { code }: any = useParams();
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const isLoading = useSelector(UISelectors.isLoading)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   console.log("in statementOfWorkPage currentSow: ", currentSow)

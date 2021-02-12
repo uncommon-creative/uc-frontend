@@ -6,15 +6,16 @@ import {
   ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText,
   FormGroup, Label, Input, Jumbotron, CardSubtitle, CardText
 } from 'reactstrap';
+import { useTranslation } from 'react-i18next';
 
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../store/slices/transaction'
 import { ActivityButton } from './ActivityButton';
-import { LoremIpsum } from '../text/LoremIpsum'
 
 export const AcceptSow = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
   const multiSigAddress = useSelector(TransactionSelectors.getMultiSigAddress)
@@ -33,7 +34,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Accept the conditions</ModalHeader>
           <ModalBody>
             <Jumbotron name="conditions" id="conditions">
-              <CardText name="algoAddr">{LoremIpsum}</CardText>
+              <CardText name="algoAddr">{t('conditions')}</CardText>
             </Jumbotron>
             <FormGroup check>
               <Label check>

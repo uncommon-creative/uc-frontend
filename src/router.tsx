@@ -42,13 +42,11 @@ const PrivateRoute = ({ children, ...rest }: any) => {
                 (
                   <>
                     {isLogged ?
-
                       (
                         children
                       )
                       :
                       <Redirect to="/login" />
-
                     }
                   </>
                 )
@@ -64,7 +62,6 @@ const PrivateRoute = ({ children, ...rest }: any) => {
     />
   )
 }
-
 
 export const AppRouter = () => {
   return (
@@ -105,9 +102,6 @@ export const AppRouter = () => {
           <PrivateRoute path="/statement-of-work/:code">
             <StatementOfWorkPage />
           </PrivateRoute>
-          {/* <PrivateRoute path="/statement-of-work">
-            <StatementOfWorkPage />
-          </PrivateRoute> */}
           <PrivateRoute path="/" >
             <HomePage />
           </PrivateRoute>

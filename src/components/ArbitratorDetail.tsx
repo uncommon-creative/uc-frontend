@@ -4,13 +4,13 @@ import {
   Badge, Row, Col, CardText
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-
-import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
+import { useTranslation } from 'react-i18next';
 
 export const ArbitratorDetail = ({ arbitrator, size }: any) => {
 
-  console.log("in ArbitratorDetail with: ", arbitrator)
+  const { t, i18n } = useTranslation();
 
+  // console.log("in ArbitratorDetail with: ", arbitrator)
 
   return (
     <>

@@ -10,6 +10,7 @@ import {
 } from 'reactstrap';
 import { useFormikContext } from 'formik';
 import update from 'immutability-helper';
+import { useTranslation } from 'react-i18next';
 
 import { actions as SowActions, selectors as SowSelectors, SowStatus } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
@@ -18,6 +19,7 @@ import { FileButton } from './FileButton';
 export const SowAttachments = ({ currentSow }: any) => {
 
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const attachments = useSelector(SowSelectors.getAttachments);
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const { values, setFieldValue } = useFormikContext();

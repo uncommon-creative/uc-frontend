@@ -11,6 +11,7 @@ import 'react-chat-elements/dist/main.css';
 import { MessageBox, MessageList, Input as InputChatElements, Button, Avatar } from 'react-chat-elements';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
+import { useTranslation } from 'react-i18next';
 
 import { ActivityButton } from '../components/ActivityButton'
 import { SowAttachments } from '../components/SowAttachments'
@@ -27,7 +28,8 @@ export const ChatSow = ({ currentSow }: any) => {
 
   console.log("in ChatSow sow: ", currentSow)
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const message = useSelector(ChatSelectors.getMessage)
   const user = useSelector(AuthSelectors.getUser)
   const users = useSelector(ProfileSelectors.getUsers)

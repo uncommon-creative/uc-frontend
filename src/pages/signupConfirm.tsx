@@ -4,6 +4,7 @@ import { Jumbotron, Container, Button, FormGroup, Input, Label, FormFeedback, Co
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
+import { useTranslation } from 'react-i18next';
 
 import { ActivityButton } from '../components/ActivityButton'
 import { actions as AuthActions, selectors as AuthSelectors } from '../store/slices/auth'
@@ -46,6 +47,7 @@ export const SignupConfirmPage = () => {
   let username = localStorage.getItem('username')
   let emailConfirm = localStorage.getItem('emailConfirm')
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const isLoading = useSelector(UISelectors.isLoading)
   let history = useHistory();
 

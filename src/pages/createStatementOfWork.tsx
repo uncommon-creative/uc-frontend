@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory, Redirect } from "react-router-dom";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { useTranslation } from 'react-i18next';
 
 import { ActivityButton } from '../components/ActivityButton'
 import { TagsInput } from '../components/TagsInput'
@@ -82,6 +83,7 @@ const StatementOfWorkSchema = Yup.object().shape({
 export const CreateStatementOfWorkPage = () => {
 
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const isLoading = useSelector(UISelectors.isLoading)
   let history = useHistory();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
@@ -372,7 +374,7 @@ export const CreateStatementOfWorkPage = () => {
                         </Label>
                       </FormGroup>
                       <Row>
-                        <Col><ActivityButton data-cy="inputSowSubmit" type="submit" name="submitSow" color="primary" block>Submit Statement Of Work</ActivityButton></Col>
+                        <Col><ActivityButton data-cy="inputSowSubmit" type="submit" name="submitSow" color="primary" block>{t('sow.submitStatementOfWork')}</ActivityButton></Col>
                       </Row>
                       <Row className="mt-2">
                         <Col><Button color="primary" block outline name="draftSow" onClick={() => dispatch(SowActions.willDraftStatementOfWork({ sow: values, history: history }))}>Save draft</Button></Col>

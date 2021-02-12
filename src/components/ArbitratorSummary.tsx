@@ -2,8 +2,12 @@ import {
   ListGroupItemHeading, ListGroupItemText, Badge,
   Row, Col
 } from 'reactstrap';
+import { useTranslation } from 'react-i18next';
 
 export const ArbitratorSummary = ({ arbitrator, size }: any) => {
+
+  const { t, i18n } = useTranslation();
+  
   return (
     <>
       <ListGroupItemHeading>
