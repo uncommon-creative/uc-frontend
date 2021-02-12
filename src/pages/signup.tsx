@@ -9,6 +9,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { ActivityButton } from '../components/ActivityButton'
 import { actions as AuthActions, selectors as AuthSelectors } from '../store/slices/auth'
@@ -51,6 +52,7 @@ const SignupSchema = Yup.object().shape({
 export const SignupPage = () => {
 
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const isLoading = useSelector(UISelectors.isLoading)
   const loginError = useSelector(AuthSelectors.getLoggedError);
   let history = useHistory();

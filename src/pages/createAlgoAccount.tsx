@@ -7,6 +7,7 @@ import {
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory, Redirect } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 import { actions as ProfileActions, selectors as ProfileSelectors } from '../store/slices/profile'
 import { ActivityButton } from '../components/ActivityButton'
@@ -17,6 +18,7 @@ const algosdk = require('algosdk');
 export const CreateAlgoAccountPage = () => {
 
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const isLoading = useSelector(UISelectors.isLoading)
   let history = useHistory();
   const algoAccount = useSelector(ProfileSelectors.getAlgoAccount)

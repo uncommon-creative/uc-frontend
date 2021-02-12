@@ -12,9 +12,9 @@ export const ActivityButton = ({ name, disabled, children, ...rest }: any) => {
     <>
       {
         isActivityRunning ? (
-          < Button disabled {...rest}>{children}  <Spinner size="sm" color="light" /></Button >
+          <Button disabled {...rest}>{children}  <Spinner size="sm" color="light" /></Button >
         ) : (
-            < Button disabled={disabled} {...rest}>{children}</Button >
+            <Button disabled={disabled} {...rest}>{children}</Button >
           )
       }
     </>

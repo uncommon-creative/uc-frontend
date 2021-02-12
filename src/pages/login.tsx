@@ -8,6 +8,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 import { actions as AuthActions, selectors as AuthSelectors } from '../store/slices/auth'
 import { ActivityButton } from '../components/ActivityButton'
@@ -40,6 +41,7 @@ export const LoginPage = () => {
   const [forgotPassword, setForgotPassword] = React.useState(false);
   const loginError = useSelector(AuthSelectors.getLoggedError);
   let history = useHistory();
+  const { t, i18n } = useTranslation();
 
   React.useEffect(() => {
     // dispatch(UIActions.stopLoading())

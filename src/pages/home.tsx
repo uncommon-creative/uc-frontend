@@ -5,6 +5,7 @@ import {
   Container, Card, CardTitle, Nav, NavItem, NavLink,
   Table, TabContent, TabPane, Row, Col, Button, Badge
 } from 'reactstrap';
+import { useTranslation } from 'react-i18next';
 
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
@@ -23,6 +24,7 @@ function TableData({ tabId, data }: any) {
   const dispatch = useDispatch();
   let history = useHistory();
   const users = useSelector(ProfileSelectors.getUsers)
+  const { t, i18n } = useTranslation();
 
   return (
     <Row>
@@ -90,6 +92,7 @@ export const HomePage = () => {
   const dispatch = useDispatch();
   const isLoading = useSelector(UISelectors.isLoading)
   let history = useHistory();
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState('1');
   const userAttributes = useSelector(ProfileSelectors.getProfile)
   const sowsAsSeller = useSelector(SowSelectors.getListSowsSeller)
@@ -113,13 +116,13 @@ export const HomePage = () => {
           <Card className="mt-3 mt-lg-5 rounded" outline color="primary">
             <div className="row">
               <div className="col-12 col-sm-8">
-                <CardTitle tag="h2">Welcome {userAttributes.given_name}</CardTitle>
+                <CardTitle tag="h2">{t('sow.welcome', {given_name: userAttributes.given_name})}</CardTitle>
               </div>
               <div className="col-12 col-sm-4 mt-sm-2 mx-auto">
                 {activeTab == '1' &&
                   <ActivityButton data-cy="createSow" type="submit" name="createSow" color="primary"
                     onClick={() => dispatch(SowActions.willCreateStatementOfWork({ history: history }))}
-                  >new Statement Of Work</ActivityButton>
+                  >{t('sow.newStatementOfWork')}</ActivityButton>
                 }
                 <RefreshButton data-cy='getSowsList' type="submit" name="getSowsList" color="primary"
                   onClick={() => {

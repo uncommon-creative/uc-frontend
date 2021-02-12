@@ -69,25 +69,33 @@ export const FileButton = ({ file, disabled, children, ...rest }: any) => {
         isActivityRunning ? (
           <FormText color="muted">
             <Row>
-              <Col className='d-flex justify-content-center' >
+              <Col className='d-flex justify-content-center'>
                 <Spinner size="2x" color="primary" />
               </Col>
-              <Col data-cy="attachment">
-                {file.filename}
-              </Col>
             </Row>
-          </FormText>
+            <Row>
+              <Col className='d-flex justify-content-center'>
+                {file.filename.length > 20 ?
+                  file.filename.substring(0, 20) + '... ' + file.filename.substring(file.filename.length - 4, file.filename.length)
+                  : file.filename}
+              </Col>
+            </Row >
+          </FormText >
         ) : (
             <FormText color="muted">
               <Row>
                 <Col data-cy="attachment" >
                   <a target="_blank" href={file.downloadUrl}>
                     <Row>
-                      <Col className='d-flex justify-content-center' >
+                      <Col className='d-flex justify-content-center'>
                         <FontAwesomeIcon icon={fileIcon} size='2x' />
                       </Col>
-                      <Col>
-                        {file.filename}
+                    </Row>
+                    <Row>
+                      <Col className='d-flex justify-content-center'>
+                        {file.filename.length > 20 ?
+                          file.filename.substring(0, 16) + '... ' + file.filename.substring(file.filename.length - 4, file.filename.length)
+                          : file.filename}
                       </Col>
                     </Row>
                   </a>

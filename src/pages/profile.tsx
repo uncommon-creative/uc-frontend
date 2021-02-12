@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory, Redirect } from "react-router-dom";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { useTranslation } from 'react-i18next';
 
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
@@ -52,6 +53,7 @@ const ArbitratorSettingsSchema = Yup.object().shape({
 export const ProfilePage = () => {
 
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const isLoading = useSelector(UISelectors.isLoading)
   let history = useHistory();
   const myArbitratorSettings = useSelector(ArbitratorSelectors.getMyArbitratorSettings)

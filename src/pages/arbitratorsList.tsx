@@ -6,6 +6,7 @@ import {
   ListGroup, ListGroupItem,
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
@@ -15,6 +16,7 @@ import { selectors as UISelectors } from '../store/slices/ui'
 export const ArbitratorsListPage = () => {
 
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const isLoading = useSelector(UISelectors.isLoading)
   const [modalOpen, setModalOpen] = React.useState(false);
   const [currentArbitrator, setCurrentArbitrator] = React.useState({} as any);
