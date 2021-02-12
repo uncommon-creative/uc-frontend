@@ -333,7 +333,7 @@ export const CreateStatementOfWorkPage = () => {
                       </Jumbotron>
                       <Col className="col-md-4 col-12">
                         <FormGroup>
-                          <Label for="sowExpiration">Expiration *</Label>
+                          <Label for="sowExpiration">{t('sow.input.sowExpirationLabel')} *</Label>
                           <CustomInput data-cy="inputSowExpiration" type="select" name="sowExpiration" id="sowExpiration"
                             onChange={(event) => {
                               console.log("event.target.value: ", event.target.value)
