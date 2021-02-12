@@ -16,6 +16,7 @@ query listSowChatMessages(
       attachmentMessage {
         key
         size
+        type
       }
       commandMessage {
         command

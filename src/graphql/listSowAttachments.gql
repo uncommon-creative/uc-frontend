@@ -7,6 +7,7 @@ query listSowAttachments(
     attachments {
       key
       size
+      type
     }
     nextToken
   }
