@@ -69,13 +69,14 @@ export const ChatSow = ({ currentSow }: any) => {
                       type={(msg.type == 'TEXT' || msg.type == 'COMMAND') ? 'text' : msg.type == 'ATTACHMENT' && 'file'}
                       text={msg.textMessage ? msg.textMessage.message : msg.commandMessage ? msg.commandMessage.command : msg.attachmentMessage && msg.attachmentMessage.key.split('/').pop()}
                       date={new Date(msg.createdAt)}
-                      data={{
+                      data={msg.type == 'ATTACHMENT' ? {
                         uri: msg.attachmentMessage.downloadUrl,
                         status: {
                           click: true,
                           loading: 0,
                         }
-                      }}
+                      }
+                        : {}}
                       onDownload={(event: any) => {
                         window.open(msg.attachmentMessage.downloadUrl);
                       }}

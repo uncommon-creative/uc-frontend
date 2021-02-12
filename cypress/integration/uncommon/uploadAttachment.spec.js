@@ -111,6 +111,7 @@ describe('Attachment', () => {
     cy.get('@sowID').then((sowID) => {
       cy.log("sowID: ", sowID)
 
+      cy.wait(5000)
       // seller
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
       // seller test sow attachment
