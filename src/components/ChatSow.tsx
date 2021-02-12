@@ -69,7 +69,12 @@ export const ChatSow = ({ currentSow }: any) => {
                       title={users[msg.from].given_name + ' ' + users[msg.from].family_name}
                       position={user.username == msg.from ? 'right' : 'left'}
                       type={(msg.type == 'TEXT' || msg.type == 'COMMAND') ? 'text' : msg.type == 'ATTACHMENT' && 'file'}
-                      text={msg.textMessage ? msg.textMessage.message : msg.commandMessage ? msg.commandMessage.command : msg.attachmentMessage && msg.attachmentMessage.key.split('/').pop()}
+                      text={msg.textMessage ? msg.textMessage.message
+                        : msg.commandMessage ? msg.commandMessage.command
+                          : msg.attachmentMessage.key.split('/').pop().length > 20 ?
+                            msg.attachmentMessage.key.split('/').pop().substring(0, 16) + '... ' + msg.attachmentMessage.key.split('/').pop().substring(msg.attachmentMessage.key.split('/').pop().length - 4, msg.attachmentMessage.key.split('/').pop().length)
+                            : msg.attachmentMessage.key.split('/').pop()
+                      }
                       date={new Date(msg.createdAt)}
                       data={msg.type == 'ATTACHMENT' ? {
                         uri: msg.attachmentMessage.downloadUrl,

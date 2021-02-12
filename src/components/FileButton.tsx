@@ -75,7 +75,9 @@ export const FileButton = ({ file, disabled, children, ...rest }: any) => {
             </Row>
             <Row>
               <Col className='d-flex justify-content-center'>
-                {file.filename}
+                {file.filename.length > 20 ?
+                  file.filename.substring(0, 20) + '... ' + file.filename.substring(file.filename.length - 4, file.filename.length)
+                  : file.filename}
               </Col>
             </Row >
           </FormText >
@@ -91,7 +93,9 @@ export const FileButton = ({ file, disabled, children, ...rest }: any) => {
                     </Row>
                     <Row>
                       <Col className='d-flex justify-content-center'>
-                        {file.filename}
+                        {file.filename.length > 20 ?
+                          file.filename.substring(0, 16) + '... ' + file.filename.substring(file.filename.length - 4, file.filename.length)
+                          : file.filename}
                       </Col>
                     </Row>
                   </a>
