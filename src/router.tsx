@@ -20,7 +20,7 @@ import { ProfilePage } from './pages/profile'
 import { CreateAlgoAccountPage } from './pages/createAlgoAccount'
 import { CreateStatementOfWorkPage } from './pages/createStatementOfWork'
 import { StatementOfWorkPage } from './pages/statementOfWork'
-import { ArbitratorsListPage } from './pages/arbitratorsList'
+import { ArbitratorsPage } from './pages/arbitrators'
 
 import { selectors as AuthSelectors } from './store/slices/auth'
 
@@ -88,7 +88,7 @@ export const AppRouter = () => {
             <Users />
           </Route>
           <Route path="/arbitrators">
-            <ArbitratorsListPage />
+            <ArbitratorsPage />
           </Route>
           <PrivateRoute path="/profile">
             <ProfilePage />

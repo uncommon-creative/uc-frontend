@@ -51,7 +51,7 @@ function* willGetFullArbitratorsList() {
   try {
     const result = yield call(ArbitratorApi.getFullArbitratorsList);
     console.log("result willGetFullArbitratorsList: ", result)
-    yield put(ArbitratorActions.didGetArbitratorsList(result))
+    yield put(ArbitratorActions.didGetFullArbitratorsList(result))
 
     // yield put(UIActions.stopLoading())
   } catch (error) {

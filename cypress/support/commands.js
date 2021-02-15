@@ -27,6 +27,8 @@ Cypress.Commands.add("login", (user) => {
 
   cy.get('[data-cy=login]').contains('Login').click()
 
+  cy.wait(3000)
+
   assert.exists(cy.contains("Welcome"), 'user logged successfully')
 })
 

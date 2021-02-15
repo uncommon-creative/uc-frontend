@@ -78,7 +78,7 @@ describe('Attachment', () => {
       .contains('Add to arbitrators')
       .click()
     cy.get('[data-cy=inputSowArbitratorsConfirm]')
-      .contains('Confirm arbitrators')
+      .contains('Confirm')
       .click()
 
     cy.get('[data-cy=inputSowExpiration]')
@@ -91,11 +91,11 @@ describe('Attachment', () => {
       .check()
 
     cy.get('[data-cy=inputAttachment]')
-      .attachFile('attachmentCypressSow.txt');
+      .attachFile('CypressSow.txt');
     cy.wait(1000)
     cy.get('[data-cy=attachmentsSow]')
-      .get('[data-cy=attachment] a')
-      .contains('attachmentCypressSow.txt')
+      .get('[data-cy=attachment]')
+      .contains('CypressSow.txt')
 
     cy.get('[data-cy=inputSowSubmit]')
       .click()
@@ -116,15 +116,15 @@ describe('Attachment', () => {
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
       // seller test sow attachment
       cy.get('[data-cy=attachmentsSow]')
-        .get('[data-cy=attachment] a')
-        .contains('attachmentCypressSow.txt')
+        .get('[data-cy=attachment]')
+        .contains('CypressSow.txt')
       // seller attachment upload
       cy.get('[data-cy=inputAttachment]')
-        .attachFile('attachmentCypressSeller.txt');
+        .attachFile('CypressSeller.txt');
       cy.wait(1000)
       cy.get('[data-cy=attachmentsSeller]')
-        .get('[data-cy=attachment] a')
-        .contains('attachmentCypressSeller.txt')
+        .get('[data-cy=attachment]')
+        .contains('CypressSeller.txt')
       cy.logout()
 
 
@@ -135,15 +135,15 @@ describe('Attachment', () => {
       cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
       // buyer test sow attachment
       cy.get('[data-cy=attachmentsSow]')
-        .get('[data-cy=attachment] a')
-        .contains('attachmentCypressSow.txt')
+        .get('[data-cy=attachment]')
+        .contains('CypressSow.txt')
       // buyer attachment upload
       cy.get('[data-cy=inputAttachment]')
-        .attachFile('attachmentCypressBuyer.txt');
+        .attachFile('CypressBuyer.txt');
       cy.wait(1000)
       cy.get('[data-cy=attachmentsBuyer]')
-        .get('[data-cy=attachment] a')
-        .contains('attachmentCypressBuyer.txt')
+        .get('[data-cy=attachment]')
+        .contains('CypressBuyer.txt')
     })
   })
 })

@@ -77,7 +77,7 @@ describe('Chat', () => {
       .contains('Add to arbitrators')
       .click()
     cy.get('[data-cy=inputSowArbitratorsConfirm]')
-      .contains('Confirm arbitrators')
+      .contains('Confirm')
       .click()
 
     cy.get('[data-cy=inputSowExpiration]')
