@@ -179,7 +179,6 @@ function* willPrepareUploadAttachment(action: any) {
     const result = yield call(SowApi.getUploadUrl, action.payload.sow.sow, key, 600, action.payload.attachment.type)
     console.log("in willPrepareUploadAttachment with result: ", result)
 
-    console.log("AAA: ", action.payload.attachment)
     yield call(SowApi.uploadFileToS3, result, action.payload.attachment)
     yield put(ChatActions.willSendAttachmentChat({ values: { key: key, size: action.payload.attachment.size, type: action.payload.attachment.type }, sow: action.payload.sow }))
     yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow.sow } });

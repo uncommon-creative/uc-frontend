@@ -15,10 +15,14 @@ import { useTranslation } from 'react-i18next';
 import { ActivityButton } from '../components/ActivityButton'
 import { TagsInput } from '../components/TagsInput'
 import { SelectArbitrators } from '../components/SelectArbitrators'
+import { ArbitratorsSelect } from '../components/arbitrator/ArbitratorsSelect'
+import { ArbitratorDetailMD } from '../components/arbitrator/ArbitratorDetailMD'
+
 import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { SowAttachments } from '../components/SowAttachments'
 import { DescriptionEditor } from '../components/DescriptionEditor'
 import { actions as SowActions, selectors as SowSelectors, SowStatus } from '../store/slices/sow'
+import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as UISelectors } from '../store/slices/ui'
 
@@ -158,18 +162,18 @@ export const CreateStatementOfWorkPage = () => {
                       </FormGroup>
                       {currentSow.status == SowStatus.DRAFT &&
                         <FormGroup>
-                        <Label for="buyer">Buyer (email address) *</Label>
-                        <Input data-cy="inputSowBuyer" disabled={currentSow.status == SowStatus.SUBMITTED} invalid={errors.buyer && touched.buyer ? true : false} type="text" name="buyer" id="buyer" placeholder="buyer email" tag={Field} />
-                        {errors.buyer && touched.buyer ? (
-                          <FormFeedback>{errors.buyer}</FormFeedback>
-                        ) : null}
-                      </FormGroup>
+                          <Label for="buyer">Buyer (email address) *</Label>
+                          <Input data-cy="inputSowBuyer" disabled={currentSow.status == SowStatus.SUBMITTED} invalid={errors.buyer && touched.buyer ? true : false} type="text" name="buyer" id="buyer" placeholder="buyer email" tag={Field} />
+                          {errors.buyer && touched.buyer ? (
+                            <FormFeedback>{errors.buyer}</FormFeedback>
+                          ) : null}
+                        </FormGroup>
                       }
                       {currentSow.status == SowStatus.SUBMITTED &&
                         <FormGroup>
-                        <Label for="buyerName">Buyer</Label>
-                        <Input data-cy="inputSowBuyerName" disabled={currentSow.status == SowStatus.SUBMITTED} type="text" name="buyerName" id="buyerName" placeholder="buyer" tag={Field} />
-                      </FormGroup>
+                          <Label for="buyerName">Buyer</Label>
+                          <Input data-cy="inputSowBuyerName" disabled={currentSow.status == SowStatus.SUBMITTED} type="text" name="buyerName" id="buyerName" placeholder="buyer" tag={Field} />
+                        </FormGroup>
                       }
                       <FormGroup>
                         <Label for="givenName">Title *</Label>
@@ -287,10 +291,9 @@ export const CreateStatementOfWorkPage = () => {
                           <Row name="arbitrators" id="arbitrators">
                             {currentArbitrators.map((arbitrator: any, index: any) => {
                               return (
-                                <Col>
-                                  <Card>
-                                    <ArbitratorDetail arbitrator={arbitrator} />
-                                  </Card>
+                                <Col className="col-md-4 col-12 d-flex">
+                                  {/* <ArbitratorDetail arbitrator={arbitrator} /> */}
+                                  <ArbitratorDetailMD arbitrator={arbitrator} />
                                 </Col>
                               )
                             }
@@ -299,10 +302,16 @@ export const CreateStatementOfWorkPage = () => {
                           <Row className="mt-2">
                             <Col className="col-6 offset-3">
                               {/* <Button color="primary" block onClick={() => dispatch(SowActions.willConfirmArbitrators())}>Select the arbitrators</Button> */}
-                              <Button data-cy="inputSowArbitratorsModal" color="primary" block onClick={toggleModal}>Select the arbitrators</Button>
+                              <Button data-cy="inputSowArbitratorsModal" color="primary" block onClick={() => {
+                                dispatch(ArbitratorActions.willGetArbitratorsList())
+                                dispatch(ArbitratorActions.willSelectThreeArbitrators(currentArbitrators))
+
+                                setModalOpen(!modalOpen)
+                              }}>Select the arbitrators</Button>
                             </Col>
                           </Row>
-                          <SelectArbitrators modal={modalOpen} toggle={toggleModal} />
+                          {/* <SelectArbitrators modal={modalOpen} toggle={toggleModal} /> */}
+                          <ArbitratorsSelect modal={modalOpen} toggle={toggleModal} />
                           <Input invalid={errors.arbitrators && touched.arbitrators ? true : false} name="arbitrators" id="arbitrators" placeholder="arbitrators" tag={FieldArray}
                             render={(arrayHelpers: any) => {
                               const arbs = values.arbitrators;

@@ -15,5 +15,6 @@ query getArbitrator(
     reputation
     given_name
     family_name
+    public_key
   }
 }
