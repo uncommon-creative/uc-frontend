@@ -28,7 +28,7 @@ export const ArbitratorDetailMD = ({ arbitrator }: any) => {
 
   return (
     <>
-      <Card tag="button" color="primary" outline onClick={() => {
+      <Card tag="button" color="primary" className="flex-fill" outline onClick={() => {
         dispatch(ArbitratorActions.willViewCurrentArbitrator(arbitrator))
         setModalOpen(!modalOpen)
       }}>

@@ -22,7 +22,7 @@ export const ArbitratorsList = () => {
   const arbitratorsList = useSelector(ArbitratorSelectors.getArbitratorsList)
 
   return (
-    <CardGroup className='d-flex flex-wrap'>
+    <CardGroup>
       {arbitratorsList.map((element: any, index: any) => {
         return (
           <Col className="col-md-3 col-12 d-flex">
