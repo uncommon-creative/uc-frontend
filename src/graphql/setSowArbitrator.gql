@@ -1,0 +1,28 @@
+mutation setSowArbitrator(
+  $sow: ID,
+  $arbitrator: ID
+) {
+  setSowArbitrator(
+    sow: $sow,
+    arbitrator: $arbitrator
+  ) {
+    arbitrators
+    arbitrator
+    codeOfConduct
+    currency
+    seller
+    buyer
+    deadline
+    description
+    numberReviews
+    price
+    quantity
+    tags
+    termsOfService
+    title
+    sow
+    createdAt
+    updatedAt
+    status
+  }
+}

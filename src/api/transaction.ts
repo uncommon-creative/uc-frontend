@@ -16,6 +16,7 @@ export const algorandGetTxParams = async () => {
 }
 
 export function createMultiSigAddress(payload: { seller: string, buyer: string, arbitrator: string, backup: string }): string {
+  console.log("createMultiSigAddress payload: ", payload)
   const mparams = {
     version: 1,
     threshold: 2,
@@ -35,12 +36,12 @@ export function createMultiSigAddress(payload: { seller: string, buyer: string, 
   }
 }
 
-export function signTransaction(multiSigAddress: any, params: any, mnemonicSecretKey: any, currentSow: any) {
+export function signTransaction(multiSigAddress: any, params: any, mnemonicSecretKey: any, price: any) {
   try {
     let txn = {
       "to": multiSigAddress,
       "fee": params.fee,
-      "amount": currentSow.price * 1000000,
+      "amount": price * 1000000,
       "firstRound": params.firstRound,
       "lastRound": params.lastRound,
       "genesisID": params.genesisID,
@@ -55,6 +56,19 @@ export function signTransaction(multiSigAddress: any, params: any, mnemonicSecre
     return signedTxn
   } catch (error) {
     console.log("signTransaction API error: ", error)
+    throw error
+  }
+}
+
+export const setSowArbitrator = async(sow: any, arbitrator: any) => {
+  const mutation = loader('../graphql/setSowArbitrator.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, arbitrator: arbitrator }))
+    // console.log("setSowArbitrator result: ", result)
+    return result.data
+  } catch (error) {
+    console.log("setSowArbitrator API error: ", error)
     throw error
   }
 }

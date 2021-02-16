@@ -38,13 +38,18 @@ function* willCreateMultiSigAddress(action: any) {
 
   const users = yield select(ProfileSelectors.getUsers)
 
-  const sellerData = users[action.payload.seller].public_key
-  const buyerData = users[action.payload.buyer].public_key
-  const arbitratorData = users[action.payload.arbitrator].public_key
-  const backup = "T7AVQFK7NJFFBPBZR5YPCI7KMFUPRHBOL4AV5RADWHPWC4VBVVE6PSVJXQ"
+  const seller_public_key = users[action.payload.seller].public_key
+  const buyer_public_key = users[action.payload.buyer].public_key
+  const arbitrator_public_key = users[action.payload.arbitrator].public_key
+  const backup_public_key = "T7AVQFK7NJFFBPBZR5YPCI7KMFUPRHBOL4AV5RADWHPWC4VBVVE6PSVJXQ"
+
+  console.log("sellerData: ", seller_public_key)
+  console.log("buyerData: ", buyer_public_key)
+  console.log("arbitratorData: ", arbitrator_public_key)
+  console.log("backup_public_key: ", backup_public_key)
 
   try {
-    const result = yield call(TransactionApi.createMultiSigAddress, { seller: sellerData.public_key, buyer: buyerData.public_key, arbitrator: arbitratorData.public_key, backup: backup })
+    const result = yield call(TransactionApi.createMultiSigAddress, { seller: seller_public_key, buyer: buyer_public_key, arbitrator: arbitrator_public_key, backup: backup_public_key })
     console.log("result willCreateMultiSigAddress: ", result)
     yield put(TransactionActions.didCreateMultiSigAddress(result))
   } catch (error) {
@@ -59,13 +64,25 @@ function* willCompleteTransaction(action: any) {
   yield put(UIActions.startActivityRunning('willCompleteTransaction'));
 
   try {
-    const resultSignedTransaction = yield call(TransactionApi.signTransaction, action.payload.multiSigAddress, action.payload.params, action.payload.mnemonicSecretKey, action.payload.currentSow)
+
+    const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.currentSow.arbitrator)
+    console.log("willCompleteTransaction resultSetSowArbitrator: ", resultSetSowArbitrator)
+
+    const resultSignedTransaction = yield call(TransactionApi.signTransaction, action.payload.multiSigAddress, action.payload.params, action.payload.mnemonicSecretKey, action.payload.currentSow.price)
     console.log("willCompleteTransaction resultSignedTransaction: ", resultSignedTransaction)
 
     const resultSendedTransaction = yield call(TransactionApi.sendTransaction, action.payload.currentSow.sow, resultSignedTransaction)
     console.log("willCompleteTransaction resultSendedTransaction: ", resultSendedTransaction)
 
-    yield put(TransactionActions.didCompleteTransaction(resultSendedTransaction))
+    if (resultSendedTransaction === "sendTxFailed") {
+      console.log("willCompleteTransaction resultSendedTransaction fail: ", resultSendedTransaction)
+      yield put(TransactionActions.didCompleteTransactionFail(resultSendedTransaction))
+      yield put(NotificationActions.willShowNotification({ message: resultSendedTransaction, type: "danger" }));
+    }
+    else {
+      console.log("willCompleteTransaction resultSendedTransaction success: ", resultSendedTransaction)
+      yield put(TransactionActions.didCompleteTransaction(resultSendedTransaction))
+    }
     yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
 
   } catch (error) {

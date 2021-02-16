@@ -6,7 +6,8 @@ export const currentSlice = createSlice({
     transactionPage: 1,
     params: {} as any,
     multiSigAddress: "",
-    completedTransaction: {} as any
+    completedTransaction: {} as any,
+    error: ''
   },
   reducers: {
     willGetParams: (state, action: PayloadAction<any>) => void (state.transactionPage = 1),
@@ -19,6 +20,7 @@ export const currentSlice = createSlice({
 
     willCompleteTransaction: (state, action: PayloadAction<any>) => state,
     didCompleteTransaction: (state, action: PayloadAction<any>) => void (state.completedTransaction = action.payload, state.transactionPage = 3),
+    didCompleteTransactionFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 4),
   }
 })
 
@@ -33,4 +35,5 @@ export const selectors = {
   getParams: (state: any) => state.transaction.params,
   getMultiSigAddress: (state: any) => state.transaction.multiSigAddress,
   getCompletedTransaction: (state: any) => state.transaction.completedTransaction,
+  getError: (state: any) => state.transaction.error,
 }

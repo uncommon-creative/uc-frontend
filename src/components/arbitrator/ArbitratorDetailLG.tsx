@@ -87,13 +87,13 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
       {selectingArbitrators &&
         <ModalFooter>
           {currentSelectedArbitrators.some((arb: any) => arb.user === currentArbitrator.user) ?
-            <Button disabled block color="primary">Arbitrator added</Button>
+            <Button disabled color="primary">Arbitrator added</Button>
             : currentSelectedArbitrators.length < 3 ?
               <ActivityButton data-cy='inputSowArbitratorsAdd' name="ArbitratorDetailLG" color="primary" onClick={() => {
                 dispatch(ArbitratorActions.willSelectArbitrator(currentArbitrator))
                 toggle()
               }}>Add to arbitrators</ActivityButton>
-              : <Button disabled block color="primary">Max number of Arbitrators selected</Button>
+              : <Button disabled color="primary">Max number of arbitrators added</Button>
           }
         </ModalFooter>
       }

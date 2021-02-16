@@ -12,19 +12,25 @@ import { actions as SowActions, selectors as SowSelectors } from '../store/slice
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../store/slices/transaction'
 import { ActivityButton } from './ActivityButton';
 
-export const AcceptSow = ({ modal, toggle }: any) => {
+export const AcceptSow = ({ modal, toggle, arbitrator }: any) => {
 
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
   const multiSigAddress = useSelector(TransactionSelectors.getMultiSigAddress)
+  const transactionError = useSelector(TransactionSelectors.getError)
   const [acceptedConditions, setAcceptedConditions] = React.useState(false);
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const params = useSelector(TransactionSelectors.getParams)
 
   React.useEffect(() => {
     modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
+
+    return () => {
+      setAcceptedConditions(false)
+      setMnemonicSecretKey('')
+    }
   }, [modal])
 
   return (
@@ -85,6 +91,22 @@ export const AcceptSow = ({ modal, toggle }: any) => {
             <Jumbotron>
               <CardText>
                 The wallet was funded successfully
+              </CardText>
+            </Jumbotron>
+          </ModalBody>
+          <ModalFooter>
+            <ActivityButton name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
+          </ModalFooter>
+        </>
+      }
+      {transactionPage == 4 &&
+        <>
+          <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
+          <ModalBody>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress}</CardSubtitle>
+            <Jumbotron>
+              <CardText>
+                The transaction failed: {transactionError}
               </CardText>
             </Jumbotron>
           </ModalBody>
