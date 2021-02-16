@@ -38,7 +38,7 @@ export function createMultiSigAddress(payload: { seller: string, buyer: string, 
 
 export function signTransaction(multiSigAddress: any, params: any, mnemonicSecretKey: any, price: any) {
   try {
-    let txn = {
+    const txn = {
       "to": multiSigAddress,
       "fee": params.fee,
       "amount": price * 1000000,
@@ -49,8 +49,8 @@ export function signTransaction(multiSigAddress: any, params: any, mnemonicSecre
       "note": new Uint8Array(0)
     };
 
-    var secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
-    var signedTxn = algosdk.signTransaction(txn, secret_key.sk);
+    const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
+    const signedTxn = algosdk.signTransaction(txn, secret_key.sk);
     // console.log("in signTransaction signedTxn: ", signedTxn)
 
     return signedTxn
@@ -60,7 +60,7 @@ export function signTransaction(multiSigAddress: any, params: any, mnemonicSecre
   }
 }
 
-export const setSowArbitrator = async(sow: any, arbitrator: any) => {
+export const setSowArbitrator = async (sow: any, arbitrator: any) => {
   const mutation = loader('../graphql/setSowArbitrator.gql')
 
   try {
@@ -82,6 +82,48 @@ export const sendTransaction = async (sow: any, signedTxn: any) => {
     return result.data.algorandSendTx
   } catch (error) {
     console.log("sendTransaction API error: ", error)
+    throw error
+  }
+}
+
+export function signMultisigTransaction(multiSigAddress: any, sellerAddress: any, params: any, mnemonicSecretKey: any, price: any, mparams: any) {
+  try {
+    const txn = {
+      "from": multiSigAddress,
+      "to": sellerAddress,
+      "fee": params.fee,
+      "amount": price * 1000000,
+      "firstRound": params.firstRound,
+      "lastRound": params.lastRound,
+      "genesisID": params.genesisID,
+      "genesisHash": params.genesisHash,
+      "note": new Uint8Array(0)
+    };
+
+    const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
+
+    console.log("signMultisigTransaction txn: ", txn)
+    console.log("signMultisigTransaction params: ", params)
+    console.log("signMultisigTransaction secret_key: ", secret_key)
+    const signedMultisigTxn = algosdk.signMultisigTransaction(txn, mparams, secret_key.sk);
+    console.log("in signMultisigTransaction signedMultisigTxn: ", signedMultisigTxn)
+
+    return signedMultisigTxn
+  } catch (error) {
+    console.log("signMultisigTransaction API error: ", error)
+    throw error
+  }
+}
+
+export const setSignedMsig = async (sow: any, signedMsig: any) => {
+  const mutation = loader('../graphql/setSignedMsig.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, signedMsig: signedMsig.blob.toString() }))
+    // console.log("setSignedMsig result: ", result)
+    return result.data.setSignedMsig
+  } catch (error) {
+    console.log("setSignedMsig API error: ", error)
     throw error
   }
 }

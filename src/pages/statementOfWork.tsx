@@ -21,6 +21,7 @@ import { RefreshButton } from '../components/RefreshButton'
 import { FileButton } from '../components/FileButton';
 import { selectors as UISelectors } from '../store/slices/ui'
 import { AcceptSow } from '../components/AcceptSow'
+import { ClaimMilestoneMet } from '../components/ClaimMilestoneMet'
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -41,13 +42,13 @@ export const StatementOfWorkPage = () => {
   const user = useSelector(AuthSelectors.getUser)
   const users = useSelector(ProfileSelectors.getUsers)
   const [selectedArbitrator, setSelectedArbitrator] = React.useState('');
-  const [modalOpen, setModalOpen] = React.useState(false);
+  const [modalOpenAcceptSow, setModalOpenAcceptSow] = React.useState(false);
+  const [modalOpenClaimMilestoneMet, setModalOpenClaimMilestoneMet] = React.useState(false);
 
-  const toggleModal = () => setModalOpen(!modalOpen);
+  const toggleModalAcceptSow = () => setModalOpenAcceptSow(!modalOpenAcceptSow);
+  const toggleModalClaimMilestoneMet = () => setModalOpenClaimMilestoneMet(!modalOpenClaimMilestoneMet);
 
   React.useEffect(() => {
-    console.log("in statementOfWorkPage")
-    // console.log("in statementOfWorkPage isLoading: ", isLoading)
     console.log("in statementOfWorkPage currentSow: ", currentSow)
     dispatch(SowActions.willGetSow({ sow: code }))
   }, [])
@@ -200,10 +201,12 @@ export const StatementOfWorkPage = () => {
                         {currentSow.seller == user.username &&
                           <>
                             {(currentSow.status == SowStatus.ACCEPTED_PAID || currentSow.status == SowStatus.REVIEW_REQUIRED) &&
-                              <Button data-cy={SowCommands.CLAIM_MILESTONE_MET} block color="primary" name={SowCommands.CLAIM_MILESTONE_MET} onClick={() => {
-                                console.log("Claim milestone met")
-                                dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: currentSow }));
-                              }}>Claim milestone met</Button>
+                              <Button data-cy={SowCommands.CLAIM_MILESTONE_MET} block color="primary" name={SowCommands.CLAIM_MILESTONE_MET}
+                                // onClick={() => {
+                                //   console.log("Claim milestone met")
+                                //   dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: currentSow }));
+                                // }}
+                                onClick={toggleModalClaimMilestoneMet}>Claim milestone met</Button>
                             }
                           </>
                         }
@@ -211,7 +214,7 @@ export const StatementOfWorkPage = () => {
                           <>
                             {currentSow.status == SowStatus.SUBMITTED &&
                               <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={currentSow.arbitrator == null} block color="primary" name={SowCommands.ACCEPT_AND_PAY}
-                                onClick={toggleModal}
+                                onClick={toggleModalAcceptSow}
                               >{currentSow.arbitrator == null ? "Select an arbitrator" : "Accept and pay"}</ActivityButton>
                             }
                             {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
@@ -279,7 +282,8 @@ export const StatementOfWorkPage = () => {
             </CardBody>
           </Card>
 
-          <AcceptSow modal={modalOpen} toggle={toggleModal} />
+          <AcceptSow modal={modalOpenAcceptSow} toggle={toggleModalAcceptSow} />
+          <ClaimMilestoneMet modal={modalOpenClaimMilestoneMet} toggle={toggleModalClaimMilestoneMet} />
         </Container>
       }
     </>

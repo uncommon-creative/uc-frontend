@@ -74,7 +74,7 @@ function* willSendTextChat(action: any) {
   yield put(UIActions.stopActivityRunning('sendMessageChat'));
 }
 
-function* willSendCommandChat(action: any) {
+export function* willSendCommandChat(action: any) {
   console.log("in willSendCommandChat with: ", action)
   yield put(UIActions.startActivityRunning(action.payload.values.command));
   const messages = yield select(ChatSelectors.getMessages)

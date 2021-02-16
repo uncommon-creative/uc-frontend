@@ -7,11 +7,13 @@ import { actions as TransactionActions, selectors as TransactionSelectors } from
 import { actions as UIActions } from '../slices/ui'
 import * as TransactionApi from '../../api/transaction'
 import { willGetUserProfile } from '../sagas/profile'
+import { willSendCommandChat } from '../sagas/chat'
 
 export function* sagas() {
   yield takeLatest(TransactionActions.willGetParams.type, willGetParams)
   yield takeLatest(TransactionActions.willCreateMultiSigAddress.type, willCreateMultiSigAddress)
-  yield takeLatest(TransactionActions.willCompleteTransaction.type, willCompleteTransaction)
+  yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPay.type, willCompleteTransactionAcceptAndPay)
+  yield takeLatest(TransactionActions.willSignTransactionClaimMilestoneMet.type, willSignTransactionClaimMilestoneMet)
   console.log('in sow saga');
 }
 
@@ -59,34 +61,66 @@ function* willCreateMultiSigAddress(action: any) {
   yield put(UIActions.stopActivityRunning('continueTransaction'));
 }
 
-function* willCompleteTransaction(action: any) {
-  console.log("in willCompleteTransaction with: ", action)
-  yield put(UIActions.startActivityRunning('willCompleteTransaction'));
+function* willCompleteTransactionAcceptAndPay(action: any) {
+  console.log("in willCompleteTransactionAcceptAndPay with: ", action)
+  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPay'));
 
   try {
-
     const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.currentSow.arbitrator)
-    console.log("willCompleteTransaction resultSetSowArbitrator: ", resultSetSowArbitrator)
+    console.log("willCompleteTransactionAcceptAndPay resultSetSowArbitrator: ", resultSetSowArbitrator)
 
     const resultSignedTransaction = yield call(TransactionApi.signTransaction, action.payload.multiSigAddress, action.payload.params, action.payload.mnemonicSecretKey, action.payload.currentSow.price)
-    console.log("willCompleteTransaction resultSignedTransaction: ", resultSignedTransaction)
+    console.log("willCompleteTransactionAcceptAndPay resultSignedTransaction: ", resultSignedTransaction)
 
     const resultSendedTransaction = yield call(TransactionApi.sendTransaction, action.payload.currentSow.sow, resultSignedTransaction)
-    console.log("willCompleteTransaction resultSendedTransaction: ", resultSendedTransaction)
+    console.log("willCompleteTransactionAcceptAndPay resultSendedTransaction: ", resultSendedTransaction)
 
     if (resultSendedTransaction === "sendTxFailed") {
-      console.log("willCompleteTransaction resultSendedTransaction fail: ", resultSendedTransaction)
-      yield put(TransactionActions.didCompleteTransactionFail(resultSendedTransaction))
+      console.log("willCompleteTransactionAcceptAndPay resultSendedTransaction fail: ", resultSendedTransaction)
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSendedTransaction))
       yield put(NotificationActions.willShowNotification({ message: resultSendedTransaction, type: "danger" }));
     }
     else {
-      console.log("willCompleteTransaction resultSendedTransaction success: ", resultSendedTransaction)
-      yield put(TransactionActions.didCompleteTransaction(resultSendedTransaction))
+      console.log("willCompleteTransactionAcceptAndPay resultSendedTransaction success: ", resultSendedTransaction)
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPay(resultSendedTransaction))
     }
     yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
 
   } catch (error) {
-    console.log("error in willCompleteTransaction ", error)
+    console.log("error in willCompleteTransactionAcceptAndPay ", error)
   }
-  yield put(UIActions.stopActivityRunning('willCompleteTransaction'));
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPay'));
+}
+
+function* willSignTransactionClaimMilestoneMet(action: any) {
+  console.log("in willSignTransactionClaimMilestoneMet with: ", action)
+  yield put(UIActions.startActivityRunning('willSignTransactionClaimMilestoneMet'));
+  const users = yield select(ProfileSelectors.getUsers)
+
+  const mparams = {
+    version: 1,
+    threshold: 2,
+    addrs: [
+      users[action.payload.currentSow.seller].public_key,
+      users[action.payload.currentSow.buyer].public_key,
+      users[action.payload.currentSow.arbitrator].public_key,
+      "T7AVQFK7NJFFBPBZR5YPCI7KMFUPRHBOL4AV5RADWHPWC4VBVVE6PSVJXQ"
+    ],
+  };
+
+  try {
+    const resultSignedMultisigTransaction = yield call(TransactionApi.signMultisigTransaction, action.payload.multiSigAddress, action.payload.sellerAddress, action.payload.params, action.payload.mnemonicSecretKey, action.payload.currentSow.price, mparams)
+    console.log("willSignTransactionClaimMilestoneMet resultSignedMultisigTransaction: ", resultSignedMultisigTransaction)
+
+    const resultSettedMultisigTransaction = yield call(TransactionApi.setSignedMsig, action.payload.currentSow.sow, resultSignedMultisigTransaction)
+    console.log("willSignTransactionClaimMilestoneMet resultSettedMultisigTransaction: ", resultSettedMultisigTransaction)
+
+    yield call(willSendCommandChat, { payload: { values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: action.payload.currentSow } })
+
+    yield put(TransactionActions.didSignTransactionClaimMilestoneMet())
+
+  } catch (error) {
+    console.log("error in willSignTransactionClaimMilestoneMet ", error)
+  }
+  yield put(UIActions.stopActivityRunning('willSignTransactionClaimMilestoneMet'));
 }
