@@ -361,6 +361,7 @@ function* willGetSow(action: any) {
     console.log("result willGetSow: ", result)
     yield call(willGetUserProfile, { user: result.seller })
     yield call(willGetUserProfile, { user: result.buyer })
+    result.arbitrator && (yield call(willGetUserProfile, { user: result.arbitrator }))
     yield put(SowActions.didGetSow(result))
     yield put(ChatActions.willReadSowChat(action.payload))
     yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow } });

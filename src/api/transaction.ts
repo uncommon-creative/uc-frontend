@@ -41,7 +41,7 @@ export function signTransaction(multiSigAddress: any, params: any, mnemonicSecre
     const txn = {
       "to": multiSigAddress,
       "fee": params.fee,
-      "amount": price * 1000000,
+      "amount": price * 1000000 + params.fee,
       "firstRound": params.firstRound,
       "lastRound": params.lastRound,
       "genesisID": params.genesisID,
@@ -51,7 +51,6 @@ export function signTransaction(multiSigAddress: any, params: any, mnemonicSecre
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
     const signedTxn = algosdk.signTransaction(txn, secret_key.sk);
-    // console.log("in signTransaction signedTxn: ", signedTxn)
 
     return signedTxn
   } catch (error) {
@@ -101,13 +100,8 @@ export function signMultisigTransaction(multiSigAddress: any, sellerAddress: any
     };
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
-
-    console.log("signMultisigTransaction txn: ", txn)
-    console.log("signMultisigTransaction params: ", params)
-    console.log("signMultisigTransaction secret_key: ", secret_key)
     const signedMultisigTxn = algosdk.signMultisigTransaction(txn, mparams, secret_key.sk);
-    console.log("in signMultisigTransaction signedMultisigTxn: ", signedMultisigTxn)
-
+    // console.log("in signMultisigTransaction signedMultisigTxn: ", signedMultisigTxn)
     return signedMultisigTxn
   } catch (error) {
     console.log("signMultisigTransaction API error: ", error)
@@ -122,6 +116,34 @@ export const setSignedMsig = async (sow: any, signedMsig: any) => {
     const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, signedMsig: signedMsig.blob.toString() }))
     // console.log("setSignedMsig result: ", result)
     return result.data.setSignedMsig
+  } catch (error) {
+    console.log("setSignedMsig API error: ", error)
+    throw error
+  }
+}
+
+export function appendSignMultisigTransaction(signedMsig: any, mnemonicSecretKey: any, msigparams: any) {
+  try {
+
+    const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
+    const buffer = Uint8Array.from(signedMsig.split(',') as any);
+
+    const directsig = algosdk.appendSignMultisigTransaction(buffer, msigparams, secret_key.sk);
+    // console.log("in appendSignMultisigTransaction directsig: ", directsig)
+    return directsig
+  } catch (error) {
+    console.log("appendSignMultisigTransaction API error: ", error)
+    throw error
+  }
+}
+
+export const confirmTxAsBuyer = async (sow: any, tx: any) => {
+  const mutation = loader('../graphql/confirmTxAsBuyer.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, tx: tx.blob.toString() }))
+    // console.log("confirmTxAsBuyer result: ", result)
+    return result.data.confirmTxAsBuyer
   } catch (error) {
     console.log("setSignedMsig API error: ", error)
     throw error

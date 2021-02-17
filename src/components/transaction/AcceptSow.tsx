@@ -8,16 +8,14 @@ import {
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
-import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
-import { selectors as ProfileSelectors } from '../store/slices/profile'
-import { actions as TransactionActions, selectors as TransactionSelectors } from '../store/slices/transaction'
-import { ActivityButton } from './ActivityButton';
+import { actions as SowActions, selectors as SowSelectors } from '../../store/slices/sow'
+import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
+import { ActivityButton } from '../ActivityButton';
 
-export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
+export const AcceptSow = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
-  const users = useSelector(ProfileSelectors.getUsers)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
   const multiSigAddress = useSelector(TransactionSelectors.getMultiSigAddress)
@@ -32,6 +30,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
     return () => {
       setAcceptedConditions(false)
       setMnemonicSecretKey('')
+      dispatch(TransactionActions.cancelTransaction())
     }
   }, [modal])
 
@@ -62,7 +61,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
       }
       {transactionPage == 2 &&
         <>
-          <ModalHeader toggle={toggle}>Claim milestone met</ModalHeader>
+          <ModalHeader toggle={toggle}>Fund the wallet</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress}</CardSubtitle>
 
@@ -79,20 +78,20 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             <ActivityButton data-cy='cancelTransaction' name="cancelTransaction" outline color="primary" onClick={() => {
               dispatch(TransactionActions.cancelTransaction())
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willSignTransactionClaimMilestoneMet' disabled={mnemonicSecretKey == ''} name="willSignTransactionClaimMilestoneMet" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willSignTransactionClaimMilestoneMet({ multiSigAddress: multiSigAddress, sellerAddress: users[currentSow.seller].public_key, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
-            }}>Sign the transaction</ActivityButton>
+            <ActivityButton data-cy='willCompleteTransactionAcceptAndPay' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptAndPay" color="primary" onClick={async () => {
+              dispatch(TransactionActions.willCompleteTransactionAcceptAndPay({ multiSigAddress: multiSigAddress, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
+            }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
       }
       {transactionPage == 3 &&
         <>
-          <ModalHeader toggle={toggle}>Transaction signed</ModalHeader>
+          <ModalHeader toggle={toggle}>Wallet funded</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress}</CardSubtitle>
             <Jumbotron>
               <CardText>
-                The transaction was signed successfully
+                {t('transaction.transactionCompleted')}
               </CardText>
             </Jumbotron>
           </ModalBody>
@@ -101,14 +100,14 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {/* {transactionPage == 4 &&
+      {transactionPage == 4 &&
         <>
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress}</CardSubtitle>
             <Jumbotron>
               <CardText>
-                The transaction failed: {transactionError}
+                {t('transaction.transactionFailed')}
               </CardText>
             </Jumbotron>
           </ModalBody>
@@ -116,7 +115,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             <ActivityButton name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
           </ModalFooter>
         </>
-      } */}
+      }
     </Modal>
   )
 }

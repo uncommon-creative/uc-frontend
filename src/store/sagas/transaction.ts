@@ -14,6 +14,7 @@ export function* sagas() {
   yield takeLatest(TransactionActions.willCreateMultiSigAddress.type, willCreateMultiSigAddress)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPay.type, willCompleteTransactionAcceptAndPay)
   yield takeLatest(TransactionActions.willSignTransactionClaimMilestoneMet.type, willSignTransactionClaimMilestoneMet)
+  yield takeLatest(TransactionActions.willCompleteTransactionAcceptMilestone.type, willCompleteTransactionAcceptMilestone)
   console.log('in sow saga');
 }
 
@@ -72,17 +73,17 @@ function* willCompleteTransactionAcceptAndPay(action: any) {
     const resultSignedTransaction = yield call(TransactionApi.signTransaction, action.payload.multiSigAddress, action.payload.params, action.payload.mnemonicSecretKey, action.payload.currentSow.price)
     console.log("willCompleteTransactionAcceptAndPay resultSignedTransaction: ", resultSignedTransaction)
 
-    const resultSendedTransaction = yield call(TransactionApi.sendTransaction, action.payload.currentSow.sow, resultSignedTransaction)
-    console.log("willCompleteTransactionAcceptAndPay resultSendedTransaction: ", resultSendedTransaction)
+    const resultSentTransaction = yield call(TransactionApi.sendTransaction, action.payload.currentSow.sow, resultSignedTransaction)
+    console.log("willCompleteTransactionAcceptAndPay resultSentTransaction: ", resultSentTransaction)
 
-    if (resultSendedTransaction === "sendTxFailed") {
-      console.log("willCompleteTransactionAcceptAndPay resultSendedTransaction fail: ", resultSendedTransaction)
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSendedTransaction))
-      yield put(NotificationActions.willShowNotification({ message: resultSendedTransaction, type: "danger" }));
+    if (resultSentTransaction === "sendTxFailed") {
+      console.log("willCompleteTransactionAcceptAndPay resultSentTransaction fail: ", resultSentTransaction)
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSentTransaction))
+      yield put(NotificationActions.willShowNotification({ message: resultSentTransaction, type: "danger" }));
     }
     else {
-      console.log("willCompleteTransactionAcceptAndPay resultSendedTransaction success: ", resultSendedTransaction)
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPay(resultSendedTransaction))
+      console.log("willCompleteTransactionAcceptAndPay resultSentTransaction success: ", resultSentTransaction)
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPay(resultSentTransaction))
     }
     yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
 
@@ -123,4 +124,44 @@ function* willSignTransactionClaimMilestoneMet(action: any) {
     console.log("error in willSignTransactionClaimMilestoneMet ", error)
   }
   yield put(UIActions.stopActivityRunning('willSignTransactionClaimMilestoneMet'));
+}
+
+function* willCompleteTransactionAcceptMilestone(action: any) {
+  console.log("in willCompleteTransactionAcceptMilestone with: ", action)
+  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptMilestone'));
+  const users = yield select(ProfileSelectors.getUsers)
+
+  const msigparams = {
+    version: 1,
+    threshold: 2,
+    addrs: [
+      users[action.payload.currentSow.seller].public_key,
+      users[action.payload.currentSow.buyer].public_key,
+      users[action.payload.currentSow.arbitrator].public_key,
+      "T7AVQFK7NJFFBPBZR5YPCI7KMFUPRHBOL4AV5RADWHPWC4VBVVE6PSVJXQ"
+    ],
+  };
+
+  try {
+    const resultAppendSignMultisigTransaction = yield call(TransactionApi.appendSignMultisigTransaction, action.payload.signedMsig, action.payload.mnemonicSecretKey, msigparams)
+    console.log("willCompleteTransactionAcceptMilestone resultAppendSignMultisigTransaction: ", resultAppendSignMultisigTransaction)
+
+    const resultConfirmedMultisigTransaction = yield call(TransactionApi.confirmTxAsBuyer, action.payload.currentSow.sow, resultAppendSignMultisigTransaction)
+    console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction: ", resultConfirmedMultisigTransaction)
+
+    if (resultConfirmedMultisigTransaction === "sendTxFailed") {
+      console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction fail: ", resultConfirmedMultisigTransaction)
+      yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail(resultConfirmedMultisigTransaction))
+      yield put(NotificationActions.willShowNotification({ message: resultConfirmedMultisigTransaction, type: "danger" }));
+    }
+    else {
+      console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction success: ", resultConfirmedMultisigTransaction)
+      yield put(TransactionActions.didCompleteTransactionAcceptMilestone(resultConfirmedMultisigTransaction))
+    }
+    yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
+
+  } catch (error) {
+    console.log("error in willCompleteTransactionAcceptMilestone ", error)
+  }
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptMilestone'));
 }

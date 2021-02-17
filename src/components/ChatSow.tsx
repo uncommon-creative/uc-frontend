@@ -26,8 +26,6 @@ function updateScroll() {
 
 export const ChatSow = ({ currentSow }: any) => {
 
-  console.log("in ChatSow sow: ", currentSow)
-
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const message = useSelector(ChatSelectors.getMessage)
