@@ -1,8 +1,10 @@
-query getSow(
-  $sow: ID
-){
-  getSow(
-    sow: $sow
+mutation setSignedMsig(
+  $sow: ID,
+  $signedMsig: String
+) {
+  setSignedMsig(
+    sow: $sow,
+    signedMsig: $signedMsig
   ) {
     sow
     arbitrators

@@ -24,6 +24,7 @@ query getSowsListSeller{
       messagesToReadArbitrator
       sowExpiration
       submittedDate
+      signedMsig
     }
     nextToken
   }

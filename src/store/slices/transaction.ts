@@ -6,7 +6,8 @@ export const currentSlice = createSlice({
     transactionPage: 1,
     params: {} as any,
     multiSigAddress: "",
-    completedTransaction: {} as any
+    transactionAcceptAndPay: {} as any,
+    error: ''
   },
   reducers: {
     willGetParams: (state, action: PayloadAction<any>) => void (state.transactionPage = 1),
@@ -17,8 +18,12 @@ export const currentSlice = createSlice({
 
     cancelTransaction: (state, action: PayloadAction<any>) => void (state.transactionPage = 1),
 
-    willCompleteTransaction: (state, action: PayloadAction<any>) => state,
-    didCompleteTransaction: (state, action: PayloadAction<any>) => void (state.completedTransaction = action.payload, state.transactionPage = 3),
+    willCompleteTransactionAcceptAndPay: (state, action: PayloadAction<any>) => state,
+    didCompleteTransactionAcceptAndPay: (state, action: PayloadAction<any>) => void (state.transactionAcceptAndPay = action.payload, state.transactionPage = 3),
+    didCompleteTransactionAcceptAndPayFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 4),
+
+    willSignTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => state,
+    didSignTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionPage = 3)
   }
 })
 
@@ -26,11 +31,12 @@ export const { actions, reducer }: any = currentSlice
 export const {
   willGetParams, didGetParams,
   willPrepareMultiSigAddressData, willCreateMultiSigAddress, didCreateMultiSigAddress,
-  willCompleteTransaction
+  willCompleteTransactionAcceptAndPay
 } = actions
 export const selectors = {
   getTransactionPage: (state: any) => state.transaction.transactionPage,
   getParams: (state: any) => state.transaction.params,
   getMultiSigAddress: (state: any) => state.transaction.multiSigAddress,
-  getCompletedTransaction: (state: any) => state.transaction.completedTransaction,
+  getTransactionAcceptAndPay: (state: any) => state.transaction.transactionAcceptAndPay,
+  getError: (state: any) => state.transaction.error,
 }

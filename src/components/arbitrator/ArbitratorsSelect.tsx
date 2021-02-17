@@ -43,7 +43,6 @@ export const ArbitratorsSelect = ({ modal, toggle }: any) => {
 
       </ModalBody>
       <ModalFooter>
-        <Row className="d-flex justify-content-end">
           {currentSelectedArbitrators.map((element: any, index: any) => {
             return (
               <Col className="col-3">
@@ -51,13 +50,12 @@ export const ArbitratorsSelect = ({ modal, toggle }: any) => {
               </Col>
             )
           })}
-          <Col className="col-3">
+          <Col className="col-2">
             <ActivityButton data-cy='inputSowArbitratorsConfirm' disabled={currentSelectedArbitrators.length == 3 ? false : true} name="confirmArbitrators" color="primary" onClick={() => {
               setFieldValue('arbitrators', currentSelectedArbitrators)
               dispatch(SowActions.willConfirmArbitrators({ arbitrators: update(currentSelectedArbitrators, {}), toggle: toggle }))
             }}>Confirm</ActivityButton>
           </Col>
-        </Row>
       </ModalFooter>
     </Modal>
   )

@@ -26,8 +26,8 @@ export const ArbitratorDetailXS = ({ arbitrator, index }: any) => {
       </Col> */}
       <Col className="col-3 p-0 border">
         <CardImg width="100%" src="//placehold.it/150" alt={'Arbitrator ' + arbitrator.given_name + ' ' + arbitrator.family_name} />
-        <CardImgOverlay className="p-0 border align-self-start">
-          <Button close onClick={() => {
+        <CardImgOverlay className="p-0">
+          <Button close className="position-absolute top-0 start-0 translate-middle" onClick={() => {
             dispatch(ArbitratorActions.willDeselectArbitrator(index))
           }} />
         </CardImgOverlay>
