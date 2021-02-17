@@ -20,8 +20,9 @@ import { ActivityButton } from '../components/ActivityButton'
 import { RefreshButton } from '../components/RefreshButton'
 import { FileButton } from '../components/FileButton';
 import { selectors as UISelectors } from '../store/slices/ui'
-import { AcceptSow } from '../components/AcceptSow'
-import { ClaimMilestoneMet } from '../components/ClaimMilestoneMet'
+import { AcceptSow } from '../components/transaction/AcceptSow'
+import { ClaimMilestoneMet } from '../components/transaction/ClaimMilestoneMet'
+import { AcceptMilestone } from '../components/transaction/AcceptMilestone'
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -44,9 +45,11 @@ export const StatementOfWorkPage = () => {
   const [selectedArbitrator, setSelectedArbitrator] = React.useState('');
   const [modalOpenAcceptSow, setModalOpenAcceptSow] = React.useState(false);
   const [modalOpenClaimMilestoneMet, setModalOpenClaimMilestoneMet] = React.useState(false);
+  const [modalOpenAcceptMilestone, setModalOpenAcceptMilestone] = React.useState(false);
 
   const toggleModalAcceptSow = () => setModalOpenAcceptSow(!modalOpenAcceptSow);
   const toggleModalClaimMilestoneMet = () => setModalOpenClaimMilestoneMet(!modalOpenClaimMilestoneMet);
+  const toggleModalAcceptMilestone = () => setModalOpenAcceptMilestone(!modalOpenAcceptMilestone);
 
   React.useEffect(() => {
     console.log("in statementOfWorkPage currentSow: ", currentSow)
@@ -202,11 +205,8 @@ export const StatementOfWorkPage = () => {
                           <>
                             {(currentSow.status == SowStatus.ACCEPTED_PAID || currentSow.status == SowStatus.REVIEW_REQUIRED) &&
                               <Button data-cy={SowCommands.CLAIM_MILESTONE_MET} block color="primary" name={SowCommands.CLAIM_MILESTONE_MET}
-                                // onClick={() => {
-                                //   console.log("Claim milestone met")
-                                //   dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: currentSow }));
-                                // }}
-                                onClick={toggleModalClaimMilestoneMet}>Claim milestone met</Button>
+                                onClick={toggleModalClaimMilestoneMet}
+                              >Claim milestone met</Button>
                             }
                           </>
                         }
@@ -230,10 +230,13 @@ export const StatementOfWorkPage = () => {
                               }}>Reject</ActivityButton>
                             }
                             {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
-                              <ActivityButton data-cy={SowCommands.ACCEPT_MILESTONE} block color="primary" name={SowCommands.ACCEPT_MILESTONE} onClick={() => {
-                                console.log("Accept milestone")
-                                dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_MILESTONE }, sow: currentSow }));
-                              }}>Accept milestone</ActivityButton>
+                              <ActivityButton data-cy={SowCommands.ACCEPT_MILESTONE} block color="primary" name={SowCommands.ACCEPT_MILESTONE}
+                                // onClick={() => {
+                                //   console.log("Accept milestone")
+                                //   dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_MILESTONE }, sow: currentSow }));
+                                // }}
+                                onClick={toggleModalAcceptMilestone}
+                              >Accept milestone</ActivityButton>
                             }
                           </>
                         }
@@ -284,6 +287,7 @@ export const StatementOfWorkPage = () => {
 
           <AcceptSow modal={modalOpenAcceptSow} toggle={toggleModalAcceptSow} />
           <ClaimMilestoneMet modal={modalOpenClaimMilestoneMet} toggle={toggleModalClaimMilestoneMet} />
+          <AcceptMilestone modal={modalOpenAcceptMilestone} toggle={toggleModalAcceptMilestone} />
         </Container>
       }
     </>
