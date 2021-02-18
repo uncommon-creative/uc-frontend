@@ -112,7 +112,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSigAddress.amount/1000000}</CardSubtitle>
             <Jumbotron>
               <CardText>
-                {t('transaction.transactionFailed')}
+                {t('transaction.transactionFailed', {errorText: transactionError})}
               </CardText>
             </Jumbotron>
           </ModalBody>
