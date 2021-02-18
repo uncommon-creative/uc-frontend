@@ -107,7 +107,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress}</CardSubtitle>
             <Jumbotron>
               <CardText>
-                {t('transaction.transactionFailed')}
+                {t('transaction.transactionFailed', {errorText: transactionError})}
               </CardText>
             </Jumbotron>
           </ModalBody>
