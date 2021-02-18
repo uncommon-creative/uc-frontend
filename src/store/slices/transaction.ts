@@ -21,16 +21,16 @@ export const currentSlice = createSlice({
     willCreateMultiSigAddress: (state, action: PayloadAction<any>) => state,
     didCreateMultiSigAddress: (state, action: PayloadAction<any>) => void (state.multiSigAddress = action.payload, state.transactionPage = 2),
 
+    willPreparePayment: (state, action: PayloadAction<any>) => state,
     didPreparePayment: (state, action: PayloadAction<any>) => void (state.payment = action.payload),
-    willChoosePayment: (state, action: PayloadAction<any>) => void (state.transactionPage = action.payload),
 
     willCompleteTransactionAcceptAndPayQR: (state, action: PayloadAction<any>) => state,
-    // didCompleteTransactionAcceptAndPayQR: (state, action: PayloadAction<any>) => void (state.transactionAcceptAndPay = action.payload, state.transactionPage = 6),
-    // didCompleteTransactionAcceptAndPayQRFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
+    didCompleteTransactionAcceptAndPayQR: (state, action: PayloadAction<any>) => void (state.transactionPage = 6),
+    didCompleteTransactionAcceptAndPayQRFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
 
-    willCompleteTransactionAcceptAndPaySeed: (state, action: PayloadAction<any>) => state,
-    didCompleteTransactionAcceptAndPaySeed: (state, action: PayloadAction<any>) => void (state.transactionAcceptAndPay = action.payload, state.transactionPage = 6),
-    didCompleteTransactionAcceptAndPaySeedFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
+    willCompleteTransactionAcceptAndPayMnemonic: (state, action: PayloadAction<any>) => state,
+    didCompleteTransactionAcceptAndPayMnemonic: (state, action: PayloadAction<any>) => void (state.transactionAcceptAndPay = action.payload, state.transactionPage = 6),
+    didCompleteTransactionAcceptAndPayMnemonicFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
 
     willSignTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => state,
     didSignTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionPage = 3),
@@ -46,7 +46,7 @@ export const { actions, reducer }: any = currentSlice
 export const {
   goToTransactionPage, willGetParams, didGetParams,
   willCreateMultiSigAddress, didCreateMultiSigAddress,
-  willCompleteTransactionAcceptAndPaySeed, didCompleteTransactionAcceptAndPaySeed, didCompleteTransactionAcceptAndPaySeedFail,
+  willCompleteTransactionAcceptAndPayMnemonic, didCompleteTransactionAcceptAndPayMnemonic, didCompleteTransactionAcceptAndPayMnemonicFail,
   willSignTransactionClaimMilestoneMet, didSignTransactionClaimMilestoneMet,
   didGetSignedMsig, willCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestoneFail
 } = actions
@@ -57,6 +57,7 @@ export const selectors = {
   getTransactionAcceptAndPay: (state: any) => state.transaction.transactionAcceptAndPay,
   getTransactionAcceptMilestone: (state: any) => state.transaction.transactionAcceptMilestone,
   getSignedMsig: (state: any) => state.transaction.signedMsig,
+  getPayment: (state: any) => state.transaction.payment,
   getError: (state: any) => state.transaction.error,
 }
 

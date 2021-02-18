@@ -52,16 +52,19 @@ export function createMultiSigAddress(payload: { seller: string, buyer: string, 
 
 export function signTransaction(multiSigAddress: any, params: any, mnemonicSecretKey: any, price: any) {
   try {
+    console.log("signTransaction price: ", price)
+    console.log("signTransaction TransactionFee: ", TransactionFee)
     const txn = {
       "to": multiSigAddress,
       "fee": params.fee,
-      "amount": price * 1000000 + TransactionFee,
+      "amount": price * 1000000 + TransactionFee * 1000000,
       "firstRound": params.firstRound,
       "lastRound": params.lastRound,
       "genesisID": params.genesisID,
       "genesisHash": params.genesisHash,
       "note": new Uint8Array(0)
     };
+    console.log("signTransaction txn: ", txn)
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
     const signedTxn = algosdk.signTransaction(txn, secret_key.sk);
@@ -160,6 +163,19 @@ export const confirmTxAsBuyer = async (sow: any, tx: any) => {
     return result.data.confirmTxAsBuyer
   } catch (error) {
     console.log("setSignedMsig API error: ", error)
+    throw error
+  }
+}
+
+export const algorandPollAccountAmount = async (account: any, amount: any) => {
+  const query = loader('../graphql/algorandPollAccountAmount.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(query, { account: account, amount: amount }))
+    console.log("algorandPollAccountAmount result: ", result)
+    return result.data.algorandPollAccountAmount
+  } catch (error) {
+    console.log("algorandPollAccountAmount API error: ", error)
     throw error
   }
 }
