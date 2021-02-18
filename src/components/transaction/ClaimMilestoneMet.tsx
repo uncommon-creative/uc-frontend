@@ -32,7 +32,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
     return () => {
       setAcceptedConditions(false)
       setMnemonicSecretKey('')
-      dispatch(TransactionActions.cancelTransaction())
+      dispatch(TransactionActions.goToTransactionPage(1))
     }
   }, [modal])
 
@@ -65,7 +65,8 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Claim milestone met</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress.address}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSigAddress.amount/1000000}</CardSubtitle>
 
             <FormGroup>
               <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
@@ -77,8 +78,8 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             </FormGroup>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy='cancelTransaction' name="cancelTransaction" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.cancelTransaction())
+            <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
+              dispatch(TransactionActions.goToTransactionPage(1))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willSignTransactionClaimMilestoneMet' disabled={mnemonicSecretKey == ''} name="willSignTransactionClaimMilestoneMet" color="primary" onClick={async () => {
               dispatch(TransactionActions.willSignTransactionClaimMilestoneMet({ multiSigAddress: multiSigAddress, sellerAddress: users[currentSow.seller].public_key, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
@@ -90,7 +91,8 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Transaction signed</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress.address}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSigAddress.amount/1000000}</CardSubtitle>
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionSigned')}
@@ -106,7 +108,8 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress.address}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSigAddress.amount/1000000}</CardSubtitle>
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionFailed')}

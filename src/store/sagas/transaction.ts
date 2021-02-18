@@ -8,18 +8,33 @@ import { actions as UIActions } from '../slices/ui'
 import * as TransactionApi from '../../api/transaction'
 import { willGetUserProfile } from '../sagas/profile'
 import { willSendCommandChat } from '../sagas/chat'
+import { TransactionFee } from '../slices/transaction'
 
 export function* sagas() {
+  yield takeLatest(TransactionActions.willGetAlgorandAccountInfo.type, willGetAlgorandAccountInfo)
   yield takeLatest(TransactionActions.willGetParams.type, willGetParams)
   yield takeLatest(TransactionActions.willCreateMultiSigAddress.type, willCreateMultiSigAddress)
-  yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPay.type, willCompleteTransactionAcceptAndPay)
+  yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPaySeed.type, willCompleteTransactionAcceptAndPaySeed)
   yield takeLatest(TransactionActions.willSignTransactionClaimMilestoneMet.type, willSignTransactionClaimMilestoneMet)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptMilestone.type, willCompleteTransactionAcceptMilestone)
   console.log('in sow saga');
 }
 
+function* willGetAlgorandAccountInfo(action: any) {
+  console.log("in willGetAlgorandAccountInfo with: ", action)
+
+  try {
+    const result = yield call(TransactionApi.algorandGetAccountInfo, action);
+    console.log("result willGetAlgorandAccountInfo: ", result)
+    // yield put(TransactionActions.didGetParams(result))
+    return result
+  } catch (error) {
+    console.log("error in willGetAlgorandAccountInfo ", error)
+  }
+}
+
 function* willGetParams(action: any) {
-  console.log("in willGetParams")
+  console.log("in willGetParams with: ", action)
 
   try {
     yield call(willGetUserProfile, { user: action.payload.seller })
@@ -54,7 +69,13 @@ function* willCreateMultiSigAddress(action: any) {
   try {
     const result = yield call(TransactionApi.createMultiSigAddress, { seller: seller_public_key, buyer: buyer_public_key, arbitrator: arbitrator_public_key, backup: backup_public_key })
     console.log("result willCreateMultiSigAddress: ", result)
-    yield put(TransactionActions.didCreateMultiSigAddress(result))
+
+    const multiSigAddressInfo = yield call(willGetAlgorandAccountInfo, result)
+    console.log("willCreateMultiSigAddress multiSigAddressInfo: ", multiSigAddressInfo)
+
+    yield put(TransactionActions.didCreateMultiSigAddress(multiSigAddressInfo))
+
+    yield put(TransactionActions.didPreparePayment({ balances: multiSigAddressInfo.amount / 1000000, price: action.payload.price, difference: action.payload.price - (multiSigAddressInfo.amount / 1000000), fee: TransactionFee }))
   } catch (error) {
     console.log("error in willCreateMultiSigAddress ", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
@@ -62,35 +83,35 @@ function* willCreateMultiSigAddress(action: any) {
   yield put(UIActions.stopActivityRunning('continueTransaction'));
 }
 
-function* willCompleteTransactionAcceptAndPay(action: any) {
-  console.log("in willCompleteTransactionAcceptAndPay with: ", action)
-  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPay'));
+function* willCompleteTransactionAcceptAndPaySeed(action: any) {
+  console.log("in willCompleteTransactionAcceptAndPaySeed with: ", action)
+  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPaySeed'));
 
   try {
     const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.currentSow.arbitrator)
-    console.log("willCompleteTransactionAcceptAndPay resultSetSowArbitrator: ", resultSetSowArbitrator)
+    console.log("willCompleteTransactionAcceptAndPaySeed resultSetSowArbitrator: ", resultSetSowArbitrator)
 
     const resultSignedTransaction = yield call(TransactionApi.signTransaction, action.payload.multiSigAddress, action.payload.params, action.payload.mnemonicSecretKey, action.payload.currentSow.price)
-    console.log("willCompleteTransactionAcceptAndPay resultSignedTransaction: ", resultSignedTransaction)
+    console.log("willCompleteTransactionAcceptAndPaySeed resultSignedTransaction: ", resultSignedTransaction)
 
     const resultSentTransaction = yield call(TransactionApi.sendTransaction, action.payload.currentSow.sow, resultSignedTransaction)
-    console.log("willCompleteTransactionAcceptAndPay resultSentTransaction: ", resultSentTransaction)
+    console.log("willCompleteTransactionAcceptAndPaySeed resultSentTransaction: ", resultSentTransaction)
 
     if (resultSentTransaction === "sendTxFailed") {
-      console.log("willCompleteTransactionAcceptAndPay resultSentTransaction fail: ", resultSentTransaction)
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSentTransaction))
+      console.log("willCompleteTransactionAcceptAndPaySeed resultSentTransaction fail: ", resultSentTransaction)
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPaySeedFail(resultSentTransaction))
       yield put(NotificationActions.willShowNotification({ message: resultSentTransaction, type: "danger" }));
     }
     else {
-      console.log("willCompleteTransactionAcceptAndPay resultSentTransaction success: ", resultSentTransaction)
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPay(resultSentTransaction))
+      console.log("willCompleteTransactionAcceptAndPaySeed resultSentTransaction success: ", resultSentTransaction)
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPaySeed(resultSentTransaction))
     }
     yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
 
   } catch (error) {
-    console.log("error in willCompleteTransactionAcceptAndPay ", error)
+    console.log("error in willCompleteTransactionAcceptAndPaySeed ", error)
   }
-  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPay'));
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPaySeed'));
 }
 
 function* willSignTransactionClaimMilestoneMet(action: any) {

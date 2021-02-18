@@ -1,7 +1,21 @@
 import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
 import * as _ from 'lodash';
+import { TransactionFee } from '../store/slices/transaction'
 const algosdk = require('algosdk');
+
+export const algorandGetAccountInfo = async (account: any) => {
+  const query = loader('../graphql/algorandGetAccountInfo.gql');
+  console.log("algorandGetAccountInfo account: ", account)
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(query, { account: account }));
+    // console.log('algorandGetAccountInfo with result: ', result);
+    return result.data.algorandGetAccountInfo
+  } catch (error) {
+    throw error
+  }
+}
 
 export const algorandGetTxParams = async () => {
   const query = loader('../graphql/algorandGetTxParams.gql');
@@ -41,7 +55,7 @@ export function signTransaction(multiSigAddress: any, params: any, mnemonicSecre
     const txn = {
       "to": multiSigAddress,
       "fee": params.fee,
-      "amount": price * 1000000 + params.fee,
+      "amount": price * 1000000 + TransactionFee,
       "firstRound": params.firstRound,
       "lastRound": params.lastRound,
       "genesisID": params.genesisID,
