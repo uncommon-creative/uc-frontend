@@ -1,0 +1,11 @@
+query algorandGetAccountInfo(
+  $account: String
+){
+  algorandGetAccountInfo(
+    account: $account
+  ) {
+    address
+    amount
+    error
+  }
+}
