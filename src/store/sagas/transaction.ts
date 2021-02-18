@@ -149,9 +149,9 @@ function* willCompleteTransactionAcceptMilestone(action: any) {
     const resultConfirmedMultisigTransaction = yield call(TransactionApi.confirmTxAsBuyer, action.payload.currentSow.sow, resultAppendSignMultisigTransaction)
     console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction: ", resultConfirmedMultisigTransaction)
 
-    if (resultConfirmedMultisigTransaction === "sendTxFailed") {
+    if (resultConfirmedMultisigTransaction === "sendTxFailed" || resultConfirmedMultisigTransaction === "TransactionPool.Remember: txn dead:") {
       console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction fail: ", resultConfirmedMultisigTransaction)
-      yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail(resultConfirmedMultisigTransaction))
+      yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail("Algorand multisig transaction expired"))
       yield put(NotificationActions.willShowNotification({ message: resultConfirmedMultisigTransaction, type: "danger" }));
     }
     else {
