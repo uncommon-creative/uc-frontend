@@ -84,11 +84,11 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Choose the payment method</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Price: {payment.price}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Total: {payment.total}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">To pay: {payment.toPay}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Price: {payment.price / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Total: {payment.total / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">To pay: {payment.toPay / 1000000} ALGO</CardSubtitle>
 
             {payment.toPay > 0 &&
               <Row>
@@ -142,11 +142,11 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Fund the wallet with QR</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Price: {payment.price}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Total: {payment.total}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">To pay: {payment.toPay}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Price: {payment.price / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Total: {payment.total / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">To pay: {payment.toPay / 1000000} ALGO</CardSubtitle>
 
             <div style={{ textAlign: 'center' }} id="qrCode">
               <img
@@ -179,11 +179,11 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Fund the wallet with mnemonic secret key</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Price: {payment.price}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Total: {payment.total}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">To pay: {payment.toPay}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Price: {payment.price / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Total: {payment.total / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">To pay: {payment.toPay / 1000000} ALGO</CardSubtitle>
 
             <FormGroup>
               <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
