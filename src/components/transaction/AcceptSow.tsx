@@ -130,6 +130,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
             <ModalFooter>
               <ActivityButton data-cy='continueTransaction' disabled={!acceptedConditions} name="continueTransaction" color="primary" onClick={() => {
                 dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_AND_PAY }, sow: currentSow }));
+                dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentSow.arbitrator }))
                 dispatch(TransactionActions.goToTransactionPage(6))
               }}>Complete</ActivityButton>
             </ModalFooter>

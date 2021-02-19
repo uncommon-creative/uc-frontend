@@ -15,6 +15,7 @@ export function* sagas() {
   yield takeLatest(TransactionActions.willGetParams.type, willGetParams)
   yield takeLatest(TransactionActions.willCreateMultiSigAddress.type, willCreateMultiSigAddress)
   yield takeLatest(TransactionActions.willPreparePayment.type, willPreparePayment)
+  yield takeLatest(TransactionActions.willSetSowArbitrator.type, willSetSowArbitrator)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayQR.type, willCompleteTransactionAcceptAndPayQR)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic.type, willCompleteTransactionAcceptAndPayMnemonic)
   yield takeLatest(TransactionActions.willSignTransactionClaimMilestoneMet.type, willSignTransactionClaimMilestoneMet)
@@ -104,10 +105,24 @@ function* willPreparePayment(action: any) {
   }
 }
 
+function* willSetSowArbitrator(action: any) {
+  console.log("in willSetSowArbitrator with: ", action)
+
+  try {
+    const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.sow, action.payload.arbitrator)
+    console.log("willSetSowArbitrator resultSetSowArbitrator: ", resultSetSowArbitrator)
+  } catch (error) {
+    console.log("error in willSetSowArbitrator ", error)
+  }
+}
+
 function* willCompleteTransactionAcceptAndPayQR(action: any) {
   console.log("in willCompleteTransactionAcceptAndPayQR with: ", action)
   yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayQR'));
   try {
+    const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.currentSow.arbitrator)
+    console.log("willCompleteTransactionAcceptAndPayMnemonic resultSetSowArbitrator: ", resultSetSowArbitrator)
+    
     const result = yield call(TransactionApi.algorandPollAccountAmount, action.payload.multiSigAddress, action.payload.toPay)
     console.log("willCompleteTransactionAcceptAndPayQR result: ", result)
 

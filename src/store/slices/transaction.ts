@@ -24,6 +24,9 @@ export const currentSlice = createSlice({
     willPreparePayment: (state, action: PayloadAction<any>) => state,
     didPreparePayment: (state, action: PayloadAction<any>) => void (state.payment = action.payload),
 
+    willSetSowArbitrator: (state, action: PayloadAction<any>) => state,
+    didSetSowArbitrator: (state, action: PayloadAction<any>) => state,
+
     willCompleteTransactionAcceptAndPayQR: (state, action: PayloadAction<any>) => state,
     didCompleteTransactionAcceptAndPayQR: (state, action: PayloadAction<any>) => void (state.transactionPage = 6),
     didCompleteTransactionAcceptAndPayQRFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
