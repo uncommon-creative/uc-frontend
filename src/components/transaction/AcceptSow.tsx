@@ -22,7 +22,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   const { t, i18n } = useTranslation();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
-  const multiSigAddress = useSelector(TransactionSelectors.getMultiSigAddress)
+  const multiSig = useSelector(TransactionSelectors.getMultiSig)
   const transactionError = useSelector(TransactionSelectors.getError)
   const [acceptedConditions, setAcceptedConditions] = React.useState(false);
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
@@ -37,12 +37,12 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   const [qrImg, SetQrImg] = React.useState(qr.createDataURL(10, 1));
 
   React.useEffect(() => {
-    if (multiSigAddress.address) {
-      qr.addData(multiSigAddress.address);
+    if (multiSig.address) {
+      qr.addData(multiSig.address);
       qr.make();
       SetQrImg(qr.createDataURL(10, 1))
     }
-  }, [multiSigAddress])
+  }, [multiSig])
 
   React.useEffect(() => {
     modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
@@ -83,7 +83,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Choose the payment method</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress.address}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
             <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances}</CardSubtitle>
             <CardSubtitle tag="h6" className="mb-2">Price: {payment.price}</CardSubtitle>
             <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee}</CardSubtitle>
@@ -95,7 +95,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
                 <Col>
                   <Card className="flex-fill" outline onClick={() => {
                     dispatch(TransactionActions.goToTransactionPage(3))
-                    dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSigAddress.address, toPay: payment.toPay }))
+                    // dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSigAddress.address, toPay: payment.toPay }))
                   }}>
                     <CardBody className="text-center">
                       <CardSubtitle tag="h5" className="mb-2 text-muted text-center">QR</CardSubtitle>
@@ -140,8 +140,12 @@ export const AcceptSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Fund the wallet with QR</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSigAddress.amount / 1000000}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Price: {payment.price}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Total: {payment.total}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">To pay: {payment.toPay}</CardSubtitle>
 
             <div style={{ textAlign: 'center' }} id="qrCode">
               <img
@@ -164,7 +168,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayQR' name="willCompleteTransactionAcceptAndPayQR" color="primary" onClick={async () => {
-              // dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSigAddress.address, toPay: payment.toPay }))
+              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, toPay: payment.toPay, currentSow: currentSow }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -173,8 +177,12 @@ export const AcceptSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Fund the wallet with mnemonic secret key</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSigAddress.amount / 1000000}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Price: {payment.price}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Total: {payment.total}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">To pay: {payment.toPay}</CardSubtitle>
 
             <FormGroup>
               <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
@@ -190,7 +198,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptAndPayMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ multiSigAddress: multiSigAddress, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
+              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, toPay: payment.toPay }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -199,8 +207,8 @@ export const AcceptSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Fund the wallet with AlgoSigner</ModalHeader>
           <ModalBody className="text-center">
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSigAddress.amount / 1000000}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle>
 
             <FontAwesomeIcon icon={faExclamationTriangle} size="5x" />
           </ModalBody>
@@ -218,8 +226,8 @@ export const AcceptSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Wallet funded</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSigAddress.amount / 1000000}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle>
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionCompleted')}
@@ -235,11 +243,11 @@ export const AcceptSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSigAddress.amount / 1000000}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle>
             <Jumbotron>
               <CardText>
-                {t('transaction.transactionFailed', { errorText: transactionError })}
+                {t('transaction.transactionFailed', { errorMessage: transactionError })}
               </CardText>
             </Jumbotron>
           </ModalBody>

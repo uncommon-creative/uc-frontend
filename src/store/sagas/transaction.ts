@@ -89,13 +89,14 @@ function* willPreparePayment(action: any) {
   console.log("in willPreparePayment with: ", action)
 
   try {
-    const payment = {
-      balances: action.amount / 1000000,
-      price: action.price,
-      toPay: (action.price + TransactionFee) - (action.amount / 1000000),
+    var payment = {
+      balances: action.amount,
+      price: action.price * 1000000,
+      toPay: (action.price * 1000000 + TransactionFee) - (action.amount),
       fee: TransactionFee,
-      total: action.price + TransactionFee
+      total: action.price * 1000000 + TransactionFee
     }
+    payment.toPay < 0 && (payment.toPay = 0)
     yield put(TransactionActions.didPreparePayment(payment))
 
   } catch (error) {
@@ -106,11 +107,8 @@ function* willPreparePayment(action: any) {
 function* willCompleteTransactionAcceptAndPayQR(action: any) {
   console.log("in willCompleteTransactionAcceptAndPayQR with: ", action)
   yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayQR'));
-  const mAlgoToPay = action.payload.toPay * 1000000
-  // const mAlgoToPay = 1001000
-  console.log("willCompleteTransactionAcceptAndPayQR mAlgoToPay: ", mAlgoToPay)
   try {
-    const result = yield call(TransactionApi.algorandPollAccountAmount, action.payload.multiSigAddress, mAlgoToPay)
+    const result = yield call(TransactionApi.algorandPollAccountAmount, action.payload.multiSigAddress, action.payload.toPay)
     console.log("willCompleteTransactionAcceptAndPayQR result: ", result)
 
     if (result) {
@@ -120,8 +118,8 @@ function* willCompleteTransactionAcceptAndPayQR(action: any) {
     }
     else {
       console.log("willCompleteTransactionAcceptAndPayQR result fail: ", result)
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPayQRFail(result))
-      yield put(NotificationActions.willShowNotification({ message: result, type: "danger" }));
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPayQRFail("Not enough balance on the wallet"))
+      yield put(NotificationActions.willShowNotification({ message: "Not enough balance on the wallet", type: "danger" }));
     }
     yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
 
@@ -139,7 +137,7 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
     const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.currentSow.arbitrator)
     console.log("willCompleteTransactionAcceptAndPayMnemonic resultSetSowArbitrator: ", resultSetSowArbitrator)
 
-    const resultSignedTransaction = yield call(TransactionApi.signTransaction, action.payload.multiSigAddress.address, action.payload.params, action.payload.mnemonicSecretKey, action.payload.currentSow.price)
+    const resultSignedTransaction = yield call(TransactionApi.signTransaction, action.payload.multiSigAddress.address, action.payload.params, action.payload.mnemonicSecretKey, action.payload.toPay)
     console.log("willCompleteTransactionAcceptAndPayMnemonic resultSignedTransaction: ", resultSignedTransaction)
 
     const resultSentTransaction = yield call(TransactionApi.sendTransaction, action.payload.currentSow.sow, resultSignedTransaction)

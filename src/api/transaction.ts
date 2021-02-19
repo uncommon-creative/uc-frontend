@@ -6,7 +6,6 @@ const algosdk = require('algosdk');
 
 export const algorandGetAccountInfo = async (account: any) => {
   const query = loader('../graphql/algorandGetAccountInfo.gql');
-  console.log("algorandGetAccountInfo account: ", account)
 
   try {
     const result: any = await API.graphql(graphqlOperation(query, { account: account }));
@@ -50,14 +49,13 @@ export function createMultiSigAddress(payload: { seller: string, buyer: string, 
   }
 }
 
-export function signTransaction(multiSigAddress: any, params: any, mnemonicSecretKey: any, price: any) {
+export function signTransaction(multiSigAddress: any, params: any, mnemonicSecretKey: any, toPay: any) {
   try {
-    console.log("signTransaction price: ", price)
-    console.log("signTransaction TransactionFee: ", TransactionFee)
+    console.log("signTransaction toPay: ", toPay)
     const txn = {
       "to": multiSigAddress,
       "fee": params.fee,
-      "amount": price * 1000000 + TransactionFee * 1000000,
+      "amount": toPay,
       "firstRound": params.firstRound,
       "lastRound": params.lastRound,
       "genesisID": params.genesisID,

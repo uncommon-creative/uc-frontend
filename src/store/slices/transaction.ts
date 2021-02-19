@@ -5,7 +5,7 @@ export const currentSlice = createSlice({
   initialState: {
     transactionPage: 1,
     params: {} as any,
-    multiSigAddress: "",
+    multiSig: {} as any,
     transactionAcceptAndPay: {} as any,
     transactionAcceptMilestone: {} as any,
     signedMsig: {} as any,
@@ -19,7 +19,7 @@ export const currentSlice = createSlice({
     didGetParams: (state, action: PayloadAction<any>) => void (state.params = action.payload),
 
     willCreateMultiSigAddress: (state, action: PayloadAction<any>) => state,
-    didCreateMultiSigAddress: (state, action: PayloadAction<any>) => void (state.multiSigAddress = action.payload, state.transactionPage = 2),
+    didCreateMultiSigAddress: (state, action: PayloadAction<any>) => void (state.multiSig = action.payload, state.transactionPage = 2),
 
     willPreparePayment: (state, action: PayloadAction<any>) => state,
     didPreparePayment: (state, action: PayloadAction<any>) => void (state.payment = action.payload),
@@ -53,7 +53,7 @@ export const {
 export const selectors = {
   getTransactionPage: (state: any) => state.transaction.transactionPage,
   getParams: (state: any) => state.transaction.params,
-  getMultiSigAddress: (state: any) => state.transaction.multiSigAddress,
+  getMultiSig: (state: any) => state.transaction.multiSig,
   getTransactionAcceptAndPay: (state: any) => state.transaction.transactionAcceptAndPay,
   getTransactionAcceptMilestone: (state: any) => state.transaction.transactionAcceptMilestone,
   getSignedMsig: (state: any) => state.transaction.signedMsig,
@@ -61,4 +61,5 @@ export const selectors = {
   getError: (state: any) => state.transaction.error,
 }
 
-export const TransactionFee = 0.001;
+// export const TransactionFee = 1000;
+export const TransactionFee = 1000000;
