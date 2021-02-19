@@ -1,0 +1,9 @@
+query algorandPollAccountAmount(
+  $account: String
+  $amount: Int
+){
+  algorandPollAccountAmount(
+    account: $account
+    amount: $amount
+  ) 
+}

@@ -20,7 +20,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
   const users = useSelector(ProfileSelectors.getUsers)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
-  const multiSigAddress = useSelector(TransactionSelectors.getMultiSigAddress)
+  const multiSig = useSelector(TransactionSelectors.getMultiSig)
   const signedMsig = useSelector(TransactionSelectors.getSignedMsig)
   const transactionError = useSelector(TransactionSelectors.getError)
   const [acceptedConditions, setAcceptedConditions] = React.useState(false);
@@ -32,7 +32,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
     return () => {
       setAcceptedConditions(false)
       setMnemonicSecretKey('')
-      dispatch(TransactionActions.cancelTransaction())
+      dispatch(TransactionActions.goToTransactionPage(1))
     }
   }, [modal])
 
@@ -65,7 +65,8 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Accept milestone</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress}</CardSubtitle>
+            {/* <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle> */}
 
             <FormGroup>
               <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
@@ -77,8 +78,8 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
             </FormGroup>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy='cancelTransaction' name="cancelTransaction" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.cancelTransaction())
+            <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
+              dispatch(TransactionActions.goToTransactionPage(1))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptMilestone' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptMilestone" color="primary" onClick={async () => {
               dispatch(TransactionActions.willCompleteTransactionAcceptMilestone({ signedMsig: signedMsig, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
@@ -90,7 +91,8 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Transaction completed</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle>
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionCompleted')}
@@ -106,10 +108,11 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle>
             <Jumbotron>
               <CardText>
-                {t('transaction.transactionFailed', {errorText: transactionError})}
+                {t('transaction.transactionFailed', { errorText: transactionError })}
               </CardText>
             </Jumbotron>
           </ModalBody>

@@ -36,6 +36,7 @@
     "immutability-helper": "^3.1.1",
     "lodash": "^4.17.20",
     "node-sass": "4.14.1",
+    "qrcode-generator": "^1.4.4",
     "react": "^17.0.1",
     "react-chat-elements": "^10.13.0",
     "react-dom": "^17.0.1",
