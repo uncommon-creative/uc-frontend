@@ -32,8 +32,6 @@ function TableData({ tabId, data }: any) {
         <Table striped borderless responsive>
           <thead>
             <tr>
-              {/* <th>Unread</th> */}
-              {/* <th>ID</th> */}
               <th>Title</th>
               {tabId != 2 && <th>Customer</th>}
               {tabId != 1 && <th>Freelance</th>}
@@ -47,14 +45,6 @@ function TableData({ tabId, data }: any) {
             {data.map((element: any) => {
               return (
                 <tr key={element.sow}>
-                  {/* <td>
-                    {tabId == 1 && <Badge data-cy='unreadMessagesSowSeller' pill color={element.messagesToReadSeller == 0 ? "secondary" : "primary"}>{element.messagesToReadSeller}</Badge>}
-                    {tabId == 2 && <Badge data-cy='unreadMessagesSowBuyer' pill color={element.messagesToReadBuyer == 0 ? "secondary" : "primary"}>{element.messagesToReadBuyer}</Badge>}
-                    {tabId == 3 && <Badge data-cy='unreadMessagesSowArbitrator' pill color={element.messagesToReadArbitrator == 0 ? "secondary" : "primary"}>{element.messagesToReadArbitrator}</Badge>}
-                  </td> */}
-                  {/* <td scope="row">
-                    <Button data-cy='submittedSow' color="link" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Button>
-                  </td> */}
                   <td>
                     <Row className="d-flex" tag={Link} onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>
                       <Col className="col-1">
@@ -132,11 +122,11 @@ export const HomePage = () => {
                       active={activeTab === '1'}
                       onClick={() => { toggle('1'); }}
                     >
-                      <Row>
-                        <Col>
+                      <Row className="mx-0">
+                        <Col className="px-1">
                           Freelance
                         </Col>
-                        <Col>
+                        <Col className="p-0">
                           {unreadMessages.asSeller != 0 &&
                             <Badge data-cy='unreadMessagesSeller' pill color={unreadMessages.asSeller == 0 ? "secondary" : "primary"}>{unreadMessages.asSeller}</Badge>
                           }
@@ -150,12 +140,11 @@ export const HomePage = () => {
                       active={activeTab === '2'}
                       onClick={() => { toggle('2'); }}
                     >
-                      <Row>
-                        <Col>
+                      <Row className="mx-0">
+                        <Col className="px-1">
                           Customer
                         </Col>
-                        <Col>
-
+                        <Col className="p-0">
                           {unreadMessages.asBuyer != 0 &&
                             <Badge data-cy='unreadMessagesBuyer' pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
                           }
@@ -168,13 +157,13 @@ export const HomePage = () => {
                       active={activeTab === '3'}
                       onClick={() => { toggle('3'); }}
                     >
-                      <Row>
-                        <Col>
+                      <Row className="mx-0">
+                        <Col className="px-1">
                           Arbitrator
                         </Col>
-                        <Col>
-                          {unreadMessages.asArbitrator != 0 &&
-                            <Badge data-cy='unreadMessagesArbitrator' pill color={unreadMessages.asArbitrator == 0 ? "secondary" : "primary"}>{unreadMessages.asArbitrator}</Badge>
+                        <Col className="p-0">
+                          {unreadMessages.asBuyer != 0 &&
+                            <Badge data-cy='unreadMessagesBuyer' pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
                           }
                         </Col>
                       </Row>
