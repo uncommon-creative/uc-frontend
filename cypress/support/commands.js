@@ -29,7 +29,11 @@ Cypress.Commands.add("login", (user) => {
 
   cy.wait(3000)
 
-  assert.exists(cy.contains("Welcome"), 'user logged successfully')
+  assert.exists(
+    cy.get('[data-cy=createSow]')
+      .contains("new project"),
+    'user submitted sow successfully'
+  )
 })
 
 Cypress.Commands.add("logout", () => {

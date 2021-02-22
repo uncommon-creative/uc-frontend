@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { actions as SowActions, selectors as SowSelectors } from '../../store/slices/sow'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
-import { ActivityButton } from '../ActivityButton';
+import { ActivityButton } from '../common/ActivityButton';
 
 export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
 

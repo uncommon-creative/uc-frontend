@@ -17,9 +17,13 @@ describe('User Mng', () => {
       .type(Cypress.env('password'))
       .should('have.value', Cypress.env('password'))
 
-    cy.get('[data-cy=login]').contains('Login').click() 
+    cy.get('[data-cy=login]').contains('Login').click()
 
-    assert.exists(cy.contains("Welcome"), 'user logged successfully')
+    assert.exists(
+      cy.get('[data-cy=createSow]')
+        .contains("new project"),
+      'user submitted sow successfully'
+    )
   })
 
 

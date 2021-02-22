@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 
 import { actions as SowActions, selectors as SowSelectors, SowStatus } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
-import { FileButton } from './FileButton';
+import { FileButton } from './common/FileButton';
 
 export const SowAttachments = ({ currentSow }: any) => {
 

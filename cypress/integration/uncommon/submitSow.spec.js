@@ -89,7 +89,11 @@ describe('Statement of Work', () => {
 
     cy.wait(2000)
 
-    assert.exists(cy.contains("Welcome"), 'user submitted sow successfully')
+    assert.exists(
+      cy.get('[data-cy=createSow]')
+        .contains("new project"),
+      'user submitted sow successfully'
+    )
 
   })
 })

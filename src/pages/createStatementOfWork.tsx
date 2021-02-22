@@ -12,7 +12,7 @@ import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 
-import { ActivityButton } from '../components/ActivityButton'
+import { ActivityButton } from '../components/common/ActivityButton'
 import { TagsInput } from '../components/TagsInput'
 import { SelectArbitrators } from '../components/SelectArbitrators'
 import { ArbitratorsSelect } from '../components/arbitrator/ArbitratorsSelect'

@@ -95,7 +95,11 @@ describe('Chat', () => {
 
     cy.wait(2000)
 
-    assert.exists(cy.contains("Welcome"), 'user submitted sow successfully')
+    assert.exists(
+      cy.get('[data-cy=createSow]')
+        .contains("new project"),
+      'user submitted sow successfully'
+    )
 
     cy.logout()
   })
@@ -109,7 +113,7 @@ describe('Chat', () => {
       cy.login(Cypress.env('userBuyer'))
       cy.wait(2000)
       cy.get('[data-cy=customerTab]').click()
-      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
+      cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
       cy.get('[data-cy=REJECT]').click()
       cy.wait(5000)
       cy.get('[class=rce-mbox-text]')

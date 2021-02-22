@@ -14,7 +14,7 @@ import { faStar } from '@fortawesome/free-solid-svg-icons'
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons'
 
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
-import { ActivityButton } from '../ActivityButton';
+import { ActivityButton } from '../common/ActivityButton';
 
 export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
 

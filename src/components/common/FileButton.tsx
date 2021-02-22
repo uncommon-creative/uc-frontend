@@ -5,7 +5,7 @@ import { Button, Spinner, FormText, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileWord, faFileVideo, faFilePowerpoint, faFilePdf, faFileImage, faFileCode, faFileAudio, faFileArchive, faFileAlt, faFileCsv, faFile, faFileExcel, } from '@fortawesome/free-solid-svg-icons'
 
-import { selectors as UISelectors } from '../store/slices/ui'
+import { selectors as UISelectors } from '../../store/slices/ui'
 
 export const FileButton = ({ file, disabled, children, ...rest }: any) => {
 
@@ -74,7 +74,7 @@ export const FileButton = ({ file, disabled, children, ...rest }: any) => {
               </Col>
             </Row>
             <Row>
-              <Col className='d-flex justify-content-center'>
+              <Col data-cy="attachment" className='d-flex justify-content-center'>
                 {file.filename.length > 20 ?
                   file.filename.substring(0, 20) + '... ' + file.filename.substring(file.filename.length - 4, file.filename.length)
                   : file.filename}
