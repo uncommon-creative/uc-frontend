@@ -231,6 +231,7 @@ function* willGetSowsListSeller() {
     for (const sow of result.sows) {
       yield call(willGetUserProfile, { user: sow.seller })
       sow.buyer != 'not_set' && (yield call(willGetUserProfile, { user: sow.buyer }))
+      sow.arbitrator && (yield call(willGetUserProfile, { user: sow.arbitrator }))
     }
     yield put(SowActions.didGetSowsListSeller(result))
 
@@ -257,6 +258,7 @@ function* willGetSowsListBuyer() {
     for (const sow of result.sows) {
       yield call(willGetUserProfile, { user: sow.seller })
       sow.buyer != 'not_set' && (yield call(willGetUserProfile, { user: sow.buyer }))
+      sow.arbitrator && (yield call(willGetUserProfile, { user: sow.arbitrator }))
     }
     yield put(SowActions.didGetSowsListBuyer(result))
 
@@ -283,6 +285,7 @@ function* willGetSowsListArbitrator() {
     for (const sow of result.sows) {
       yield call(willGetUserProfile, { user: sow.seller })
       yield call(willGetUserProfile, { user: sow.buyer })
+      sow.arbitrator && (yield call(willGetUserProfile, { user: sow.arbitrator }))
     }
     yield put(SowActions.didGetSowsListArbitrator(result))
 

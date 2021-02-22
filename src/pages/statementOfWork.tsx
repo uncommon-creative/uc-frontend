@@ -197,52 +197,75 @@ export const StatementOfWorkPage = () => {
                         </Jumbotron>
                       </Col>
                     </Row>}
-                  <Row>
-                    <Col className="col-12">
-                      <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Special commands</CardSubtitle>
-                      <Jumbotron>
-                        {currentSow.seller == user.username &&
-                          <>
-                            {(currentSow.status == SowStatus.ACCEPTED_PAID || currentSow.status == SowStatus.REVIEW_REQUIRED) &&
-                              <Button data-cy={SowCommands.CLAIM_MILESTONE_MET} block color="primary" name={SowCommands.CLAIM_MILESTONE_MET}
-                                onClick={toggleModalClaimMilestoneMet}
-                              >Claim milestone met</Button>
-                            }
-                          </>
-                        }
-                        {currentSow.buyer == user.username &&
-                          <>
-                            {currentSow.status == SowStatus.SUBMITTED &&
-                              <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={currentSow.arbitrator == null} block color="primary" name={SowCommands.ACCEPT_AND_PAY}
-                                onClick={toggleModalAcceptSow}
-                              >{currentSow.arbitrator == null ? "Select an arbitrator" : "Accept and pay"}</ActivityButton>
-                            }
-                            {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
-                              <ActivityButton data-cy={SowCommands.REQUEST_REVIEW} block color="primary" name={SowCommands.REQUEST_REVIEW} onClick={() => {
-                                console.log("Request review")
-                                dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REQUEST_REVIEW }, sow: currentSow }));
-                              }}>Request review</ActivityButton>
-                            }
-                            {(currentSow.status == SowStatus.SUBMITTED || currentSow.status == SowStatus.MILESTONE_CLAIMED) &&
-                              <ActivityButton data-cy={SowCommands.REJECT} block color="primary" name={SowCommands.REJECT} onClick={() => {
-                                console.log("Reject")
-                                dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REJECT }, sow: currentSow }));
-                              }}>Reject</ActivityButton>
-                            }
-                            {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
-                              <ActivityButton data-cy={SowCommands.ACCEPT_MILESTONE} block color="primary" name={SowCommands.ACCEPT_MILESTONE}
-                                // onClick={() => {
-                                //   console.log("Accept milestone")
-                                //   dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_MILESTONE }, sow: currentSow }));
-                                // }}
-                                onClick={toggleModalAcceptMilestone}
-                              >Accept milestone</ActivityButton>
-                            }
-                          </>
-                        }
-                      </Jumbotron>
-                    </Col>
-                  </Row>
+                  {(currentSow.status != SowStatus.REJECTED && currentSow.status != SowStatus.EXPIRED && currentSow.status != SowStatus.MILESTONE_ACCEPTED) &&
+                    <Row>
+                      <Col className="col-12">
+                        <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Special commands</CardSubtitle>
+                        <Jumbotron>
+                          {currentSow.arbitrator && currentSow.status == SowStatus.DISPUTED &&
+                            <CardText className="text-muted text-center">
+                              {t('chat.emptyComandsWithoutDate', { given_name: users[currentSow.arbitrator].given_name, family_name: users[currentSow.arbitrator].family_name })}
+                            </CardText>
+                          }
+                          {currentSow.seller == user.username &&
+                            <>
+                              {currentSow.status == SowStatus.SUBMITTED &&
+                                <CardText className="text-muted text-center">
+                                  {t('chat.emptyComandsWithDate', { given_name: users[currentSow.buyer].given_name, family_name: users[currentSow.buyer].family_name, date: new Date(currentSow.sowExpiration).toLocaleDateString() })}
+                                </CardText>
+                              }
+                              {(currentSow.status == SowStatus.ACCEPTED_PAID || currentSow.status == SowStatus.REVIEW_REQUIRED) &&
+                                <Button data-cy={SowCommands.CLAIM_MILESTONE_MET} block color="primary" name={SowCommands.CLAIM_MILESTONE_MET}
+                                  onClick={toggleModalClaimMilestoneMet}
+                                >Claim milestone met</Button>
+                              }
+                              {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
+                                <CardText className="text-muted text-center">
+                                  {/* {t('chat.emptyComandsWithDate', {given_name: users[currentSow.buyer].given_name, family_name: users[currentSow.buyer].family_name, date: new Date(currentSow.).toLocaleDateString()})} */}
+                                  {t('chat.emptyComandsWithoutDate', { given_name: users[currentSow.buyer].given_name, family_name: users[currentSow.buyer].family_name })}
+                                </CardText>
+                              }
+                            </>
+                          }
+                          {currentSow.buyer == user.username &&
+                            <>
+                              {currentSow.status == SowStatus.SUBMITTED &&
+                                <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={currentSow.arbitrator == null} block color="primary" name={SowCommands.ACCEPT_AND_PAY}
+                                  onClick={toggleModalAcceptSow}
+                                >{currentSow.arbitrator == null ? "Select an arbitrator" : "Accept and pay"}</ActivityButton>
+                              }
+                              {currentSow.status == SowStatus.ACCEPTED_PAID &&
+                                <CardText className="text-muted text-center">
+                                  {t('chat.emptyComandsWithDate', { given_name: users[currentSow.seller].given_name, family_name: users[currentSow.seller].family_name, date: new Date(currentSow.deadline).toLocaleDateString() })}
+                                </CardText>
+                              }
+                              {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
+                                <ActivityButton data-cy={SowCommands.REQUEST_REVIEW} block color="primary" name={SowCommands.REQUEST_REVIEW} onClick={() => {
+                                  console.log("Request review")
+                                  dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REQUEST_REVIEW }, sow: currentSow }));
+                                }}>Request review</ActivityButton>
+                              }
+                              {(currentSow.status == SowStatus.SUBMITTED || currentSow.status == SowStatus.MILESTONE_CLAIMED) &&
+                                <ActivityButton data-cy={SowCommands.REJECT} block color="primary" name={SowCommands.REJECT} onClick={() => {
+                                  console.log("Reject")
+                                  dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REJECT }, sow: currentSow }));
+                                }}>Reject</ActivityButton>
+                              }
+                              {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
+                                <ActivityButton data-cy={SowCommands.ACCEPT_MILESTONE} block color="primary" name={SowCommands.ACCEPT_MILESTONE}
+                                  onClick={toggleModalAcceptMilestone}
+                                >Accept milestone</ActivityButton>
+                              }
+                              {currentSow.status == SowStatus.REVIEW_REQUIRED &&
+                                <CardText className="text-muted text-center">
+                                  {t('chat.emptyComandsWithoutDate', { given_name: users[currentSow.seller].given_name, family_name: users[currentSow.seller].family_name })}
+                                </CardText>
+                              }
+                            </>
+                          }
+                        </Jumbotron>
+                      </Col>
+                    </Row>}
                   <Row>
                     <Col className="col-12">
                       <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Attachments</CardSubtitle>
