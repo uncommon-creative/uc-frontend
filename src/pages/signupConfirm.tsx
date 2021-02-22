@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
 import { useTranslation } from 'react-i18next';
 
-import { ActivityButton } from '../components/ActivityButton'
+import { ActivityButton } from '../components/common/ActivityButton'
 import { actions as AuthActions, selectors as AuthSelectors } from '../store/slices/auth'
 import { selectors as UISelectors, actions as UIActions } from '../store/slices/ui'
 

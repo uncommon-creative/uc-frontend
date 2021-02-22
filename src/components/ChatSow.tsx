@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from 'react-i18next';
 
-import { ActivityButton } from '../components/ActivityButton'
+import { ActivityButton } from './common/ActivityButton'
 import { SowAttachments } from '../components/SowAttachments'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'

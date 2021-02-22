@@ -4,7 +4,7 @@ import { Button, Spinner } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRedo } from '@fortawesome/free-solid-svg-icons'
 
-import { selectors as UISelectors } from '../store/slices/ui'
+import { selectors as UISelectors } from '../../store/slices/ui'
 
 export const RefreshButton = ({ name, disabled, children, ...rest }: any) => {
 

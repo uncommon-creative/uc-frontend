@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as AuthSelectors } from '../store/slices/auth'
-import { ActivityButton } from '../components/ActivityButton'
+import { ActivityButton } from '../components/common/ActivityButton'
 import { TagsInput } from '../components/TagsInput';
 import { selectors as UISelectors } from '../store/slices/ui'
 

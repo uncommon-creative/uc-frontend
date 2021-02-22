@@ -16,9 +16,9 @@ import { actions as ChatActions, selectors as ChatSelectors } from '../store/sli
 import { ChatSow } from '../components/ChatSow'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
 import { ArbitratorDetail } from '../components/ArbitratorDetail';
-import { ActivityButton } from '../components/ActivityButton'
-import { RefreshButton } from '../components/RefreshButton'
-import { FileButton } from '../components/FileButton';
+import { ActivityButton } from '../components/common/ActivityButton'
+import { RefreshButton } from '../components/common/RefreshButton'
+import { FileButton } from '../components/common/FileButton';
 import { selectors as UISelectors } from '../store/slices/ui'
 import { AcceptSow } from '../components/transaction/AcceptSow'
 import { ClaimMilestoneMet } from '../components/transaction/ClaimMilestoneMet'

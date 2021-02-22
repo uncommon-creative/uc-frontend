@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as ChatSelectors } from '../store/slices/chat'
-import { ActivityButton } from '../components/ActivityButton';
-import { RefreshButton } from '../components/RefreshButton'
+import { ActivityButton } from '../components/common/ActivityButton';
+import { RefreshButton } from '../components/common/RefreshButton'
 import { selectors as UISelectors } from '../store/slices/ui'
 
 function validateEmail(email: any) {
@@ -32,8 +32,8 @@ function TableData({ tabId, data }: any) {
         <Table striped borderless responsive>
           <thead>
             <tr>
-              <th>Unread</th>
-              <th>ID</th>
+              {/* <th>Unread</th> */}
+              {/* <th>ID</th> */}
               <th>Title</th>
               {tabId != 2 && <th>Customer</th>}
               {tabId != 1 && <th>Freelance</th>}
@@ -47,16 +47,26 @@ function TableData({ tabId, data }: any) {
             {data.map((element: any) => {
               return (
                 <tr key={element.sow}>
-                  <td>
+                  {/* <td>
                     {tabId == 1 && <Badge data-cy='unreadMessagesSowSeller' pill color={element.messagesToReadSeller == 0 ? "secondary" : "primary"}>{element.messagesToReadSeller}</Badge>}
                     {tabId == 2 && <Badge data-cy='unreadMessagesSowBuyer' pill color={element.messagesToReadBuyer == 0 ? "secondary" : "primary"}>{element.messagesToReadBuyer}</Badge>}
                     {tabId == 3 && <Badge data-cy='unreadMessagesSowArbitrator' pill color={element.messagesToReadArbitrator == 0 ? "secondary" : "primary"}>{element.messagesToReadArbitrator}</Badge>}
-                  </td>
-                  <td scope="row">
-                    {/* <Link to="/users" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Link> */}
+                  </td> */}
+                  {/* <td scope="row">
                     <Button data-cy='submittedSow' color="link" onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>{element.sow.substring(0, 5).toUpperCase()}</Button>
+                  </td> */}
+                  <td>
+                    <Row className="d-flex" tag={Link} onClick={() => dispatch(SowActions.willSelectSow({ sow: element, history: history }))}>
+                      <Col className="col-1">
+                        {tabId == 1 && <Badge data-cy='unreadMessagesSowSeller' pill color={element.messagesToReadSeller == 0 ? "secondary" : "primary"}>{element.messagesToReadSeller}</Badge>}
+                        {tabId == 2 && <Badge data-cy='unreadMessagesSowBuyer' pill color={element.messagesToReadBuyer == 0 ? "secondary" : "primary"}>{element.messagesToReadBuyer}</Badge>}
+                        {tabId == 3 && <Badge data-cy='unreadMessagesSowArbitrator' pill color={element.messagesToReadArbitrator == 0 ? "secondary" : "primary"}>{element.messagesToReadArbitrator}</Badge>}
+                      </Col>
+                      <Col className="col-10">
+                        {element.title}
+                      </Col>
+                    </Row>
                   </td>
-                  <td>{element.title ? element.title : '-'}</td>
                   {tabId != 1 && <td>{
                     validateEmail(element.seller) ?
                       element.seller
@@ -114,54 +124,78 @@ export const HomePage = () => {
       {!isLoading &&
         <Container>
           <Card className="mt-3 mt-lg-5 rounded" outline color="primary">
-            <div className="row">
-              <div className="col-12 col-sm-8">
-                <CardTitle tag="h2">{t('sow.welcome', {given_name: userAttributes.given_name})}</CardTitle>
-              </div>
-              <div className="col-12 col-sm-4 mt-sm-2 mx-auto">
+            <Row>
+              <Col>
+                <Nav tabs>
+                  <NavItem >
+                    <NavLink
+                      active={activeTab === '1'}
+                      onClick={() => { toggle('1'); }}
+                    >
+                      <Row>
+                        <Col>
+                          Freelance
+                        </Col>
+                        <Col>
+                          {unreadMessages.asSeller != 0 &&
+                            <Badge data-cy='unreadMessagesSeller' pill color={unreadMessages.asSeller == 0 ? "secondary" : "primary"}>{unreadMessages.asSeller}</Badge>
+                          }
+                        </Col>
+                      </Row>
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      data-cy='customerTab'
+                      active={activeTab === '2'}
+                      onClick={() => { toggle('2'); }}
+                    >
+                      <Row>
+                        <Col>
+                          Customer
+                        </Col>
+                        <Col>
+
+                          {unreadMessages.asBuyer != 0 &&
+                            <Badge data-cy='unreadMessagesBuyer' pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
+                          }
+                        </Col>
+                      </Row>
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      active={activeTab === '3'}
+                      onClick={() => { toggle('3'); }}
+                    >
+                      <Row>
+                        <Col>
+                          Arbitrator
+                        </Col>
+                        <Col>
+                          {unreadMessages.asArbitrator != 0 &&
+                            <Badge data-cy='unreadMessagesArbitrator' pill color={unreadMessages.asArbitrator == 0 ? "secondary" : "primary"}>{unreadMessages.asArbitrator}</Badge>
+                          }
+                        </Col>
+                      </Row>
+                    </NavLink>
+                  </NavItem>
+                </Nav>
+              </Col>
+              <Col className="d-flex justify-content-end">
                 {activeTab == '1' &&
-                  <ActivityButton data-cy="createSow" type="submit" name="createSow" color="primary"
+                  <ActivityButton data-cy="createSow" type="submit" name="createSow" color="primary" className="ml-sm-2"
                     onClick={() => dispatch(SowActions.willCreateStatementOfWork({ history: history }))}
                   >{t('sow.newStatementOfWork')}</ActivityButton>
                 }
-                <RefreshButton data-cy='getSowsList' type="submit" name="getSowsList" color="primary"
+                <RefreshButton data-cy='getSowsList' type="submit" name="getSowsList" color="primary" className="ml-sm-2"
                   onClick={() => {
                     console.log('in refreshSowsList')
                     dispatch(SowActions.willGetSowsList())
                   }}
                 />
-              </div>
-            </div>
-            <Nav tabs>
-              <NavItem >
-                <NavLink
-                  active={activeTab === '1'}
-                  onClick={() => { toggle('1'); }}
-                >
-                  Freelance
-              <Badge data-cy='unreadMessagesSeller' pill color={unreadMessages.asSeller == 0 ? "secondary" : "primary"}>{unreadMessages.asSeller}</Badge>
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  data-cy='customerTab'
-                  active={activeTab === '2'}
-                  onClick={() => { toggle('2'); }}
-                >
-                  Customer
-              <Badge data-cy='unreadMessagesBuyer' pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  active={activeTab === '3'}
-                  onClick={() => { toggle('3'); }}
-                >
-                  Arbitrator
-              <Badge data-cy='unreadMessagesArbitrator' pill color={unreadMessages.asArbitrator == 0 ? "secondary" : "primary"}>{unreadMessages.asArbitrator}</Badge>
-                </NavLink>
-              </NavItem>
-            </Nav>
+              </Col>
+            </Row>
             <TabContent activeTab={activeTab}>
               <TabPane tabId="1">
                 <TableData tabId="1" data={sowsAsSeller} />

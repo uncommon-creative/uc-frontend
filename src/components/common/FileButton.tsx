@@ -5,7 +5,7 @@ import { Button, Spinner, FormText, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileWord, faFileVideo, faFilePowerpoint, faFilePdf, faFileImage, faFileCode, faFileAudio, faFileArchive, faFileAlt, faFileCsv, faFile, faFileExcel, } from '@fortawesome/free-solid-svg-icons'
 
-import { selectors as UISelectors } from '../store/slices/ui'
+import { selectors as UISelectors } from '../../store/slices/ui'
 
 export const FileButton = ({ file, disabled, children, ...rest }: any) => {
 

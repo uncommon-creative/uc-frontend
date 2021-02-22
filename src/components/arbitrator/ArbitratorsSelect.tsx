@@ -14,7 +14,7 @@ import { actions as SowActions, selectors as SowSelectors } from '../../store/sl
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
 import { ArbitratorsList } from './ArbitratorList'
 import { ArbitratorDetailXS } from './ArbitratorDetailXS'
-import { ActivityButton } from '../ActivityButton';
+import { ActivityButton } from '../common/ActivityButton';
 
 export const ArbitratorsSelect = ({ modal, toggle }: any) => {
 

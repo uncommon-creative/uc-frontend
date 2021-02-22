@@ -11,7 +11,7 @@ import { Link, useHistory } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 
 import { actions as AuthActions, selectors as AuthSelectors } from '../store/slices/auth'
-import { ActivityButton } from '../components/ActivityButton'
+import { ActivityButton } from '../components/common/ActivityButton'
 import { selectors as UISelectors, actions as UIActions } from '../store/slices/ui'
 
 

@@ -13,7 +13,7 @@ import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { ArbitratorSummary } from '../components/ArbitratorSummary'
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
-import { ActivityButton } from './ActivityButton';
+import { ActivityButton } from './common/ActivityButton';
 
 export const SelectArbitrators = ({ modal, toggle }: any) => {
 
