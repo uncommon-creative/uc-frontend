@@ -94,7 +94,11 @@ describe('Chat', () => {
 
     cy.wait(2000)
 
-    assert.exists(cy.contains("Welcome"), 'user submitted sow successfully')
+    assert.exists(
+      cy.get('[data-cy=createSow]')
+        .contains("new project"),
+      'user submitted sow successfully'
+    )
 
   })
 
@@ -104,7 +108,7 @@ describe('Chat', () => {
       cy.log("sowID: ", sowID)
 
       cy.wait(5000)
-      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
+      cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
       cy.get('[class="rce-input rce-input-textarea"]')
         .type('test cypress invio messaggio seller')
         .should('have.value', 'test cypress invio messaggio seller')
@@ -118,11 +122,11 @@ describe('Chat', () => {
       cy.wait(5000)
 
       cy.get('[data-cy=customerTab]').click()
-      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).parents('tr').within(() => {
-        cy.get('[data-cy=unreadMessagesSowBuyer]').contains(1)
-      })
+      // cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`).parents('tr').within(() => {
+      //   cy.get('[data-cy=unreadMessagesSowBuyer]').contains(1)
+      // })
 
-      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
+      cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
       cy.wait(5000)
       cy.get('[class="rce-mbox-text"]')
         .contains('test cypress invio messaggio seller')
@@ -147,10 +151,10 @@ describe('Chat', () => {
       cy.login(Cypress.env('userSeller'))
       cy.wait(5000)
 
-      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
-      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).parents('tr').within(() => {
-        cy.get('[data-cy=unreadMessagesSowSeller]').contains(2)
-      })
+      cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
+      // cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`).parents('tr').within(() => {
+      //   cy.get('[data-cy=unreadMessagesSowSeller]').contains(2)
+      // })
 
       cy.get('[class="rce-mbox-text"]')
         .contains('test cypress invio messaggio buyer DUE')

@@ -74,7 +74,7 @@ export const FileButton = ({ file, disabled, children, ...rest }: any) => {
               </Col>
             </Row>
             <Row>
-              <Col className='d-flex justify-content-center'>
+              <Col data-cy="attachment" className='d-flex justify-content-center'>
                 {file.filename.length > 20 ?
                   file.filename.substring(0, 20) + '... ' + file.filename.substring(file.filename.length - 4, file.filename.length)
                   : file.filename}

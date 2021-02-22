@@ -102,7 +102,11 @@ describe('Attachment', () => {
 
     cy.wait(2000)
 
-    assert.exists(cy.contains("Welcome"), 'user submitted sow successfully')
+    assert.exists(
+      cy.get('[data-cy=createSow]')
+        .contains("new project"),
+      'user submitted sow successfully'
+    )
 
   })
 
@@ -113,7 +117,7 @@ describe('Attachment', () => {
 
       cy.wait(5000)
       // seller
-      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
+      cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
       // seller test sow attachment
       cy.get('[data-cy=attachmentsSow]')
         .get('[data-cy=attachment]')
@@ -132,7 +136,7 @@ describe('Attachment', () => {
       cy.login(Cypress.env('userBuyer'))
       cy.wait(2000)
       cy.get('[data-cy=customerTab]').click()
-      cy.get('[data-cy=submittedSow]').contains(sowID.substr(0, 5).toUpperCase()).click()
+      cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
       // buyer test sow attachment
       cy.get('[data-cy=attachmentsSow]')
         .get('[data-cy=attachment]')
