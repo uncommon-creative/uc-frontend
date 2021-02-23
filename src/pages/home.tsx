@@ -112,7 +112,7 @@ export const HomePage = () => {
   return (
     <>
       {!isLoading &&
-        <Container>
+        <Container >
           <Card className="mt-3 mt-lg-5 rounded" outline color="primary">
             <Row>
               <Col>

@@ -12,6 +12,7 @@ import { history } from './store'
 import { ConnectedRouter } from 'connected-react-router'
 
 import { Header } from './header'
+import { Footer } from './footer'
 import { HomePage } from './pages/home'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
@@ -66,8 +67,8 @@ const PrivateRoute = ({ children, ...rest }: any) => {
 export const AppRouter = () => {
   return (
     <ConnectedRouter history={history}>
-      <Header className="mb-3" />
-      <Container fluid>
+      <Header className="mb-3 sticky-top shadow" />
+      <Container className="d-flex min-vh-100">
         <Switch>
           <Route path="/about">
             <About />
@@ -107,6 +108,7 @@ export const AppRouter = () => {
           </PrivateRoute>
         </Switch>
       </Container>
+      <Footer className="" />
     </ConnectedRouter>
   );
 }

@@ -13,6 +13,8 @@ import { actions as AuthActions } from './store/slices/auth'
 import { selectors as ProfileSelectors, actions as ProfileActions } from './store/slices/profile'
 import { Breadcrumb, BreadcrumbItem } from 'reactstrap';
 
+import UCLogo from './images/UC.webp'
+
 export const Header = ({ className }: any) => {
 
   let history = useHistory();
@@ -24,17 +26,20 @@ export const Header = ({ className }: any) => {
   const dispatch = useDispatch()
 
   return (
-    <Navbar className={className} color="primary" light expand="md">
-      <NavbarBrand href="/">Uncommon Creative</NavbarBrand>
+    <Navbar className={className} color="secondary" light expand="md">
+      <NavbarBrand href="/" className="px-4 py-2">
+        <img src={UCLogo} height="100" alt="Uncommon Creative Logo"></img>
+      </NavbarBrand>
       <NavbarToggler onClick={toggle} />
       <Collapse isOpen={isOpen} navbar>
 
         <Nav className="mr-auto" navbar>
+
+        </Nav>
+        <Nav navbar>
           <NavItem>
             <NavLink tag={Link} to="/arbitrators">Arbitrators</NavLink>
           </NavItem>
-        </Nav>
-        <Nav navbar>
 
           {isAuthenticated ? (
             <UncontrolledDropdown nav inNavbar>
