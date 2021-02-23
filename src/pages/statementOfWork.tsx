@@ -13,9 +13,9 @@ import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommand
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
+import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { ChatSow } from '../components/ChatSow'
-import { ArbitratorSummary } from '../components/ArbitratorSummary'
-import { ArbitratorDetail } from '../components/ArbitratorDetail';
+import { ArbitratorDetailXS } from '../components/arbitrator/ArbitratorDetailXS'
 import { ActivityButton } from '../components/common/ActivityButton'
 import { RefreshButton } from '../components/common/RefreshButton'
 import { FileButton } from '../components/common/FileButton';
@@ -34,15 +34,12 @@ export const StatementOfWorkPage = () => {
   let { code }: any = useParams();
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
-  const isLoading = useSelector(UISelectors.isLoading)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   console.log("in statementOfWorkPage currentSow: ", currentSow)
   const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators);
-  const attachments = useSelector(SowSelectors.getAttachments);
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const user = useSelector(AuthSelectors.getUser)
   const users = useSelector(ProfileSelectors.getUsers)
-  const [selectedArbitrator, setSelectedArbitrator] = React.useState('');
   const [modalOpenAcceptSow, setModalOpenAcceptSow] = React.useState(false);
   const [modalOpenClaimMilestoneMet, setModalOpenClaimMilestoneMet] = React.useState(false);
   const [modalOpenAcceptMilestone, setModalOpenAcceptMilestone] = React.useState(false);
@@ -56,9 +53,12 @@ export const StatementOfWorkPage = () => {
     dispatch(SowActions.willGetSow({ sow: code }))
   }, [])
 
+  React.useEffect(() => {
+    currentSow.status == SowStatus.SUBMITTED && dispatch(ArbitratorActions.selectingOneArbitrator())
+  }, [currentSow])
+
   return (
     <>
-      {/* {!isLoading && */}
       {Object.keys(currentSow).length &&
         <Container>
           <Card>
@@ -125,11 +125,22 @@ export const StatementOfWorkPage = () => {
                             </Col>
                           </Row>
                         }
+                        {currentSow.arbitrator &&
+                          <Row>
+                            <Col className="col-12 col-lg-6">
+                              <CardText>Arbitrator:</CardText>
+                            </Col>
+                            <Col className="col-12 col-lg-6 text-lg-right">
+                              <CardText color="primary">
+                                {users[currentSow.arbitrator].given_name + ' ' + users[currentSow.arbitrator].family_name}
+                              </CardText>
+                            </Col>
+                          </Row>}
                         <Row>
-                          <Col className="col-12 col-lg-4">
+                          <Col className="col-12 col-lg-5">
                             <CardText>Deadline:</CardText>
                           </Col>
-                          <Col className="col-12 col-lg-8 text-lg-right">
+                          <Col className="col-12 col-lg-7 text-lg-right">
                             <CardText color="primary">{new Date(currentSow.deadline).toLocaleDateString()}</CardText>
                           </Col>
                         </Row>
@@ -158,10 +169,10 @@ export const StatementOfWorkPage = () => {
                           </Col>
                         </Row>
                         <Row>
-                          <Col className="col-12 col-lg-4">
+                          <Col className="col-12 col-lg-5">
                             <CardText>Expiration:</CardText>
                           </Col>
-                          <Col className="col-12 col-lg-8 text-lg-right">
+                          <Col className="col-12 col-lg-7 text-lg-right">
                             <CardText color="primary">{new Date(currentSow.sowExpiration).toLocaleDateString()}</CardText>
                           </Col>
                         </Row>
@@ -184,19 +195,18 @@ export const StatementOfWorkPage = () => {
                         <Jumbotron>
                           {currentArbitrators.map((element: any, index: any) => {
                             return (
-                              <ListGroupItem data-cy={`selectArbitrator${element.given_name}`} className={currentSow.arbitrator == element.user ? 'border border-primary' : 'border'} /* active={currentSow.arbitrator == element.user} */ key={index}
+                              <ListGroupItem data-cy={`selectArbitrator${element.given_name}`} className={currentSow.arbitrator == element.user ? 'border border-primary' : 'border'} key={index}
                                 onClick={() => {
                                   console.log("selecting arbitrator: ", element)
-                                  dispatch(SowActions.willSelectArbitrator(element.user))
-                                  // setSelectedArbitrator(element.user)
                                 }}>
-                                <ArbitratorSummary arbitrator={element} size='h6' />
+                                <ArbitratorDetailXS arbitrator={element} index={index} />
                               </ListGroupItem>
                             )
                           })}
                         </Jumbotron>
                       </Col>
-                    </Row>}
+                    </Row>
+                  }
                   {(currentSow.status != SowStatus.REJECTED && currentSow.status != SowStatus.EXPIRED && currentSow.status != SowStatus.MILESTONE_ACCEPTED) &&
                     <Row>
                       <Col className="col-12">

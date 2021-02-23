@@ -3,21 +3,22 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export const currentSlice = createSlice({
   name: 'arbitrator',
   initialState: {
-    selectingArbitrators: false,
+    selectingThreeArbitrators: false,
+    selectingOneArbitrator: false,
     myArbitratorSettings: {},
     arbitratorsList: [],
 
     currentArbitrator: {},
-    currentSelectedArbitrators: []
+    currentSelectedArbitrators: [],
   },
   reducers: {
     willGetArbitrator: (state, action: PayloadAction<any>) => state,
     didGetArbitrator: (state, action: PayloadAction<any>) => void (state.myArbitratorSettings = action.payload),
 
-    willGetArbitratorsList: (state, action: PayloadAction<any>) => void (state.selectingArbitrators = true),
+    willGetArbitratorsList: (state, action: PayloadAction<any>) => void (state.selectingThreeArbitrators = true, state.selectingOneArbitrator = false),
     didGetArbitratorsList: (state, action: PayloadAction<any>) => void (state.arbitratorsList = action.payload.arbitrators),
 
-    willGetFullArbitratorsList: (state, action: PayloadAction<any>) => void (state.selectingArbitrators = false),
+    willGetFullArbitratorsList: (state, action: PayloadAction<any>) => void (state.selectingThreeArbitrators = false, state.selectingOneArbitrator = false),
     didGetFullArbitratorsList: (state, action: PayloadAction<any>) => void (state.arbitratorsList = action.payload.arbitrators),
 
     willSaveArbitratorSettings: (state, action: PayloadAction<any>) => state,
@@ -27,6 +28,8 @@ export const currentSlice = createSlice({
     willSelectArbitrator: (state, action: PayloadAction<any>) => void (state.currentSelectedArbitrators = state.currentSelectedArbitrators.concat(action.payload)),
     willDeselectArbitrator: (state, action: PayloadAction<any>) => void (state.currentSelectedArbitrators.splice(action.payload, 1)),
     willSelectThreeArbitrators: (state, action: PayloadAction<any>) => void (state.currentSelectedArbitrators = action.payload),
+
+    selectingOneArbitrator: (state, action: PayloadAction<any>) => void (state.selectingThreeArbitrators = false, state.selectingOneArbitrator = true),
   }
 })
 
@@ -37,7 +40,8 @@ export const {
   willSaveArbitratorSettings
 } = actions
 export const selectors = {
-  isSelectingArbitrators: (state: any) => state.arbitrator.selectingArbitrators,
+  isSelectingThreeArbitrators: (state: any) => state.arbitrator.selectingThreeArbitrators,
+  isSelectingOneArbitrator: (state: any) => state.arbitrator.selectingOneArbitrator,
   getMyArbitratorSettings: (state: any) => state.arbitrator.myArbitratorSettings,
   getArbitratorsList: (state: any) => state.arbitrator.arbitratorsList,
   getCurrentArbitrator: (state: any) => state.arbitrator.currentArbitrator,
