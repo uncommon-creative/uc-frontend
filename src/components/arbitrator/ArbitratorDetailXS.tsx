@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
+import Avatar from '../../images/Avatar.png'
 
 export const ArbitratorDetailXS = ({ arbitrator, index }: any) => {
 
@@ -24,8 +25,8 @@ export const ArbitratorDetailXS = ({ arbitrator, index }: any) => {
           dispatch(ArbitratorActions.willDeselectArbitrator(index))
         }} />
       </Col> */}
-      <Col className="col-3 p-0 border">
-        <CardImg width="100%" src="//placehold.it/150" alt={'Arbitrator ' + arbitrator.given_name + ' ' + arbitrator.family_name} />
+      <Col className="col-3 p-0">
+        <img src={Avatar} width="50" alt="Avatar" />
         <CardImgOverlay className="p-0">
           <Button close className="position-absolute top-0 start-0 translate-middle" onClick={() => {
             dispatch(ArbitratorActions.willDeselectArbitrator(index))
