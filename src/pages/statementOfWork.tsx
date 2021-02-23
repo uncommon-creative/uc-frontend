@@ -125,11 +125,22 @@ export const StatementOfWorkPage = () => {
                             </Col>
                           </Row>
                         }
+                        {currentSow.arbitrator &&
+                          <Row>
+                            <Col className="col-12 col-lg-6">
+                              <CardText>Arbitrator:</CardText>
+                            </Col>
+                            <Col className="col-12 col-lg-6 text-lg-right">
+                              <CardText color="primary">
+                                {users[currentSow.arbitrator].given_name + ' ' + users[currentSow.arbitrator].family_name}
+                              </CardText>
+                            </Col>
+                          </Row>}
                         <Row>
-                          <Col className="col-12 col-lg-4">
+                          <Col className="col-12 col-lg-5">
                             <CardText>Deadline:</CardText>
                           </Col>
-                          <Col className="col-12 col-lg-8 text-lg-right">
+                          <Col className="col-12 col-lg-7 text-lg-right">
                             <CardText color="primary">{new Date(currentSow.deadline).toLocaleDateString()}</CardText>
                           </Col>
                         </Row>
@@ -158,10 +169,10 @@ export const StatementOfWorkPage = () => {
                           </Col>
                         </Row>
                         <Row>
-                          <Col className="col-12 col-lg-4">
+                          <Col className="col-12 col-lg-5">
                             <CardText>Expiration:</CardText>
                           </Col>
-                          <Col className="col-12 col-lg-8 text-lg-right">
+                          <Col className="col-12 col-lg-7 text-lg-right">
                             <CardText color="primary">{new Date(currentSow.sowExpiration).toLocaleDateString()}</CardText>
                           </Col>
                         </Row>
@@ -194,7 +205,8 @@ export const StatementOfWorkPage = () => {
                           })}
                         </Jumbotron>
                       </Col>
-                    </Row>}
+                    </Row>
+                  }
                   {(currentSow.status != SowStatus.REJECTED && currentSow.status != SowStatus.EXPIRED && currentSow.status != SowStatus.MILESTONE_ACCEPTED) &&
                     <Row>
                       <Col className="col-12">
