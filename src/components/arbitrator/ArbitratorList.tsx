@@ -10,8 +10,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
-import { ArbitratorDetail } from '../../components/ArbitratorDetail'
-import { ArbitratorSummary } from '../../components/ArbitratorSummary'
 
 import { ArbitratorDetailMD } from './ArbitratorDetailMD'
 

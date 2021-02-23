@@ -13,10 +13,8 @@ import { faStar } from '@fortawesome/free-solid-svg-icons'
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons'
 
 import { ArbitratorDetailLG } from './ArbitratorDetailLG'
-
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
-import { ArbitratorDetail } from '../../components/ArbitratorDetail'
-import { ArbitratorSummary } from '../../components/ArbitratorSummary'
+import Avatar from '../../images/Avatar.png'
 
 export const ArbitratorDetailMD = ({ arbitrator }: any) => {
 
@@ -28,14 +26,14 @@ export const ArbitratorDetailMD = ({ arbitrator }: any) => {
 
   return (
     <>
-      <Card tag="button" color="primary" className="flex-fill" outline onClick={() => {
+      <Card tag="button" color="primary" className="flex-fill mx-auto" outline onClick={() => {
         dispatch(ArbitratorActions.willViewCurrentArbitrator(arbitrator))
         setModalOpen(!modalOpen)
       }}>
-        <CardBody>
+        <CardBody className="mx-auto">
           <Row>
             <Col>
-              <CardImg top width="100%" src="//placehold.it/100" alt="Card image cap" />
+              <img src={Avatar} width="100" alt="Avatar" />
             </Col>
           </Row>
           <Row>

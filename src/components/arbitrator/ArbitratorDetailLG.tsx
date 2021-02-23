@@ -15,6 +15,7 @@ import { faStar as farStar } from '@fortawesome/free-regular-svg-icons'
 
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
 import { ActivityButton } from '../common/ActivityButton';
+import Avatar from '../../images/Avatar.png'
 
 export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
 
@@ -29,8 +30,8 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
       {/* <ModalHeader>{currentArbitrator.given_name}</ModalHeader> */}
       <ModalHeader>
         <Row className='d-flex flex-wrap'>
-          <Col className="col-md-3 col-12">
-            <CardImg width='100%' src="//placehold.it/200" alt="Card image cap" />
+          <Col className="col-md-3 col-12 text-center">
+            <img src={Avatar} width="200" alt="Avatar" />
           </Col>
           <Col className="d-flex justify-content-between flex-column">
             <Row>

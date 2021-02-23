@@ -43,19 +43,19 @@ export const ArbitratorsSelect = ({ modal, toggle }: any) => {
 
       </ModalBody>
       <ModalFooter>
-          {currentSelectedArbitrators.map((element: any, index: any) => {
-            return (
-              <Col className="col-3">
-                <ArbitratorDetailXS arbitrator={element} index={index} />
-              </Col>
-            )
-          })}
-          <Col className="col-2">
-            <ActivityButton data-cy='inputSowArbitratorsConfirm' disabled={currentSelectedArbitrators.length == 3 ? false : true} name="confirmArbitrators" color="primary" onClick={() => {
-              setFieldValue('arbitrators', currentSelectedArbitrators)
-              dispatch(SowActions.willConfirmArbitrators({ arbitrators: update(currentSelectedArbitrators, {}), toggle: toggle }))
-            }}>Confirm</ActivityButton>
-          </Col>
+        {currentSelectedArbitrators.map((element: any, index: any) => {
+          return (
+            <Col className="col-3">
+              <ArbitratorDetailXS arbitrator={element} index={index} />
+            </Col>
+          )
+        })}
+        <Col className="col-2">
+          <ActivityButton data-cy='inputSowArbitratorsConfirm' disabled={currentSelectedArbitrators.length == 3 ? false : true} name="confirmArbitrators" color="primary" onClick={() => {
+            setFieldValue('arbitrators', currentSelectedArbitrators)
+            dispatch(SowActions.willConfirmArbitrators({ arbitrators: update(currentSelectedArbitrators, {}), toggle: toggle }))
+          }}>Confirm</ActivityButton>
+        </Col>
       </ModalFooter>
     </Modal>
   )

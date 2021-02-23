@@ -28,7 +28,7 @@ export const Header = ({ className }: any) => {
   return (
     <Navbar className={className} color="secondary" light expand="md">
       <NavbarBrand href="/" className="px-4 py-2">
-        <img src={UCLogo} height="100" alt="Uncommon Creative Logo"></img>
+        <img src={UCLogo} height="100" alt="Uncommon Creative Logo" />
       </NavbarBrand>
       <NavbarToggler onClick={toggle} />
       <Collapse isOpen={isOpen} navbar>
