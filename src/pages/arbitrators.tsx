@@ -11,9 +11,6 @@ import { useTranslation } from 'react-i18next';
 
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { ArbitratorsList } from '../components/arbitrator/ArbitratorList'
-
-import { ArbitratorDetail } from '../components/ArbitratorDetail'
-import { ArbitratorSummary } from '../components/ArbitratorSummary'
 import { selectors as UISelectors } from '../store/slices/ui'
 
 export const ArbitratorsPage = () => {

@@ -14,11 +14,9 @@ import { useTranslation } from 'react-i18next';
 
 import { ActivityButton } from '../components/common/ActivityButton'
 import { TagsInput } from '../components/TagsInput'
-import { SelectArbitrators } from '../components/SelectArbitrators'
 import { ArbitratorsSelect } from '../components/arbitrator/ArbitratorsSelect'
 import { ArbitratorDetailMD } from '../components/arbitrator/ArbitratorDetailMD'
 
-import { ArbitratorDetail } from '../components/ArbitratorDetail'
 import { SowAttachments } from '../components/SowAttachments'
 import { DescriptionEditor } from '../components/DescriptionEditor'
 import { actions as SowActions, selectors as SowSelectors, SowStatus } from '../store/slices/sow'

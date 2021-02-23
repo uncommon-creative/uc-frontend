@@ -14,6 +14,7 @@ import { faStar } from '@fortawesome/free-solid-svg-icons'
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons'
 
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
+import { actions as SowActions } from '../../store/slices/sow'
 import { ActivityButton } from '../common/ActivityButton';
 import Avatar from '../../images/Avatar.png'
 
@@ -21,7 +22,8 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
-  const selectingArbitrators = useSelector(ArbitratorSelectors.isSelectingArbitrators)
+  const selectingThreeArbitrators = useSelector(ArbitratorSelectors.isSelectingThreeArbitrators)
+  const selectingOneArbitrator = useSelector(ArbitratorSelectors.isSelectingOneArbitrator)
   const currentArbitrator = useSelector(ArbitratorSelectors.getCurrentArbitrator)
   const currentSelectedArbitrators = useSelector(ArbitratorSelectors.getCurrentSelectedArbitrators)
 
@@ -85,7 +87,7 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
           </Col>
         </Row>
       </ModalHeader>
-      {selectingArbitrators &&
+      {selectingThreeArbitrators &&
         <ModalFooter>
           {currentSelectedArbitrators.some((arb: any) => arb.user === currentArbitrator.user) ?
             <Button disabled color="primary">Arbitrator added</Button>
@@ -96,6 +98,14 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
               }}>Add to arbitrators</ActivityButton>
               : <Button disabled color="primary">Max number of arbitrators added</Button>
           }
+        </ModalFooter>
+      }
+      {selectingOneArbitrator &&
+        <ModalFooter>
+          <ActivityButton data-cy='inputSowArbitratorsSelectOne' name="ArbitratorDetailLG" color="primary" onClick={() => {
+            dispatch(SowActions.willSelectArbitrator(currentArbitrator.user))
+            toggle()
+          }}>Select the arbitrator</ActivityButton>
         </ModalFooter>
       }
     </Modal>
