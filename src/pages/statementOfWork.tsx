@@ -23,6 +23,7 @@ import { selectors as UISelectors } from '../store/slices/ui'
 import { AcceptSow } from '../components/transaction/AcceptSow'
 import { ClaimMilestoneMet } from '../components/transaction/ClaimMilestoneMet'
 import { AcceptMilestone } from '../components/transaction/AcceptMilestone'
+import { Reject } from '../components/transaction/Reject'
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -43,10 +44,12 @@ export const StatementOfWorkPage = () => {
   const [modalOpenAcceptSow, setModalOpenAcceptSow] = React.useState(false);
   const [modalOpenClaimMilestoneMet, setModalOpenClaimMilestoneMet] = React.useState(false);
   const [modalOpenAcceptMilestone, setModalOpenAcceptMilestone] = React.useState(false);
+  const [modalOpenReject, setModalOpenReject] = React.useState(false);
 
   const toggleModalAcceptSow = () => setModalOpenAcceptSow(!modalOpenAcceptSow);
   const toggleModalClaimMilestoneMet = () => setModalOpenClaimMilestoneMet(!modalOpenClaimMilestoneMet);
   const toggleModalAcceptMilestone = () => setModalOpenAcceptMilestone(!modalOpenAcceptMilestone);
+  const toggleModalReject = () => setModalOpenReject(!modalOpenReject);
 
   React.useEffect(() => {
     console.log("in statementOfWorkPage currentSow: ", currentSow)
@@ -256,10 +259,9 @@ export const StatementOfWorkPage = () => {
                                 }}>Request review</ActivityButton>
                               }
                               {(currentSow.status == SowStatus.SUBMITTED || currentSow.status == SowStatus.MILESTONE_CLAIMED) &&
-                                <ActivityButton data-cy={SowCommands.REJECT} block color="primary" name={SowCommands.REJECT} onClick={() => {
-                                  console.log("Reject")
-                                  dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REJECT }, sow: currentSow }));
-                                }}>Reject</ActivityButton>
+                                <ActivityButton data-cy={SowCommands.REJECT + "Modal"} block color="primary" name={SowCommands.REJECT}
+                                  onClick={toggleModalReject}
+                                >Reject</ActivityButton>
                               }
                               {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
                                 <ActivityButton data-cy={SowCommands.ACCEPT_MILESTONE} block color="primary" name={SowCommands.ACCEPT_MILESTONE}
@@ -321,6 +323,7 @@ export const StatementOfWorkPage = () => {
           <AcceptSow modal={modalOpenAcceptSow} toggle={toggleModalAcceptSow} />
           <ClaimMilestoneMet modal={modalOpenClaimMilestoneMet} toggle={toggleModalClaimMilestoneMet} />
           <AcceptMilestone modal={modalOpenAcceptMilestone} toggle={toggleModalAcceptMilestone} />
+          <Reject modal={modalOpenReject} toggle={toggleModalReject} />
         </Container>
       }
     </>
