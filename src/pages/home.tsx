@@ -112,12 +112,12 @@ export const HomePage = () => {
   return (
     <>
       {!isLoading &&
-        <Container >
+        <Container>
           <Card className="mt-3 mt-lg-5 rounded" outline color="primary">
             <Row>
               <Col>
                 <Nav tabs>
-                  <NavItem >
+                  <NavItem>
                     <NavLink
                       active={activeTab === '1'}
                       onClick={() => { toggle('1'); }}
@@ -134,41 +134,45 @@ export const HomePage = () => {
                       </Row>
                     </NavLink>
                   </NavItem>
-                  <NavItem>
-                    <NavLink
-                      data-cy='customerTab'
-                      active={activeTab === '2'}
-                      onClick={() => { toggle('2'); }}
-                    >
-                      <Row className="mx-0">
-                        <Col className="px-1">
-                          Customer
+                  {sowsAsBuyer.length > 0 &&
+                    <NavItem>
+                      <NavLink
+                        data-cy='customerTab'
+                        active={activeTab === '2'}
+                        onClick={() => { toggle('2'); }}
+                      >
+                        <Row className="mx-0">
+                          <Col className="px-1">
+                            Customer
                         </Col>
-                        <Col className="p-0">
-                          {unreadMessages.asBuyer != 0 &&
-                            <Badge data-cy='unreadMessagesBuyer' pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
-                          }
+                          <Col className="p-0">
+                            {unreadMessages.asBuyer != 0 &&
+                              <Badge data-cy='unreadMessagesBuyer' pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
+                            }
+                          </Col>
+                        </Row>
+                      </NavLink>
+                    </NavItem>
+                  }
+                  {sowsAsArbitrator.length > 0 &&
+                    <NavItem>
+                      <NavLink
+                        active={activeTab === '3'}
+                        onClick={() => { toggle('3'); }}
+                      >
+                        <Row className="mx-0">
+                          <Col className="px-1">
+                            Arbitrator
                         </Col>
-                      </Row>
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      active={activeTab === '3'}
-                      onClick={() => { toggle('3'); }}
-                    >
-                      <Row className="mx-0">
-                        <Col className="px-1">
-                          Arbitrator
-                        </Col>
-                        <Col className="p-0">
-                          {unreadMessages.asBuyer != 0 &&
-                            <Badge data-cy='unreadMessagesBuyer' pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
-                          }
-                        </Col>
-                      </Row>
-                    </NavLink>
-                  </NavItem>
+                          <Col className="p-0">
+                            {unreadMessages.asBuyer != 0 &&
+                              <Badge data-cy='unreadMessagesBuyer' pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
+                            }
+                          </Col>
+                        </Row>
+                      </NavLink>
+                    </NavItem>
+                  }
                 </Nav>
               </Col>
               <Col className="d-flex justify-content-end">
