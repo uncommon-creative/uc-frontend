@@ -61,7 +61,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Accept the conditions</ModalHeader>
           <ModalBody>
             <Jumbotron name="conditions" id="conditions">
-              <CardText name="algoAddr">{t('transaction.conditions')}</CardText>
+              <CardText name="transactionConditions">{t('transaction.conditions')}</CardText>
             </Jumbotron>
             <FormGroup check>
               <Label check>
