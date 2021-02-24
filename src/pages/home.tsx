@@ -117,25 +117,23 @@ export const HomePage = () => {
             <Row>
               <Col>
                 <Nav tabs>
-                  {sowsAsSeller.length > 0 &&
-                    <NavItem>
-                      <NavLink
-                        active={activeTab === '1'}
-                        onClick={() => { toggle('1'); }}
-                      >
-                        <Row className="mx-0">
-                          <Col className="px-1">
-                            Freelance
+                  <NavItem>
+                    <NavLink
+                      active={activeTab === '1'}
+                      onClick={() => { toggle('1'); }}
+                    >
+                      <Row className="mx-0">
+                        <Col className="px-1">
+                          Freelance
                         </Col>
-                          <Col className="p-0">
-                            {unreadMessages.asSeller != 0 &&
-                              <Badge data-cy='unreadMessagesSeller' pill color={unreadMessages.asSeller == 0 ? "secondary" : "primary"}>{unreadMessages.asSeller}</Badge>
-                            }
-                          </Col>
-                        </Row>
-                      </NavLink>
-                    </NavItem>
-                  }
+                        <Col className="p-0">
+                          {unreadMessages.asSeller != 0 &&
+                            <Badge data-cy='unreadMessagesSeller' pill color={unreadMessages.asSeller == 0 ? "secondary" : "primary"}>{unreadMessages.asSeller}</Badge>
+                          }
+                        </Col>
+                      </Row>
+                    </NavLink>
+                  </NavItem>
                   {sowsAsBuyer.length > 0 &&
                     <NavItem>
                       <NavLink
