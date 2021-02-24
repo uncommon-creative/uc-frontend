@@ -42,6 +42,8 @@ export const currentSlice = createSlice({
     willCompleteTransactionAcceptMilestone: (state, action: PayloadAction<any>) => state,
     didCompleteTransactionAcceptMilestone: (state, action: PayloadAction<any>) => void (state.transactionAcceptMilestone = action.payload, state.transactionPage = 3),
     didCompleteTransactionAcceptMilestoneFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 4),
+
+    willReject: (state, action: PayloadAction<any>) => void (state.transactionPage = 2),
   }
 })
 
@@ -51,7 +53,8 @@ export const {
   willCreateMultiSigAddress, didCreateMultiSigAddress,
   willCompleteTransactionAcceptAndPayMnemonic, didCompleteTransactionAcceptAndPayMnemonic, didCompleteTransactionAcceptAndPayMnemonicFail,
   willSignTransactionClaimMilestoneMet, didSignTransactionClaimMilestoneMet,
-  didGetSignedMsig, willCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestoneFail
+  didGetSignedMsig, willCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestoneFail,
+  willReject
 } = actions
 export const selectors = {
   getTransactionPage: (state: any) => state.transaction.transactionPage,

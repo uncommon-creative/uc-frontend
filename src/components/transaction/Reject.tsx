@@ -46,7 +46,7 @@ export const Reject = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Accept the conditions to reject</ModalHeader>
           <ModalBody>
             <Jumbotron name="conditions" id="conditions">
-              <CardText name="algoAddr">{t('transaction.conditions')}</CardText>
+              <CardText name="transactionConditions">{t('transaction.conditions')}</CardText>
             </Jumbotron>
             <FormGroup check>
               <Label check>
@@ -60,11 +60,11 @@ export const Reject = ({ modal, toggle }: any) => {
           <ModalFooter>
             <ActivityButton data-cy={SowCommands.REJECT} disabled={!acceptedConditions} name={SowCommands.REJECT} color="primary" onClick={() => {
               dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REJECT }, sow: currentSow }));
+              dispatch(TransactionActions.willReject())
             }}>Reject</ActivityButton>
           </ModalFooter>
         </>
       }
-
       {transactionPage == 2 &&
         <>
           <ModalHeader toggle={toggle}>Rejected</ModalHeader>
@@ -76,7 +76,7 @@ export const Reject = ({ modal, toggle }: any) => {
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
+            <ActivityButton data-cy="closeTransaction" name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
           </ModalFooter>
         </>
       }
