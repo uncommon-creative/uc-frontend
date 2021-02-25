@@ -165,18 +165,18 @@ export const confirmTxAsBuyer = async (sow: any, tx: any) => {
   }
 }
 
-export const onAmountChecked = (id: any) => {
-  const subscription = loader('../graphql/onAmountChecked.gql')
-  console.log("in onAmountChecked id: ", id)
+// export function onAmountChecked(id: any) {
+//   const subscription = loader('../graphql/onAmountChecked.gql')
+//   console.log("in onAmountChecked id: ", id)
 
-  const result: any = (API.graphql(graphqlOperation(subscription, { id: id })) as any)
-    .subscribe({
-      next: ({ provider, value }: any) => {
-        console.log("onAmountChecked received subscribe with ", value);
-        return value.data.onAmountChecked
-      }
-    });
-}
+//   const result: any = (API.graphql(graphqlOperation(subscription, { id: id })) as any)
+//     .subscribe({
+//       next: function* ({ provider, value }: any) {
+//         console.log("onAmountChecked received subscribe with ", value);
+//         // return value.data.onAmountChecked
+//       }
+//     });
+// }
 
 export const algorandPollAccountAmount = async (id: any, account: any, amount: any) => {
   const query = loader('../graphql/algorandPollAccountAmount.gql')

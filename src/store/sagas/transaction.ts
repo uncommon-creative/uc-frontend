@@ -121,8 +121,8 @@ function* willCompleteTransactionAcceptAndPayQR(action: any) {
   yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayQR'));
   try {
     
-    const resultOnAmountChecked = yield call(TransactionApi.onAmountChecked, action.payload.currentSow.sow)
-    console.log("willCompleteTransactionAcceptAndPayQR resultOnAmountChecked: ", resultOnAmountChecked)
+    // const resultOnAmountChecked = yield call(TransactionApi.onAmountChecked, action.payload.currentSow.sow)
+    // console.log("willCompleteTransactionAcceptAndPayQR resultOnAmountChecked: ", resultOnAmountChecked)
 
     const resultAlgorandPollAccountAmount = yield call(TransactionApi.algorandPollAccountAmount, action.payload.currentSow.sow, action.payload.multiSigAddress, action.payload.toPay)
     console.log("willCompleteTransactionAcceptAndPayQR resultAlgorandPollAccountAmount: ", resultAlgorandPollAccountAmount)
@@ -145,7 +145,7 @@ function* willCompleteTransactionAcceptAndPayQR(action: any) {
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptAndPayQR ", error)
   }
-  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayQR'));
+  // yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayQR'));
 }
 
 function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
