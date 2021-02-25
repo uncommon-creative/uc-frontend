@@ -1,0 +1,9 @@
+subscription onAmountChecked($id: ID!) {
+  onAmountChecked(
+    id: $id
+  ){
+    id
+    status
+    error
+  }
+}
