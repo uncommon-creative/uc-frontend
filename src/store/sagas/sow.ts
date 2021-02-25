@@ -357,7 +357,6 @@ function* willGetSowAttachmentsList(action: any) {
 function* willGetSow(action: any) {
   console.log("in willGetSow with: ", action)
   yield put(UIActions.startActivityRunning("getSow"));
-  // yield put(UIActions.startLoading())
 
   try {
     const result = yield call(SowApi.getSow, action.payload.sow);
@@ -373,12 +372,12 @@ function* willGetSow(action: any) {
     if (Array.isArray(result.arbitrators)) {
       for (const arb of result.arbitrators) {
         fullArbitrators.push(yield call(ArbitratorApi.getArbitrator, arb))
+        yield call(willGetUserProfile, { user: arb })
       }
     }
     console.log("in willGetSow with fullArbitrators: ", fullArbitrators)
     yield put(SowActions.willConfirmArbitrators({ arbitrators: fullArbitrators, toggle: () => { } }))
 
-    // yield put(UIActions.stopLoading())
   } catch (error) {
     console.log("error in willGetSow ", error)
   }

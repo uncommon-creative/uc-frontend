@@ -94,8 +94,8 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               <Row>
                 <Col>
                   <Card className="flex-fill" outline onClick={() => {
-                    dispatch(TransactionActions.goToTransactionPage(3))
-                    // dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSigAddress.address, toPay: payment.toPay }))
+                    // dispatch(TransactionActions.goToTransactionPage(3))
+                    dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, toPay: payment.toPay, currentSow: currentSow }))
                   }}>
                     <CardBody className="text-center">
                       <CardSubtitle tag="h5" className="mb-2 text-muted text-center">QR</CardSubtitle>
@@ -169,7 +169,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayQR' name="willCompleteTransactionAcceptAndPayQR" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, toPay: payment.toPay, currentSow: currentSow }))
+              // dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, toPay: payment.toPay, currentSow: currentSow }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -209,7 +209,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Fund the wallet with AlgoSigner</ModalHeader>
           <ModalBody className="text-center">
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
 
             <FontAwesomeIcon icon={faExclamationTriangle} size="5x" />
           </ModalBody>
@@ -228,7 +228,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Wallet funded</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionCompleted')}
@@ -245,7 +245,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionFailed', { errorMessage: transactionError })}

@@ -120,23 +120,27 @@ function* willCompleteTransactionAcceptAndPayQR(action: any) {
   console.log("in willCompleteTransactionAcceptAndPayQR with: ", action)
   yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayQR'));
   try {
-    const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.currentSow.arbitrator)
-    console.log("willCompleteTransactionAcceptAndPayMnemonic resultSetSowArbitrator: ", resultSetSowArbitrator)
     
-    const result = yield call(TransactionApi.algorandPollAccountAmount, action.payload.multiSigAddress, action.payload.toPay)
-    console.log("willCompleteTransactionAcceptAndPayQR result: ", result)
+    const resultOnAmountChecked = yield call(TransactionApi.onAmountChecked, action.payload.currentSow.sow)
+    console.log("willCompleteTransactionAcceptAndPayQR resultOnAmountChecked: ", resultOnAmountChecked)
 
-    if (result) {
-      console.log("willCompleteTransactionAcceptAndPayQR result success: ", result)
-      yield call(willSendCommandChat, { payload: { values: { command: SowCommands.ACCEPT_AND_PAY }, sow: action.payload.currentSow } })
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPayQR(result))
-    }
-    else {
-      console.log("willCompleteTransactionAcceptAndPayQR result fail: ", result)
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPayQRFail("Not enough balance on the wallet"))
-      yield put(NotificationActions.willShowNotification({ message: "Not enough balance on the wallet", type: "danger" }));
-    }
-    yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
+    const resultAlgorandPollAccountAmount = yield call(TransactionApi.algorandPollAccountAmount, action.payload.currentSow.sow, action.payload.multiSigAddress, action.payload.toPay)
+    console.log("willCompleteTransactionAcceptAndPayQR resultAlgorandPollAccountAmount: ", resultAlgorandPollAccountAmount)
+
+    // if (result) {
+    //   console.log("willCompleteTransactionAcceptAndPayQR result success: ", result)
+    //   const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.currentSow.arbitrator)
+    //   console.log("willCompleteTransactionAcceptAndPayQR resultSetSowArbitrator: ", resultSetSowArbitrator)
+
+    //   yield call(willSendCommandChat, { payload: { values: { command: SowCommands.ACCEPT_AND_PAY }, sow: action.payload.currentSow } })
+    //   yield put(TransactionActions.didCompleteTransactionAcceptAndPayQR(result))
+    // }
+    // else {
+    //   console.log("willCompleteTransactionAcceptAndPayQR result fail: ", result)
+    //   yield put(TransactionActions.didCompleteTransactionAcceptAndPayQRFail("Not enough balance on the wallet"))
+    //   yield put(NotificationActions.willShowNotification({ message: "Not enough balance on the wallet", type: "danger" }));
+    // }
+    // yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
 
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptAndPayQR ", error)

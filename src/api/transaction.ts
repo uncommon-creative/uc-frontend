@@ -165,11 +165,27 @@ export const confirmTxAsBuyer = async (sow: any, tx: any) => {
   }
 }
 
-export const algorandPollAccountAmount = async (account: any, amount: any) => {
+export const onAmountChecked = (id: any) => {
+  const subscription = loader('../graphql/onAmountChecked.gql')
+  console.log("in onAmountChecked id: ", id)
+
+  const result: any = (API.graphql(graphqlOperation(subscription, { id: id })) as any)
+    .subscribe({
+      next: ({ provider, value }: any) => {
+        console.log("onAmountChecked received subscribe with ", value);
+        return value.data.onAmountChecked
+      }
+    });
+}
+
+export const algorandPollAccountAmount = async (id: any, account: any, amount: any) => {
   const query = loader('../graphql/algorandPollAccountAmount.gql')
+  console.log("in algorandPollAccountAmount id: ", id)
+  console.log("in algorandPollAccountAmount account: ", account)
+  console.log("in algorandPollAccountAmount amount: ", amount)
 
   try {
-    const result: any = await API.graphql(graphqlOperation(query, { account: account, amount: amount }))
+    const result: any = await API.graphql(graphqlOperation(query, { id: id, account: account, amount: amount }))
     console.log("algorandPollAccountAmount result: ", result)
     return result.data.algorandPollAccountAmount
   } catch (error) {
