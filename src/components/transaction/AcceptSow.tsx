@@ -11,9 +11,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQrcode, faKey, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import qrcode from 'qrcode-generator';
 
+import { API, graphqlOperation } from 'aws-amplify';
+import { loader } from 'graphql.macro';
+
 import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
 import { actions as ChatActions, selectors as ChatSelectors } from '../../store/slices/chat'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
+import { actions as NotificationActions } from '../../store/slices/notification'
+import { actions as UIActions } from '../../store/slices/ui'
 import { ActivityButton } from '../common/ActivityButton';
 
 export const AcceptSow = ({ modal, toggle }: any) => {
@@ -28,7 +33,6 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const params = useSelector(TransactionSelectors.getParams)
   const payment = useSelector(TransactionSelectors.getPayment)
-
 
   const typeNumber: TypeNumber = 4;
   const errorCorrectionLevel: ErrorCorrectionLevel = 'L';
@@ -53,6 +57,34 @@ export const AcceptSow = ({ modal, toggle }: any) => {
       dispatch(TransactionActions.goToTransactionPage(1))
     }
   }, [modal])
+
+  React.useEffect(() => {
+    if (transactionPage == 3) {
+      const subscription = loader('../../graphql/onAmountChecked.gql')
+      console.log("in onAmountChecked id: ", currentSow.sow)
+
+      const result: any = (API.graphql(graphqlOperation(subscription, { id: currentSow.sow })) as any)
+        .subscribe({
+          next: ({ provider, value }: any) => {
+            console.log("onAmountChecked received subscribe with ", value);
+
+            if (value.data.onAmountChecked.status === "AMOUNT_OK") {
+              console.log("onAmountChecked value success: ", value)
+              dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentSow.arbitrator }))
+              dispatch(TransactionActions.didCompleteTransactionAcceptAndPayQR(value.data))
+            }
+            else if (value.data.onAmountChecked.status === "AMOUNT_NOT_OK") {
+              console.log("onAmountChecked value fail: ", value)
+              dispatch(TransactionActions.didCompleteTransactionAcceptAndPayQRFail("Not enough balance on the wallet."))
+              dispatch(NotificationActions.willShowNotification({ message: "Not enough balance on the wallet", type: "danger" }));
+            }
+
+            dispatch(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayQR'));
+            dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
+          }
+        });
+    }
+  }, [transactionPage])
 
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl">
@@ -94,8 +126,8 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               <Row>
                 <Col>
                   <Card className="flex-fill" outline onClick={() => {
-                    dispatch(TransactionActions.goToTransactionPage(3))
-                    // dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSigAddress.address, toPay: payment.toPay }))
+                    // dispatch(TransactionActions.goToTransactionPage(3))
+                    dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, toPay: payment.toPay, currentSow: currentSow }))
                   }}>
                     <CardBody className="text-center">
                       <CardSubtitle tag="h5" className="mb-2 text-muted text-center">QR</CardSubtitle>
@@ -169,7 +201,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayQR' name="willCompleteTransactionAcceptAndPayQR" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, toPay: payment.toPay, currentSow: currentSow }))
+              // dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, toPay: payment.toPay, currentSow: currentSow }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -209,7 +241,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Fund the wallet with AlgoSigner</ModalHeader>
           <ModalBody className="text-center">
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
 
             <FontAwesomeIcon icon={faExclamationTriangle} size="5x" />
           </ModalBody>
@@ -228,7 +260,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Wallet funded</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionCompleted')}
@@ -245,7 +277,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionFailed', { errorMessage: transactionError })}

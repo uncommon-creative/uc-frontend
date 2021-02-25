@@ -1,9 +1,15 @@
 query algorandPollAccountAmount(
-  $account: String
+  $id: ID!,
+  $account: String,
   $amount: Int
 ){
   algorandPollAccountAmount(
+    id: $id
     account: $account
     amount: $amount
-  ) 
+  ) {
+    id
+    status
+    error
+  }
 }

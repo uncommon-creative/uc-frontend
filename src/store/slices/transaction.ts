@@ -27,7 +27,7 @@ export const currentSlice = createSlice({
     willSetSowArbitrator: (state, action: PayloadAction<any>) => state,
     didSetSowArbitrator: (state, action: PayloadAction<any>) => state,
 
-    willCompleteTransactionAcceptAndPayQR: (state, action: PayloadAction<any>) => state,
+    willCompleteTransactionAcceptAndPayQR: (state, action: PayloadAction<any>) => void (state.transactionPage = 3),
     didCompleteTransactionAcceptAndPayQR: (state, action: PayloadAction<any>) => void (state.transactionPage = 6),
     didCompleteTransactionAcceptAndPayQRFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
 
