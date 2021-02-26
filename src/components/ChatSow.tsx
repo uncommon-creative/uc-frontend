@@ -48,9 +48,9 @@ export const ChatSow = ({ currentSow }: any) => {
 
   return (
     <>
-      <Row id='chatMessages' style={{ overflow: 'scroll', minHeight: '200px', maxHeight: '500px' }}>
-        <Col className="col-12">
-          <Card >
+      <Row id='chatMessages' style={{ overflow: 'auto', minHeight: '200px', maxHeight: '500px' }}>
+        <Col className="col-12 p-0">
+          <Card>
             {
               messages.map((msg: any, index: any) => {
                 return (
@@ -74,30 +74,32 @@ export const ChatSow = ({ currentSow }: any) => {
                             : msg.attachmentMessage.key.split('/').pop()
                       }
                       date={new Date(msg.createdAt)}
-                      data={msg.type == 'ATTACHMENT' ? {
-                        uri: msg.attachmentMessage.downloadUrl,
-                        status: {
-                          click: true,
-                          loading: 0,
+                      data={msg.type == 'ATTACHMENT' ?
+                        {
+                          uri: msg.attachmentMessage.downloadUrl,
+                          status: {
+                            click: true,
+                            loading: 0,
+                          }
                         }
+                        : {}
                       }
-                        : {}}
                       onDownload={(event: any) => {
                         window.open(msg.attachmentMessage.downloadUrl);
                       }}
                     />
                   </>
                 )
-              }
-              )
+              })
             }
           </Card>
         </Col>
       </Row>
-
       <Row>
-        <Col className="col-12">
+        <Col className="col-12 px-0">
           <InputChatElements
+            inputStyle={{ overflow: 'auto', maxHeight: '300px' }}
+            className="border"
             value={message}
             placeholder="Type here..."
             multiline={true}
