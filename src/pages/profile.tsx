@@ -13,12 +13,20 @@ import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 
+import { configuration } from '../config'
+import { actions as ProfileActions, selectors as ProfileSelectors } from '../store/slices/profile'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
-import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { ActivityButton } from '../components/common/ActivityButton'
 import { TagsInput } from '../components/TagsInput';
 import { selectors as UISelectors } from '../store/slices/ui'
+import Portrait from '../images/Portrait.png'
+
+const ProfileSchema = Yup.object().shape({
+  bio: Yup.string()
+    .min(3, 'Too Short!')
+    .required('Required'),
+});
 
 const ArbitratorSettingsSchema = Yup.object().shape({
   enabled: Yup.bool()
@@ -45,9 +53,6 @@ const ArbitratorSettingsSchema = Yup.object().shape({
         .min(1, 'At least one tag required!')
         .required('Required')
     }),
-
-
-
 });
 
 export const ProfilePage = () => {
@@ -56,14 +61,17 @@ export const ProfilePage = () => {
   const { t, i18n } = useTranslation();
   const isLoading = useSelector(UISelectors.isLoading)
   let history = useHistory();
+  const userAttributes = useSelector(ProfileSelectors.getProfile)
   const myArbitratorSettings = useSelector(ArbitratorSelectors.getMyArbitratorSettings)
   const user = useSelector(AuthSelectors.getUser)
+  const [userBio, setuserBio] = React.useState(userAttributes.bio);
   const [dropdownCurrencyOpen, setDropdownCurrencyOpen] = React.useState(false);
   const [switchEnabled, setSwitchEnabled] = React.useState(myArbitratorSettings ? myArbitratorSettings.enabled : false);
   const [feeCurrency, setFeeCurrency] = React.useState("ALGO");
 
   const toggleDropDownCurrency = () => setDropdownCurrencyOpen(!dropdownCurrencyOpen);
   const toggleSwitchEnabled = (switchEnabled: any) => setSwitchEnabled(switchEnabled);
+  const addDefaultSrc = (ev: any) => { ev.target.src = Portrait }
 
   return (
     <>
@@ -72,6 +80,69 @@ export const ProfilePage = () => {
           <Card>
             <CardBody>
               <CardTitle tag="h5" className="text-center">Profile</CardTitle>
+              <Formik
+                enableReinitialize={true}
+                initialValues={{
+                  bio: userBio
+                }}
+                validationSchema={ProfileSchema}
+                validateOnBlur={true}
+                onSubmit={values => {
+                  console.log('in onsubmit with: ', values)
+                  dispatch(ProfileActions.willSubmitProfile({ profile: values }));
+                }}
+              >
+                {({ errors, touched, setFieldValue, values }) => {
+                  return (
+                    <Form>
+                      {values && console.log("values profile: ", values)}
+                      <Row>
+                        <Col className="col-3 text-center">
+                          <FormGroup>
+                            <Label for="portrait">
+                              <img height="100" alt="Portrait" onError={addDefaultSrc}
+                                src={`${configuration.dev.host}/resources/${user.username}/portrait`}
+                              />
+                            </Label>
+
+                            <Input type="file" name="file" id="portrait" style={{ display: "none" }} accept="image/*"
+                              onChange={(event: any) => {
+                                console.log("event.target.files: ", event.target.files)
+                                if (event.target.files.length) {
+                                  dispatch(ProfileActions.willUploadPortrait({ user: user.username, portrait: event.target.files[0] }))
+                                }
+                              }}
+                            />
+                            {/* <FormText color="muted">
+                              This is some placeholder block-level help text for the above input.
+                              It's a bit lighter and easily wraps to a new line.
+                            </FormText> */}
+                          </FormGroup>
+                        </Col>
+                        <Col className="col-9">
+                          <FormGroup>
+                            <Label for="profileBio">Bio</Label>
+                            <Input data-cy="profileBio" value={userBio} type="textarea" name="profileBio" id="profileBio" placeholder="profileBio"
+                              onChange={(event: any) => {
+                                setuserBio(event.target.value)
+                                setFieldValue('bio', event.target.value)
+                              }}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <ActivityButton data-cy='submitProfile' type="submit" name="submitProfile" color="primary" block>Save profile</ActivityButton>
+                        </Col>
+                      </Row>
+                    </Form>
+                  )
+                }}
+              </Formik>
+
+
+
             </CardBody>
 
             <Jumbotron>
@@ -169,7 +240,7 @@ export const ProfilePage = () => {
                       </FormGroup>
                       <Row>
                         <Col>
-                          <ActivityButton data-cy='arbitratorSettingsSubmit'type="submit" name="saveArbitratorSettings" color="primary" block>Save arbitrator settings</ActivityButton>
+                          <ActivityButton data-cy='arbitratorSettingsSubmit' type="submit" name="saveArbitratorSettings" color="primary" block>Save arbitrator settings</ActivityButton>
                         </Col>
                       </Row>
                     </Form>

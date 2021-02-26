@@ -35,7 +35,8 @@ export const SowAttachments = ({ currentSow }: any) => {
             if (event.target.files.length) {
               dispatch(SowActions.willPrepareUploadAttachment({ sow: currentSow, attachment: event.target.files[0], username: user.username, newAttachments: newAttachments }))
             }
-          }} />
+          }}
+        />
       </FormGroup>
       {currentSow.status == SowStatus.DRAFT && newAttachments.map((element: any, index: any) => {
         return (

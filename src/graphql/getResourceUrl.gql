@@ -1,0 +1,11 @@
+query getResourceUrl (
+  $key: String,
+  $expires: Int,
+  $type: String
+) {
+  getResourceUrl(
+    key: $key
+    expires: $expires
+    type: $type
+  )
+}

@@ -18,12 +18,19 @@ query getProfileData($user: ID){
     name: "email"
   ){
     value
-  }  
+  }
 
   public_key: getProfileData( 
     user: $user
     name: "public_key"
   ){
     value
-  }  
+  }
+
+  bio: getProfileData( 
+    user: $user
+    name: "bio"
+  ){
+    value
+  }
 }

@@ -24,7 +24,8 @@ export const currentSlice = createSlice({
     willSaveArbitratorSettings: (state, action: PayloadAction<any>) => state,
 
 
-    willViewCurrentArbitrator: (state, action: PayloadAction<any>) => void (state.currentArbitrator = action.payload),
+    willViewCurrentArbitrator: (state, action: PayloadAction<any>) => state,
+    didViewCurrentArbitrator: (state, action: PayloadAction<any>) => void (state.currentArbitrator = action.payload),
     willSelectArbitrator: (state, action: PayloadAction<any>) => void (state.currentSelectedArbitrators = state.currentSelectedArbitrators.concat(action.payload)),
     willDeselectArbitrator: (state, action: PayloadAction<any>) => void (state.currentSelectedArbitrators.splice(action.payload, 1)),
     willSelectThreeArbitrators: (state, action: PayloadAction<any>) => void (state.currentSelectedArbitrators = action.payload),
