@@ -289,7 +289,7 @@ export const CreateStatementOfWorkPage = () => {
                           <Row name="arbitrators" id="arbitrators">
                             {currentArbitrators.map((arbitrator: any, index: any) => {
                               return (
-                                <Col className="col-md-4 col-12">
+                                <Col className="col-md-4 col-12 d-flex">
                                   {/* <ArbitratorDetail arbitrator={arbitrator} /> */}
                                   <ArbitratorDetailMD arbitrator={arbitrator} />
                                 </Col>

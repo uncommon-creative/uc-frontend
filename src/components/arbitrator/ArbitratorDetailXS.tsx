@@ -9,9 +9,10 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
+import { configuration } from '../../config'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
 import { ArbitratorDetailLG } from './ArbitratorDetailLG'
-import Avatar from '../../images/Avatar.png'
+import Portrait from '../../images/Portrait.png'
 
 export const ArbitratorDetailXS = ({ arbitrator, index }: any) => {
 
@@ -22,6 +23,7 @@ export const ArbitratorDetailXS = ({ arbitrator, index }: any) => {
   console.log("in ArbitratorDetailXS", arbitrator)
 
   const toggleModal = () => setModalOpen(!modalOpen);
+  const addDefaultSrc = (ev: any) => { ev.target.src = Portrait }
 
   return (
     <>
@@ -34,8 +36,10 @@ export const ArbitratorDetailXS = ({ arbitrator, index }: any) => {
           dispatch(ArbitratorActions.willDeselectArbitrator(index))
         }} />
       </Col> */}
-        <Col className="col-3 p-0">
-          <img src={Avatar} width="45" alt="Avatar" />
+        <Col className="col-3 p-0 text-center">
+          <img height="45" alt="Portrait" onError={addDefaultSrc}
+            src={`${configuration.dev.host}/resources/${arbitrator.user}/portrait`}
+          />
           {!selectingOneArbitrator &&
             <CardImgOverlay className="p-0">
               <Button close className="position-absolute top-0 start-0 translate-middle" onClick={() => {

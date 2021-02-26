@@ -12,9 +12,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar } from '@fortawesome/free-solid-svg-icons'
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons'
 
+import { configuration } from '../../config'
 import { ArbitratorDetailLG } from './ArbitratorDetailLG'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
-import Avatar from '../../images/Avatar.png'
+import Portrait from '../../images/Portrait.png'
 
 export const ArbitratorDetailMD = ({ arbitrator }: any) => {
 
@@ -23,6 +24,7 @@ export const ArbitratorDetailMD = ({ arbitrator }: any) => {
   const [modalOpen, setModalOpen] = React.useState(false);
 
   const toggleModal = () => setModalOpen(!modalOpen);
+  const addDefaultSrc = (ev: any) => { ev.target.src = Portrait }
 
   return (
     <>
@@ -33,7 +35,9 @@ export const ArbitratorDetailMD = ({ arbitrator }: any) => {
         <CardBody className="mx-auto">
           <Row>
             <Col>
-              <img src={Avatar} width="100" alt="Avatar" />
+              <img height="100" alt="Portrait" onError={addDefaultSrc}
+                src={`${configuration.dev.host}/resources/${arbitrator.user}/portrait`}
+              />
             </Col>
           </Row>
           <Row>

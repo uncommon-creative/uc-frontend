@@ -28,6 +28,12 @@ export const currentSlice = createSlice({
       console.log("in didGetUserProfile with ", action)
       void (state.users[action.payload.userID] = action.payload.userData)
     },
+
+    willUploadPortrait: (state, action: PayloadAction<any>) => state,
+    didUploadPortrait: (state, action: PayloadAction<any>) => state,
+
+    willSubmitProfile: (state, action: PayloadAction<any>) => state,
+    didSubmitProfile: (state, action: PayloadAction<any>) => state,
   }
 })
 
@@ -35,7 +41,8 @@ export const { actions, reducer }: any = currentSlice
 export const {
   willGoToProfile,
   willAddPublicKey, willRetrieveProfileData, didRetrieveProfileData, didGenerateAlgoAccount,
-  willGetUserProfile, didGetUserProfile
+  willGetUserProfile, didGetUserProfile,
+  willUploadPortrait, didUploadPortrait, willSubmitProfile, didSubmitProfile
 } = actions
 export const selectors = {
   getUsers: (state: any) => state.profile.users,

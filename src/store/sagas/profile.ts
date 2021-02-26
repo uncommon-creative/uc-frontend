@@ -8,6 +8,8 @@ import { actions as NotificationActions } from '../slices/notification'
 import * as ServiceApi from '../../api/service'
 import { actions as UIActions } from '../slices/ui'
 import { push } from 'connected-react-router'
+
+import { willGetArbitrator } from './arbitrator'
 const algosdk = require('algosdk');
 
 export function* sagas() {
@@ -16,15 +18,15 @@ export function* sagas() {
   yield takeLatest(ProfileActions.willAddPublicKey.type, willAddPublicKey)
   yield takeLatest(AuthActions.didLoginUserSuccess.type, willRetrieveProfileData)
   yield takeEvery(ProfileActions.willGetUserProfile.type, willGetUserProfile)
+  yield takeEvery(ProfileActions.willUploadPortrait.type, willUploadPortrait)
+  yield takeEvery(ProfileActions.willSubmitProfile.type, willSubmitProfile)
 }
 
 function* willGoToProfile(action: any) {
   console.log("in willGoToProfile with: ", action)
 
   try {
-    const result = yield call(ArbitratorApi.getArbitrator, action.payload.user);
-    console.log("result willGetArbitrator: ", result)
-    yield put(ArbitratorActions.didGetArbitrator(result))
+    yield call(willGetArbitrator, action)
 
     action.payload.history.push('/profile')
   } catch (error) {
@@ -34,7 +36,6 @@ function* willGoToProfile(action: any) {
 
 function* willRetrieveProfileData(action: any) {
   console.log('in willRetrieveProfileData with ', action);
-  // yield put(UIActions.startLoading())
 
   try {
     const result = yield call(ServiceApi.getProfileData, null);
@@ -47,7 +48,6 @@ function* willRetrieveProfileData(action: any) {
       console.log('with public_key')
     }
 
-    // yield put(UIActions.stopLoading())
   } catch (error) {
     console.log('Error retriving profile data', error);
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
@@ -71,7 +71,7 @@ function* willAddPublicKey(action: any) {
 }
 
 function* willGenerateAlgoAccount() {
-  console.log("in generateAlgoAccount")
+  console.log("in willGenerateAlgoAccount")
   try {
     const account = algosdk.generateAccount();
     console.log("result account: ", account)
@@ -95,4 +95,35 @@ export function* willGetUserProfile(action: any) {
   } catch (error) {
     console.log("error willGetUserProfile: ", error)
   }
+}
+
+export function* willUploadPortrait(action: any) {
+  console.log("in willUploadPortrait with: ", action)
+
+  try {
+    const resultUrl = yield call(ServiceApi.getResourceUrl, "portrait", 600, action.payload.portrait.type)
+    console.log("result willUploadPortrait: ", resultUrl)
+
+    yield call(ServiceApi.uploadFileToS3, resultUrl, action.payload.portrait)
+
+    // yield put(ProfileActions.didUploadPortrait(result));
+  } catch (error) {
+    console.log("willUploadPortrait error", error)
+  }
+}
+
+export function* willSubmitProfile(action: any) {
+  console.log("in willSubmitProfile with: ", action)
+  yield put(UIActions.startActivityRunning("submitProfile"));
+
+  try {
+    const result = yield call(ServiceApi.putProfileData, "bio", action.payload.profile.bio)
+    console.log("willSubmitProfile result", result)
+
+    yield put(ProfileActions.didSubmitProfile(result));
+    yield put(NotificationActions.willShowNotification({ message: "Profile updated", type: "success" }));
+  } catch (error) {
+    console.log("willSubmitProfile error", error)
+  }
+  yield put(UIActions.stopActivityRunning("submitProfile"));
 }

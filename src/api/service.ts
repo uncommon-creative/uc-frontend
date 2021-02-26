@@ -1,6 +1,7 @@
 import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
 import * as _ from 'lodash';
+const axios = require('axios')
 
 export const getProfileData = async (user: any) => {
   const query = loader('../graphql/getProfileData.gql');
@@ -29,5 +30,29 @@ export const putProfileData = async (name: string, value: string) => {
   } catch (error) {
     console.log("putProfileData API error: ", error)
     throw error
+  }
+}
+
+export const getResourceUrl = async (key: any, expires: any, type: any) => {
+  const query = loader('../graphql/getResourceUrl.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(query, { key: key, expires: expires, type: type }))
+    console.log("getResourceUrl result: ", result)
+    return result.data.getResourceUrl
+  } catch (error) {
+    console.log("getResourceUrl API error: ", error)
+    throw error
+  }
+}
+
+export const uploadFileToS3 = async (url: any, file: any) => {
+  try {
+    const axiosResponse = await axios.put(url, file, {
+      headers: { 'Content-Type': file.type, 'x-amz-acl': 'private' }
+    });
+    console.log("uploadFileToS3 axiosResponse: ", axiosResponse)
+  } catch (error) {
+    console.log(error)
   }
 }

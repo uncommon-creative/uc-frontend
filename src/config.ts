@@ -17,5 +17,6 @@ export const configuration: any = {
     'aws_appsync_graphqlEndpoint': 'https://na5y3uyopje3rbqfvb6o6kscli.appsync-api.eu-west-1.amazonaws.com/graphql',
     'aws_appsync_region': 'eu-west-1',
     'aws_appsync_authenticationType': 'AMAZON_COGNITO_USER_POOLS',
+    'host': 'https://app.uncommon-demo.com'
   }
 }

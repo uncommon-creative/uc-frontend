@@ -6,18 +6,19 @@ import { selectors as ProfileSelectors } from '../slices/profile'
 import { selectors as AuthSelectors } from '../slices/auth'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as UIActions } from '../slices/ui'
+import { willGetUserProfile } from '../sagas/profile'
 
 export function* sagas() {
   yield takeLatest(ArbitratorActions.willGetArbitrator.type, willGetArbitrator)
   yield takeLatest(ArbitratorActions.willGetArbitratorsList.type, willGetArbitratorsList)
   yield takeLatest(ArbitratorActions.willGetFullArbitratorsList.type, willGetFullArbitratorsList)
   yield takeLatest(ArbitratorActions.willSaveArbitratorSettings.type, willSaveArbitratorSettings)
+  yield takeLatest(ArbitratorActions.willViewCurrentArbitrator.type, willViewCurrentArbitrator)
   console.log('in arbitrator saga');
 }
 
-function* willGetArbitrator(action: any) {
+export function* willGetArbitrator(action: any) {
   console.log("in willGetArbitrator with: ", action)
-  // yield put(UIActions.startLoading())
 
   try {
     const result = yield call(ArbitratorApi.getArbitrator, action.payload.user);
@@ -29,7 +30,6 @@ function* willGetArbitrator(action: any) {
   } catch (error) {
     console.log("error in willGetArbitrator ", error)
   }
-  // yield put(UIActions.stopLoading())
 }
 
 function* willGetArbitratorsList() {
@@ -87,4 +87,17 @@ function* willSaveArbitratorSettings(action: any) {
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning("saveArbitratorSettings"));
+}
+
+function* willViewCurrentArbitrator(action: any) {
+  console.log("in willViewCurrentArbitrator with ", action)
+
+  try {
+    yield call(willGetUserProfile, { user: action.payload.user })
+
+    yield put(ArbitratorActions.didViewCurrentArbitrator(action.payload))
+  } catch (error) {
+    console.log("error in willViewCurrentArbitrator ", error)
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
+  }
 }
