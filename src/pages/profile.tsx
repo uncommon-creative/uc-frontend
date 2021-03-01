@@ -86,7 +86,7 @@ export const ProfilePage = () => {
             <Formik
               enableReinitialize={true}
               initialValues={{
-                bio: userBio,
+                bio: userBio ? userBio : '',
                 enabled: myArbitratorSettings && myArbitratorSettings.hasOwnProperty('enabled') ? myArbitratorSettings.enabled : switchEnabled,
                 feePercentage: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.perc : '',
                 feeFlat: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.flat : '',
@@ -97,16 +97,14 @@ export const ProfilePage = () => {
               validateOnBlur={true}
               onSubmit={values => {
                 console.log('in onsubmit with: ', values)
-                dispatch(ProfileActions.willSubmitProfile({ profile: values }));
-                dispatch(ArbitratorActions.willSaveArbitratorSettings({ arbitratorSettings: values, history: history }));
+                dispatch(ProfileActions.willSubmitProfile(values));
+                // dispatch(ArbitratorActions.willSaveArbitratorSettings({ arbitratorSettings: values, history: history }));
               }}
             >
               {({ errors, touched, setFieldValue, values }) => {
                 return (
                   <Form><CardBody>
                     <CardTitle tag="h5" className="text-center">Profile</CardTitle>
-
-
                     <Row>
                       <Col className="col-3 text-center">
                         <FormGroup>
@@ -136,12 +134,15 @@ export const ProfilePage = () => {
                       <Col className="col-9">
                         <FormGroup>
                           <Label for="profileBio">Bio</Label>
-                          <Input data-cy="profileBio" value={userBio} type="textarea" name="profileBio" id="profileBio" placeholder="profileBio"
+                          <Input data-cy="profileBio" value={userBio} invalid={errors.bio && touched.bio ? true : false} type="textarea" name="profileBio" id="profileBio" placeholder="profileBio"
                             onChange={(event: any) => {
                               setuserBio(event.target.value)
                               setFieldValue('bio', event.target.value)
                             }}
                           />
+                          {errors.bio && touched.bio ? (
+                            <FormFeedback>{errors.bio}</FormFeedback>
+                          ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -184,7 +185,7 @@ export const ProfilePage = () => {
                                     }}
                                   >
                                     ALGO
-                              </DropdownItem>
+                                  </DropdownItem>
                                   <DropdownItem disabled={feeCurrency == "USDC"}
                                     onClick={() => {
                                       setFieldValue('currency', "USDC")
@@ -192,7 +193,7 @@ export const ProfilePage = () => {
                                     }}
                                   >
                                     USDC
-                              </DropdownItem>
+                                  </DropdownItem>
                                 </DropdownMenu>
                               </InputGroupButtonDropdown>
                               {errors.feeFlat && touched.feeFlat ? (

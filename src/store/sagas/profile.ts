@@ -4,12 +4,14 @@ import { actions as ProfileActions, selectors as ProfileSelectors } from '../sli
 import { actions as AuthActions } from '../slices/auth'
 import * as ArbitratorApi from '../../api/arbitrator'
 import { actions as ArbitratorActions } from '../slices/arbitrator'
+import { willSaveArbitratorSettings } from './arbitrator'
 import { actions as NotificationActions } from '../slices/notification'
 import * as ServiceApi from '../../api/service'
 import { actions as UIActions } from '../slices/ui'
 import { push } from 'connected-react-router'
 
 import { willGetArbitrator } from './arbitrator'
+
 const algosdk = require('algosdk');
 
 export function* sagas() {
@@ -124,10 +126,9 @@ export function* willSubmitProfile(action: any) {
   yield put(ProfileActions.startLoadingProfile())
 
   try {
-    const result = yield call(ServiceApi.putProfileData, "bio", action.payload.profile.bio)
-    console.log("willSubmitProfile result", result)
+    yield call(willSaveProfile, action)
+    yield call(willSaveArbitratorSettings, action)
 
-    yield put(ProfileActions.didSubmitProfile(result));
     yield put(NotificationActions.willShowNotification({ message: "Profile updated", type: "success" }));
   } catch (error) {
     console.log("willSubmitProfile error", error)
@@ -135,4 +136,18 @@ export function* willSubmitProfile(action: any) {
   }
   yield put(UIActions.stopActivityRunning("submitProfile"));
   yield put(ProfileActions.stopLoadingProfile())
+}
+
+function* willSaveProfile(action: any) {
+  console.log("in willSaveProfile with: ", action)
+
+  try {
+    const result = yield call(ServiceApi.putProfileData, "bio", action.payload.bio)
+    console.log("willSaveProfile result", result)
+
+    yield put(ProfileActions.didSaveProfile(result));
+  } catch (error) {
+    console.log("willSaveProfile error", error)
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
+  }
 }

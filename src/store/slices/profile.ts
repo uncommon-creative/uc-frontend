@@ -36,6 +36,9 @@ export const currentSlice = createSlice({
 
     willSubmitProfile: (state, action: PayloadAction<any>) => state,
     didSubmitProfile: (state, action: PayloadAction<any>) => state,
+
+    willSaveProfile: (state, action: PayloadAction<any>) => state,
+    didSaveProfile: (state, action: PayloadAction<any>) => state,
   }
 })
 

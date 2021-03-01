@@ -59,28 +59,29 @@ function* willGetFullArbitratorsList() {
   }
 }
 
-function* willSaveArbitratorSettings(action: any) {
+export function* willSaveArbitratorSettings(action: any) {
   console.log("in willSaveArbitratorSettings with ", action)
   yield put(UIActions.startActivityRunning("submitProfile"));
 
   const myArbitratorSettings = yield select(ArbitratorSelectors.getMyArbitratorSettings)
   const user = yield select(AuthSelectors.getUser)
 
-  const tagsParsed = action.payload.arbitratorSettings.tags.map((tag: any) => JSON.stringify(tag))
+  const tagsParsed = action.payload.tags.map((tag: any) => JSON.stringify(tag))
   const fee = {
-    flat: action.payload.arbitratorSettings.feeFlat != '' ? action.payload.arbitratorSettings.feeFlat : 0,
-    perc: action.payload.arbitratorSettings.feePercentage != '' ? action.payload.arbitratorSettings.feePercentage : 0
+    flat: action.payload.feeFlat != '' ? action.payload.feeFlat : 0,
+    perc: action.payload.feePercentage != '' ? action.payload.feePercentage : 0
   }
 
   try {
     if (myArbitratorSettings && user.username === myArbitratorSettings.user) {
-      const result = yield call(ArbitratorApi.updateArbitrator, action.payload.arbitratorSettings.enabled, fee, action.payload.arbitratorSettings.currency, tagsParsed)
+      const result = yield call(ArbitratorApi.updateArbitrator, action.payload.enabled, fee, action.payload.currency, tagsParsed)
       console.log("update arbitrator success result: ", result)
     }
     else {
-      const result = yield call(ArbitratorApi.addArbitrator, fee, action.payload.arbitratorSettings.currency, tagsParsed)
+      const result = yield call(ArbitratorApi.addArbitrator, fee, action.payload.currency, tagsParsed)
       console.log("add arbitrator success result: ", result)
     }
+    yield call(willGetArbitrator, { payload: user.username })
     yield put(NotificationActions.willShowNotification({ message: "Arbitrator settings saved", type: "success" }));
   } catch (error) {
     console.log("error in willSaveArbitratorSettings ", error)
