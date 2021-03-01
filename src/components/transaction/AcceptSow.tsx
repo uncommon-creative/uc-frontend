@@ -69,6 +69,32 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   //   console.log("algoSign result: ", result);
   // }
 
+  const subscribeOnAmountChecked = () => {
+    const subscription = loader('../../graphql/onAmountChecked.gql')
+    console.log("in onAmountChecked id: ", currentSow.sow)
+
+    const result: any = (API.graphql(graphqlOperation(subscription, { id: currentSow.sow })) as any)
+      .subscribe({
+        next: ({ provider, value }: any) => {
+          console.log("onAmountChecked received subscribe with ", value);
+
+          if (value.data.onAmountChecked.status === "AMOUNT_OK") {
+            console.log("onAmountChecked value success: ", value)
+            dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentSow.arbitrator }))
+            dispatch(TransactionActions.didCompleteTransactionAcceptAndPayQR(value.data))
+          }
+          else if (value.data.onAmountChecked.status === "AMOUNT_NOT_OK") {
+            console.log("onAmountChecked value fail: ", value)
+            dispatch(TransactionActions.didCompleteTransactionAcceptAndPayQRFail("Not enough balance on the wallet."))
+            dispatch(NotificationActions.willShowNotification({ message: "Not enough balance on the wallet", type: "danger" }));
+          }
+
+          dispatch(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayQR'));
+          dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
+        }
+      });
+  }
+
   React.useEffect(() => {
     if (multiSig.address) {
       qr.addData(multiSig.address);
@@ -97,31 +123,9 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   }, [modal])
 
   React.useEffect(() => {
-    if (transactionPage == 3) {
-      const subscription = loader('../../graphql/onAmountChecked.gql')
-      console.log("in onAmountChecked id: ", currentSow.sow)
-
-      const result: any = (API.graphql(graphqlOperation(subscription, { id: currentSow.sow })) as any)
-        .subscribe({
-          next: ({ provider, value }: any) => {
-            console.log("onAmountChecked received subscribe with ", value);
-
-            if (value.data.onAmountChecked.status === "AMOUNT_OK") {
-              console.log("onAmountChecked value success: ", value)
-              dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentSow.arbitrator }))
-              dispatch(TransactionActions.didCompleteTransactionAcceptAndPayQR(value.data))
-            }
-            else if (value.data.onAmountChecked.status === "AMOUNT_NOT_OK") {
-              console.log("onAmountChecked value fail: ", value)
-              dispatch(TransactionActions.didCompleteTransactionAcceptAndPayQRFail("Not enough balance on the wallet."))
-              dispatch(NotificationActions.willShowNotification({ message: "Not enough balance on the wallet", type: "danger" }));
-            }
-
-            dispatch(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayQR'));
-            dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
-          }
-        });
-    }
+    //if (transactionPage ==// 3) {
+      transactionPage == 3 && subscribeOnAmountChecked()
+    //}
   }, [transactionPage])
 
   return (
