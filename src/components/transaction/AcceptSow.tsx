@@ -21,6 +21,8 @@ import { actions as NotificationActions } from '../../store/slices/notification'
 import { actions as UIActions } from '../../store/slices/ui'
 import { ActivityButton } from '../common/ActivityButton';
 
+declare var AlgoSigner: any;
+
 export const AcceptSow = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
@@ -33,12 +35,39 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const params = useSelector(TransactionSelectors.getParams)
   const payment = useSelector(TransactionSelectors.getPayment)
+  const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
+  const [currentFromAlgoSigner, setCurrentFromAlgoSigner] = React.useState('');
 
   const typeNumber: TypeNumber = 4;
   const errorCorrectionLevel: ErrorCorrectionLevel = 'L';
   const qr = qrcode(typeNumber, errorCorrectionLevel);
   qr.make();
   const [qrImg, SetQrImg] = React.useState(qr.createDataURL(10, 1));
+
+  // let completeTxnAPAlgoSigner = async () => {
+  //   let paramsAlgoSigner = await AlgoSigner.algod({
+  //     ledger: 'TestNet',
+  //     path: '/v2/transactions/params',
+  //   });
+  //   console.log("paramsAlgoSigner: ", paramsAlgoSigner)
+
+  //   const txn = {
+  //     "from": currentFromAlgoSigner,
+  //     "to": multiSig.address,
+  //     "fee": paramsAlgoSigner.fee,
+  //     "type": 'pay',
+  //     "amount": payment.toPay,
+  //     "firstRound": paramsAlgoSigner['last-round'],
+  //     "lastRound": paramsAlgoSigner['last-round'] + 1000,
+  //     "genesisID": paramsAlgoSigner['genesis-id'],
+  //     "genesisHash": paramsAlgoSigner['genesis-hash'],
+  //     "note": new Uint8Array(0)
+  //   };
+
+  //   console.log("in algoSign txn: ", txn)
+  //   let result = await AlgoSigner.sign(txn)
+  //   console.log("algoSign result: ", result);
+  // }
 
   React.useEffect(() => {
     if (multiSig.address) {
@@ -47,6 +76,15 @@ export const AcceptSow = ({ modal, toggle }: any) => {
       SetQrImg(qr.createDataURL(10, 1))
     }
   }, [multiSig])
+
+  const [isAlgoSignInstalled, setAlgo] = React.useState(false);
+  React.useEffect(() => {
+    if (transactionPage == 2) {
+      if (typeof AlgoSigner !== 'undefined') {
+        setAlgo(true);
+      }
+    }
+  }, [transactionPage]);
 
   React.useEffect(() => {
     modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
@@ -126,7 +164,6 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               <Row>
                 <Col>
                   <Card className="flex-fill" outline onClick={() => {
-                    // dispatch(TransactionActions.goToTransactionPage(3))
                     dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, toPay: payment.toPay, currentSow: currentSow }))
                   }}>
                     <CardBody className="text-center">
@@ -147,10 +184,12 @@ export const AcceptSow = ({ modal, toggle }: any) => {
                 </Col>
                 <Col>
                   <Card className="flex-fill" disabled onClick={() => {
-                    // dispatch(TransactionActions.goToTransactionPage(5))
+                    isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner())
+                      : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
                   }}>
-                    <CardBody className="text-center text-muted">
-                      <CardSubtitle tag="h5" className="mb-2 text-muted text-center">Algosigner</CardSubtitle>
+                    <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
+                      <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner</CardSubtitle>
+                      {!isAlgoSignInstalled && <CardSubtitle tag="h6" className="mb-2 text-muted text-center">(not installed)</CardSubtitle>}
                       <FontAwesomeIcon icon={faExclamationTriangle} size="5x" />
                     </CardBody>
                   </Card>
@@ -241,21 +280,39 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Fund the wallet with AlgoSigner</ModalHeader>
           <ModalBody className="text-center">
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Price: {payment.price / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">Total: {payment.total / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2">To pay: {payment.toPay / 1000000} ALGO</CardSubtitle>
 
-            <FontAwesomeIcon icon={faExclamationTriangle} size="5x" />
+            {algoSigner.accounts.map((element: any, index: any) => {
+              return (
+                <ListGroupItem className={currentFromAlgoSigner == element.address ? 'border border-primary' : 'border'}
+                  onClick={() => {
+                    console.log("select currentFromAlgoSigner: ", element.address)
+                    setCurrentFromAlgoSigner(element.address)
+                  }}
+                >{element.address}</ListGroupItem>
+              )
+            })}
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
-            {/* <ActivityButton data-cy='willCompleteTransactionAcceptAndPayMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptAndPayMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ multiSigAddress: multiSigAddress, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
-            }}>Complete the transaction</ActivityButton> */}
+            <ActivityButton data-cy='willCompleteTransactionAcceptAndPayAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionAcceptAndPayAlgoSigner" color="primary"
+              onClick={//completeTxnAPAlgoSigner
+                () => {
+                  dispatch(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, params: params, toPay: payment.toPay }))
+                }
+              }
+            >Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
       }
-      {transactionPage == 6 &&
+      {
+        transactionPage == 6 &&
         <>
           <ModalHeader toggle={toggle}>Wallet funded</ModalHeader>
           <ModalBody>
@@ -272,7 +329,8 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage == 7 &&
+      {
+        transactionPage == 7 &&
         <>
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>
@@ -289,6 +347,6 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-    </Modal>
+    </Modal >
   )
 }

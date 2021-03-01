@@ -4,6 +4,8 @@ import * as _ from 'lodash';
 import { TransactionFee } from '../store/slices/transaction'
 const algosdk = require('algosdk');
 
+declare var AlgoSigner: any;
+
 export const algorandGetAccountInfo = async (account: any) => {
   const query = loader('../graphql/algorandGetAccountInfo.gql');
 
@@ -165,19 +167,6 @@ export const confirmTxAsBuyer = async (sow: any, tx: any) => {
   }
 }
 
-// export function onAmountChecked(id: any) {
-//   const subscription = loader('../graphql/onAmountChecked.gql')
-//   console.log("in onAmountChecked id: ", id)
-
-//   const result: any = (API.graphql(graphqlOperation(subscription, { id: id })) as any)
-//     .subscribe({
-//       next: function* ({ provider, value }: any) {
-//         console.log("onAmountChecked received subscribe with ", value);
-//         // return value.data.onAmountChecked
-//       }
-//     });
-// }
-
 export const algorandPollAccountAmount = async (id: any, account: any, amount: any) => {
   const query = loader('../graphql/algorandPollAccountAmount.gql')
   console.log("in algorandPollAccountAmount id: ", id)
@@ -190,6 +179,84 @@ export const algorandPollAccountAmount = async (id: any, account: any, amount: a
     return result.data.algorandPollAccountAmount
   } catch (error) {
     console.log("algorandPollAccountAmount API error: ", error)
+    throw error
+  }
+}
+
+export const algoConnect = async () => {
+  try {
+    let result = await AlgoSigner.connect();
+    if (Object.keys(result).length === 0) {
+      console.log("algoConnect result: ", result);
+
+      return result;
+    }
+  } catch (error) {
+    console.log("algoConnect error: ", error)
+    throw error
+  }
+}
+
+export const algoGetAccounts = async () => {
+  try {
+    let accounts = await AlgoSigner.accounts({
+      ledger: 'TestNet'
+    });
+    // console.log("algoConnect accounts: ", accounts)
+
+    return accounts;
+  } catch (error) {
+    console.log("algoConnect error: ", error)
+    throw error
+  }
+}
+
+export const algoSign = async (from: any, multiSigAddress: any, params: any, toPay: any) => {
+  console.log("in algoSign from: ", from)
+  console.log("in algoSign multiSigAddress: ", multiSigAddress)
+  console.log("in algoSign params: ", params)
+  console.log("in algoSign toPay: ", toPay)
+  try {
+    let paramsAlgoSigner = await AlgoSigner.algod({
+      ledger: 'TestNet',
+      path: '/v2/transactions/params',
+    });
+    console.log("params: ", paramsAlgoSigner);
+
+
+    const txn = {
+      "from": from,
+      "to": multiSigAddress,
+      "fee": paramsAlgoSigner.fee,
+      "type": 'pay',
+      "amount": toPay,
+      "firstRound": paramsAlgoSigner['last-round'],
+      "lastRound": paramsAlgoSigner['last-round'] + 1000,
+      "genesisID": paramsAlgoSigner['genesis-id'],
+      "genesisHash": paramsAlgoSigner['genesis-hash'],
+      "note": new Uint8Array(0)
+    };
+
+    console.log("in algoSign txn: ", txn)
+    let result = await AlgoSigner.sign(txn)
+    console.log("algoSign result: ", result);
+    return result;
+  } catch (error) {
+    console.log("algoSign error: ", error)
+    throw error
+  }
+}
+
+export const algoSendTx = async (signedTxn: any) => {
+  try {
+    let result = await AlgoSigner.send({
+      ledger: 'TestNet',
+      tx: signedTxn.blob,
+    });
+    console.log("algoSendTx result: ", result);
+    return result;
+  } catch (error) {
+    console.log("algoSendTx error: ", error)
     throw error
   }
 }

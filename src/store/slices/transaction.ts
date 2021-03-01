@@ -7,6 +7,7 @@ export const currentSlice = createSlice({
     params: {} as any,
     multiSig: {} as any,
     transactionAcceptAndPay: {} as any,
+    algoSigner: {} as any,
     transactionAcceptMilestone: {} as any,
     signedMsig: {} as any,
     payment: {} as any,
@@ -35,6 +36,12 @@ export const currentSlice = createSlice({
     didCompleteTransactionAcceptAndPayMnemonic: (state, action: PayloadAction<any>) => void (state.transactionAcceptAndPay = action.payload, state.transactionPage = 6),
     didCompleteTransactionAcceptAndPayMnemonicFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
 
+    willPrepareTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => state,
+    didPrepareTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 5),
+    willCompleteTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => state,
+    didCompleteTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => void (state.transactionPage = 6),
+    didCompleteTransactionAcceptAndPayAlgoSignerFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
+
     willSignTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => state,
     didSignTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionPage = 3),
 
@@ -51,7 +58,9 @@ export const { actions, reducer }: any = currentSlice
 export const {
   goToTransactionPage, willGetParams, didGetParams,
   willCreateMultiSigAddress, didCreateMultiSigAddress,
+  willCompleteTransactionAcceptAndPayQR, didCompleteTransactionAcceptAndPayQR, didCompleteTransactionAcceptAndPayQRFail,
   willCompleteTransactionAcceptAndPayMnemonic, didCompleteTransactionAcceptAndPayMnemonic, didCompleteTransactionAcceptAndPayMnemonicFail,
+  willCompleteTransactionAcceptAndPayAlgoSigner, didCompleteTransactionAcceptAndPayAlgoSigner, didCompleteTransactionAcceptAndPayAlgoSignerFail,
   willSignTransactionClaimMilestoneMet, didSignTransactionClaimMilestoneMet,
   didGetSignedMsig, willCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestoneFail,
   willReject
@@ -61,6 +70,7 @@ export const selectors = {
   getParams: (state: any) => state.transaction.params,
   getMultiSig: (state: any) => state.transaction.multiSig,
   getTransactionAcceptAndPay: (state: any) => state.transaction.transactionAcceptAndPay,
+  getAlgoSigner: (state: any) => state.transaction.algoSigner,
   getTransactionAcceptMilestone: (state: any) => state.transaction.transactionAcceptMilestone,
   getSignedMsig: (state: any) => state.transaction.signedMsig,
   getPayment: (state: any) => state.transaction.payment,
