@@ -24,11 +24,13 @@ export function* sagas() {
 
 function* willGoToProfile(action: any) {
   console.log("in willGoToProfile with: ", action)
+  yield put(ProfileActions.startLoadingProfile())
 
   try {
     yield call(willGetArbitrator, action)
 
     action.payload.history.push('/profile')
+    yield put(ProfileActions.stopLoadingProfile())
   } catch (error) {
     console.log('error in willGoToProfile ', error)
   }
@@ -99,22 +101,27 @@ export function* willGetUserProfile(action: any) {
 
 export function* willUploadPortrait(action: any) {
   console.log("in willUploadPortrait with: ", action)
+  // yield put(ProfileActions.startLoadingProfile())
 
   try {
     const resultUrl = yield call(ServiceApi.getResourceUrl, "portrait", 600, action.payload.portrait.type)
     console.log("result willUploadPortrait: ", resultUrl)
 
     yield call(ServiceApi.uploadFileToS3, resultUrl, action.payload.portrait)
+    yield put(NotificationActions.willShowNotification({ message: "Profile updated", type: "success" }));
 
-    // yield put(ProfileActions.didUploadPortrait(result));
+    yield put(ProfileActions.didUploadPortrait());
   } catch (error) {
     console.log("willUploadPortrait error", error)
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
+  // yield put(ProfileActions.stopLoadingProfile())
 }
 
 export function* willSubmitProfile(action: any) {
   console.log("in willSubmitProfile with: ", action)
   yield put(UIActions.startActivityRunning("submitProfile"));
+  yield put(ProfileActions.startLoadingProfile())
 
   try {
     const result = yield call(ServiceApi.putProfileData, "bio", action.payload.profile.bio)
@@ -124,6 +131,8 @@ export function* willSubmitProfile(action: any) {
     yield put(NotificationActions.willShowNotification({ message: "Profile updated", type: "success" }));
   } catch (error) {
     console.log("willSubmitProfile error", error)
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning("submitProfile"));
+  yield put(ProfileActions.stopLoadingProfile())
 }

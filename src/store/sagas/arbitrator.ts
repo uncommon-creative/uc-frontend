@@ -61,7 +61,7 @@ function* willGetFullArbitratorsList() {
 
 function* willSaveArbitratorSettings(action: any) {
   console.log("in willSaveArbitratorSettings with ", action)
-  yield put(UIActions.startActivityRunning("saveArbitratorSettings"));
+  yield put(UIActions.startActivityRunning("submitProfile"));
 
   const myArbitratorSettings = yield select(ArbitratorSelectors.getMyArbitratorSettings)
   const user = yield select(AuthSelectors.getUser)
@@ -86,7 +86,7 @@ function* willSaveArbitratorSettings(action: any) {
     console.log("error in willSaveArbitratorSettings ", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
-  yield put(UIActions.stopActivityRunning("saveArbitratorSettings"));
+  yield put(UIActions.stopActivityRunning("submitProfile"));
 }
 
 function* willViewCurrentArbitrator(action: any) {

@@ -38,7 +38,7 @@ export const ArbitratorDetailXS = ({ arbitrator, index }: any) => {
       </Col> */}
         <Col className="col-3 p-0 text-center">
           <img height="45" alt="Portrait" onError={addDefaultSrc}
-            src={`${configuration.dev.host}/resources/${arbitrator.user}/portrait`}
+            src={`${configuration.dev.host}/resources/${arbitrator.user}/portrait?${Date.now()}`}
           />
           {!selectingOneArbitrator &&
             <CardImgOverlay className="p-0">

@@ -36,7 +36,7 @@ export const ArbitratorDetailMD = ({ arbitrator }: any) => {
           <Row>
             <Col>
               <img height="100" alt="Portrait" onError={addDefaultSrc}
-                src={`${configuration.dev.host}/resources/${arbitrator.user}/portrait`}
+                src={`${configuration.dev.host}/resources/${arbitrator.user}/portrait?${Date.now()}`}
               />
             </Col>
           </Row>
