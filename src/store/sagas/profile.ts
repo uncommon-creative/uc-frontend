@@ -4,12 +4,14 @@ import { actions as ProfileActions, selectors as ProfileSelectors } from '../sli
 import { actions as AuthActions } from '../slices/auth'
 import * as ArbitratorApi from '../../api/arbitrator'
 import { actions as ArbitratorActions } from '../slices/arbitrator'
+import { willSaveArbitratorSettings } from './arbitrator'
 import { actions as NotificationActions } from '../slices/notification'
 import * as ServiceApi from '../../api/service'
 import { actions as UIActions } from '../slices/ui'
 import { push } from 'connected-react-router'
 
 import { willGetArbitrator } from './arbitrator'
+
 const algosdk = require('algosdk');
 
 export function* sagas() {
@@ -24,11 +26,13 @@ export function* sagas() {
 
 function* willGoToProfile(action: any) {
   console.log("in willGoToProfile with: ", action)
+  yield put(ProfileActions.startLoadingProfile())
 
   try {
     yield call(willGetArbitrator, action)
 
     action.payload.history.push('/profile')
+    yield put(ProfileActions.stopLoadingProfile())
   } catch (error) {
     console.log('error in willGoToProfile ', error)
   }
@@ -99,31 +103,51 @@ export function* willGetUserProfile(action: any) {
 
 export function* willUploadPortrait(action: any) {
   console.log("in willUploadPortrait with: ", action)
+  // yield put(ProfileActions.startLoadingProfile())
 
   try {
     const resultUrl = yield call(ServiceApi.getResourceUrl, "portrait", 600, action.payload.portrait.type)
     console.log("result willUploadPortrait: ", resultUrl)
 
     yield call(ServiceApi.uploadFileToS3, resultUrl, action.payload.portrait)
+    yield put(NotificationActions.willShowNotification({ message: "Profile updated", type: "success" }));
 
-    // yield put(ProfileActions.didUploadPortrait(result));
+    yield put(ProfileActions.didUploadPortrait());
   } catch (error) {
     console.log("willUploadPortrait error", error)
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
+  // yield put(ProfileActions.stopLoadingProfile())
 }
 
 export function* willSubmitProfile(action: any) {
   console.log("in willSubmitProfile with: ", action)
   yield put(UIActions.startActivityRunning("submitProfile"));
+  yield put(ProfileActions.startLoadingProfile())
 
   try {
-    const result = yield call(ServiceApi.putProfileData, "bio", action.payload.profile.bio)
-    console.log("willSubmitProfile result", result)
+    yield call(willSaveProfile, action)
+    yield call(willSaveArbitratorSettings, action)
 
-    yield put(ProfileActions.didSubmitProfile(result));
     yield put(NotificationActions.willShowNotification({ message: "Profile updated", type: "success" }));
   } catch (error) {
     console.log("willSubmitProfile error", error)
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning("submitProfile"));
+  yield put(ProfileActions.stopLoadingProfile())
+}
+
+function* willSaveProfile(action: any) {
+  console.log("in willSaveProfile with: ", action)
+
+  try {
+    const result = yield call(ServiceApi.putProfileData, "bio", action.payload.bio)
+    console.log("willSaveProfile result", result)
+
+    yield put(ProfileActions.didSaveProfile(result));
+  } catch (error) {
+    console.log("willSaveProfile error", error)
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
+  }
 }

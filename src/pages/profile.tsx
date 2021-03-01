@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {
   Card, CardBody, CardText, CardTitle, CardSubtitle, Button,
-  Container, Label,
+  Container, Label, Spinner,
   Col, Row, Jumbotron,
   FormGroup, FormFeedback,
   InputGroup, Input, CustomInput,
@@ -22,13 +22,13 @@ import { TagsInput } from '../components/TagsInput';
 import { selectors as UISelectors } from '../store/slices/ui'
 import Portrait from '../images/Portrait.png'
 
-const ProfileSchema = Yup.object().shape({
+// const ProfileSchema = Yup.object().shape({
+// });
+
+const ArbitratorSettingsSchema = Yup.object().shape({
   bio: Yup.string()
     .min(3, 'Too Short!')
     .required('Required'),
-});
-
-const ArbitratorSettingsSchema = Yup.object().shape({
   enabled: Yup.bool()
     .required('Required'),
   feePercentage: Yup.number()
@@ -59,8 +59,9 @@ export const ProfilePage = () => {
 
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
-  const isLoading = useSelector(UISelectors.isLoading)
   let history = useHistory();
+  const loadingProfile = useSelector(ProfileSelectors.isLoadingProfile)
+  const uploadingPortrait = useSelector(ProfileSelectors.isUploadingPortrait)
   const userAttributes = useSelector(ProfileSelectors.getProfile)
   const myArbitratorSettings = useSelector(ArbitratorSelectors.getMyArbitratorSettings)
   const user = useSelector(AuthSelectors.getUser)
@@ -75,99 +76,81 @@ export const ProfilePage = () => {
 
   return (
     <>
-      {!isLoading &&
+      {loadingProfile ?
+        <Container style={{ position: "relative", top: 150, bottom: '50%', left: '50%', right: '50%', height: '100%', zIndex: 10 }}>
+          <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+        </Container>
+        :
         <Container>
           <Card>
-            <CardBody>
-              <CardTitle tag="h5" className="text-center">Profile</CardTitle>
-              <Formik
-                enableReinitialize={true}
-                initialValues={{
-                  bio: userBio
-                }}
-                validationSchema={ProfileSchema}
-                validateOnBlur={true}
-                onSubmit={values => {
-                  console.log('in onsubmit with: ', values)
-                  dispatch(ProfileActions.willSubmitProfile({ profile: values }));
-                }}
-              >
-                {({ errors, touched, setFieldValue, values }) => {
-                  return (
-                    <Form>
-                      {values && console.log("values profile: ", values)}
-                      <Row>
-                        <Col className="col-3 text-center">
-                          <FormGroup>
-                            <Label for="portrait">
+            <Formik
+              enableReinitialize={true}
+              initialValues={{
+                bio: userBio ? userBio : '',
+                enabled: myArbitratorSettings && myArbitratorSettings.hasOwnProperty('enabled') ? myArbitratorSettings.enabled : switchEnabled,
+                feePercentage: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.perc : '',
+                feeFlat: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.flat : '',
+                currency: feeCurrency,
+                tags: myArbitratorSettings && myArbitratorSettings.tags && myArbitratorSettings.tags.length ? myArbitratorSettings.tags.map((tag: any) => JSON.parse(tag)) : []
+              }}
+              validationSchema={ArbitratorSettingsSchema}
+              validateOnBlur={true}
+              onSubmit={values => {
+                console.log('in onsubmit with: ', values)
+                dispatch(ProfileActions.willSubmitProfile(values));
+                // dispatch(ArbitratorActions.willSaveArbitratorSettings({ arbitratorSettings: values, history: history }));
+              }}
+            >
+              {({ errors, touched, setFieldValue, values }) => {
+                return (
+                  <Form><CardBody>
+                    <CardTitle tag="h5" className="text-center">Profile</CardTitle>
+                    <Row>
+                      <Col className="col-3 text-center">
+                        <FormGroup>
+                          <Label for="portrait">
+                            {uploadingPortrait ?
+                              <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+                              :
                               <img height="100" alt="Portrait" onError={addDefaultSrc}
-                                src={`${configuration.dev.host}/resources/${user.username}/portrait`}
+                                src={`${configuration.dev.host}/resources/${user.username}/portrait?${Date.now()}`}
                               />
-                            </Label>
+                            }
+                          </Label>
+                          <Input type="file" name="file" id="portrait" style={{ display: "none" }} accept="image/*"
+                            onChange={(event: any) => {
+                              console.log("event.target.files: ", event.target.files)
+                              if (event.target.files.length) {
+                                dispatch(ProfileActions.willUploadPortrait({ user: user.username, portrait: event.target.files[0] }))
+                              }
+                            }}
+                          />
+                          {/* <FormText color="muted">
+                            This is some placeholder block-level help text for the above input.
+                            It's a bit lighter and easily wraps to a new line.
+                          </FormText> */}
+                        </FormGroup>
+                      </Col>
+                      <Col className="col-9">
+                        <FormGroup>
+                          <Label for="profileBio">Bio</Label>
+                          <Input data-cy="profileBio" value={userBio} invalid={errors.bio && touched.bio ? true : false} type="textarea" name="profileBio" id="profileBio" placeholder="profileBio"
+                            onChange={(event: any) => {
+                              setuserBio(event.target.value)
+                              setFieldValue('bio', event.target.value)
+                            }}
+                          />
+                          {errors.bio && touched.bio ? (
+                            <FormFeedback>{errors.bio}</FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                  </CardBody>
+                    <Jumbotron>
+                      <CardTitle tag="h6" className="text-center">Arbitrator Settings</CardTitle>
+                      <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Change your arbitrator settings</CardSubtitle>
 
-                            <Input type="file" name="file" id="portrait" style={{ display: "none" }} accept="image/*"
-                              onChange={(event: any) => {
-                                console.log("event.target.files: ", event.target.files)
-                                if (event.target.files.length) {
-                                  dispatch(ProfileActions.willUploadPortrait({ user: user.username, portrait: event.target.files[0] }))
-                                }
-                              }}
-                            />
-                            {/* <FormText color="muted">
-                              This is some placeholder block-level help text for the above input.
-                              It's a bit lighter and easily wraps to a new line.
-                            </FormText> */}
-                          </FormGroup>
-                        </Col>
-                        <Col className="col-9">
-                          <FormGroup>
-                            <Label for="profileBio">Bio</Label>
-                            <Input data-cy="profileBio" value={userBio} type="textarea" name="profileBio" id="profileBio" placeholder="profileBio"
-                              onChange={(event: any) => {
-                                setuserBio(event.target.value)
-                                setFieldValue('bio', event.target.value)
-                              }}
-                            />
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col>
-                          <ActivityButton data-cy='submitProfile' type="submit" name="submitProfile" color="primary" block>Save profile</ActivityButton>
-                        </Col>
-                      </Row>
-                    </Form>
-                  )
-                }}
-              </Formik>
-
-
-
-            </CardBody>
-
-            <Jumbotron>
-              <CardTitle tag="h6" className="text-center">Arbitrator Settings</CardTitle>
-              <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Change your arbitrator settings</CardSubtitle>
-
-              <Formik
-                enableReinitialize={true}
-                initialValues={{
-                  enabled: myArbitratorSettings && myArbitratorSettings.hasOwnProperty('enabled') ? myArbitratorSettings.enabled : switchEnabled,
-                  feePercentage: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.perc : '',
-                  feeFlat: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.flat : '',
-                  currency: feeCurrency,
-                  tags: myArbitratorSettings && myArbitratorSettings.tags && myArbitratorSettings.tags.length ? myArbitratorSettings.tags.map((tag: any) => JSON.parse(tag)) : []
-                }}
-                validationSchema={ArbitratorSettingsSchema}
-                validateOnBlur={true}
-                onSubmit={values => {
-                  console.log('in onsubmit with: ', values)
-                  dispatch(ArbitratorActions.willSaveArbitratorSettings({ arbitratorSettings: values, history: history }));
-                }}
-              >
-                {({ errors, touched, setFieldValue, values }) => {
-                  return (
-                    <Form>
                       {values && console.log("values: ", values)}
                       <Row>
                         <Col className="col-md-2 col-12">
@@ -202,7 +185,7 @@ export const ProfilePage = () => {
                                     }}
                                   >
                                     ALGO
-                              </DropdownItem>
+                                  </DropdownItem>
                                   <DropdownItem disabled={feeCurrency == "USDC"}
                                     onClick={() => {
                                       setFieldValue('currency', "USDC")
@@ -210,7 +193,7 @@ export const ProfilePage = () => {
                                     }}
                                   >
                                     USDC
-                              </DropdownItem>
+                                  </DropdownItem>
                                 </DropdownMenu>
                               </InputGroupButtonDropdown>
                               {errors.feeFlat && touched.feeFlat ? (
@@ -238,16 +221,17 @@ export const ProfilePage = () => {
                           <FormFeedback className="d-block">{errors.tags}</FormFeedback>
                         ) : null}
                       </FormGroup>
-                      <Row>
+                      {/* <Row>
                         <Col>
                           <ActivityButton data-cy='arbitratorSettingsSubmit' type="submit" name="saveArbitratorSettings" color="primary" block>Save arbitrator settings</ActivityButton>
                         </Col>
-                      </Row>
-                    </Form>
-                  )
-                }}
-              </Formik>
-            </Jumbotron>
+                      </Row> */}
+                    </Jumbotron>
+                    <ActivityButton data-cy='submitProfile' type="submit" name="submitProfile" color="primary" block>Submit profile</ActivityButton>
+                  </Form>
+                )
+              }}
+            </Formik>
           </Card>
         </Container>
       }

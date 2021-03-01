@@ -42,7 +42,7 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
             <Row className='d-flex flex-wrap'>
               <Col className="col-md-3 col-12 text-center">
                 <img height="150" alt="Portrait" onError={addDefaultSrc}
-                  src={`${configuration.dev.host}/resources/${currentArbitrator.user}/portrait`}
+                  src={`${configuration.dev.host}/resources/${currentArbitrator.user}/portrait?${Date.now()}`}
                 />
               </Col>
               <Col className="d-flex justify-content-between flex-column">

@@ -10,6 +10,11 @@ describe('Chat', () => {
     cy.get('[data-cy=profile]').contains('Profile').click()
     cy.wait(2000)
 
+    cy.get('[data-cy=profileBio]')
+      .clear()
+      .type("Ceci n'est pas une biographie.")
+      .should('have.value', "Ceci n'est pas une biographie.")
+
     // enable and set arbitrator settings
     cy.get('[data-cy=arbitratorSettingsEnabled]')
       .parent()
@@ -29,10 +34,10 @@ describe('Chat', () => {
       .type('cypress{enter}')
       .get('[class=css-1rhbuit-multiValue]')
       .contains('cypress')
-    cy.get('[data-cy=arbitratorSettingsSubmit]')
+    cy.get('[data-cy=submitProfile]')
       .click()
 
-    cy.wait(1000)
+    cy.wait(3000)
 
     // check arbitrator settings
     cy.visit(Cypress.env('host'))
@@ -65,7 +70,7 @@ describe('Chat', () => {
     cy.get('[data-cy=arbitratorSettingsEnabled]')
       .parent()
       .click('left')
-    cy.get('[data-cy=arbitratorSettingsSubmit]')
+    cy.get('[data-cy=submitProfile]')
       .click()
   })
 })
