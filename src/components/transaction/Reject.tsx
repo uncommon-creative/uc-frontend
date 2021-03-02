@@ -22,19 +22,10 @@ export const Reject = ({ modal, toggle }: any) => {
   const { t, i18n } = useTranslation();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
-  // const multiSig = useSelector(TransactionSelectors.getMultiSig)
-  // const transactionError = useSelector(TransactionSelectors.getError)
-  const [acceptedConditions, setAcceptedConditions] = React.useState(false);
-  // const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
-  // const params = useSelector(TransactionSelectors.getParams)
-  // const payment = useSelector(TransactionSelectors.getPayment)
-
-
 
   React.useEffect(() => {
 
     return () => {
-      setAcceptedConditions(false)
       dispatch(TransactionActions.goToTransactionPage(1))
     }
   }, [modal])
@@ -43,22 +34,17 @@ export const Reject = ({ modal, toggle }: any) => {
     <Modal isOpen={modal} toggle={toggle} size="xl">
       {transactionPage == 1 &&
         <>
-          <ModalHeader toggle={toggle}>Accept the conditions to reject</ModalHeader>
+          <ModalHeader toggle={toggle}>Reject</ModalHeader>
           <ModalBody>
-            <Jumbotron name="conditions" id="conditions">
-              <CardText name="transactionConditions">{t('transaction.conditions')}</CardText>
+            <Jumbotron name="reject" id="reject">
+              <CardText name="transactionConditions">{t('transaction.reject')}</CardText>
             </Jumbotron>
-            <FormGroup check>
-              <Label check>
-                <Input data-cy="acceptConditions" checked={acceptedConditions} name="acceptConditions" id="acceptConditions" type="checkbox"
-                  onChange={(event) => setAcceptedConditions(event.target.checked)}
-                />Accept conditions *
-              </Label>
-            </FormGroup>
-
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy={SowCommands.REJECT} disabled={!acceptedConditions} name={SowCommands.REJECT} color="primary" onClick={() => {
+          <ActivityButton data-cy='cancel' name="cancel" outline color="primary" onClick={() => {
+              toggle()
+            }}>Cancel</ActivityButton>
+            <ActivityButton data-cy={SowCommands.REJECT} name={SowCommands.REJECT} color="primary" onClick={() => {
               dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REJECT }, sow: currentSow }));
               dispatch(TransactionActions.willReject())
             }}>Reject</ActivityButton>
@@ -70,13 +56,11 @@ export const Reject = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Rejected</ModalHeader>
           <ModalBody>
             <Jumbotron>
-              <CardText>
-                {t('transaction.transactionCompleted')}
-              </CardText>
+            <CardText name="transactionConditions">{t('transaction.rejectCompleted')}</CardText>
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy="closeTransaction" name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
+            <ActivityButton data-cy="rejectComplete" name="rejectComplete" color="primary" onClick={toggle}>Close</ActivityButton>
           </ModalFooter>
         </>
       }
