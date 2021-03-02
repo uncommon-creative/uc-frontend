@@ -188,7 +188,7 @@ export const algoConnect = async () => {
   try {
     let result = await AlgoSigner.connect();
     if (Object.keys(result).length === 0) {
-      console.log("algoConnect result: ", result);
+      // console.log("algoConnect result: ", result);
 
       return result;
     }
@@ -212,18 +212,12 @@ export const algoGetAccounts = async () => {
   }
 }
 
-export const algoSign = async (from: any, multiSigAddress: any, params: any, toPay: any) => {
-  console.log("in algoSign from: ", from)
-  console.log("in algoSign multiSigAddress: ", multiSigAddress)
-  console.log("in algoSign params: ", params)
-  console.log("in algoSign toPay: ", toPay)
+export const algoSign = async (from: any, multiSigAddress: any, toPay: any, sow: any) => {
   try {
     let paramsAlgoSigner = await AlgoSigner.algod({
       ledger: configuration.dev.algorand_net,
       path: '/v2/transactions/params',
     });
-    console.log("params: ", paramsAlgoSigner);
-
 
     const txn = {
       "from": from,
@@ -235,10 +229,9 @@ export const algoSign = async (from: any, multiSigAddress: any, params: any, toP
       "lastRound": paramsAlgoSigner['last-round'] + 1000,
       "genesisID": paramsAlgoSigner['genesis-id'],
       "genesisHash": paramsAlgoSigner['genesis-hash'],
-      "note": new Uint8Array(0)
+      "note": sow
     };
 
-    console.log("in algoSign txn: ", txn)
     let result = await AlgoSigner.sign(txn)
     console.log("algoSign result: ", result);
     return result;

@@ -44,31 +44,6 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   qr.make();
   const [qrImg, SetQrImg] = React.useState(qr.createDataURL(10, 1));
 
-  // let completeTxnAPAlgoSigner = async () => {
-  //   let paramsAlgoSigner = await AlgoSigner.algod({
-  //     ledger: 'TestNet',
-  //     path: '/v2/transactions/params',
-  //   });
-  //   console.log("paramsAlgoSigner: ", paramsAlgoSigner)
-
-  //   const txn = {
-  //     "from": currentFromAlgoSigner,
-  //     "to": multiSig.address,
-  //     "fee": paramsAlgoSigner.fee,
-  //     "type": 'pay',
-  //     "amount": payment.toPay,
-  //     "firstRound": paramsAlgoSigner['last-round'],
-  //     "lastRound": paramsAlgoSigner['last-round'] + 1000,
-  //     "genesisID": paramsAlgoSigner['genesis-id'],
-  //     "genesisHash": paramsAlgoSigner['genesis-hash'],
-  //     "note": new Uint8Array(0)
-  //   };
-
-  //   console.log("in algoSign txn: ", txn)
-  //   let result = await AlgoSigner.sign(txn)
-  //   console.log("algoSign result: ", result);
-  // }
-
   const subscribeOnAmountChecked = () => {
     const subscription = loader('../../graphql/onAmountChecked.gql')
     console.log("in onAmountChecked id: ", currentSow.sow)
@@ -81,15 +56,16 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           if (value.data.onAmountChecked.status === "AMOUNT_OK") {
             console.log("onAmountChecked value success: ", value)
             dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentSow.arbitrator }))
-            dispatch(TransactionActions.didCompleteTransactionAcceptAndPayQR(value.data))
+            dispatch(TransactionActions.didCompleteTransactionAcceptAndPay(value.data))
           }
           else if (value.data.onAmountChecked.status === "AMOUNT_NOT_OK") {
             console.log("onAmountChecked value fail: ", value)
-            dispatch(TransactionActions.didCompleteTransactionAcceptAndPayQRFail("Not enough balance on the wallet."))
+            dispatch(TransactionActions.didCompleteTransactionAcceptAndPayFail("Not enough balance on the wallet."))
             dispatch(NotificationActions.willShowNotification({ message: "Not enough balance on the wallet", type: "danger" }));
           }
 
           dispatch(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayQR'));
+          dispatch(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayAlgoSigner'));
           dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
         }
       });
@@ -123,9 +99,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   }, [modal])
 
   React.useEffect(() => {
-    //if (transactionPage ==// 3) {
-      transactionPage == 3 && subscribeOnAmountChecked()
-    //}
+    (transactionPage == 3 || transactionPage == 5) && subscribeOnAmountChecked()
   }, [transactionPage])
 
   return (
@@ -188,7 +162,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
                 </Col>
                 <Col>
                   <Card className="flex-fill" disabled onClick={() => {
-                    isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner())
+                    isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, toPay: payment.toPay }))
                       : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
                   }}>
                     <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
@@ -292,7 +266,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
 
             {algoSigner.accounts.map((element: any, index: any) => {
               return (
-                <ListGroupItem className={currentFromAlgoSigner == element.address ? 'border border-primary' : 'border'}
+                <ListGroupItem className={currentFromAlgoSigner == element.address ? 'border border-primary' : 'border'} key={index}
                   onClick={() => {
                     console.log("select currentFromAlgoSigner: ", element.address)
                     setCurrentFromAlgoSigner(element.address)
@@ -308,7 +282,8 @@ export const AcceptSow = ({ modal, toggle }: any) => {
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionAcceptAndPayAlgoSigner" color="primary"
               onClick={//completeTxnAPAlgoSigner
                 () => {
-                  dispatch(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, params: params, toPay: payment.toPay }))
+                  dispatch(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, toPay: payment.toPay, sow: currentSow.sow }))
+                  subscribeOnAmountChecked()
                 }
               }
             >Complete the transaction</ActivityButton>
