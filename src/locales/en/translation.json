@@ -12,7 +12,8 @@
   "auth": {},
   "chat": {
     "emptyComandsWithDate": "Awaiting action from {{given_name}} {{family_name}} expected by {{date}}.",
-    "emptyComandsWithoutDate": "Awaiting action from {{given_name}} {{family_name}}."},
+    "emptyComandsWithoutDate": "Awaiting action from {{given_name}} {{family_name}}."
+  },
   "profile": {},
   "sow": {
     "welcome": "Welcome {{given_name}}",
@@ -29,6 +30,16 @@
     "transactionSigned": "The transaction was signed successfully",
     "transactionFailed": "The transaction failed: {{errorMessage}}",
     "reject": "This action will reject the quote, are you sure you want to decline this proposal?",
-    "rejectCompleted": "The quote was rejected."
+    "rejectCompleted": "The quote was rejected.",
+    "payment": {
+      "algo": "{{value}} ALGO",
+      "summary": "Summary of payment",
+      "multisigAddress": "Your funds will be sent to escrow account: {{multisigAddress}}",
+      "balances": "A) Current balance of escrow account:",
+      "price": "B) Price to be paid:",
+      "fee": "C) Blockchain Fee:",
+      "total": "Total (B+C):",
+      "toPay": "To pay (B+C-A):"
+    }
   }
 }

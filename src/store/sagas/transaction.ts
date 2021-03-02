@@ -171,7 +171,7 @@ function* willPrepareTransactionAcceptAndPayAlgoSigner(action: any) {
     const resultAlgoConnect = yield call(TransactionApi.algoConnect)
     console.log("willPrepareTransactionAcceptAndPayAlgoSigner resultAlgoConnect: ", resultAlgoConnect)
 
-    const resultAccounts = yield call(TransactionApi.algoGetAccounts)
+    let resultAccounts = yield call(TransactionApi.algoGetAccounts)
     console.log("willPrepareTransactionAcceptAndPayAlgoSigner resultAccounts: ", resultAccounts)
 
     const resultAlgorandPollAccountAmount = yield call(TransactionApi.algorandPollAccountAmount, action.payload.sow, action.payload.multiSigAddress, action.payload.toPay)
