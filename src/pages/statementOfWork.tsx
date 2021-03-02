@@ -198,7 +198,7 @@ export const StatementOfWorkPage = () => {
                         <Jumbotron>
                           {currentArbitrators.map((element: any, index: any) => {
                             return (
-                              <ListGroupItem data-cy={`selectArbitrator${element.given_name}`} className={currentSow.arbitrator == element.user ? 'border border-primary' : 'border'} key={index}
+                              <ListGroupItem data-cy={`selectArbitrator${element.given_name}`} className={currentSow.arbitrator == element.user ? 'border border-primary bg-light' : 'border'} key={index}
                                 onClick={() => {
                                   console.log("selecting arbitrator: ", element)
                                 }}>

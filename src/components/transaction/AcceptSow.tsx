@@ -20,6 +20,7 @@ import { actions as TransactionActions, selectors as TransactionSelectors } from
 import { actions as NotificationActions } from '../../store/slices/notification'
 import { actions as UIActions } from '../../store/slices/ui'
 import { ActivityButton } from '../common/ActivityButton';
+import { Payment } from './Payment'
 
 declare var AlgoSigner: any;
 
@@ -94,6 +95,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
     return () => {
       setAcceptedConditions(false)
       setMnemonicSecretKey('')
+      setCurrentFromAlgoSigner('')
       dispatch(TransactionActions.goToTransactionPage(1))
     }
   }, [modal])
@@ -131,12 +133,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Choose the payment method</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Price: {payment.price / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Total: {payment.total / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">To pay: {payment.toPay / 1000000} ALGO</CardSubtitle>
+            <Payment />
 
             {payment.toPay > 0 &&
               <Row>
@@ -190,12 +187,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Fund the wallet with QR</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Price: {payment.price / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Total: {payment.total / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">To pay: {payment.toPay / 1000000} ALGO</CardSubtitle>
+            <Payment />
 
             <div style={{ textAlign: 'center' }} id="qrCode">
               <img
@@ -227,12 +219,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Fund the wallet with mnemonic secret key</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Price: {payment.price / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Total: {payment.total / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">To pay: {payment.toPay / 1000000} ALGO</CardSubtitle>
+            <Payment />
 
             <FormGroup>
               <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
@@ -256,22 +243,20 @@ export const AcceptSow = ({ modal, toggle }: any) => {
       {transactionPage == 5 &&
         <>
           <ModalHeader toggle={toggle}>Fund the wallet with AlgoSigner</ModalHeader>
-          <ModalBody className="text-center">
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Balances: {payment.balances / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Price: {payment.price / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Fee: {payment.fee / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">Total: {payment.total / 1000000} ALGO</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2">To pay: {payment.toPay / 1000000} ALGO</CardSubtitle>
+          <ModalBody>
+            <Payment />
 
+            <CardSubtitle tag="h6" className="pt-5 text-muted text-center">Select one of your AlgoSigner accounts</CardSubtitle>
             {algoSigner.accounts.map((element: any, index: any) => {
               return (
-                <ListGroupItem className={currentFromAlgoSigner == element.address ? 'border border-primary' : 'border'} key={index}
+                <ListGroupItem disabled={element.amount < payment.toPay} className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
                   onClick={() => {
                     console.log("select currentFromAlgoSigner: ", element.address)
                     setCurrentFromAlgoSigner(element.address)
                   }}
-                >{element.address}</ListGroupItem>
+                >
+                  {element.address + ': ' + t('transaction.payment.algo', { value: element.amount / 1000000 })}
+                </ListGroupItem>
               )
             })}
           </ModalBody>
@@ -295,8 +280,6 @@ export const AcceptSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Wallet funded</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionCompleted')}

@@ -203,11 +203,20 @@ export const algoGetAccounts = async () => {
     let accounts = await AlgoSigner.accounts({
       ledger: configuration.dev.algorand_net
     });
-    // console.log("algoConnect accounts: ", accounts)
+    // console.log("algoGetAccounts accounts: ", accounts)
 
-    return accounts;
+    var accountsInfo = [] as any
+    for (let account of accounts) {
+      accountsInfo.push(await AlgoSigner.algod({
+        ledger: 'TestNet',
+        path: '/v2/accounts/' + account.address,
+      }))
+    }
+    // console.log("algoGetAccounts accountsInfo: ", accountsInfo)
+
+    return accountsInfo;
   } catch (error) {
-    console.log("algoConnect error: ", error)
+    console.log("algoGetAccounts error: ", error)
     throw error
   }
 }
