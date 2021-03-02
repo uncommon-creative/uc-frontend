@@ -10,6 +10,8 @@ import { willGetUserProfile } from '../sagas/profile'
 import { willSendCommandChat } from '../sagas/chat'
 import { TransactionFee } from '../slices/transaction'
 
+declare var AlgoSigner: any;
+
 export function* sagas() {
   yield takeLatest(TransactionActions.willGetAlgorandAccountInfo.type, willGetAlgorandAccountInfo)
   yield takeLatest(TransactionActions.willGetParams.type, willGetParams)
@@ -18,6 +20,8 @@ export function* sagas() {
   yield takeLatest(TransactionActions.willSetSowArbitrator.type, willSetSowArbitrator)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayQR.type, willCompleteTransactionAcceptAndPayQR)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic.type, willCompleteTransactionAcceptAndPayMnemonic)
+  yield takeLatest(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner.type, willPrepareTransactionAcceptAndPayAlgoSigner)
+  yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner.type, willCompleteTransactionAcceptAndPayAlgoSigner)
   yield takeLatest(TransactionActions.willSignTransactionClaimMilestoneMet.type, willSignTransactionClaimMilestoneMet)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptMilestone.type, willCompleteTransactionAcceptMilestone)
   console.log('in sow saga');
@@ -119,33 +123,13 @@ function* willSetSowArbitrator(action: any) {
 function* willCompleteTransactionAcceptAndPayQR(action: any) {
   console.log("in willCompleteTransactionAcceptAndPayQR with: ", action)
   yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayQR'));
-  try {
-    
-    // const resultOnAmountChecked = yield call(TransactionApi.onAmountChecked, action.payload.currentSow.sow)
-    // console.log("willCompleteTransactionAcceptAndPayQR resultOnAmountChecked: ", resultOnAmountChecked)
 
+  try {
     const resultAlgorandPollAccountAmount = yield call(TransactionApi.algorandPollAccountAmount, action.payload.currentSow.sow, action.payload.multiSigAddress, action.payload.toPay)
     console.log("willCompleteTransactionAcceptAndPayQR resultAlgorandPollAccountAmount: ", resultAlgorandPollAccountAmount)
-
-    // if (result) {
-    //   console.log("willCompleteTransactionAcceptAndPayQR result success: ", result)
-    //   const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.currentSow.arbitrator)
-    //   console.log("willCompleteTransactionAcceptAndPayQR resultSetSowArbitrator: ", resultSetSowArbitrator)
-
-    //   yield call(willSendCommandChat, { payload: { values: { command: SowCommands.ACCEPT_AND_PAY }, sow: action.payload.currentSow } })
-    //   yield put(TransactionActions.didCompleteTransactionAcceptAndPayQR(result))
-    // }
-    // else {
-    //   console.log("willCompleteTransactionAcceptAndPayQR result fail: ", result)
-    //   yield put(TransactionActions.didCompleteTransactionAcceptAndPayQRFail("Not enough balance on the wallet"))
-    //   yield put(NotificationActions.willShowNotification({ message: "Not enough balance on the wallet", type: "danger" }));
-    // }
-    // yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
-
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptAndPayQR ", error)
   }
-  // yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayQR'));
 }
 
 function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
@@ -164,12 +148,12 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
 
     if (resultSentTransaction === "sendTxFailed") {
       console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction fail: ", resultSentTransaction)
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPayMnemonicFail(resultSentTransaction))
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSentTransaction))
       yield put(NotificationActions.willShowNotification({ message: resultSentTransaction, type: "danger" }));
     }
     else {
       console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction success: ", resultSentTransaction)
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPayMnemonic(resultSentTransaction))
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPay(resultSentTransaction))
     }
     yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
 
@@ -177,6 +161,42 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
     console.log("error in willCompleteTransactionAcceptAndPayMnemonic ", error)
   }
   yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
+}
+
+function* willPrepareTransactionAcceptAndPayAlgoSigner(action: any) {
+  console.log("in willPrepareTransactionAcceptAndPayAlgoSigner")
+  yield put(UIActions.startActivityRunning('willPrepareTransactionAcceptAndPayAlgoSigner'));
+
+  try {
+    const resultAlgoConnect = yield call(TransactionApi.algoConnect)
+    console.log("willPrepareTransactionAcceptAndPayAlgoSigner resultAlgoConnect: ", resultAlgoConnect)
+
+    const resultAccounts = yield call(TransactionApi.algoGetAccounts)
+    console.log("willPrepareTransactionAcceptAndPayAlgoSigner resultAccounts: ", resultAccounts)
+
+    const resultAlgorandPollAccountAmount = yield call(TransactionApi.algorandPollAccountAmount, action.payload.sow, action.payload.multiSigAddress, action.payload.toPay)
+    console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultAlgorandPollAccountAmount: ", resultAlgorandPollAccountAmount)
+
+    yield put(TransactionActions.didPrepareTransactionAcceptAndPayAlgoSigner(resultAccounts))
+
+  } catch (error) {
+    console.log("error in willPrepareTransactionAcceptAndPayAlgoSigner ", error)
+  }
+}
+
+function* willCompleteTransactionAcceptAndPayAlgoSigner(action: any) {
+  console.log("in willCompleteTransactionAcceptAndPayAlgoSigner with: ", action)
+  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayAlgoSigner'));
+
+  try {
+    const resultAlgoSign = yield call(TransactionApi.algoSign, action.payload.from, action.payload.multiSigAddress, action.payload.toPay, action.payload.sow)
+    console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultAlgoSign: ", resultAlgoSign)
+
+    const resultAlgoSendTx = yield call(TransactionApi.algoSendTx, resultAlgoSign)
+    console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultAlgoSendTx: ", resultAlgoSendTx)
+  } catch (error) {
+    console.log("error in willCompleteTransactionAcceptAndPayAlgoSigner ", error)
+  }
 }
 
 function* willSignTransactionClaimMilestoneMet(action: any) {
