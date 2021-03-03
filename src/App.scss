@@ -68,4 +68,8 @@ $spacers: map-merge(
   $spacers
 );
 
+.rce-mbox-text {
+  white-space: pre-wrap;
+}
+
 @import "~bootstrap/scss/bootstrap";

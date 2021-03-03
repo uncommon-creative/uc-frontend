@@ -20,6 +20,7 @@ query listSowChatMessages(
       }
       commandMessage {
         command
+        data
       }
       type
       modified

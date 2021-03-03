@@ -1,12 +1,9 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  ListGroupItemHeading, ListGroupItem, ListGroupItemText, Badge,
-  Row, Col, Card, CardText, Container,
-  FormText, FormGroup, Input, Label, FormFeedback,
+  Row, Col, Card
 } from 'reactstrap';
 import { Formik } from 'formik';
-import * as Yup from 'yup';
 import 'react-chat-elements/dist/main.css';
 import { MessageBox, MessageList, Input as InputChatElements, Button, Avatar } from 'react-chat-elements';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -18,6 +15,7 @@ import { SowAttachments } from '../components/SowAttachments'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { selectors as AuthSelectors } from '../store/slices/auth'
+import { actions as SowActions } from "../store/slices/sow";
 
 function updateScroll() {
   var element: any = document.getElementById("chatMessages");
@@ -37,6 +35,7 @@ export const ChatSow = ({ currentSow }: any) => {
   React.useEffect(() => {
     const refreshChat = setInterval(() => {
       dispatch(ChatActions.willRefreshSowChat({ messages: messages, sow: currentSow.sow }))
+      dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
     }, 30000);
 
     return () => clearInterval(refreshChat)
@@ -54,41 +53,45 @@ export const ChatSow = ({ currentSow }: any) => {
             {
               messages.map((msg: any, index: any) => {
                 return (
-                  <>
-                    {/* <Avatar
-                  src={'https://facebook.github.io/react/img/logo.svg'}
-                  alt={msg.from == currentSow.seller ? 'S' : msg.from == currentSow.buyer ? 'B' : msg.from == currentSow.arbitrator && 'A'}
-                  size="small"
-                  type="circle flexible" /> */}
+                  // <>
+                  //   <Avatar
+                  // src={'https://facebook.github.io/react/img/logo.svg'}
+                  // alt={msg.from == currentSow.seller ? 'S' : msg.from == currentSow.buyer ? 'B' : msg.from == currentSow.arbitrator && 'A'}
+                  // size="small"
+                  // type="circle flexible" />
 
-                    <MessageBox
-                      data-cy='messageChat'
-                      className='chatMessage'
-                      title={users[msg.from].given_name + ' ' + users[msg.from].family_name}
-                      position={user.username == msg.from ? 'right' : 'left'}
-                      type={(msg.type == 'TEXT' || msg.type == 'COMMAND') ? 'text' : msg.type == 'ATTACHMENT' && 'file'}
-                      text={msg.textMessage ? msg.textMessage.message
-                        : msg.commandMessage ? msg.commandMessage.command
-                          : msg.attachmentMessage.key.split('/').pop().length > 20 ?
-                            msg.attachmentMessage.key.split('/').pop().substring(0, 16) + '... ' + msg.attachmentMessage.key.split('/').pop().substring(msg.attachmentMessage.key.split('/').pop().length - 4, msg.attachmentMessage.key.split('/').pop().length)
-                            : msg.attachmentMessage.key.split('/').pop()
-                      }
-                      date={new Date(msg.createdAt)}
-                      data={msg.type == 'ATTACHMENT' ?
-                        {
-                          uri: msg.attachmentMessage.downloadUrl,
-                          status: {
-                            click: true,
-                            loading: 0,
-                          }
+                  <MessageBox
+                    key={index}
+                    data-cy='messageChat'
+                    className='chatMessage'
+                    title={users[msg.from].given_name + ' ' + users[msg.from].family_name}
+                    position={user.username == msg.from ? 'right' : 'left'}
+                    type={(msg.type == 'TEXT' || msg.type == 'COMMAND') ? 'text' : msg.type == 'ATTACHMENT' && 'file'}
+                    text={msg.textMessage ? msg.textMessage.message
+                      : msg.commandMessage ?
+                        msg.commandMessage.data ?
+                          msg.commandMessage.command + ' (#' + JSON.parse(msg.commandMessage.data).reviews_left + '): \n' + JSON.parse(msg.commandMessage.data).message
+                          : msg.commandMessage.command
+                        : msg.attachmentMessage.key.split('/').pop().length > 20 ?
+                          msg.attachmentMessage.key.split('/').pop().substring(0, 16) + '... ' + msg.attachmentMessage.key.split('/').pop().substring(msg.attachmentMessage.key.split('/').pop().length - 4, msg.attachmentMessage.key.split('/').pop().length)
+                          : msg.attachmentMessage.key.split('/').pop()
+                    }
+                    date={new Date(msg.createdAt)}
+                    data={msg.type == 'ATTACHMENT' ?
+                      {
+                        uri: msg.attachmentMessage.downloadUrl,
+                        status: {
+                          click: true,
+                          loading: 0,
                         }
-                        : {}
                       }
-                      onDownload={(event: any) => {
-                        window.open(msg.attachmentMessage.downloadUrl);
-                      }}
-                    />
-                  </>
+                      : {}
+                    }
+                    onDownload={(event: any) => {
+                      window.open(msg.attachmentMessage.downloadUrl);
+                    }}
+                  />
+                  // </>
                 )
               })
             }

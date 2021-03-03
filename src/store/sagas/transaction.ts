@@ -24,6 +24,7 @@ export function* sagas() {
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner.type, willCompleteTransactionAcceptAndPayAlgoSigner)
   yield takeLatest(TransactionActions.willSignTransactionClaimMilestoneMet.type, willSignTransactionClaimMilestoneMet)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptMilestone.type, willCompleteTransactionAcceptMilestone)
+  yield takeLatest(TransactionActions.willRequestReview.type, willRequestReview)
   console.log('in sow saga');
 }
 
@@ -270,4 +271,21 @@ function* willCompleteTransactionAcceptMilestone(action: any) {
     console.log("error in willCompleteTransactionAcceptMilestone ", error)
   }
   yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptMilestone'));
+}
+
+function* willRequestReview(action: any) {
+  console.log("in willRequestReview with: ", action)
+  yield put(UIActions.startActivityRunning('willRequestReview'));
+
+  try {
+    const result = yield call(TransactionApi.requestReview, action.payload.sow, action.payload.notes)
+    console.log("willRequestReview result: ", result)
+
+    yield put(SowActions.willGetSow({ sow: action.payload.sow }))
+    yield put(TransactionActions.didRequestReview())
+
+  } catch (error) {
+    console.log("error in willRequestReview ", error)
+  }
+  yield put(UIActions.stopActivityRunning('willRequestReview'));
 }
