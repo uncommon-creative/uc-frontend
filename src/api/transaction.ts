@@ -163,7 +163,7 @@ export const confirmTxAsBuyer = async (sow: any, tx: any) => {
     // console.log("confirmTxAsBuyer result: ", result)
     return result.data.confirmTxAsBuyer
   } catch (error) {
-    console.log("setSignedMsig API error: ", error)
+    console.log("confirmTxAsBuyer API error: ", error)
     throw error
   }
 }
@@ -260,6 +260,19 @@ export const algoSendTx = async (signedTxn: any) => {
     return result;
   } catch (error) {
     console.log("algoSendTx error: ", error)
+    throw error
+  }
+}
+
+export const requestReview = async (sow: any, notes: any) => {
+  const mutation = loader('../graphql/requestReview.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, notes: notes }))
+    console.log("requestReview result: ", result)
+    return result.data.requestReview
+  } catch (error) {
+    console.log("requestReview API error: ", error)
     throw error
   }
 }

@@ -31,6 +31,8 @@
     "transactionFailed": "The transaction failed: {{errorMessage}}",
     "reject": "This action will reject the quote, are you sure you want to decline this proposal?",
     "rejectCompleted": "The quote was rejected.",
+    "requestReview": "Add a note to your review request.",
+    "requestReviewCompleted": "The review request was sent to the seller.",
     "payment": {
       "algo": "{{value}} ALGO",
       "summary": "Summary of payment",

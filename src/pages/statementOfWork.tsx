@@ -24,6 +24,7 @@ import { AcceptSow } from '../components/transaction/AcceptSow'
 import { ClaimMilestoneMet } from '../components/transaction/ClaimMilestoneMet'
 import { AcceptMilestone } from '../components/transaction/AcceptMilestone'
 import { Reject } from '../components/transaction/Reject'
+import { RequestReview } from '../components/transaction/RequestReview'
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -45,11 +46,13 @@ export const StatementOfWorkPage = () => {
   const [modalOpenClaimMilestoneMet, setModalOpenClaimMilestoneMet] = React.useState(false);
   const [modalOpenAcceptMilestone, setModalOpenAcceptMilestone] = React.useState(false);
   const [modalOpenReject, setModalOpenReject] = React.useState(false);
+  const [modalOpenRequestReview, setModalOpenRequestReview] = React.useState(false);
 
   const toggleModalAcceptSow = () => setModalOpenAcceptSow(!modalOpenAcceptSow);
   const toggleModalClaimMilestoneMet = () => setModalOpenClaimMilestoneMet(!modalOpenClaimMilestoneMet);
   const toggleModalAcceptMilestone = () => setModalOpenAcceptMilestone(!modalOpenAcceptMilestone);
   const toggleModalReject = () => setModalOpenReject(!modalOpenReject);
+  const toggleModalRequestReview = () => setModalOpenRequestReview(!modalOpenRequestReview);
 
   React.useEffect(() => {
     console.log("in statementOfWorkPage currentSow: ", currentSow)
@@ -253,10 +256,10 @@ export const StatementOfWorkPage = () => {
                                 </CardText>
                               }
                               {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
-                                <ActivityButton data-cy={SowCommands.REQUEST_REVIEW} block color="primary" name={SowCommands.REQUEST_REVIEW} onClick={() => {
-                                  console.log("Request review")
-                                  dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REQUEST_REVIEW }, sow: currentSow }));
-                                }}>Request review</ActivityButton>
+                                <ActivityButton data-cy={SowCommands.REQUEST_REVIEW} block color="primary" name={SowCommands.REQUEST_REVIEW}
+                                  disabled={currentSow.numberReviews == 0}
+                                  onClick={toggleModalRequestReview}
+                                >Request review</ActivityButton>
                               }
                               {(currentSow.status == SowStatus.SUBMITTED || currentSow.status == SowStatus.MILESTONE_CLAIMED) &&
                                 <ActivityButton data-cy={SowCommands.REJECT + "Modal"} block color="primary" name={SowCommands.REJECT}
@@ -324,6 +327,7 @@ export const StatementOfWorkPage = () => {
           <ClaimMilestoneMet modal={modalOpenClaimMilestoneMet} toggle={toggleModalClaimMilestoneMet} />
           <AcceptMilestone modal={modalOpenAcceptMilestone} toggle={toggleModalAcceptMilestone} />
           <Reject modal={modalOpenReject} toggle={toggleModalReject} />
+          <RequestReview modal={modalOpenRequestReview} toggle={toggleModalRequestReview} />
         </Container>
       }
     </>

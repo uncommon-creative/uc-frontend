@@ -47,6 +47,9 @@ export const currentSlice = createSlice({
     didCompleteTransactionAcceptMilestoneFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 4),
 
     willReject: (state, action: PayloadAction<any>) => void (state.transactionPage = 2),
+
+    willRequestReview: (state, action: PayloadAction<any>) => state,
+    didRequestReview: (state, action: PayloadAction<any>) => void (state.transactionPage = 2),
   }
 })
 
@@ -59,7 +62,7 @@ export const {
   willPrepareTransactionAcceptAndPayAlgoSigner, didPrepareTransactionAcceptAndPayAlgoSigner, willCompleteTransactionAcceptAndPayAlgoSigner,
   willSignTransactionClaimMilestoneMet, didSignTransactionClaimMilestoneMet,
   didGetSignedMsig, willCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestoneFail,
-  willReject
+  willReject, willRequestReview, didRequestReview
 } = actions
 export const selectors = {
   getTransactionPage: (state: any) => state.transaction.transactionPage,
