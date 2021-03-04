@@ -39,6 +39,7 @@ export const StatementOfWorkPage = () => {
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   console.log("in statementOfWorkPage currentSow: ", currentSow)
   const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators);
+  const currentChosenArbitrator = useSelector(ArbitratorSelectors.getCurrentChosenArbitrator)
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const user = useSelector(AuthSelectors.getUser)
   const users = useSelector(ProfileSelectors.getUsers)
@@ -201,7 +202,7 @@ export const StatementOfWorkPage = () => {
                         <Jumbotron>
                           {currentArbitrators.map((element: any, index: any) => {
                             return (
-                              <ListGroupItem data-cy={`selectArbitrator${element.given_name}`} className={currentSow.arbitrator == element.user ? 'border border-primary bg-light' : 'border'} key={index}
+                              <ListGroupItem data-cy={`selectArbitrator${element.given_name}`} className={currentChosenArbitrator == element.user ? 'border border-primary bg-light' : 'border'} key={index}
                                 onClick={() => {
                                   console.log("selecting arbitrator: ", element)
                                 }}>
@@ -246,7 +247,7 @@ export const StatementOfWorkPage = () => {
                           {currentSow.buyer == user.username &&
                             <>
                               {currentSow.status == SowStatus.SUBMITTED &&
-                                <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={currentSow.arbitrator == null} block color="primary" name={SowCommands.ACCEPT_AND_PAY}
+                                <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={currentChosenArbitrator == null} block color="primary" name={SowCommands.ACCEPT_AND_PAY}
                                   onClick={toggleModalAcceptSow}
                                 >{currentSow.arbitrator == null ? "Select an arbitrator" : "Accept and pay"}</ActivityButton>
                               }

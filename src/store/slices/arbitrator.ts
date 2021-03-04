@@ -9,6 +9,7 @@ export const currentSlice = createSlice({
     arbitratorsList: [],
 
     currentArbitrator: {},
+    currentChosenArbitrator: '',
     currentSelectedArbitrators: [],
   },
   reducers: {
@@ -26,11 +27,13 @@ export const currentSlice = createSlice({
 
     willViewCurrentArbitrator: (state, action: PayloadAction<any>) => state,
     didViewCurrentArbitrator: (state, action: PayloadAction<any>) => void (state.currentArbitrator = action.payload),
-    willSelectArbitrator: (state, action: PayloadAction<any>) => void (state.currentSelectedArbitrators = state.currentSelectedArbitrators.concat(action.payload)),
+    willAddArbitrator: (state, action: PayloadAction<any>) => void (state.currentSelectedArbitrators = state.currentSelectedArbitrators.concat(action.payload)),
     willDeselectArbitrator: (state, action: PayloadAction<any>) => void (state.currentSelectedArbitrators.splice(action.payload, 1)),
     willSelectThreeArbitrators: (state, action: PayloadAction<any>) => void (state.currentSelectedArbitrators = action.payload),
 
     selectingOneArbitrator: (state, action: PayloadAction<any>) => void (state.selectingThreeArbitrators = false, state.selectingOneArbitrator = true),
+
+    willChooseArbitrator: (state, action: PayloadAction<any>) => void (state.currentChosenArbitrator = action.payload),
   }
 })
 
@@ -46,5 +49,6 @@ export const selectors = {
   getMyArbitratorSettings: (state: any) => state.arbitrator.myArbitratorSettings,
   getArbitratorsList: (state: any) => state.arbitrator.arbitratorsList,
   getCurrentArbitrator: (state: any) => state.arbitrator.currentArbitrator,
+  getCurrentChosenArbitrator: (state: any) => state.arbitrator.currentChosenArbitrator,
   getCurrentSelectedArbitrators: (state: any) => state.arbitrator.currentSelectedArbitrators,
 }
