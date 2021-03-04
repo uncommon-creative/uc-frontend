@@ -105,7 +105,7 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
                 <Button disabled color="primary">Arbitrator added</Button>
                 : currentSelectedArbitrators.length < 3 ?
                   <ActivityButton data-cy='inputSowArbitratorsAdd' name="ArbitratorDetailLG" color="primary" onClick={() => {
-                    dispatch(ArbitratorActions.willSelectArbitrator(currentArbitrator))
+                    dispatch(ArbitratorActions.willAddArbitrator(currentArbitrator))
                     toggle()
                   }}>Add to arbitrators</ActivityButton>
                   : <Button disabled color="primary">Max number of arbitrators added</Button>
@@ -115,7 +115,7 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
           {selectingOneArbitrator &&
             <ModalFooter>
               <ActivityButton data-cy='inputSowArbitratorsSelectOne' name="ArbitratorDetailLG" color="primary" onClick={() => {
-                dispatch(SowActions.willSelectArbitrator(currentArbitrator.user))
+                dispatch(ArbitratorActions.willChooseArbitrator(currentArbitrator.user))
                 toggle()
               }}>Select the arbitrator</ActivityButton>
             </ModalFooter>

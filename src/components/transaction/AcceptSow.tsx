@@ -15,7 +15,8 @@ import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
 
 import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
-import { actions as ChatActions, selectors as ChatSelectors } from '../../store/slices/chat'
+import { actions as ChatActions } from '../../store/slices/chat'
+import { selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
 import { actions as NotificationActions } from '../../store/slices/notification'
 import { actions as UIActions } from '../../store/slices/ui'
@@ -29,6 +30,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
+  const currentChosenArbitrator = useSelector(ArbitratorSelectors.getCurrentChosenArbitrator)
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
   const multiSig = useSelector(TransactionSelectors.getMultiSig)
   const transactionError = useSelector(TransactionSelectors.getError)
@@ -124,7 +126,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='continueTransaction' disabled={!acceptedConditions} name="continueTransaction" color="primary" onClick={() => {
-              dispatch(TransactionActions.willCreateMultiSigAddress({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator, price: currentSow.price }))
+              dispatch(TransactionActions.willCreateMultiSigAddress({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentChosenArbitrator, price: currentSow.price }))
             }}>Continue</ActivityButton>
           </ModalFooter>
         </>
