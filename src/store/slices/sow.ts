@@ -7,9 +7,9 @@ export const currentSlice = createSlice({
     attachments: [],
     newAttachments: [],
     currentSow: {} as any,
-    sowsAsSeller: [],
-    sowsAsBuyer: [],
-    sowsAsArbitrator: []
+    sowsAsSeller: [] as any,
+    sowsAsBuyer: [] as any,
+    sowsAsArbitrator: [] as any
   },
   reducers: {
     willConfirmArbitrators: (state, action: PayloadAction<any>) => void (state.currentArbitrators = action.payload.arbitrators),
