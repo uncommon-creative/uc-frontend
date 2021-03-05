@@ -34,6 +34,8 @@ Cypress.Commands.add("login", (user) => {
       .contains("new project"),
     'user submitted sow successfully'
   )
+  cy.scrollTo('top')   
+  cy.wait(5000)
 })
 
 Cypress.Commands.add("logout", () => {
