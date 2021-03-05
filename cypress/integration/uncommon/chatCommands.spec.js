@@ -93,7 +93,7 @@ describe('Chat', () => {
     cy.get('[data-cy=inputSowSubmit]')
       .click()
 
-    cy.wait(2000)
+    cy.wait(5000)
 
     assert.exists(
       cy.get('[data-cy=createSow]')
