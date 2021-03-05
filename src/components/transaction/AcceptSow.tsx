@@ -58,7 +58,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
 
           if (value.data.onAmountChecked.status === "AMOUNT_OK") {
             console.log("onAmountChecked value success: ", value)
-            dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentSow.arbitrator }))
+            dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentChosenArbitrator }))
             dispatch(TransactionActions.didCompleteTransactionAcceptAndPay(value.data))
           }
           else if (value.data.onAmountChecked.status === "AMOUNT_NOT_OK") {
@@ -92,7 +92,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   }, [transactionPage]);
 
   React.useEffect(() => {
-    modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
+    modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentChosenArbitrator }))
 
     return () => {
       setAcceptedConditions(false)
@@ -178,7 +178,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
             <ModalFooter>
               <ActivityButton data-cy='continueTransaction' disabled={!acceptedConditions} name="continueTransaction" color="primary" onClick={() => {
                 dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_AND_PAY }, sow: currentSow }));
-                dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentSow.arbitrator }))
+                dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentChosenArbitrator }))
                 dispatch(TransactionActions.goToTransactionPage(6))
               }}>Complete</ActivityButton>
             </ModalFooter>
@@ -270,7 +270,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               onClick={//completeTxnAPAlgoSigner
                 () => {
                   dispatch(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, toPay: payment.toPay, sow: currentSow.sow }))
-                  subscribeOnAmountChecked()
+                  // subscribeOnAmountChecked()
                 }
               }
             >Complete the transaction</ActivityButton>
