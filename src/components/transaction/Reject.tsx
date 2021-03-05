@@ -64,7 +64,6 @@ export const Reject = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-
     </Modal>
   )
 }
