@@ -170,13 +170,13 @@ export const confirmTxAsBuyer = async (sow: any, tx: any) => {
 
 export const algorandPollAccountAmount = async (id: any, account: any, amount: any) => {
   const query = loader('../graphql/algorandPollAccountAmount.gql')
-  console.log("in algorandPollAccountAmount id: ", id)
-  console.log("in algorandPollAccountAmount account: ", account)
-  console.log("in algorandPollAccountAmount amount: ", amount)
+  // console.log("in algorandPollAccountAmount id: ", id)
+  // console.log("in algorandPollAccountAmount account: ", account)
+  // console.log("in algorandPollAccountAmount amount: ", amount)
 
   try {
     const result: any = await API.graphql(graphqlOperation(query, { id: id, account: account, amount: amount }))
-    console.log("algorandPollAccountAmount result: ", result)
+    // console.log("algorandPollAccountAmount result: ", result)
     return result.data.algorandPollAccountAmount
   } catch (error) {
     console.log("algorandPollAccountAmount API error: ", error)

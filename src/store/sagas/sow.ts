@@ -304,7 +304,7 @@ function* willGetSowsListArbitrator() {
 
 function* willSelectSow(action: any) {
   console.log("in willSelectSow with: ", action)
-  const fullArbitrators = []
+  const fullArbitrators = [] as any
 
   if (Array.isArray(action.payload.sow.arbitrators)) {
     for (const arb of action.payload.sow.arbitrators) {
@@ -368,7 +368,7 @@ function* willGetSow(action: any) {
     yield put(ChatActions.willReadSowChat(action.payload))
     yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow } });
 
-    const fullArbitrators = []
+    const fullArbitrators = [] as any
     if (Array.isArray(result.arbitrators)) {
       for (const arb of result.arbitrators) {
         fullArbitrators.push(yield call(ArbitratorApi.getArbitrator, arb))

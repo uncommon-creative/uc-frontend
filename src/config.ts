@@ -18,6 +18,7 @@ export const configuration: any = {
     'aws_appsync_region': 'eu-west-1',
     'aws_appsync_authenticationType': 'AMAZON_COGNITO_USER_POOLS',
     'host': 'https://app.uncommon-demo.com',
-    'algorand_net': 'TestNet'
+    'algorand_net': 'TestNet',
+    'algorand_poll_account_amount_time': 120000
   }
 }

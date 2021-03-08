@@ -9,6 +9,7 @@ import * as TransactionApi from '../../api/transaction'
 import { willGetUserProfile } from '../sagas/profile'
 import { willSendCommandChat } from '../sagas/chat'
 import { TransactionFee } from '../slices/transaction'
+import { configuration } from '../../config'
 
 declare var AlgoSigner: any;
 
@@ -126,8 +127,10 @@ function* willCompleteTransactionAcceptAndPayQR(action: any) {
   yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayQR'));
 
   try {
-    const resultAlgorandPollAccountAmount = yield call(TransactionApi.algorandPollAccountAmount, action.payload.currentSow.sow, action.payload.multiSigAddress, action.payload.toPay)
-    console.log("willCompleteTransactionAcceptAndPayQR resultAlgorandPollAccountAmount: ", resultAlgorandPollAccountAmount)
+    yield call(willAlgorandPollAccountAmount, action)
+
+    // const resultAlgorandPollAccountAmount = yield call(TransactionApi.algorandPollAccountAmount, action.payload.currentSow.sow, action.payload.multiSigAddress, action.payload.total)
+    // console.log("willCompleteTransactionAcceptAndPayQR resultAlgorandPollAccountAmount: ", resultAlgorandPollAccountAmount)
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptAndPayQR ", error)
   }
@@ -165,7 +168,7 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
 }
 
 function* willPrepareTransactionAcceptAndPayAlgoSigner(action: any) {
-  console.log("in willPrepareTransactionAcceptAndPayAlgoSigner")
+  console.log("in willPrepareTransactionAcceptAndPayAlgoSigner with: ", action)
   yield put(UIActions.startActivityRunning('willPrepareTransactionAcceptAndPayAlgoSigner'));
 
   try {
@@ -175,10 +178,11 @@ function* willPrepareTransactionAcceptAndPayAlgoSigner(action: any) {
     let resultAccounts = yield call(TransactionApi.algoGetAccounts)
     console.log("willPrepareTransactionAcceptAndPayAlgoSigner resultAccounts: ", resultAccounts)
 
-    const resultAlgorandPollAccountAmount = yield call(TransactionApi.algorandPollAccountAmount, action.payload.sow, action.payload.multiSigAddress, action.payload.toPay)
-    console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultAlgorandPollAccountAmount: ", resultAlgorandPollAccountAmount)
-
     yield put(TransactionActions.didPrepareTransactionAcceptAndPayAlgoSigner(resultAccounts))
+
+    yield call(willAlgorandPollAccountAmount, action)
+    // const resultAlgorandPollAccountAmount = yield call(TransactionApi.algorandPollAccountAmount, action.payload.sow, action.payload.multiSigAddress, action.payload.total)
+    // console.log("willPrepareTransactionAcceptAndPayAlgoSigner resultAlgorandPollAccountAmount: ", resultAlgorandPollAccountAmount)
 
   } catch (error) {
     console.log("error in willPrepareTransactionAcceptAndPayAlgoSigner ", error)
@@ -288,4 +292,21 @@ function* willRequestReview(action: any) {
     console.log("error in willRequestReview ", error)
   }
   yield put(UIActions.stopActivityRunning('willRequestReview'));
+}
+
+function* willAlgorandPollAccountAmount(action: any) {
+  console.log("in willAlgorandPollAccountAmount with: ", action)
+  const activePolls = yield select(TransactionSelectors.getActivePolls)
+
+  try {
+    if ((!activePolls[action.payload.sow]) || (Date.now() - activePolls[action.payload.sow]) > configuration.dev.algorand_poll_account_amount_time) {
+      const resultAlgorandPollAccountAmount = yield call(TransactionApi.algorandPollAccountAmount, action.payload.sow, action.payload.multiSigAddress, action.payload.total)
+      console.log("willAlgorandPollAccountAmount resultAlgorandPollAccountAmount: ", resultAlgorandPollAccountAmount)
+
+      yield put(TransactionActions.didAlgorandPollAccountAmount({ sow: action.payload.sow, timestamp: Date.now() }))
+    }
+
+  } catch (error) {
+    console.log("error in willAlgorandPollAccountAmount ", error)
+  }
 }
