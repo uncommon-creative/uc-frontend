@@ -141,7 +141,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               <Row>
                 <Col>
                   <Card className="flex-fill" outline onClick={() => {
-                    dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, toPay: payment.toPay, currentSow: currentSow }))
+                    dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, total: payment.total, sow: currentSow.sow }))
                   }}>
                     <CardBody className="text-center">
                       <CardSubtitle tag="h5" className="mb-2 text-muted text-center">QR</CardSubtitle>
@@ -161,7 +161,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
                 </Col>
                 <Col>
                   <Card className="flex-fill" disabled onClick={() => {
-                    isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, toPay: payment.toPay }))
+                    isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, total: payment.total }))
                       : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
                   }}>
                     <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
@@ -212,7 +212,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayQR' name="willCompleteTransactionAcceptAndPayQR" color="primary" onClick={async () => {
-              // dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, toPay: payment.toPay, currentSow: currentSow }))
+              // dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, total: payment.total, sow: currentSow.sow }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -267,12 +267,10 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionAcceptAndPayAlgoSigner" color="primary"
-              onClick={//completeTxnAPAlgoSigner
-                () => {
-                  dispatch(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, toPay: payment.toPay, sow: currentSow.sow }))
-                  // subscribeOnAmountChecked()
-                }
-              }
+              onClick={() => {
+                dispatch(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, toPay: payment.toPay, sow: currentSow.sow }))
+                // subscribeOnAmountChecked()
+              }}
             >Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
