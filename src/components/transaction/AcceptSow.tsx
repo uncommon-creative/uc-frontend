@@ -150,7 +150,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
                   </Card>
                 </Col>
                 <Col>
-                  <Card className="flex-fill" onClick={() => {
+                  <Card data-cy='mnemonicAcceptAndPay' className="flex-fill" onClick={() => {
                     dispatch(TransactionActions.goToTransactionPage(4))
                   }}>
                     <CardBody className="text-center">
@@ -176,7 +176,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           </ModalBody>
           {payment.toPay <= 0 &&
             <ModalFooter>
-              <ActivityButton data-cy='continueTransaction' disabled={!acceptedConditions} name="continueTransaction" color="primary" onClick={() => {
+              <ActivityButton data-cy='completeAcceptAndPay' disabled={!acceptedConditions} name="completeAcceptAndPay" color="primary" onClick={() => {
                 dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_AND_PAY }, sow: currentSow }));
                 dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentChosenArbitrator }))
                 dispatch(TransactionActions.goToTransactionPage(6))
@@ -237,7 +237,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptAndPayMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, toPay: payment.toPay }))
+              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, toPay: payment.toPay, arbitrator: currentChosenArbitrator }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -287,7 +287,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
+            <ActivityButton data-cy="closeAcceptAndPay" name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
           </ModalFooter>
         </>
       }
