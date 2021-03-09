@@ -19,14 +19,13 @@ import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { ActivityButton } from '../components/common/ActivityButton'
 import { TagsInput } from '../components/TagsInput';
-import { selectors as UISelectors } from '../store/slices/ui'
 import Portrait from '../images/Portrait.png'
 
-// const ProfileSchema = Yup.object().shape({
-// });
-
-const ArbitratorSettingsSchema = Yup.object().shape({
+const ProfileSchema = Yup.object().shape({
   bio: Yup.string()
+    .min(3, 'Too Short!')
+    .required('Required'),
+  address: Yup.string()
     .min(3, 'Too Short!')
     .required('Required'),
   enabled: Yup.bool()
@@ -65,7 +64,8 @@ export const ProfilePage = () => {
   const userAttributes = useSelector(ProfileSelectors.getProfile)
   const myArbitratorSettings = useSelector(ArbitratorSelectors.getMyArbitratorSettings)
   const user = useSelector(AuthSelectors.getUser)
-  const [userBio, setuserBio] = React.useState(userAttributes.bio);
+  const [profileBio, setProfileBio] = React.useState(userAttributes.bio);
+  const [profileAddress, setProfileAddress] = React.useState(userAttributes.address);
   const [dropdownCurrencyOpen, setDropdownCurrencyOpen] = React.useState(false);
   const [switchEnabled, setSwitchEnabled] = React.useState(myArbitratorSettings ? myArbitratorSettings.enabled : false);
   const [feeCurrency, setFeeCurrency] = React.useState("ALGO");
@@ -86,14 +86,15 @@ export const ProfilePage = () => {
             <Formik
               enableReinitialize={true}
               initialValues={{
-                bio: userBio ? userBio : '',
+                bio: profileBio ? profileBio : '',
+                address: profileAddress ? profileAddress : '',
                 enabled: myArbitratorSettings && myArbitratorSettings.hasOwnProperty('enabled') ? myArbitratorSettings.enabled : switchEnabled,
                 feePercentage: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.perc : '',
                 feeFlat: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.flat : '',
                 currency: feeCurrency,
                 tags: myArbitratorSettings && myArbitratorSettings.tags && myArbitratorSettings.tags.length ? myArbitratorSettings.tags.map((tag: any) => JSON.parse(tag)) : []
               }}
-              validationSchema={ArbitratorSettingsSchema}
+              validationSchema={ProfileSchema}
               validateOnBlur={true}
               onSubmit={values => {
                 console.log('in onsubmit with: ', values)
@@ -133,15 +134,31 @@ export const ProfilePage = () => {
                       </Col>
                       <Col className="col-9">
                         <FormGroup>
-                          <Label for="profileBio">Bio</Label>
-                          <Input data-cy="profileBio" value={userBio} invalid={errors.bio && touched.bio ? true : false} type="textarea" name="profileBio" id="profileBio" placeholder="profileBio"
+                          <Label for="profileBio">Bio *</Label>
+                          <Input data-cy="profileBio" value={profileBio} invalid={errors.bio && touched.bio ? true : false} type="textarea" name="profileBio" id="profileBio" placeholder="profileBio"
                             onChange={(event: any) => {
-                              setuserBio(event.target.value)
+                              setProfileBio(event.target.value)
                               setFieldValue('bio', event.target.value)
                             }}
                           />
                           {errors.bio && touched.bio ? (
                             <FormFeedback>{errors.bio}</FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <FormGroup>
+                          <Label for="profileAddress">Address *</Label>
+                          <Input data-cy="profileAddress" value={profileAddress} invalid={errors.address && touched.address ? true : false} type="text" name="profileAddress" id="profileAddress" placeholder="profileAddress"
+                            onChange={(event: any) => {
+                              setProfileAddress(event.target.value)
+                              setFieldValue('address', event.target.value)
+                            }}
+                          />
+                          {errors.address && touched.address ? (
+                            <FormFeedback>{errors.address}</FormFeedback>
                           ) : null}
                         </FormGroup>
                       </Col>
