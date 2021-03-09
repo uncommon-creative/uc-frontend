@@ -68,7 +68,7 @@ export const RequestReview = ({ modal, toggle }: any) => {
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy="requestReviewCompleted" name="requestReviewCompleted" color="primary" onClick={toggle}>Close</ActivityButton>
+            <ActivityButton data-cy="closeRequestReview" name="closeRequestReview" color="primary" onClick={toggle}>Close</ActivityButton>
           </ModalFooter>
         </>
       }
