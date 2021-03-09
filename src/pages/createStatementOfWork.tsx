@@ -137,7 +137,7 @@ export const CreateStatementOfWorkPage = () => {
                 validateOnBlur={true}
                 onSubmit={values => {
                   console.log('in onsubmit with: ', values)
-                  dispatch(SowActions.willSubmitStatementOfWork({ sow: values, history: history }));
+                  dispatch(SowActions.willSubmitStatementOfWork({ sow: values/* , history: history */ }));
                 }}
               >
                 {({ errors, touched, setFieldValue, values }) => {
@@ -380,11 +380,12 @@ export const CreateStatementOfWorkPage = () => {
                           ) : null}
                         </Label>
                       </FormGroup>
+
                       <Row>
                         <Col><ActivityButton data-cy="inputSowSubmit" type="submit" name="submitSow" color="primary" block>{t('sow.submitStatementOfWork')}</ActivityButton></Col>
                       </Row>
                       <Row className="mt-2">
-                        <Col><Button color="primary" block outline name="draftSow" onClick={() => dispatch(SowActions.willDraftStatementOfWork({ sow: values, history: history }))}>Save draft</Button></Col>
+                        <Col><Button color="primary" block outline name="draftSow" onClick={() => dispatch(SowActions.willDraftStatementOfWork({ sow: values/* , history: history */ }))}>Save draft</Button></Col>
                         <Col><Button color="primary" block to="/" outline tag={Link}>Cancel</Button></Col>
                       </Row>
                     </Form>

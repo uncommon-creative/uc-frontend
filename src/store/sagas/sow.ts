@@ -1,4 +1,4 @@
-import { call, put, takeEvery, takeLatest, delay } from 'redux-saga/effects'
+import { call, put, takeEvery, takeLatest, delay, select } from 'redux-saga/effects'
 import { push } from 'connected-react-router'
 import update from 'immutability-helper';
 
@@ -6,7 +6,7 @@ import * as SowApi from '../../api/sow'
 import { actions as SowActions, SowStatus, SowCommands } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as ChatActions } from '../slices/chat'
-import { actions as ProfileActions } from '../slices/profile'
+import { actions as ProfileActions, selectors as ProfileSelectors } from '../slices/profile'
 import { actions as UIActions } from '../slices/ui'
 import * as ArbitratorApi from '../../api/arbitrator'
 import { willGetUserProfile } from '../sagas/profile'
@@ -106,33 +106,42 @@ function* willSubmitStatementOfWork(action: any) {
 
   yield put(UIActions.startActivityRunning("submitSow"));
 
+  const userAttributes = yield select(ProfileSelectors.getProfile)
+  console.log("in willSubmitStatementOfWork userAttributes: ", userAttributes)
   const tagsParsed = action.payload.sow.tags.map((tag: any) => JSON.stringify(tag))
   const arbitratorsParsed = action.payload.sow.arbitrators.map((arb: any) => arb.user)
 
   try {
-    const result = yield call(
-      SowApi.submitStatementOfWork,
-      action.payload.sow.sow,
-      arbitratorsParsed,
-      action.payload.sow.codeOfConduct,
-      action.payload.sow.currency,
-      action.payload.sow.buyer,
-      action.payload.sow.deadline,
-      action.payload.sow.description,
-      action.payload.sow.numberReviews,
-      action.payload.sow.price,
-      action.payload.sow.quantity,
-      tagsParsed,
-      action.payload.sow.termsOfService,
-      action.payload.sow.title,
-      action.payload.sow.sowExpiration
-    )
-    console.log("willSubmitStatementOfWork result: ", result)
+    if (userAttributes.address) {
+      const result = yield call(
+        SowApi.submitStatementOfWork,
+        action.payload.sow.sow,
+        arbitratorsParsed,
+        action.payload.sow.codeOfConduct,
+        action.payload.sow.currency,
+        action.payload.sow.buyer,
+        action.payload.sow.deadline,
+        action.payload.sow.description,
+        action.payload.sow.numberReviews,
+        action.payload.sow.price,
+        action.payload.sow.quantity,
+        tagsParsed,
+        action.payload.sow.termsOfService,
+        action.payload.sow.title,
+        action.payload.sow.sowExpiration
+      )
+      console.log("willSubmitStatementOfWork result: ", result)
 
-    yield call(willGetUserProfile, { user: result.buyer })
-    yield put(SowActions.didSubmitStatementOfWork(result))
-    yield put(push("/home"))
-    yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
+      yield call(willGetUserProfile, { user: result.buyer })
+      yield put(SowActions.didSubmitStatementOfWork(result))
+      yield put(push("/home"))
+      yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
+    }
+    else {
+      yield call(willDraftStatementOfWork, action)
+      yield put(push("/profile"))
+      yield put(NotificationActions.willShowNotification({ message: "Please complete your profile before submit.", type: "info" }));
+    }
   } catch (error) {
     console.log("error in willSubmitStatementOfWork ", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));

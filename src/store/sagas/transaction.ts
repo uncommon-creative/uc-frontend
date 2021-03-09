@@ -181,9 +181,6 @@ function* willPrepareTransactionAcceptAndPayAlgoSigner(action: any) {
     yield put(TransactionActions.didPrepareTransactionAcceptAndPayAlgoSigner(resultAccounts))
 
     yield call(willAlgorandPollAccountAmount, action)
-    // const resultAlgorandPollAccountAmount = yield call(TransactionApi.algorandPollAccountAmount, action.payload.sow, action.payload.multiSigAddress, action.payload.total)
-    // console.log("willPrepareTransactionAcceptAndPayAlgoSigner resultAlgorandPollAccountAmount: ", resultAlgorandPollAccountAmount)
-
   } catch (error) {
     console.log("error in willPrepareTransactionAcceptAndPayAlgoSigner ", error)
   }

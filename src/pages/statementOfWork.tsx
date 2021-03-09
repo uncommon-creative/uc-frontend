@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams, useHistory } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 
+import { actions as NotificationActions } from '../store/slices/notification'
 import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
@@ -37,8 +38,10 @@ export const StatementOfWorkPage = () => {
   let { code }: any = useParams();
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
+  let history = useHistory();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   console.log("in statementOfWorkPage currentSow: ", currentSow)
+  const userAttributes = useSelector(ProfileSelectors.getProfile)
   const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators);
   const currentChosenArbitrator = useSelector(ArbitratorSelectors.getCurrentChosenArbitrator)
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
@@ -99,7 +102,7 @@ export const StatementOfWorkPage = () => {
                   <Row>
                     <Col className="col-12">
                       <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Summary</CardSubtitle>
-                      
+
                       <Jumbotron>
                         {currentSow.seller == user.username && currentSow.status == SowStatus.SUBMITTED &&
                           <Button color="primary" block to="/create-statement-of-work" outline tag={Link}>Edit</Button>
@@ -146,7 +149,8 @@ export const StatementOfWorkPage = () => {
                                 {users[currentSow.arbitrator].given_name + ' ' + users[currentSow.arbitrator].family_name}
                               </CardText>
                             </Col>
-                          </Row>}
+                          </Row>
+                        }
                         <Row className="d-flex justify-content-between">
                           <Col className="col-12 col-lg-auto">
                             <CardText>Deadline:</CardText>
@@ -249,7 +253,13 @@ export const StatementOfWorkPage = () => {
                             <>
                               {currentSow.status == SowStatus.SUBMITTED &&
                                 <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={currentChosenArbitrator == ''} block color="primary" name={SowCommands.ACCEPT_AND_PAY}
-                                  onClick={toggleModalAcceptSow}
+                                  onClick={
+                                    userAttributes.address ? toggleModalAcceptSow
+                                      : () => {
+                                        history.push('/profile')
+                                        dispatch(NotificationActions.willShowNotification({ message: "Please complete your profile before accept and pay.", type: "info" }));
+                                      }
+                                  }
                                 >{currentChosenArbitrator == '' ? "Select an arbitrator" : "Accept and pay"}</ActivityButton>
                               }
                               {currentSow.status == SowStatus.ACCEPTED_PAID &&
