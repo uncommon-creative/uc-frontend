@@ -15,6 +15,11 @@ describe('Chat', () => {
       .type("Ceci n'est pas une biographie.")
       .should('have.value', "Ceci n'est pas une biographie.")
 
+    cy.get('[data-cy=profileAddress]')
+      .clear()
+      .type("Viale Regina Margherita, 71, 09124 Cagliari CA")
+      .should('have.value', "Viale Regina Margherita, 71, 09124 Cagliari CA")
+
     // enable and set arbitrator settings
     cy.get('[data-cy=arbitratorSettingsEnabled]')
       .parent()
@@ -72,5 +77,11 @@ describe('Chat', () => {
       .click('left')
     cy.get('[data-cy=submitProfile]')
       .click()
+
+    cy.get('[data-cy=profileBio]')
+      .should('have.value', "Ceci n'est pas une biographie.")
+
+    cy.get('[data-cy=profileAddress]')
+      .should('have.value', "Viale Regina Margherita, 71, 09124 Cagliari CA")
   })
 })
