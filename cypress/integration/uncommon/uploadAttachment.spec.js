@@ -82,7 +82,7 @@ describe('Attachment', () => {
       .click()
 
     cy.get('[data-cy=inputSowExpiration]')
-      .select('3 months')
+      .select('1 day')
 
     cy.get('[data-cy=inputSowTermsOfService]')
       .check()

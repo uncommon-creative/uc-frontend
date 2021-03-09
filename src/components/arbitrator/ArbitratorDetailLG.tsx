@@ -114,7 +114,7 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
           }
           {selectingOneArbitrator &&
             <ModalFooter>
-              <ActivityButton data-cy='inputSowArbitratorsSelectOne' name="ArbitratorDetailLG" color="primary" onClick={() => {
+              <ActivityButton data-cy='willChooseArbitrator' name="ArbitratorDetailLG" color="primary" onClick={() => {
                 dispatch(ArbitratorActions.willChooseArbitrator(currentArbitrator.user))
                 toggle()
               }}>Select the arbitrator</ActivityButton>

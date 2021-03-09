@@ -264,7 +264,7 @@ export const StatementOfWorkPage = () => {
                                 >Request review</ActivityButton>
                               }
                               {(currentSow.status == SowStatus.SUBMITTED || currentSow.status == SowStatus.MILESTONE_CLAIMED) &&
-                                <ActivityButton data-cy={SowCommands.REJECT + "Modal"} block color="primary" name={SowCommands.REJECT}
+                                <ActivityButton data-cy={SowCommands.REJECT} block color="primary" name={SowCommands.REJECT}
                                   onClick={toggleModalReject}
                                 >Reject</ActivityButton>
                               }
