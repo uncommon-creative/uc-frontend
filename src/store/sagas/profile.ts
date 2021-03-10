@@ -144,7 +144,19 @@ function* willSaveProfile(action: any) {
     console.log("willSaveProfile result", resultBio)
     yield put(ProfileActions.didSaveProfile(resultBio));
 
-    const resultAddress = yield call(ServiceApi.putProfileData, "address", action.payload.address)
+    const fullAddress = {
+      address: action.payload.address,
+      city: action.payload.addressCity,
+      zip: action.payload.addressZip,
+      state: action.payload.addressState,
+      country: action.payload.addressCountry
+    }
+
+    // const fullAddressString = action.payload.address + ', ' + action.payload.addressCity + ', ' + action.payload.addressState + ', ' + action.payload.addressZip + ', ' + action.payload.addressCountry
+    console.log("in willSaveProfile fullAddress: ", fullAddress)
+    // console.log("in willSaveProfile fullAddressString: ", fullAddressString)
+
+    const resultAddress = yield call(ServiceApi.putProfileData, "address", JSON.stringify(fullAddress))
     console.log("willSaveProfile result", resultAddress)
     yield put(ProfileActions.didSaveProfile(resultAddress));
   } catch (error) {
