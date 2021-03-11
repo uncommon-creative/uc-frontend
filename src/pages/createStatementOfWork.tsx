@@ -80,7 +80,7 @@ const StatementOfWorkSchema = Yup.object().shape({
   sowExpiration: Yup.number()
     .min(1, 'Select expiration')
     .required('Required'),
-  licenseTermsFlag: Yup.boolean()
+  licenseTermsOption: Yup.string()
     .required('Required'),
   licenseTermsNotes: Yup.string()
     .min(3, 'Too Short!')
@@ -137,7 +137,7 @@ export const CreateStatementOfWorkPage = () => {
                   codeOfConduct: false,
                   arbitrators: currentArbitrators,
                   sowExpiration: 0,
-                  licenseTermsFlag: currentSow.licenseTermsFlag ? currentSow.licenseTermsFlag : null,
+                  licenseTermsOption: currentSow.licenseTermsOption ? currentSow.licenseTermsOption : '',
                   licenseTermsNotes: currentSow.licenseTermsNotes ? currentSow.licenseTermsNotes : ''
                 }}
                 validationSchema={StatementOfWorkSchema}
@@ -223,17 +223,13 @@ export const CreateStatementOfWorkPage = () => {
                                         setFieldValue('currency', "ALGO")
                                         setPriceCurrency("ALGO")
                                       }}
-                                    >
-                                      ALGO
-                              </DropdownItem>
+                                    >ALGO</DropdownItem>
                                     <DropdownItem disabled={priceCurrency == "USDC"}
                                       onClick={() => {
                                         setFieldValue('currency', "USDC")
                                         setPriceCurrency("USDC")
                                       }}
-                                    >
-                                      USDC
-                              </DropdownItem>
+                                    >USDC</DropdownItem>
                                   </DropdownMenu>
                                 </InputGroupButtonDropdown>
                                 {errors.price && touched.price ? (
@@ -346,6 +342,47 @@ export const CreateStatementOfWorkPage = () => {
                         </FormGroup>
                       </Jumbotron>
                       <Row>
+                        <Col>
+                          {/* <FormGroup> */}
+                            <Label for="licenseTerms">{t('sow.input.sowLicenseTermsLabel')} *</Label>
+                            <FormGroup check>
+                              <Input type="radio" name="licenseTerms" id="licenseTerms-option1" checked={values.licenseTermsOption == 'option1'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
+                                onClick={(event: any) => {
+                                  console.log("event1: ", event.target.checked)
+                                  setFieldValue("licenseTermsOption", 'option1')
+                                  setFieldValue("licenseTermsNotes", t('sow.input.sowLicenseTermsLabelOption1'))
+                                }}
+                              />
+                              <Label check for="licenseTerms-option1">
+                                {t('sow.input.sowLicenseTermsLabelOption1')}
+                              </Label>
+                            </FormGroup>
+                            <FormGroup check>
+                              <Input type="radio" name="licenseTerms" id="licenseTerms-option2" checked={values.licenseTermsOption == 'option2'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
+                                onClick={(event: any) => {
+                                  console.log("event2: ", event.target.checked)
+                                  setFieldValue("licenseTermsOption", 'option2')
+                                  setFieldValue("licenseTermsNotes", '')
+                                }} />
+                              <Label check for="licenseTerms-option2">
+                                {t('sow.input.sowLicenseTermsLabelOption2')}
+                              </Label>
+                              <Input hidden={values.licenseTermsOption != 'option2'} value={values.licenseTermsNotes} type="textarea" name="licenseTermsNotes" id="licenseTermsNotes" placeholder="licenseTermsNotes" invalid={errors.licenseTermsNotes && touched.licenseTermsNotes ? true : false}
+                                onChange={(event: any) => {
+                                  setFieldValue("licenseTermsNotes", event.target.value)
+                                }}
+                              />
+                              {errors.licenseTermsOption && touched.licenseTermsOption ? (
+                                <FormFeedback>{errors.licenseTermsOption}</FormFeedback>
+                              ) : null}
+                              {errors.licenseTermsNotes && touched.licenseTermsNotes ? (
+                                <FormFeedback hidden={values.licenseTermsOption != 'option2'}>{errors.licenseTermsNotes}</FormFeedback>
+                              ) : null}
+                            </FormGroup>
+                          {/* </FormGroup> */}
+                        </Col>
+                      </Row>
+                      <Row>
                         <Col className="col-md-4 col-12">
                           <FormGroup>
                             <Label for="sowExpiration">{t('sow.input.sowExpirationLabel')} *</Label>
@@ -366,49 +403,6 @@ export const CreateStatementOfWorkPage = () => {
                             {errors.sowExpiration && touched.sowExpiration ? (
                               <FormFeedback className="d-block">{errors.sowExpiration}</FormFeedback>
                             ) : null}
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col>
-                          <FormGroup>
-                            <Label for="licenseTerms">{t('sow.input.sowLicenseTermsLabel')} *</Label>
-                            <FormGroup check>
-                              <Input type="radio" name="licenseTerms" id="licenseTerms-option1"
-                                onClick={(event: any) => {
-                                  console.log("event1: ", event.target.checked)
-                                  setFieldValue("licenseTerms", t('sow.input.sowLicenseTermsLabelOption1'))
-                                }}
-                              />
-                              <Label check for="licenseTerms-option1">
-                                {t('sow.input.sowLicenseTermsLabelOption1')}
-                              </Label>
-                            </FormGroup>
-                            <FormGroup check>
-                              <Input type="radio" name="licenseTerms" id="licenseTerms-option2"
-                                onClick={(event: any) => {
-                                  console.log("event2: ", event.target.checked)
-                                  setFieldValue("licenseTerms", '')
-                                }} />
-                              <Label check for="licenseTerms-option2">
-                                {t('sow.input.sowLicenseTermsLabelOption2')}
-                              </Label>
-                              <Input /* value={mnemonicSecretKey} */ type="textarea" name="licenseTerms-option2-text" id="licenseTerms-option2-text" placeholder="licenseTerms-option2-text"
-                                onChange={(event: any) => {
-                                  setFieldValue("licenseTerms", event.target.value)
-                                }}
-                              />
-                            </FormGroup>
-
-                            {/* <Label check>
-                              <Input data-cy="inputSowLicenseTerms" invalid={errors.LicenseTerms && touched.LicenseTerms ? true : false} name="LicenseTerms" id="LicenseTerms" type="checkbox"
-                                onChange={(event) => setFieldValue("LicenseTerms", event.target.checked)}
-                              />
-                              License Terms *
-                              {errors.LicenseTerms && touched.LicenseTerms ? (
-                                <FormFeedback>{errors.LicenseTerms}</FormFeedback>
-                              ) : null}
-                            </Label> */}
                           </FormGroup>
                         </Col>
                       </Row>
