@@ -1,8 +1,8 @@
-mutation confirmTxAsBuyer(
+mutation algorandPutTransaction(
   $sow: ID,
   $tx: String
 ) {
-  confirmTxAsBuyer(
+  algorandPutTransaction(
     sow: $sow,
     tx: $tx
   )

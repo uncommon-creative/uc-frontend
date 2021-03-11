@@ -16,6 +16,7 @@ declare var AlgoSigner: any;
 export function* sagas() {
   yield takeLatest(TransactionActions.willGetAlgorandAccountInfo.type, willGetAlgorandAccountInfo)
   yield takeLatest(TransactionActions.willGetParams.type, willGetParams)
+  yield takeLatest(TransactionActions.willGetParamsWithDelay.type, willGetParamsWithDelay)
   yield takeLatest(TransactionActions.willCreateMultiSigAddress.type, willCreateMultiSigAddress)
   yield takeLatest(TransactionActions.willPreparePayment.type, willPreparePayment)
   yield takeLatest(TransactionActions.willSetSowArbitrator.type, willSetSowArbitrator)
@@ -56,6 +57,23 @@ function* willGetParams(action: any) {
 
   } catch (error) {
     console.log("error in willGetParams ", error)
+  }
+}
+
+function* willGetParamsWithDelay(action: any) {
+  console.log("in willGetParamsWithDelay with: ", action)
+
+  try {
+    yield call(willGetUserProfile, { user: action.payload.seller })
+    yield call(willGetUserProfile, { user: action.payload.buyer })
+    yield call(willGetUserProfile, { user: action.payload.arbitrator })
+
+    const result = yield call(TransactionApi.algorandGetTxParamsWithDelay);
+    console.log("result willGetParamsWithDelay: ", result)
+    yield put(TransactionActions.didGetParamsWithDelay(result))
+
+  } catch (error) {
+    console.log("error in willGetParamsWithDelay ", error)
   }
 }
 
@@ -254,7 +272,7 @@ function* willCompleteTransactionAcceptMilestone(action: any) {
     const resultAppendSignMultisigTransaction = yield call(TransactionApi.appendSignMultisigTransaction, action.payload.signedMsig, action.payload.mnemonicSecretKey, msigparams)
     console.log("willCompleteTransactionAcceptMilestone resultAppendSignMultisigTransaction: ", resultAppendSignMultisigTransaction)
 
-    const resultConfirmedMultisigTransaction = yield call(TransactionApi.confirmTxAsBuyer, action.payload.currentSow.sow, resultAppendSignMultisigTransaction)
+    const resultConfirmedMultisigTransaction = yield call(TransactionApi.algorandPutTransaction, action.payload.currentSow.sow, resultAppendSignMultisigTransaction)
     console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction: ", resultConfirmedMultisigTransaction)
 
     if (resultConfirmedMultisigTransaction === "sendTxFailed" || resultConfirmedMultisigTransaction === "TransactionPool.Remember: txn dead:") {
