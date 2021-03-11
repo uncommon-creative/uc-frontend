@@ -264,9 +264,9 @@ export const StatementOfWorkPage = () => {
                                     }
                                   >
                                     <span id={SowCommands.ACCEPT_AND_PAY}>Accept and pay</span>
-                                  <Tooltip placement="top" isOpen={tooltipOpenAcceptAndPay} target={SowCommands.ACCEPT_AND_PAY} toggle={toggleAcceptAndPay}>
-                                    Please choose an arbitrator 
-                                  </Tooltip>
+                                    <Tooltip placement="top" isOpen={tooltipOpenAcceptAndPay} target={SowCommands.ACCEPT_AND_PAY} toggle={currentChosenArbitrator == '' ? toggleAcceptAndPay : () => { }}>
+                                      Please choose an arbitrator
+                                    </Tooltip>
                                   </ActivityButton>
                                 </>
 
