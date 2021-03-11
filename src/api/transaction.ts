@@ -171,8 +171,8 @@ export const algorandPutTransaction = async (sow: any, tx: any) => {
   const mutation = loader('../graphql/algorandPutTransaction.gql')
 
   try {
-    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, tx: tx.blob.toString() }))
-    // console.log("algorandPutTransaction result: ", result)
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, blob: tx.blob.toString() }))
+    console.log("algorandPutTransaction result: ", result)
     return result.data.algorandPutTransaction
   } catch (error) {
     console.log("algorandPutTransaction API error: ", error)

@@ -1,9 +1,9 @@
 mutation algorandPutTransaction(
-  $sow: ID,
-  $tx: String
+  $sow: String,
+  $blob: String
 ) {
   algorandPutTransaction(
     sow: $sow,
-    tx: $tx
+    blob: $blob
   )
 }
