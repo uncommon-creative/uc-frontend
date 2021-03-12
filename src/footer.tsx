@@ -11,8 +11,8 @@ import AlgorandLogo from './images/Algorand.png'
 export const Footer = ({ className }: any) => {
 
   return (
-    <Container>
-      <Navbar className={className} color="white" light expand="md">
+    <Container className={className} style={{height: '75px'}}>
+      <Navbar color="white" light expand="md">
         <Nav navbar className="mx-auto">
           <NavItem className="mx-3">
             <a target="_blank" className="text-muted" href="https://uncommon-creative.net/">Home</a>
