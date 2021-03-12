@@ -10,6 +10,7 @@ import { willGetUserProfile } from '../sagas/profile'
 import { willSendCommandChat } from '../sagas/chat'
 import { TransactionFee } from '../slices/transaction'
 import { configuration } from '../../config'
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
 declare var AlgoSigner: any;
 
@@ -296,7 +297,7 @@ function* willAlgorandPollAccountAmount(action: any) {
   const activePolls = yield select(TransactionSelectors.getActivePolls)
 
   try {
-    if ((!activePolls[action.payload.sow]) || (Date.now() - activePolls[action.payload.sow]) > configuration.dev.algorand_poll_account_amount_time) {
+    if ((!activePolls[action.payload.sow]) || (Date.now() - activePolls[action.payload.sow]) > configuration[stage].algorand_poll_account_amount_time) {
       const resultAlgorandPollAccountAmount = yield call(TransactionApi.algorandPollAccountAmount, action.payload.sow, action.payload.multiSigAddress, action.payload.total)
       console.log("willAlgorandPollAccountAmount resultAlgorandPollAccountAmount: ", resultAlgorandPollAccountAmount)
 
