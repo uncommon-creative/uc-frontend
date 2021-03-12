@@ -70,7 +70,7 @@ export const SignupConfirmPage = () => {
   return (
     <>
       {!isLoading &&
-        <Container className="mt-3 mt-lg-10">
+        <Container className="mt-3">
           {emailConfirm == "PASSWORD_RESET" ?
             <Jumbotron>
               <CardTitle tag="h5" className="text-center">Reset Password Page</CardTitle>

@@ -69,7 +69,7 @@ export const SignupPage = () => {
     <>
       {!isLoading &&
         <Container>
-          <Card className="mt-3 mt-lg-10">
+          <Card className="mt-3">
             <CardBody>
               <CardTitle tag="h5" className="text-center">Signup Page</CardTitle>
               <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Hint: Insert Email e Password</CardSubtitle>
