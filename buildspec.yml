@@ -1,7 +1,7 @@
 version: 0.2
 env:
   variables:
-    REACT_APP_STAGE: REACT_APP_STAGE
+    REACT_APP_STAGE: $REACT_APP_STAGE
 phases:
   install:
     runtime-versions:
