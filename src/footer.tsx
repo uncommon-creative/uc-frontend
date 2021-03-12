@@ -30,7 +30,7 @@ export const Footer = ({ className }: any) => {
       </Navbar>
       <Row className="text-muted text-center">
         <Col>
-          <CardText style={{ fontSize: 14 }}>Uncommon Digital SRL © All rights reserved. Powered by <img src={AlgorandLogo} height="14" alt="Uncommon Creative Logo" /></ CardText>
+          <CardText style={{ fontSize: 14 }}>Uncommon Digital SRL © All rights reserved. Powered by <img src={AlgorandLogo} height="14" alt="Algorand Logo" /></ CardText>
         </Col>
       </Row>
     </Container>

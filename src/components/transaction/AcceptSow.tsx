@@ -22,6 +22,8 @@ import { actions as NotificationActions } from '../../store/slices/notification'
 import { actions as UIActions } from '../../store/slices/ui'
 import { ActivityButton } from '../common/ActivityButton';
 import { Payment } from './Payment'
+import AlgoSignerLogo from '../../images/AlgoSigner.png'
+
 
 declare var AlgoSigner: any;
 
@@ -140,7 +142,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
             {payment.toPay > 0 &&
               <Row>
                 <Col>
-                  <Card className="flex-fill" outline onClick={() => {
+                  <Card outline onClick={() => {
                     dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, total: payment.total, sow: currentSow.sow }))
                   }}>
                     <CardBody className="text-center">
@@ -150,7 +152,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
                   </Card>
                 </Col>
                 <Col>
-                  <Card data-cy='mnemonicAcceptAndPay' className="flex-fill" onClick={() => {
+                  <Card data-cy='mnemonicAcceptAndPay' onClick={() => {
                     dispatch(TransactionActions.goToTransactionPage(4))
                   }}>
                     <CardBody className="text-center">
@@ -160,14 +162,14 @@ export const AcceptSow = ({ modal, toggle }: any) => {
                   </Card>
                 </Col>
                 <Col>
-                  <Card className="flex-fill" disabled onClick={() => {
+                  <Card disabled onClick={() => {
                     isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, total: payment.total }))
                       : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
                   }}>
                     <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
                       <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner</CardSubtitle>
                       {!isAlgoSignInstalled && <CardSubtitle tag="h6" className="mb-2 text-muted text-center">(not installed)</CardSubtitle>}
-                      <FontAwesomeIcon icon={faExclamationTriangle} size="5x" />
+                      <img src={AlgoSignerLogo} height="80" alt="AlgoSigner Logo" />
                     </CardBody>
                   </Card>
                 </Col>
