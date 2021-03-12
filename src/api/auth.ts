@@ -15,7 +15,6 @@ export const isAuthenticated = async () => {
   } catch (error) {
     return false;
   }
-
 }
 
 export const getAuthenticatedUser = async () => {

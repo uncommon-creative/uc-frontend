@@ -14,6 +14,8 @@ import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '
 import { ArbitratorDetailLG } from './ArbitratorDetailLG'
 import Portrait from '../../images/Portrait.png'
 
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
+
 export const ArbitratorDetailXS = ({ arbitrator, index }: any) => {
 
   const dispatch = useDispatch();
@@ -38,7 +40,7 @@ export const ArbitratorDetailXS = ({ arbitrator, index }: any) => {
       </Col> */}
         <Col className="col-3 p-0 text-center">
           <img height="45" alt="Portrait" onError={addDefaultSrc}
-            src={`${configuration.dev.host}/resources/${arbitrator.user}/portrait?${Date.now()}`}
+            src={`${configuration[stage].host}/resources/${arbitrator.user}/portrait?${Date.now()}`}
           />
           {!selectingOneArbitrator &&
             <CardImgOverlay className="p-0">

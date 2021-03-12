@@ -20,5 +20,27 @@ export const configuration: any = {
     'host': 'https://app.uncommon-demo.com',
     'algorand_net': 'TestNet',
     'algorand_poll_account_amount_time': 120000
+  },
+  demo: {
+    Auth: {
+
+      // REQUIRED - Amazon Cognito Region
+      region: 'eu-west-1',
+
+      // OPTIONAL - Amazon Cognito User Pool ID
+      userPoolId: 'eu-west-1_BUjZx7mY6',
+
+      userPoolWebClientId: '3g1f1q1g79aimflohv2ub8jf2q',
+
+      // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
+      mandatorySignIn: false
+
+    },
+    'aws_appsync_graphqlEndpoint': 'https://ffcdzwrsorfytmiktc3id4jw74.appsync-api.eu-west-1.amazonaws.com/graphql',
+    'aws_appsync_region': 'eu-west-1',
+    'aws_appsync_authenticationType': 'AMAZON_COGNITO_USER_POOLS',
+    'host': 'https://demo.uncommon-demo.com',
+    'algorand_net': 'TestNet',
+    'algorand_poll_account_amount_time': 120000
   }
 }
