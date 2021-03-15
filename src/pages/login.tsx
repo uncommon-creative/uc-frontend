@@ -51,7 +51,7 @@ export const LoginPage = () => {
     <>
       {!isLoading &&
         <Container>
-          <Card className="mt-3 mt-lg-10">
+          <Card className="mt-3">
             {!forgotPassword ?
               <CardBody>
                 <CardTitle tag="h5" className="text-center">Login Page</CardTitle>

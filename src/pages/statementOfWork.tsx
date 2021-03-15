@@ -1,9 +1,7 @@
 import * as React from 'react';
 import {
   Card, CardText, CardBody, CardTitle, CardSubtitle,
-  Button, Container, Col, Row, Spinner,
-  Modal, ModalHeader, ModalBody, ModalFooter,
-  ListGroup, ListGroupItemHeading, ListGroupItem, Jumbotron,
+  Button, Container, Col, Row, Tooltip, ListGroupItem, Jumbotron,
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams, useHistory } from "react-router-dom";
@@ -60,6 +58,9 @@ export const StatementOfWorkPage = () => {
   const toggleModalAcceptMilestone = () => setModalOpenAcceptMilestone(!modalOpenAcceptMilestone);
   const toggleModalReject = () => setModalOpenReject(!modalOpenReject);
   const toggleModalRequestReview = () => setModalOpenRequestReview(!modalOpenRequestReview);
+
+  const [tooltipOpenAcceptAndPay, setTooltipOpenAcceptAndPay] = React.useState(false);
+  const toggleAcceptAndPay = () => setTooltipOpenAcceptAndPay(!tooltipOpenAcceptAndPay);
 
   React.useEffect(() => {
     console.log("in statementOfWorkPage currentSow: ", currentSow)
@@ -252,15 +253,23 @@ export const StatementOfWorkPage = () => {
                           {currentSow.buyer == user.username &&
                             <>
                               {currentSow.status == SowStatus.SUBMITTED &&
-                                <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={currentChosenArbitrator == ''} block color="primary" name={SowCommands.ACCEPT_AND_PAY}
-                                  onClick={
-                                    userAttributes.address ? toggleModalAcceptSow
-                                      : () => {
-                                        history.push('/profile')
-                                        dispatch(NotificationActions.willShowNotification({ message: "Please complete your profile before accept and pay.", type: "info" }));
-                                      }
-                                  }
-                                >{currentChosenArbitrator == '' ? "Select an arbitrator" : "Accept and pay"}</ActivityButton>
+                                <>
+                                  <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={currentChosenArbitrator == ''} block color="primary" name={SowCommands.ACCEPT_AND_PAY}
+                                    onClick={
+                                      userAttributes.address ? toggleModalAcceptSow
+                                        : () => {
+                                          history.push('/profile')
+                                          dispatch(NotificationActions.willShowNotification({ message: "Please complete your profile before accept and pay.", type: "info" }));
+                                        }
+                                    }
+                                  >
+                                    <span id={SowCommands.ACCEPT_AND_PAY}>Accept and pay</span>
+                                    <Tooltip placement="top" isOpen={tooltipOpenAcceptAndPay} target={SowCommands.ACCEPT_AND_PAY} toggle={currentChosenArbitrator == '' ? toggleAcceptAndPay : () => { }}>
+                                      Please choose an arbitrator
+                                    </Tooltip>
+                                  </ActivityButton>
+                                </>
+
                               }
                               {currentSow.status == SowStatus.ACCEPTED_PAID &&
                                 <CardText className="text-muted text-center">

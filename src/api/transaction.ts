@@ -1,8 +1,11 @@
 import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
 import * as _ from 'lodash';
+
 import { TransactionFee } from '../store/slices/transaction'
 import { configuration } from '../config'
+
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 const algosdk = require('algosdk');
 
 declare var AlgoSigner: any;
@@ -201,7 +204,7 @@ export const algoConnect = async () => {
 export const algoGetAccounts = async () => {
   try {
     let accounts = await AlgoSigner.accounts({
-      ledger: configuration.dev.algorand_net
+      ledger: configuration[stage].algorand_net
     });
     // console.log("algoGetAccounts accounts: ", accounts)
 
@@ -224,7 +227,7 @@ export const algoGetAccounts = async () => {
 export const algoSign = async (from: any, multiSigAddress: any, toPay: any, sow: any) => {
   try {
     let paramsAlgoSigner = await AlgoSigner.algod({
-      ledger: configuration.dev.algorand_net,
+      ledger: configuration[stage].algorand_net,
       path: '/v2/transactions/params',
     });
 
@@ -253,7 +256,7 @@ export const algoSign = async (from: any, multiSigAddress: any, toPay: any, sow:
 export const algoSendTx = async (signedTxn: any) => {
   try {
     let result = await AlgoSigner.send({
-      ledger: configuration.dev.algorand_net,
+      ledger: configuration[stage].algorand_net,
       tx: signedTxn.blob,
     });
     console.log("algoSendTx result: ", result);
