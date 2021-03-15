@@ -17,6 +17,7 @@ export const configuration: any = {
     'aws_appsync_graphqlEndpoint': 'https://na5y3uyopje3rbqfvb6o6kscli.appsync-api.eu-west-1.amazonaws.com/graphql',
     'aws_appsync_region': 'eu-west-1',
     'aws_appsync_authenticationType': 'AMAZON_COGNITO_USER_POOLS',
+    'arbitrators_list_webhook': 'https://dbyc3f5xvj.execute-api.eu-west-1.amazonaws.com/dev/arbitrators',
     'host': 'https://app.uncommon-demo.com',
     'algorand_net': 'TestNet',
     'algorand_poll_account_amount_time': 120000
@@ -39,6 +40,7 @@ export const configuration: any = {
     'aws_appsync_graphqlEndpoint': 'https://ffcdzwrsorfytmiktc3id4jw74.appsync-api.eu-west-1.amazonaws.com/graphql',
     'aws_appsync_region': 'eu-west-1',
     'aws_appsync_authenticationType': 'AMAZON_COGNITO_USER_POOLS',
+    'arbitrators_list_webhook': 'https://g4uq7oz57f.execute-api.eu-west-1.amazonaws.com/demo/arbitrators',
     'host': 'https://demo.uncommon-demo.com',
     'algorand_net': 'TestNet',
     'algorand_poll_account_amount_time': 120000
