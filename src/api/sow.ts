@@ -225,3 +225,15 @@ export const getSow = async (sow: any) => {
     throw error
   }
 }
+
+export const buildHtml = async (sow: any) => {
+  const mutation = loader('../graphql/buildHtml.gql');
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow }));
+    console.log('buildHtml with result: ', result);
+    return result.data.buildHtml
+  } catch (error) {
+    throw error
+  }
+}

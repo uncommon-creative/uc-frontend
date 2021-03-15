@@ -1,0 +1,7 @@
+mutation buildHtml(
+  $sow: ID!
+){
+  buildHtml(
+    sow: $sow
+  )
+}

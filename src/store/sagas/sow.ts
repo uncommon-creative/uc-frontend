@@ -25,6 +25,7 @@ export function* sagas() {
   yield takeLatest(SowActions.willSelectSow.type, willSelectSow)
   yield takeLatest(SowActions.willGetSowAttachmentsList.type, willGetSowAttachmentsList)
   yield takeLatest(SowActions.willGetSow.type, willGetSow)
+  yield takeLatest(SowActions.willBuildHtml.type, willBuildHtml)
   console.log('in sow saga');
 }
 
@@ -395,4 +396,20 @@ function* willGetSow(action: any) {
     console.log("error in willGetSow ", error)
   }
   yield put(UIActions.stopActivityRunning("getSow"));
+}
+
+function* willBuildHtml(action: any) {
+  console.log("in willBuildHtml with: ", action)
+  yield put(UIActions.startActivityRunning("willBuildHtml"));
+
+  try {
+    const result = yield call(SowApi.buildHtml, action.payload.sow);
+    console.log("result willBuildHtml: ", result)
+
+    yield put(SowActions.didBuildHtml(result))
+
+  } catch (error) {
+    console.log("error in willBuildHtml ", error)
+  }
+  yield put(UIActions.stopActivityRunning("willBuildHtml"));
 }
