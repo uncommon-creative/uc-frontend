@@ -25,6 +25,8 @@ query getSowsListSeller{
       sowExpiration
       submittedDate
       signedMsig
+      licenseTermsOption
+      licenseTermsNotes
     }
     nextToken
   }

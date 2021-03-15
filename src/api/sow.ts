@@ -32,7 +32,9 @@ export const draftStatementOfWork = async (
   tags: any,
   termsOfService: any,
   title: any,
-  sowExpiration: any
+  sowExpiration: any,
+  licenseTermsOption: any,
+  licenseTermsNotes: any
 ) => {
 
   const mutation = loader('../graphql/draftSow.gql')
@@ -52,7 +54,9 @@ export const draftStatementOfWork = async (
       tags: tags,
       termsOfService: termsOfService,
       title: title,
-      sowExpiration: sowExpiration
+      sowExpiration: sowExpiration,
+      licenseTermsOption: licenseTermsOption,
+      licenseTermsNotes: licenseTermsNotes
     }))
     // console.log("draftSow result: ", result)
     return result.data.draftSow
@@ -76,7 +80,9 @@ export const submitStatementOfWork = async (
   tags: any,
   termsOfService: any,
   title: any,
-  sowExpiration: any
+  sowExpiration: any,
+  licenseTermsOption: any,
+  licenseTermsNotes: any
 ) => {
 
   const mutation = loader('../graphql/submitSow.gql')
@@ -96,7 +102,9 @@ export const submitStatementOfWork = async (
       tags: tags,
       termsOfService: termsOfService,
       title: title,
-      sowExpiration: sowExpiration
+      sowExpiration: sowExpiration,
+      licenseTermsOption: licenseTermsOption,
+      licenseTermsNotes: licenseTermsNotes
     }))
     // console.log("submitSow rawResult: ", result)
     return result.data.submitSow

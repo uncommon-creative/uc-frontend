@@ -88,7 +88,9 @@ function* willDraftStatementOfWork(action: any) {
       tagsParsed,
       action.payload.sow.termsOfService,
       action.payload.sow.title,
-      action.payload.sow.sowExpiration
+      action.payload.sow.sowExpiration,
+      action.payload.sow.licenseTermsOption,
+      action.payload.sow.licenseTermsNotes
     )
     console.log("willDraftStatementOfWork result: ", result)
 
@@ -128,7 +130,9 @@ function* willSubmitStatementOfWork(action: any) {
         tagsParsed,
         action.payload.sow.termsOfService,
         action.payload.sow.title,
-        action.payload.sow.sowExpiration
+        action.payload.sow.sowExpiration,
+        action.payload.sow.licenseTermsOption,
+        action.payload.sow.licenseTermsNotes
       )
       console.log("willSubmitStatementOfWork result: ", result)
 
