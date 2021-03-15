@@ -81,6 +81,15 @@ export const SowDetails = ({ modal, toggle }: any) => {
             </CardText>
           </Col>
         </Row>
+        {currentSow.licenseTermsNotes &&
+          <Row>
+            <Col>
+              <CardText className="my-1" name="licenseTerms" id="licenseTerms">
+                License Terms: {currentSow.licenseTermsNotes}
+              </CardText>
+            </Col>
+          </Row>
+        }
         <Jumbotron>
           {/* <CardSubtitle className="text-center text-muted">Milestone 1</CardSubtitle> */}
           <Row className="">

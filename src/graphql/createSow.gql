@@ -18,5 +18,7 @@ mutation createSow{
     createdAt
     updatedAt
     status
+    licenseTermsOption
+    licenseTermsNotes
   }
 }
