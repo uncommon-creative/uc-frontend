@@ -346,7 +346,7 @@ export const CreateStatementOfWorkPage = () => {
                           {/* <FormGroup> */}
                             <Label for="licenseTerms">{t('sow.input.sowLicenseTermsLabel')} *</Label>
                             <FormGroup check>
-                              <Input type="radio" name="licenseTerms" id="licenseTerms-option1" checked={values.licenseTermsOption == 'option1'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
+                              <Input data-cy="licenseTerms-option1" type="radio" name="licenseTerms" id="licenseTerms-option1" checked={values.licenseTermsOption == 'option1'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
                                 onClick={(event: any) => {
                                   console.log("event1: ", event.target.checked)
                                   setFieldValue("licenseTermsOption", 'option1')
@@ -358,7 +358,7 @@ export const CreateStatementOfWorkPage = () => {
                               </Label>
                             </FormGroup>
                             <FormGroup check>
-                              <Input type="radio" name="licenseTerms" id="licenseTerms-option2" checked={values.licenseTermsOption == 'option2'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
+                              <Input data-cy="licenseTerms-option2" type="radio" name="licenseTerms" id="licenseTerms-option2" checked={values.licenseTermsOption == 'option2'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
                                 onClick={(event: any) => {
                                   console.log("event2: ", event.target.checked)
                                   setFieldValue("licenseTermsOption", 'option2')
