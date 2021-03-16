@@ -20,7 +20,8 @@ export const configuration: any = {
     'arbitrators_list_webhook': 'https://dbyc3f5xvj.execute-api.eu-west-1.amazonaws.com/dev/arbitrators',
     'host': 'https://app.uncommon-demo.com',
     'algorand_net': 'TestNet',
-    'algorand_poll_account_amount_time': 120000
+    'algorand_poll_account_amount_time': 120000,
+    'legal_document_template_key': 'vtl_templates/legal_sow_doc.vtl'
   },
   demo: {
     Auth: {
@@ -43,6 +44,7 @@ export const configuration: any = {
     'arbitrators_list_webhook': 'https://g4uq7oz57f.execute-api.eu-west-1.amazonaws.com/demo/arbitrators',
     'host': 'https://demo.uncommon-demo.com',
     'algorand_net': 'TestNet',
-    'algorand_poll_account_amount_time': 120000
+    'algorand_poll_account_amount_time': 120000,
+    'legal_document_template_key': 'vtl_templates/legal_sow_doc.vtl'
   }
 }

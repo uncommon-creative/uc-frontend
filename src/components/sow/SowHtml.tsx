@@ -41,9 +41,9 @@ export const SowHtml = ({ modal, toggle }: any) => {
         <ActivityButton data-cy='closeHtml' name="closeHtml" outline color="primary" onClick={() => {
           dispatch(SowActions.didBuildHtml(''))
         }}>Close</ActivityButton>
-        <ActivityButton name="printHtml" color="primary" onClick={() => {
+        {/* <ActivityButton name="printHtml" color="primary" onClick={() => {
           window.print()
-        }}>Print document</ActivityButton>
+        }}>Download document</ActivityButton> */}
       </ModalFooter>
     </Modal>
   )

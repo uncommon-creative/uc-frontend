@@ -138,7 +138,7 @@ export const SowDetails = ({ modal, toggle }: any) => {
           toggle()
         }}>Close</ActivityButton>
         <ActivityButton data-cy='willBuildHtml' name="willBuildHtml" color="primary" onClick={() => {
-          dispatch(SowActions.willBuildHtml({ sow: currentSow.sow }))
+          dispatch(SowActions.willBuildHtml({ currentSow: currentSow }))
         }}>View document</ActivityButton>
       </ModalFooter>
 
