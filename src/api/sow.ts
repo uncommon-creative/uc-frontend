@@ -2,6 +2,7 @@ import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
 import * as _ from 'lodash';
 const axios = require('axios')
+const Velocity = require('velocityjs');
 
 export const createStatementOfWork = async () => {
   const mutation = loader('../graphql/createSow.gql')
@@ -221,6 +222,60 @@ export const getSow = async (sow: any) => {
     const result: any = await API.graphql(graphqlOperation(query, { sow: sow }));
     // console.log('getSow with result: ', result);
     return result.data.getSow
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getSowHtml = async (templt, data) => {
+  try {
+    const axiosResponse = await axios.get(templt);
+    // console.log("getSowHtml axiosResponse: ", axiosResponse)
+
+    const html_doc = Velocity.render(axiosResponse.data, {
+      context: {
+        SELLER_NAME: data.seller_name,
+        SELLER_ADDRESS: data.seller_address,
+        BUYER_NAME: data.buyer_name,
+        BUYER_ADDRESS: data.buyer_address,
+        TITLE: data.title,
+        STARTDATE: data.startdate,
+        PRICE: data.price,
+        CURRENCY: data.currency,
+        MSIG_ADDRESS: data.msig_address,
+        UC_FEE: data.uc_fee,
+        DEADLINE: data.deadline,
+        N_REVIEWS: data.n_reviews,
+        ACCEPTANCE_TIME: data.acceptance_time,
+        ARBITRATOR_NAME: data.arbitrator_name,
+        ARBITRATOR_NAMES: data.arbitrator_names,
+        PERCENTAGE_ARBITRATOR_FEE: data.percentage_arbitrator_fee,
+        FLAT_ARBITRATOR_FEE: data.flat_arbitrator_fee,
+        DESCRIPTION: data.description,
+        DEFINITION_OF_DONE: data.definition_of_done,
+        LICENSE: data.license,
+        EMPTY: data.empty,
+        LICENSE_TERMS_OPTION: data.licenseTermsOption,
+        LICENSE_TERMS_NOTES: data.licenseTermsNotes
+      },
+      util: {
+        stringify: (obj) => JSON.stringify(obj)
+      }
+    });
+    // console.log(html_doc);
+    return html_doc;
+  } catch (error) {
+    throw error
+  }
+}
+
+export const buildHtmlBackend = async (sow: any) => {
+  const mutation = loader('../graphql/buildHtml.gql');
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow }));
+    console.log('buildHtml with result: ', result);
+    return result.data.buildHtml
   } catch (error) {
     throw error
   }

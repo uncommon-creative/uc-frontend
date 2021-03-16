@@ -10,6 +10,10 @@ import { actions as ProfileActions, selectors as ProfileSelectors } from '../sli
 import { actions as UIActions } from '../slices/ui'
 import * as ArbitratorApi from '../../api/arbitrator'
 import { willGetUserProfile } from '../sagas/profile'
+import { configuration } from '../../config'
+import { current } from 'immer';
+
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
 export function* sagas() {
   yield takeLatest(SowActions.willConfirmArbitrators.type, willConfirmArbitrators)
@@ -25,6 +29,7 @@ export function* sagas() {
   yield takeLatest(SowActions.willSelectSow.type, willSelectSow)
   yield takeLatest(SowActions.willGetSowAttachmentsList.type, willGetSowAttachmentsList)
   yield takeLatest(SowActions.willGetSow.type, willGetSow)
+  yield takeLatest(SowActions.willBuildHtml.type, willBuildHtml)
   console.log('in sow saga');
 }
 
@@ -395,4 +400,52 @@ function* willGetSow(action: any) {
     console.log("error in willGetSow ", error)
   }
   yield put(UIActions.stopActivityRunning("getSow"));
+}
+
+function* willBuildHtml(action: any) {
+  console.log("in willBuildHtml with: ", action)
+  yield put(UIActions.startActivityRunning("willBuildHtml"));
+  const users = yield select(ProfileSelectors.getUsers)
+
+  try {
+    // const result = yield call(SowApi.buildHtmlBackend, action.payload.sow);
+    // console.log("result willBuildHtmlBackend: ", result)
+    const downloadUrlTemplate = yield call(SowApi.getDownloadUrl, action.payload.currentSow.sow, configuration[stage].legal_document_template_key, 600)
+    // console.log("willBuildHtml downloadUrl: ", downloadUrlTemplate)
+
+    const resultHtml = yield call(SowApi.getSowHtml,
+      downloadUrlTemplate,
+      {
+        seller_name: users[action.payload.currentSow.seller].given_name + ' ' + users[action.payload.currentSow.seller].family_name,
+        seller_address: users[action.payload.currentSow.seller].public_key,
+        buyer_name: users[action.payload.currentSow.buyer].given_name + ' ' + users[action.payload.currentSow.buyer].family_name,
+        buyer_address: users[action.payload.currentSow.buyer].public_key,
+        title: action.payload.currentSow.title,
+        startdate: new Date(action.payload.currentSow.submittedDate).toLocaleDateString(),
+        price: action.payload.currentSow.price,
+        currency: action.payload.currentSow.currency,
+        msig_address: "UNABLE TO COMPUTE ADDRESS", //
+        uc_fee: "0.5%", //
+        deadline: new Date(action.payload.currentSow.deadline).toLocaleDateString(),
+        n_reviews: action.payload.currentSow.numberReviews,
+        acceptance_time: new Date(action.payload.currentSow.sowExpiration).toLocaleDateString(),
+        arbitrator_name: null, //
+        arbitrator_names: action.payload.arbitrators, //
+        percentage_arbitrator_fee: null, //
+        flat_arbitrator_fee: null, //
+        description: action.payload.currentSow.description,
+        definition_of_done: "DEFINITION OF DONE PLACEHOLDER", //
+        license: action.payload.currentSow.licenseTermsNotes,
+        empty: action.payload.currentSow.licenseTermsOption,
+        licenseTermsOption: action.payload.currentSow.licenseTermsOption,
+        licenseTermsNotes: action.payload.currentSow.licenseTermsNotes
+      }
+    )
+
+    yield put(SowActions.didBuildHtml(resultHtml))
+
+  } catch (error) {
+    console.log("error in willBuildHtml ", error)
+  }
+  yield put(UIActions.stopActivityRunning("willBuildHtml"));
 }
