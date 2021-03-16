@@ -21,7 +21,10 @@
     "submitStatementOfWork": "Submit Statement Of Work",
     "input": {
       "sowExpirationLabel": "Order must be confirmed in",
-      "sowExpirationPlaceholder": "sowExpiration"
+      "sowExpirationPlaceholder": "sowExpiration",
+      "sowLicenseTermsLabel": "License Terms",
+      "sowLicenseTermsLabelOption1": "All rights transferred to the buyer",
+      "sowLicenseTermsLabelOption2": "Customized"
     }
   },
   "transaction": {

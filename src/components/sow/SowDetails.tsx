@@ -11,8 +11,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQrcode, faKey, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import qrcode from 'qrcode-generator';
 
-import { selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
+import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
+import { SowHtml } from './SowHtml';
 import { ActivityButton } from '../common/ActivityButton';
 
 export const SowDetails = ({ modal, toggle }: any) => {
@@ -20,6 +21,7 @@ export const SowDetails = ({ modal, toggle }: any) => {
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
+  const html = useSelector(SowSelectors.getHtml)
   const users = useSelector(ProfileSelectors.getUsers)
 
   return (
@@ -81,6 +83,15 @@ export const SowDetails = ({ modal, toggle }: any) => {
             </CardText>
           </Col>
         </Row>
+        {currentSow.licenseTermsNotes &&
+          <Row>
+            <Col>
+              <CardText className="my-1" name="licenseTerms" id="licenseTerms">
+                License Terms: {currentSow.licenseTermsNotes}
+              </CardText>
+            </Col>
+          </Row>
+        }
         <Jumbotron>
           {/* <CardSubtitle className="text-center text-muted">Milestone 1</CardSubtitle> */}
           <Row className="">
@@ -123,10 +134,15 @@ export const SowDetails = ({ modal, toggle }: any) => {
         </Jumbotron>
       </ModalBody>
       <ModalFooter>
+        <ActivityButton data-cy='willBuildHtml' name="willBuildHtml" color="primary" onClick={() => {
+          dispatch(SowActions.willBuildHtml({ currentSow: currentSow }))
+        }}>Show legal agreement</ActivityButton>
         <ActivityButton data-cy='closeSowExtended' name="closeSowExtended" outline color="primary" onClick={() => {
           toggle()
         }}>Close</ActivityButton>
       </ModalFooter>
+
+      <SowHtml modal={html != ''} toggle={() => dispatch(SowActions.didBuildHtml(''))} />
     </Modal>
   )
 }

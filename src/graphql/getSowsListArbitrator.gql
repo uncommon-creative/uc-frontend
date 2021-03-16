@@ -25,6 +25,8 @@ query getSowsListArbitrator{
       sowExpiration
       submittedDate
       signedMsig
+      licenseTermsOption
+      licenseTermsNotes
     }
     nextToken
   }
