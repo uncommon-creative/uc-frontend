@@ -134,15 +134,15 @@ export const SowDetails = ({ modal, toggle }: any) => {
         </Jumbotron>
       </ModalBody>
       <ModalFooter>
+        <ActivityButton data-cy='willBuildHtml' name="willBuildHtml" color="primary" onClick={() => {
+          dispatch(SowActions.willBuildHtml({ currentSow: currentSow }))
+        }}>Show legal agreement</ActivityButton>
         <ActivityButton data-cy='closeSowExtended' name="closeSowExtended" outline color="primary" onClick={() => {
           toggle()
         }}>Close</ActivityButton>
-        <ActivityButton data-cy='willBuildHtml' name="willBuildHtml" color="primary" onClick={() => {
-          dispatch(SowActions.willBuildHtml({ currentSow: currentSow }))
-        }}>View document</ActivityButton>
       </ModalFooter>
 
-      <SowHtml modal={html != ''} toggle={() => dispatch(SowActions.didBuildHtml(''))}/>
+      <SowHtml modal={html != ''} toggle={() => dispatch(SowActions.didBuildHtml(''))} />
     </Modal>
   )
 }
