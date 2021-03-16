@@ -417,9 +417,9 @@ function* willBuildHtml(action: any) {
       downloadUrlTemplate,
       {
         seller_name: users[action.payload.currentSow.seller].given_name + ' ' + users[action.payload.currentSow.seller].family_name,
-        seller_address: users[action.payload.currentSow.seller].public_key,
+        seller_address: users[action.payload.currentSow.seller].address.address + ', ' + users[action.payload.currentSow.seller].address.city + ', ' + users[action.payload.currentSow.seller].address.zip + ', ' + users[action.payload.currentSow.seller].address.state + ', ' + users[action.payload.currentSow.seller].address.country,
         buyer_name: users[action.payload.currentSow.buyer].given_name + ' ' + users[action.payload.currentSow.buyer].family_name,
-        buyer_address: users[action.payload.currentSow.buyer].public_key,
+        buyer_address: users[action.payload.currentSow.buyer].address.address + ', ' + users[action.payload.currentSow.buyer].address.city + ', ' + users[action.payload.currentSow.buyer].address.zip + ', ' + users[action.payload.currentSow.buyer].address.state + ', ' + users[action.payload.currentSow.buyer].address.country,
         title: action.payload.currentSow.title,
         startdate: new Date(action.payload.currentSow.submittedDate).toLocaleDateString(),
         price: action.payload.currentSow.price,
@@ -434,7 +434,7 @@ function* willBuildHtml(action: any) {
         percentage_arbitrator_fee: null, //
         flat_arbitrator_fee: null, //
         description: action.payload.currentSow.description,
-        definition_of_done: "DEFINITION OF DONE PLACEHOLDER", //
+        definition_of_done: null, //"DEFINITION OF DONE PLACEHOLDER", //
         license: action.payload.currentSow.licenseTermsNotes,
         empty: action.payload.currentSow.licenseTermsOption,
         licenseTermsOption: action.payload.currentSow.licenseTermsOption,
