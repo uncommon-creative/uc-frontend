@@ -47,6 +47,7 @@ export const currentSlice = createSlice({
     willSignTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => state,
     didSignTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionPage = 3),
 
+    willGetSignedMsig: (state, action: PayloadAction<any>) => state,
     didGetSignedMsig: (state, action: PayloadAction<any>) => void (state.signedMsig = action.payload, state.transactionPage = 2),
     willCompleteTransactionAcceptMilestone: (state, action: PayloadAction<any>) => state,
     didCompleteTransactionAcceptMilestone: (state, action: PayloadAction<any>) => void (state.transactionAcceptMilestone = action.payload, state.transactionPage = 3),

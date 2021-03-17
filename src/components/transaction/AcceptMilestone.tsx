@@ -55,8 +55,8 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
 
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy='continueTransaction' disabled={!acceptedConditions} name="continueTransaction" color="primary" onClick={() => {
-              dispatch(TransactionActions.didGetSignedMsig(currentSow.signedMsig))
+            <ActivityButton data-cy='willGetSignedMsig' disabled={!acceptedConditions} name="willGetSignedMsig" color="primary" onClick={() => {
+              dispatch(TransactionActions.willGetSignedMsig({sow: currentSow.sow}))
             }}>Continue</ActivityButton>
           </ModalFooter>
         </>
