@@ -37,8 +37,7 @@ const StatementOfWorkSchema = Yup.object().shape({
   buyer: Yup.string().when('status', {
     is: 'DRAFT',
     then: Yup.string()
-      .test(
-        'Should not contain your email address', 'Should not contain your email address', (value, context) => value != context.parent.seller)
+      .test('Should not contain your email address', 'Should not contain your email address', (value, context) => value != context.parent.seller)
       .email()
       .min(2, 'Too Short!')
       .max(50, 'Too Long!')
@@ -78,6 +77,7 @@ const StatementOfWorkSchema = Yup.object().shape({
     .oneOf([true], "The Code of Conduct must be accepted.")
     .required('Required'),
   arbitrators: Yup.array()
+    .test('Should not contain the buyer', 'Should not contain the buyer', (value: any, context) => !(value.some((arb: any) => arb.email == context.parent.buyer)))
     .length(3, 'Three arbitrators required!')
     .required('Required'),
   sowExpiration: Yup.number()
@@ -154,7 +154,7 @@ export const CreateStatementOfWorkPage = () => {
                 {({ errors, touched, setFieldValue, values }) => {
                   return (
                     <Form>
-                      {values && console.log("values: ", values)}
+                      {/* {values && console.log("values: ", values)} */}
                       <FormGroup>
                         <Label for="sow">Sow</Label>
                         <Input data-cy="inputSowID" disabled invalid={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
