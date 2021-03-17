@@ -5,6 +5,9 @@ import { configuration } from '../config'
 
 export const configure = () => {
   const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
+  console.log("configure process.env.REACT_APP_STAGE:", process.env.REACT_APP_STAGE)
+  console.log("configure stage:", stage)
+  console.log("configure configuration[stage]:", configuration[stage])
   Amplify.configure(configuration[stage]);
 }
 
@@ -15,7 +18,6 @@ export const isAuthenticated = async () => {
   } catch (error) {
     return false;
   }
-
 }
 
 export const getAuthenticatedUser = async () => {

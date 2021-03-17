@@ -21,6 +21,8 @@ import { ActivityButton } from '../components/common/ActivityButton'
 import { TagsInput } from '../components/TagsInput';
 import Portrait from '../images/Portrait.png'
 
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
+
 const ProfileSchema = Yup.object().shape({
   bio: Yup.string()
     .min(3, 'Too Short!')
@@ -134,7 +136,7 @@ export const ProfilePage = () => {
                               <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
                               :
                               <img height="80" alt="Portrait" onError={addDefaultSrc}
-                                src={`${configuration.dev.host}/resources/${user.username}/portrait?${Date.now()}`}
+                                src={`${configuration[stage].host}/resources/${user.username}/portrait?${Date.now()}`}
                               />
                             }
                           </Label>

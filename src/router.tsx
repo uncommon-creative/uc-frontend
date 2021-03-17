@@ -7,7 +7,7 @@ import {
   useHistory
 } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Container, Spinner } from "reactstrap";
+import { Container } from "reactstrap";
 import { history } from './store'
 import { ConnectedRouter } from 'connected-react-router'
 
@@ -67,8 +67,8 @@ const PrivateRoute = ({ children, ...rest }: any) => {
 export const AppRouter = () => {
   return (
     <ConnectedRouter history={history}>
-      <Header className="mb-3 sticky-top shadow" />
-      <Container className="d-flex min-vh-100">
+      <Header className=" sticky-top shadow" />
+      <Container className="d-flex pt-3" style={{minHeight: 'calc(100vh - 91px - 130px)'}}>
         <Switch>
           <Route path="/about">
             <About />
@@ -108,7 +108,7 @@ export const AppRouter = () => {
           </PrivateRoute>
         </Switch>
       </Container>
-      <Footer className="" />
+      <Footer className="mt-3" />
     </ConnectedRouter>
   );
 }

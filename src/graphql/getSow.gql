@@ -28,5 +28,7 @@ query getSow(
     sowExpiration
     submittedDate
     signedMsig
+    licenseTermsOption
+    licenseTermsNotes
   }
 }

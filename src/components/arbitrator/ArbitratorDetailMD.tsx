@@ -17,6 +17,8 @@ import { ArbitratorDetailLG } from './ArbitratorDetailLG'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
 import Portrait from '../../images/Portrait.png'
 
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
+
 export const ArbitratorDetailMD = ({ arbitrator }: any) => {
 
   const dispatch = useDispatch();
@@ -36,7 +38,7 @@ export const ArbitratorDetailMD = ({ arbitrator }: any) => {
           <Row>
             <Col>
               <img height="100" alt="Portrait" onError={addDefaultSrc}
-                src={`${configuration.dev.host}/resources/${arbitrator.user}/portrait?${Date.now()}`}
+                src={`${configuration[stage].host}/resources/${arbitrator.user}/portrait?${Date.now()}`}
               />
             </Col>
           </Row>

@@ -21,6 +21,8 @@ import { actions as SowActions } from '../../store/slices/sow'
 import { ActivityButton } from '../common/ActivityButton';
 import Portrait from '../../images/Portrait.png'
 
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
+
 export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
@@ -42,7 +44,7 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
             <Row className='d-flex flex-wrap'>
               <Col className="col-md-3 col-12 text-center">
                 <img height="150" alt="Portrait" onError={addDefaultSrc}
-                  src={`${configuration.dev.host}/resources/${currentArbitrator.user}/portrait?${Date.now()}`}
+                  src={`${configuration[stage].host}/resources/${currentArbitrator.user}/portrait?${Date.now()}`}
                 />
               </Col>
               <Col className="d-flex justify-content-between flex-column">
