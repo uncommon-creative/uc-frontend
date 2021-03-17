@@ -4,7 +4,7 @@ import {
   Row, Col, Card, Table, Badge
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
-import { useTable } from 'react-table';
+import { useTable, useFlexLayout } from 'react-table';
 import { Link, useHistory } from "react-router-dom";
 
 import { ActivityButton } from './common/ActivityButton'
@@ -30,6 +30,9 @@ export const TableSows = ({ tabId, data }: any) => {
   const columns = React.useMemo(
     () => [
       {
+        minWidth: 175,
+        width: 175,
+        maxWidth: 175,
         Header: 'Title',
         accessor: (row: any) =>
           <Row className="d-flex" tag={Link} onClick={() => dispatch(SowActions.willSelectSow({ sow: row, history: history }))}>
@@ -89,7 +92,7 @@ export const TableSows = ({ tabId, data }: any) => {
     ],
     [users]
   )
-  const tableInstance = useTable({ columns, data: data })
+  const tableInstance = useTable({ columns, data: data }, useFlexLayout)
   const {
     getTableProps,
     getTableBodyProps,
