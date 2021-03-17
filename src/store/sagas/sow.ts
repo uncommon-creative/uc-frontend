@@ -228,7 +228,7 @@ function* willDeleteAttachment(action: any) {
 
 function* willGetSowsList() {
   console.log("in willGetSowsList")
-  yield put(UIActions.startActivityRunning("getSowsList"));
+  yield put(UIActions.startActivityRunning("willGetSowsList"));
   try {
     yield call(willGetSowsListSeller)
     yield call(willGetSowsListBuyer)
@@ -236,7 +236,7 @@ function* willGetSowsList() {
   } catch (error) {
     console.log("error in willGetSowsList ", error)
   }
-  yield put(UIActions.stopActivityRunning("getSowsList"));
+  yield put(UIActions.stopActivityRunning("willGetSowsList"));
 }
 
 function* willGetSowsListSeller() {
