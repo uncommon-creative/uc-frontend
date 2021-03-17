@@ -44,7 +44,7 @@ export const Reject = ({ modal, toggle }: any) => {
           <ActivityButton data-cy='cancel' name="cancel" outline color="primary" onClick={() => {
               toggle()
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy={SowCommands.REJECT} name={SowCommands.REJECT} color="primary" onClick={() => {
+            <ActivityButton data-cy={"willReject"} name={"willReject"} color="primary" onClick={() => {
               dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REJECT }, sow: currentSow }));
               dispatch(TransactionActions.willReject())
             }}>Reject</ActivityButton>
@@ -60,11 +60,10 @@ export const Reject = ({ modal, toggle }: any) => {
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy="rejectComplete" name="rejectComplete" color="primary" onClick={toggle}>Close</ActivityButton>
+            <ActivityButton data-cy="closeReject" name="closeReject" color="primary" onClick={toggle}>Close</ActivityButton>
           </ModalFooter>
         </>
       }
-
     </Modal>
   )
 }

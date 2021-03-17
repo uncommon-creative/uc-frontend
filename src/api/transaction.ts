@@ -1,8 +1,11 @@
 import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
 import * as _ from 'lodash';
+
 import { TransactionFee } from '../store/slices/transaction'
 import { configuration } from '../config'
+
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 const algosdk = require('algosdk');
 
 declare var AlgoSigner: any;
@@ -170,13 +173,13 @@ export const confirmTxAsBuyer = async (sow: any, tx: any) => {
 
 export const algorandPollAccountAmount = async (id: any, account: any, amount: any) => {
   const query = loader('../graphql/algorandPollAccountAmount.gql')
-  console.log("in algorandPollAccountAmount id: ", id)
-  console.log("in algorandPollAccountAmount account: ", account)
-  console.log("in algorandPollAccountAmount amount: ", amount)
+  // console.log("in algorandPollAccountAmount id: ", id)
+  // console.log("in algorandPollAccountAmount account: ", account)
+  // console.log("in algorandPollAccountAmount amount: ", amount)
 
   try {
     const result: any = await API.graphql(graphqlOperation(query, { id: id, account: account, amount: amount }))
-    console.log("algorandPollAccountAmount result: ", result)
+    // console.log("algorandPollAccountAmount result: ", result)
     return result.data.algorandPollAccountAmount
   } catch (error) {
     console.log("algorandPollAccountAmount API error: ", error)
@@ -201,7 +204,7 @@ export const algoConnect = async () => {
 export const algoGetAccounts = async () => {
   try {
     let accounts = await AlgoSigner.accounts({
-      ledger: configuration.dev.algorand_net
+      ledger: configuration[stage].algorand_net
     });
     // console.log("algoGetAccounts accounts: ", accounts)
 
@@ -224,7 +227,7 @@ export const algoGetAccounts = async () => {
 export const algoSign = async (from: any, multiSigAddress: any, toPay: any, sow: any) => {
   try {
     let paramsAlgoSigner = await AlgoSigner.algod({
-      ledger: configuration.dev.algorand_net,
+      ledger: configuration[stage].algorand_net,
       path: '/v2/transactions/params',
     });
 
@@ -253,7 +256,7 @@ export const algoSign = async (from: any, multiSigAddress: any, toPay: any, sow:
 export const algoSendTx = async (signedTxn: any) => {
   try {
     let result = await AlgoSigner.send({
-      ledger: configuration.dev.algorand_net,
+      ledger: configuration[stage].algorand_net,
       tx: signedTxn.blob,
     });
     console.log("algoSendTx result: ", result);

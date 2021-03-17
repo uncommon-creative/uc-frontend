@@ -21,6 +21,8 @@ import { actions as SowActions } from '../../store/slices/sow'
 import { ActivityButton } from '../common/ActivityButton';
 import Portrait from '../../images/Portrait.png'
 
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
+
 export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
@@ -42,7 +44,7 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
             <Row className='d-flex flex-wrap'>
               <Col className="col-md-3 col-12 text-center">
                 <img height="150" alt="Portrait" onError={addDefaultSrc}
-                  src={`${configuration.dev.host}/resources/${currentArbitrator.user}/portrait?${Date.now()}`}
+                  src={`${configuration[stage].host}/resources/${currentArbitrator.user}/portrait?${Date.now()}`}
                 />
               </Col>
               <Col className="d-flex justify-content-between flex-column">
@@ -105,7 +107,7 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
                 <Button disabled color="primary">Arbitrator added</Button>
                 : currentSelectedArbitrators.length < 3 ?
                   <ActivityButton data-cy='inputSowArbitratorsAdd' name="ArbitratorDetailLG" color="primary" onClick={() => {
-                    dispatch(ArbitratorActions.willSelectArbitrator(currentArbitrator))
+                    dispatch(ArbitratorActions.willAddArbitrator(currentArbitrator))
                     toggle()
                   }}>Add to arbitrators</ActivityButton>
                   : <Button disabled color="primary">Max number of arbitrators added</Button>
@@ -114,8 +116,8 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
           }
           {selectingOneArbitrator &&
             <ModalFooter>
-              <ActivityButton data-cy='inputSowArbitratorsSelectOne' name="ArbitratorDetailLG" color="primary" onClick={() => {
-                dispatch(SowActions.willSelectArbitrator(currentArbitrator.user))
+              <ActivityButton data-cy='willChooseArbitrator' name="ArbitratorDetailLG" color="primary" onClick={() => {
+                dispatch(ArbitratorActions.willChooseArbitrator(currentArbitrator.user))
                 toggle()
               }}>Select the arbitrator</ActivityButton>
             </ModalFooter>

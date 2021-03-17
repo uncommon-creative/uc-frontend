@@ -9,7 +9,8 @@ export const currentSlice = createSlice({
     currentSow: {} as any,
     sowsAsSeller: [] as any,
     sowsAsBuyer: [] as any,
-    sowsAsArbitrator: [] as any
+    sowsAsArbitrator: [] as any,
+    html: ''
   },
   reducers: {
     willConfirmArbitrators: (state, action: PayloadAction<any>) => void (state.currentArbitrators = action.payload.arbitrators),
@@ -44,7 +45,8 @@ export const currentSlice = createSlice({
     willGetSow: (state, action: PayloadAction<any>) => state,
     didGetSow: (state, action: PayloadAction<any>) => void (state.currentSow = action.payload),
 
-    willSelectArbitrator: (state, action: PayloadAction<any>) => void (state.currentSow.arbitrator = action.payload),
+    willBuildHtml: (state, action: PayloadAction<any>) => state,
+    didBuildHtml: (state, action: PayloadAction<any>) => void (state.html = action.payload),
   }
 })
 
@@ -53,7 +55,7 @@ export const {
   willConfirmArbitrators, willCreateStatementOfWork, didCreateStatementOfWork, willDraftStatementOfWork, willSubmitStatementOfWork, didSubmitStatementOfWork,
   willPrepareUploadAttachment, didPrepareUploadAttachment, willDeleteAttachment,
   willGetSowsList, willGetSowsListSeller, didGetSowsListSeller, willGetSowsListBuyer, didGetSowsListBuyer, willGetSowsListArbitrator, didGetSowsListArbitrator,
-  willSelectSow, willGetSowAttachmentsList, didGetSowAttachmentsList, willGetSow, didGetSow, willSelectArbitrator
+  willSelectSow, willGetSowAttachmentsList, didGetSowAttachmentsList, willGetSow, didGetSow, willChooseArbitrator
 } = actions
 export const selectors = {
   getCurrentArbitrators: (state: any) => state.statementOfWork.currentArbitrators,
@@ -62,7 +64,8 @@ export const selectors = {
   getListSowsBuyer: (state: any) => state.statementOfWork.sowsAsBuyer,
   getListSowsArbitrator: (state: any) => state.statementOfWork.sowsAsArbitrator,
   getAttachments: (state: any) => state.statementOfWork.attachments,
-  getNewAttachments: (state: any) => state.statementOfWork.newAttachments
+  getNewAttachments: (state: any) => state.statementOfWork.newAttachments,
+  getHtml: (state: any) => state.statementOfWork.html
 }
 
 export enum SowStatus {

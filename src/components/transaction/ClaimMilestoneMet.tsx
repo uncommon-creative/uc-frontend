@@ -100,7 +100,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
+            <ActivityButton data-cy="closeClaimMilestoneMet" name="closeClaimMilestoneMet" color="primary" onClick={toggle}>Close</ActivityButton>
           </ModalFooter>
         </>
       }

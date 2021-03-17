@@ -1,4 +1,4 @@
-import { call, put, takeEvery, takeLatest, delay } from 'redux-saga/effects'
+import { call, put, takeEvery, takeLatest, delay, select } from 'redux-saga/effects'
 import { push } from 'connected-react-router'
 import update from 'immutability-helper';
 
@@ -6,10 +6,14 @@ import * as SowApi from '../../api/sow'
 import { actions as SowActions, SowStatus, SowCommands } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as ChatActions } from '../slices/chat'
-import { actions as ProfileActions } from '../slices/profile'
+import { actions as ProfileActions, selectors as ProfileSelectors } from '../slices/profile'
 import { actions as UIActions } from '../slices/ui'
 import * as ArbitratorApi from '../../api/arbitrator'
 import { willGetUserProfile } from '../sagas/profile'
+import { configuration } from '../../config'
+import { current } from 'immer';
+
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
 export function* sagas() {
   yield takeLatest(SowActions.willConfirmArbitrators.type, willConfirmArbitrators)
@@ -25,6 +29,7 @@ export function* sagas() {
   yield takeLatest(SowActions.willSelectSow.type, willSelectSow)
   yield takeLatest(SowActions.willGetSowAttachmentsList.type, willGetSowAttachmentsList)
   yield takeLatest(SowActions.willGetSow.type, willGetSow)
+  yield takeLatest(SowActions.willBuildHtml.type, willBuildHtml)
   console.log('in sow saga');
 }
 
@@ -88,7 +93,9 @@ function* willDraftStatementOfWork(action: any) {
       tagsParsed,
       action.payload.sow.termsOfService,
       action.payload.sow.title,
-      action.payload.sow.sowExpiration
+      action.payload.sow.sowExpiration,
+      action.payload.sow.licenseTermsOption,
+      action.payload.sow.licenseTermsNotes
     )
     console.log("willDraftStatementOfWork result: ", result)
 
@@ -106,33 +113,44 @@ function* willSubmitStatementOfWork(action: any) {
 
   yield put(UIActions.startActivityRunning("submitSow"));
 
+  const userAttributes = yield select(ProfileSelectors.getProfile)
+  console.log("in willSubmitStatementOfWork userAttributes: ", userAttributes)
   const tagsParsed = action.payload.sow.tags.map((tag: any) => JSON.stringify(tag))
   const arbitratorsParsed = action.payload.sow.arbitrators.map((arb: any) => arb.user)
 
   try {
-    const result = yield call(
-      SowApi.submitStatementOfWork,
-      action.payload.sow.sow,
-      arbitratorsParsed,
-      action.payload.sow.codeOfConduct,
-      action.payload.sow.currency,
-      action.payload.sow.buyer,
-      action.payload.sow.deadline,
-      action.payload.sow.description,
-      action.payload.sow.numberReviews,
-      action.payload.sow.price,
-      action.payload.sow.quantity,
-      tagsParsed,
-      action.payload.sow.termsOfService,
-      action.payload.sow.title,
-      action.payload.sow.sowExpiration
-    )
-    console.log("willSubmitStatementOfWork result: ", result)
+    if (userAttributes.address) {
+      const result = yield call(
+        SowApi.submitStatementOfWork,
+        action.payload.sow.sow,
+        arbitratorsParsed,
+        action.payload.sow.codeOfConduct,
+        action.payload.sow.currency,
+        action.payload.sow.buyer,
+        action.payload.sow.deadline,
+        action.payload.sow.description,
+        action.payload.sow.numberReviews,
+        action.payload.sow.price,
+        action.payload.sow.quantity,
+        tagsParsed,
+        action.payload.sow.termsOfService,
+        action.payload.sow.title,
+        action.payload.sow.sowExpiration,
+        action.payload.sow.licenseTermsOption,
+        action.payload.sow.licenseTermsNotes
+      )
+      console.log("willSubmitStatementOfWork result: ", result)
 
-    yield call(willGetUserProfile, { user: result.buyer })
-    yield put(SowActions.didSubmitStatementOfWork(result))
-    yield put(push("/home"))
-    yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
+      yield call(willGetUserProfile, { user: result.buyer })
+      yield put(SowActions.didSubmitStatementOfWork(result))
+      yield put(push("/home"))
+      yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
+    }
+    else {
+      yield call(willDraftStatementOfWork, action)
+      yield put(push("/profile"))
+      yield put(NotificationActions.willShowNotification({ message: "Please complete your profile before submit.", type: "info" }));
+    }
   } catch (error) {
     console.log("error in willSubmitStatementOfWork ", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
@@ -304,7 +322,7 @@ function* willGetSowsListArbitrator() {
 
 function* willSelectSow(action: any) {
   console.log("in willSelectSow with: ", action)
-  const fullArbitrators = []
+  const fullArbitrators = [] as any
 
   if (Array.isArray(action.payload.sow.arbitrators)) {
     for (const arb of action.payload.sow.arbitrators) {
@@ -368,7 +386,7 @@ function* willGetSow(action: any) {
     yield put(ChatActions.willReadSowChat(action.payload))
     yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow } });
 
-    const fullArbitrators = []
+    const fullArbitrators = [] as any
     if (Array.isArray(result.arbitrators)) {
       for (const arb of result.arbitrators) {
         fullArbitrators.push(yield call(ArbitratorApi.getArbitrator, arb))
@@ -382,4 +400,52 @@ function* willGetSow(action: any) {
     console.log("error in willGetSow ", error)
   }
   yield put(UIActions.stopActivityRunning("getSow"));
+}
+
+function* willBuildHtml(action: any) {
+  console.log("in willBuildHtml with: ", action)
+  yield put(UIActions.startActivityRunning("willBuildHtml"));
+  const users = yield select(ProfileSelectors.getUsers)
+
+  try {
+    // const result = yield call(SowApi.buildHtmlBackend, action.payload.sow);
+    // console.log("result willBuildHtmlBackend: ", result)
+    const downloadUrlTemplate = yield call(SowApi.getDownloadUrl, action.payload.currentSow.sow, configuration[stage].legal_document_template_key, 600)
+    // console.log("willBuildHtml downloadUrl: ", downloadUrlTemplate)
+
+    const resultHtml = yield call(SowApi.getSowHtml,
+      downloadUrlTemplate,
+      {
+        seller_name: users[action.payload.currentSow.seller].given_name + ' ' + users[action.payload.currentSow.seller].family_name,
+        seller_address: users[action.payload.currentSow.seller].address.address + ', ' + users[action.payload.currentSow.seller].address.city + ', ' + users[action.payload.currentSow.seller].address.zip + ', ' + users[action.payload.currentSow.seller].address.state + ', ' + users[action.payload.currentSow.seller].address.country,
+        buyer_name: users[action.payload.currentSow.buyer].given_name + ' ' + users[action.payload.currentSow.buyer].family_name,
+        buyer_address: users[action.payload.currentSow.buyer].address.address + ', ' + users[action.payload.currentSow.buyer].address.city + ', ' + users[action.payload.currentSow.buyer].address.zip + ', ' + users[action.payload.currentSow.buyer].address.state + ', ' + users[action.payload.currentSow.buyer].address.country,
+        title: action.payload.currentSow.title,
+        startdate: new Date(action.payload.currentSow.submittedDate).toLocaleDateString(),
+        price: action.payload.currentSow.price,
+        currency: action.payload.currentSow.currency,
+        msig_address: "UNABLE TO COMPUTE ADDRESS", //
+        uc_fee: "0.5%", //
+        deadline: new Date(action.payload.currentSow.deadline).toLocaleDateString(),
+        n_reviews: action.payload.currentSow.numberReviews,
+        acceptance_time: new Date(action.payload.currentSow.sowExpiration).toLocaleDateString(),
+        arbitrator_name: null, //
+        arbitrator_names: action.payload.arbitrators, //
+        percentage_arbitrator_fee: null, //
+        flat_arbitrator_fee: null, //
+        description: action.payload.currentSow.description,
+        definition_of_done: null, //"DEFINITION OF DONE PLACEHOLDER", //
+        license: action.payload.currentSow.licenseTermsNotes,
+        empty: action.payload.currentSow.licenseTermsOption,
+        licenseTermsOption: action.payload.currentSow.licenseTermsOption,
+        licenseTermsNotes: action.payload.currentSow.licenseTermsNotes
+      }
+    )
+
+    yield put(SowActions.didBuildHtml(resultHtml))
+
+  } catch (error) {
+    console.log("error in willBuildHtml ", error)
+  }
+  yield put(UIActions.stopActivityRunning("willBuildHtml"));
 }

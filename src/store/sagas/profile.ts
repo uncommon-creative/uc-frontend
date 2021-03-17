@@ -86,7 +86,7 @@ function* willGenerateAlgoAccount() {
 }
 
 export function* willGetUserProfile(action: any) {
-  console.log("in willGetUserProfile with ", action)
+  // console.log("in willGetUserProfile with ", action)
   const users = yield select(ProfileSelectors.getUsers)
 
   try {
@@ -103,7 +103,6 @@ export function* willGetUserProfile(action: any) {
 
 export function* willUploadPortrait(action: any) {
   console.log("in willUploadPortrait with: ", action)
-  // yield put(ProfileActions.startLoadingProfile())
 
   try {
     const resultUrl = yield call(ServiceApi.getResourceUrl, "portrait", 600, action.payload.portrait.type)
@@ -117,7 +116,6 @@ export function* willUploadPortrait(action: any) {
     console.log("willUploadPortrait error", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
-  // yield put(ProfileActions.stopLoadingProfile())
 }
 
 export function* willSubmitProfile(action: any) {
@@ -142,10 +140,25 @@ function* willSaveProfile(action: any) {
   console.log("in willSaveProfile with: ", action)
 
   try {
-    const result = yield call(ServiceApi.putProfileData, "bio", action.payload.bio)
-    console.log("willSaveProfile result", result)
+    const resultBio = yield call(ServiceApi.putProfileData, "bio", action.payload.bio)
+    console.log("willSaveProfile result", resultBio)
+    yield put(ProfileActions.didSaveProfile(resultBio));
 
-    yield put(ProfileActions.didSaveProfile(result));
+    const fullAddress = {
+      address: action.payload.address,
+      city: action.payload.addressCity,
+      zip: action.payload.addressZip,
+      state: action.payload.addressState,
+      country: action.payload.addressCountry
+    }
+
+    // const fullAddressString = action.payload.address + ', ' + action.payload.addressCity + ', ' + action.payload.addressState + ', ' + action.payload.addressZip + ', ' + action.payload.addressCountry
+    console.log("in willSaveProfile fullAddress: ", fullAddress)
+    // console.log("in willSaveProfile fullAddressString: ", fullAddressString)
+
+    const resultAddress = yield call(ServiceApi.putProfileData, "address", JSON.stringify(fullAddress))
+    console.log("willSaveProfile result", resultAddress)
+    yield put(ProfileActions.didSaveProfile(resultAddress));
   } catch (error) {
     console.log("willSaveProfile error", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));

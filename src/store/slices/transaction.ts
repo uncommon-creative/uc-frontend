@@ -11,6 +11,7 @@ export const currentSlice = createSlice({
     transactionAcceptMilestone: {} as any,
     signedMsig: {} as any,
     payment: {} as any,
+    activePolls: {} as any,
     error: ''
   },
   reducers: {
@@ -27,6 +28,9 @@ export const currentSlice = createSlice({
 
     willSetSowArbitrator: (state, action: PayloadAction<any>) => state,
     didSetSowArbitrator: (state, action: PayloadAction<any>) => state,
+
+    willAlgorandPollAccountAmount: (state, action: PayloadAction<any>) => state,
+    didAlgorandPollAccountAmount: (state, action: PayloadAction<any>) => void (state.activePolls[action.payload.sow] = action.payload.timestamp),
 
     didCompleteTransactionAcceptAndPay: (state, action: PayloadAction<any>) => void (state.transactionAcceptAndPay = action.payload, state.transactionPage = 6),
     didCompleteTransactionAcceptAndPayFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
@@ -73,6 +77,7 @@ export const selectors = {
   getTransactionAcceptMilestone: (state: any) => state.transaction.transactionAcceptMilestone,
   getSignedMsig: (state: any) => state.transaction.signedMsig,
   getPayment: (state: any) => state.transaction.payment,
+  getActivePolls: (state: any) => state.transaction.activePolls,
   getError: (state: any) => state.transaction.error,
 }
 

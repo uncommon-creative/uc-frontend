@@ -3,7 +3,7 @@ import {
   Card, CardBody, CardText, CardTitle, CardSubtitle, Button,
   Container, Label, Spinner,
   Col, Row, Jumbotron,
-  FormGroup, FormFeedback,
+  FormGroup, FormFeedback, FormText,
   InputGroup, Input, CustomInput,
   InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem
 } from 'reactstrap';
@@ -19,15 +19,28 @@ import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { ActivityButton } from '../components/common/ActivityButton'
 import { TagsInput } from '../components/TagsInput';
-import { selectors as UISelectors } from '../store/slices/ui'
 import Portrait from '../images/Portrait.png'
 
-// const ProfileSchema = Yup.object().shape({
-// });
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
-const ArbitratorSettingsSchema = Yup.object().shape({
+const ProfileSchema = Yup.object().shape({
   bio: Yup.string()
     .min(3, 'Too Short!')
+    .required('Required'),
+  address: Yup.string()
+    .min(2, 'Too Short!')
+    .required('Required'),
+  addressCity: Yup.string()
+    .min(2, 'Too Short!')
+    .required('Required'),
+  addressState: Yup.string()
+    .min(1, 'Too Short!')
+    .required('Required'),
+  addressZip: Yup.string()
+    .min(2, 'Too Short!')
+    .required('Required'),
+  addressCountry: Yup.string()
+    .min(2, 'Too Short!')
     .required('Required'),
   enabled: Yup.bool()
     .required('Required'),
@@ -65,7 +78,12 @@ export const ProfilePage = () => {
   const userAttributes = useSelector(ProfileSelectors.getProfile)
   const myArbitratorSettings = useSelector(ArbitratorSelectors.getMyArbitratorSettings)
   const user = useSelector(AuthSelectors.getUser)
-  const [userBio, setuserBio] = React.useState(userAttributes.bio);
+  const [profileBio, setProfileBio] = React.useState(userAttributes.bio);
+  const [profileAddress, setProfileAddress] = React.useState(userAttributes.address ? userAttributes.address.address : '');
+  const [profileAddressCity, setProfileAddressCity] = React.useState(userAttributes.address ? userAttributes.address.city : '');
+  const [profileAddressState, setProfileAddressState] = React.useState(userAttributes.address ? userAttributes.address.state : '');
+  const [profileAddressZip, setProfileAddressZip] = React.useState(userAttributes.address ? userAttributes.address.zip : '');
+  const [profileAddressCountry, setProfileAddressCountry] = React.useState(userAttributes.address ? userAttributes.address.country : '');
   const [dropdownCurrencyOpen, setDropdownCurrencyOpen] = React.useState(false);
   const [switchEnabled, setSwitchEnabled] = React.useState(myArbitratorSettings ? myArbitratorSettings.enabled : false);
   const [feeCurrency, setFeeCurrency] = React.useState("ALGO");
@@ -86,14 +104,19 @@ export const ProfilePage = () => {
             <Formik
               enableReinitialize={true}
               initialValues={{
-                bio: userBio ? userBio : '',
+                bio: profileBio ? profileBio : '',
+                address: profileAddress ? profileAddress : '',
+                addressCity: profileAddressCity ? profileAddressCity : '',
+                addressState: profileAddressState ? profileAddressState : '',
+                addressZip: profileAddressZip ? profileAddressZip : '',
+                addressCountry: profileAddressCountry ? profileAddressCountry : '',
                 enabled: myArbitratorSettings && myArbitratorSettings.hasOwnProperty('enabled') ? myArbitratorSettings.enabled : switchEnabled,
                 feePercentage: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.perc : '',
                 feeFlat: myArbitratorSettings && myArbitratorSettings.fee ? myArbitratorSettings.fee.flat : '',
                 currency: feeCurrency,
                 tags: myArbitratorSettings && myArbitratorSettings.tags && myArbitratorSettings.tags.length ? myArbitratorSettings.tags.map((tag: any) => JSON.parse(tag)) : []
               }}
-              validationSchema={ArbitratorSettingsSchema}
+              validationSchema={ProfileSchema}
               validateOnBlur={true}
               onSubmit={values => {
                 console.log('in onsubmit with: ', values)
@@ -104,16 +127,16 @@ export const ProfilePage = () => {
               {({ errors, touched, setFieldValue, values }) => {
                 return (
                   <Form><CardBody>
-                    <CardTitle tag="h5" className="text-center">Profile</CardTitle>
-                    <Row>
+                    {/* <CardTitle tag="h5" className="text-center">Profile</CardTitle> */}
+                    <Row className="d-flex align-items-end">
                       <Col className="col-3 text-center">
                         <FormGroup>
                           <Label for="portrait">
                             {uploadingPortrait ?
                               <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
                               :
-                              <img height="100" alt="Portrait" onError={addDefaultSrc}
-                                src={`${configuration.dev.host}/resources/${user.username}/portrait?${Date.now()}`}
+                              <img height="80" alt="Portrait" onError={addDefaultSrc}
+                                src={`${configuration[stage].host}/resources/${user.username}/portrait?${Date.now()}`}
                               />
                             }
                           </Label>
@@ -125,18 +148,17 @@ export const ProfilePage = () => {
                               }
                             }}
                           />
-                          {/* <FormText color="muted">
-                            This is some placeholder block-level help text for the above input.
-                            It's a bit lighter and easily wraps to a new line.
-                          </FormText> */}
+                          <CardText tag="h5">
+                            {userAttributes.given_name + ' ' + userAttributes.family_name}
+                          </CardText>
                         </FormGroup>
                       </Col>
                       <Col className="col-9">
                         <FormGroup>
-                          <Label for="profileBio">Bio</Label>
-                          <Input data-cy="profileBio" value={userBio} invalid={errors.bio && touched.bio ? true : false} type="textarea" name="profileBio" id="profileBio" placeholder="profileBio"
+                          <Label for="profileBio">Bio *</Label>
+                          <Input className="h-100" data-cy="profileBio" value={profileBio} invalid={errors.bio && touched.bio ? true : false} type="textarea" name="profileBio" id="profileBio" placeholder="bio"
                             onChange={(event: any) => {
-                              setuserBio(event.target.value)
+                              setProfileBio(event.target.value)
                               setFieldValue('bio', event.target.value)
                             }}
                           />
@@ -144,6 +166,84 @@ export const ProfilePage = () => {
                             <FormFeedback>{errors.bio}</FormFeedback>
                           ) : null}
                         </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <Row>
+                          <Col>
+                            <FormGroup>
+                              <Label for="profileAddress">Address *</Label>
+                              <Input data-cy="profileAddress" value={profileAddress} invalid={errors.address && touched.address ? true : false} type="text" name="profileAddress" id="profileAddress" placeholder="address"
+                                onChange={(event: any) => {
+                                  setProfileAddress(event.target.value)
+                                  setFieldValue('address', event.target.value)
+                                }}
+                              />
+                              {errors.address && touched.address ? (
+                                <FormFeedback>{errors.address}</FormFeedback>
+                              ) : null}
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col className="col-md-4 col-12">
+                            <FormGroup>
+                              <Label for="profileAddressCity">City *</Label>
+                              <Input data-cy="profileAddressCity" value={profileAddressCity} invalid={errors.addressCity && touched.addressCity ? true : false} type="text" name="profileAddressCity" id="profileAddressCity" placeholder="city"
+                                onChange={(event: any) => {
+                                  setProfileAddressCity(event.target.value)
+                                  setFieldValue('addressCity', event.target.value)
+                                }}
+                              />
+                              {errors.addressCity && touched.addressCity ? (
+                                <FormFeedback>{errors.addressCity}</FormFeedback>
+                              ) : null}
+                            </FormGroup>
+                          </Col>
+                          <Col className="col-md-2 col-12">
+                            <FormGroup>
+                              <Label for="profileAddressZip">Zip code *</Label>
+                              <Input data-cy="profileAddressZip" value={profileAddressZip} invalid={errors.addressZip && touched.addressZip ? true : false} type="text" name="profileAddressZip" id="profileAddressZip" placeholder="zip"
+                                onChange={(event: any) => {
+                                  setProfileAddressZip(event.target.value)
+                                  setFieldValue('addressZip', event.target.value)
+                                }}
+                              />
+                              {errors.addressZip && touched.addressZip ? (
+                                <FormFeedback>{errors.addressZip}</FormFeedback>
+                              ) : null}
+                            </FormGroup>
+                          </Col>
+                          <Col className="col-md-2 col-12">
+                            <FormGroup>
+                              <Label for="profileAddressState">State/province *</Label>
+                              <Input data-cy="profileAddressState" value={profileAddressState} invalid={errors.addressState && touched.addressState ? true : false} type="text" name="profileAddressState" id="profileAddressState" placeholder="state"
+                                onChange={(event: any) => {
+                                  setProfileAddressState(event.target.value)
+                                  setFieldValue('addressState', event.target.value)
+                                }}
+                              />
+                              {errors.addressState && touched.addressState ? (
+                                <FormFeedback>{errors.addressState}</FormFeedback>
+                              ) : null}
+                            </FormGroup>
+                          </Col>
+                          <Col className="col-md-4 col-12">
+                            <FormGroup>
+                              <Label for="profileAddressCountry">Country *</Label>
+                              <Input data-cy="profileAddressCountry" value={profileAddressCountry} invalid={errors.addressCountry && touched.addressCountry ? true : false} type="text" name="profileAddressCountry" id="profileAddressCountry" placeholder="country"
+                                onChange={(event: any) => {
+                                  setProfileAddressCountry(event.target.value)
+                                  setFieldValue('addressCountry', event.target.value)
+                                }}
+                              />
+                              {errors.addressCountry && touched.addressCountry ? (
+                                <FormFeedback>{errors.addressCountry}</FormFeedback>
+                              ) : null}
+                            </FormGroup>
+                          </Col>
+                        </Row>
                       </Col>
                     </Row>
                   </CardBody>

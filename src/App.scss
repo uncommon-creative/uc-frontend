@@ -39,7 +39,7 @@
 
 /* make the customizations */
 $theme-colors: (
-    "primary": #00c1cf,
+    "primary": #005ea6,
     "secondary": #ffffff,
     "tertiary": #6c757d,
     "light": #dee2e6
@@ -73,3 +73,20 @@ $spacers: map-merge(
 }
 
 @import "~bootstrap/scss/bootstrap";
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printSection,
+  #printSection * {
+    visibility: visible;
+  }
+  #printSection {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+}

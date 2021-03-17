@@ -33,4 +33,11 @@ query getProfileData($user: ID){
   ){
     value
   }
+
+  address: getProfileData( 
+    user: $user
+    name: "address"
+  ){
+    value
+  }
 }

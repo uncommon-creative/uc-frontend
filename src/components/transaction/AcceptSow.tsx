@@ -15,12 +15,15 @@ import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
 
 import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
-import { actions as ChatActions, selectors as ChatSelectors } from '../../store/slices/chat'
+import { actions as ChatActions } from '../../store/slices/chat'
+import { selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
 import { actions as NotificationActions } from '../../store/slices/notification'
 import { actions as UIActions } from '../../store/slices/ui'
 import { ActivityButton } from '../common/ActivityButton';
 import { Payment } from './Payment'
+import AlgoSignerLogo from '../../images/AlgoSigner.png'
+
 
 declare var AlgoSigner: any;
 
@@ -29,6 +32,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
+  const currentChosenArbitrator = useSelector(ArbitratorSelectors.getCurrentChosenArbitrator)
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
   const multiSig = useSelector(TransactionSelectors.getMultiSig)
   const transactionError = useSelector(TransactionSelectors.getError)
@@ -56,7 +60,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
 
           if (value.data.onAmountChecked.status === "AMOUNT_OK") {
             console.log("onAmountChecked value success: ", value)
-            dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentSow.arbitrator }))
+            dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentChosenArbitrator }))
             dispatch(TransactionActions.didCompleteTransactionAcceptAndPay(value.data))
           }
           else if (value.data.onAmountChecked.status === "AMOUNT_NOT_OK") {
@@ -90,7 +94,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   }, [transactionPage]);
 
   React.useEffect(() => {
-    modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
+    modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentChosenArbitrator }))
 
     return () => {
       setAcceptedConditions(false)
@@ -124,7 +128,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='continueTransaction' disabled={!acceptedConditions} name="continueTransaction" color="primary" onClick={() => {
-              dispatch(TransactionActions.willCreateMultiSigAddress({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator, price: currentSow.price }))
+              dispatch(TransactionActions.willCreateMultiSigAddress({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentChosenArbitrator, price: currentSow.price }))
             }}>Continue</ActivityButton>
           </ModalFooter>
         </>
@@ -138,8 +142,8 @@ export const AcceptSow = ({ modal, toggle }: any) => {
             {payment.toPay > 0 &&
               <Row>
                 <Col>
-                  <Card className="flex-fill" outline onClick={() => {
-                    dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, toPay: payment.toPay, currentSow: currentSow }))
+                  <Card outline onClick={() => {
+                    dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, total: payment.total, sow: currentSow.sow }))
                   }}>
                     <CardBody className="text-center">
                       <CardSubtitle tag="h5" className="mb-2 text-muted text-center">QR</CardSubtitle>
@@ -148,7 +152,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
                   </Card>
                 </Col>
                 <Col>
-                  <Card className="flex-fill" onClick={() => {
+                  <Card data-cy='mnemonicAcceptAndPay' onClick={() => {
                     dispatch(TransactionActions.goToTransactionPage(4))
                   }}>
                     <CardBody className="text-center">
@@ -158,14 +162,14 @@ export const AcceptSow = ({ modal, toggle }: any) => {
                   </Card>
                 </Col>
                 <Col>
-                  <Card className="flex-fill" disabled onClick={() => {
-                    isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, toPay: payment.toPay }))
+                  <Card disabled onClick={() => {
+                    isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, total: payment.total }))
                       : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
                   }}>
                     <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
                       <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner</CardSubtitle>
                       {!isAlgoSignInstalled && <CardSubtitle tag="h6" className="mb-2 text-muted text-center">(not installed)</CardSubtitle>}
-                      <FontAwesomeIcon icon={faExclamationTriangle} size="5x" />
+                      <img src={AlgoSignerLogo} height="80" alt="AlgoSigner Logo" />
                     </CardBody>
                   </Card>
                 </Col>
@@ -174,9 +178,9 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           </ModalBody>
           {payment.toPay <= 0 &&
             <ModalFooter>
-              <ActivityButton data-cy='continueTransaction' disabled={!acceptedConditions} name="continueTransaction" color="primary" onClick={() => {
+              <ActivityButton data-cy='completeAcceptAndPay' disabled={!acceptedConditions} name="completeAcceptAndPay" color="primary" onClick={() => {
                 dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_AND_PAY }, sow: currentSow }));
-                dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentSow.arbitrator }))
+                dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentChosenArbitrator }))
                 dispatch(TransactionActions.goToTransactionPage(6))
               }}>Complete</ActivityButton>
             </ModalFooter>
@@ -210,7 +214,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayQR' name="willCompleteTransactionAcceptAndPayQR" color="primary" onClick={async () => {
-              // dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, toPay: payment.toPay, currentSow: currentSow }))
+              // dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, total: payment.total, sow: currentSow.sow }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -235,7 +239,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptAndPayMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, toPay: payment.toPay }))
+              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, toPay: payment.toPay, arbitrator: currentChosenArbitrator }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -265,12 +269,10 @@ export const AcceptSow = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionAcceptAndPayAlgoSigner" color="primary"
-              onClick={//completeTxnAPAlgoSigner
-                () => {
-                  dispatch(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, toPay: payment.toPay, sow: currentSow.sow }))
-                  subscribeOnAmountChecked()
-                }
-              }
+              onClick={() => {
+                dispatch(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, toPay: payment.toPay, sow: currentSow.sow }))
+                // subscribeOnAmountChecked()
+              }}
             >Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -287,7 +289,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
+            <ActivityButton data-cy="closeAcceptAndPay" name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
           </ModalFooter>
         </>
       }

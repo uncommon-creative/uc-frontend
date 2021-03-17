@@ -80,6 +80,11 @@ const StatementOfWorkSchema = Yup.object().shape({
   sowExpiration: Yup.number()
     .min(1, 'Select expiration')
     .required('Required'),
+  licenseTermsOption: Yup.string()
+    .required('Required'),
+  licenseTermsNotes: Yup.string()
+    .min(3, 'Too Short!')
+    .required('Required'),
 });
 
 export const CreateStatementOfWorkPage = () => {
@@ -131,13 +136,15 @@ export const CreateStatementOfWorkPage = () => {
                   termsOfService: false,
                   codeOfConduct: false,
                   arbitrators: currentArbitrators,
-                  sowExpiration: 0
+                  sowExpiration: 0,
+                  licenseTermsOption: currentSow.licenseTermsOption ? currentSow.licenseTermsOption : '',
+                  licenseTermsNotes: currentSow.licenseTermsNotes ? currentSow.licenseTermsNotes : ''
                 }}
                 validationSchema={StatementOfWorkSchema}
                 validateOnBlur={true}
                 onSubmit={values => {
                   console.log('in onsubmit with: ', values)
-                  dispatch(SowActions.willSubmitStatementOfWork({ sow: values, history: history }));
+                  dispatch(SowActions.willSubmitStatementOfWork({ sow: values/* , history: history */ }));
                 }}
               >
                 {({ errors, touched, setFieldValue, values }) => {
@@ -216,17 +223,13 @@ export const CreateStatementOfWorkPage = () => {
                                         setFieldValue('currency', "ALGO")
                                         setPriceCurrency("ALGO")
                                       }}
-                                    >
-                                      ALGO
-                              </DropdownItem>
+                                    >ALGO</DropdownItem>
                                     <DropdownItem disabled={priceCurrency == "USDC"}
                                       onClick={() => {
                                         setFieldValue('currency', "USDC")
                                         setPriceCurrency("USDC")
                                       }}
-                                    >
-                                      USDC
-                              </DropdownItem>
+                                    >USDC</DropdownItem>
                                   </DropdownMenu>
                                 </InputGroupButtonDropdown>
                                 {errors.price && touched.price ? (
@@ -338,53 +341,103 @@ export const CreateStatementOfWorkPage = () => {
                           ) : null}
                         </FormGroup>
                       </Jumbotron>
-                      <Col className="col-md-4 col-12">
-                        <FormGroup>
-                          <Label for="sowExpiration">{t('sow.input.sowExpirationLabel')} *</Label>
-                          <CustomInput data-cy="inputSowExpiration" type="select" name="sowExpiration" id="sowExpiration"
-                            onChange={(event) => {
-                              console.log("event.target.value: ", event.target.value)
-                              setFieldValue("sowExpiration", parseInt(event.target.value, 10))
-                            }}
-                          >
-                            <option value={0}>Select...</option>
-                            <option value={86400}>1 day</option>
-                            <option value={604800}>1 week</option>
-                            <option value={2628000}>1 month</option>
-                            <option value={7884000}>3 months</option>
-                            <option value={15768000}>6 months</option>
-                            <option value={31536000}>1 year</option>
-                          </CustomInput>
-                          {errors.sowExpiration && touched.sowExpiration ? (
-                            <FormFeedback className="d-block">{errors.sowExpiration}</FormFeedback>
-                          ) : null}
-                        </FormGroup>
-                      </Col>
-                      <FormGroup check>
-                        <Label check>
-                          <Input data-cy="inputSowTermsOfService" invalid={errors.termsOfService && touched.termsOfService ? true : false} name="termsOfService" id="termsOfService" type="checkbox"
-                            onChange={(event) => setFieldValue("termsOfService", event.target.checked)}
-                          />Terms of Service *
-                          {errors.termsOfService && touched.termsOfService ? (
-                            <FormFeedback>{errors.termsOfService}</FormFeedback>
-                          ) : null}
-                        </Label>
-                      </FormGroup>
-                      <FormGroup check>
-                        <Label check>
-                          <Input data-cy="inputSowCodeOfConduct" invalid={errors.codeOfConduct && touched.codeOfConduct ? true : false} name="codeOfConduct" id="codeOfConduct" type="checkbox"
-                            onChange={(event) => setFieldValue("codeOfConduct", event.target.checked)}
-                          />Code of Conduct *
-                          {errors.codeOfConduct && touched.codeOfConduct ? (
-                            <FormFeedback>{errors.codeOfConduct}</FormFeedback>
-                          ) : null}
-                        </Label>
-                      </FormGroup>
+                      <Row>
+                        <Col>
+                          {/* <FormGroup> */}
+                            <Label for="licenseTerms">{t('sow.input.sowLicenseTermsLabel')} *</Label>
+                            <FormGroup check>
+                              <Input data-cy="licenseTerms-option1" type="radio" name="licenseTerms" id="licenseTerms-option1" checked={values.licenseTermsOption == 'option1'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
+                                onClick={(event: any) => {
+                                  console.log("event1: ", event.target.checked)
+                                  setFieldValue("licenseTermsOption", 'option1')
+                                  setFieldValue("licenseTermsNotes", t('sow.input.sowLicenseTermsLabelOption1'))
+                                }}
+                              />
+                              <Label check for="licenseTerms-option1">
+                                {t('sow.input.sowLicenseTermsLabelOption1')}
+                              </Label>
+                            </FormGroup>
+                            <FormGroup check>
+                              <Input data-cy="licenseTerms-option2" type="radio" name="licenseTerms" id="licenseTerms-option2" checked={values.licenseTermsOption == 'option2'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
+                                onClick={(event: any) => {
+                                  console.log("event2: ", event.target.checked)
+                                  setFieldValue("licenseTermsOption", 'option2')
+                                  setFieldValue("licenseTermsNotes", '')
+                                }} />
+                              <Label check for="licenseTerms-option2">
+                                {t('sow.input.sowLicenseTermsLabelOption2')}
+                              </Label>
+                              <Input hidden={values.licenseTermsOption != 'option2'} value={values.licenseTermsNotes} type="textarea" name="licenseTermsNotes" id="licenseTermsNotes" placeholder="licenseTermsNotes" invalid={errors.licenseTermsNotes && touched.licenseTermsNotes ? true : false}
+                                onChange={(event: any) => {
+                                  setFieldValue("licenseTermsNotes", event.target.value)
+                                }}
+                              />
+                              {errors.licenseTermsOption && touched.licenseTermsOption ? (
+                                <FormFeedback>{errors.licenseTermsOption}</FormFeedback>
+                              ) : null}
+                              {errors.licenseTermsNotes && touched.licenseTermsNotes ? (
+                                <FormFeedback hidden={values.licenseTermsOption != 'option2'}>{errors.licenseTermsNotes}</FormFeedback>
+                              ) : null}
+                            </FormGroup>
+                          {/* </FormGroup> */}
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col className="col-md-4 col-12">
+                          <FormGroup>
+                            <Label for="sowExpiration">{t('sow.input.sowExpirationLabel')} *</Label>
+                            <CustomInput data-cy="inputSowExpiration" type="select" name="sowExpiration" id="sowExpiration"
+                              onChange={(event) => {
+                                console.log("event.target.value: ", event.target.value)
+                                setFieldValue("sowExpiration", parseInt(event.target.value, 10))
+                              }}
+                            >
+                              <option value={0}>Select...</option>
+                              <option value={86400}>1 day</option>
+                              <option value={604800}>1 week</option>
+                              <option value={2628000}>1 month</option>
+                              <option value={7884000}>3 months</option>
+                              <option value={15768000}>6 months</option>
+                              <option value={31536000}>1 year</option>
+                            </CustomInput>
+                            {errors.sowExpiration && touched.sowExpiration ? (
+                              <FormFeedback className="d-block">{errors.sowExpiration}</FormFeedback>
+                            ) : null}
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <FormGroup check>
+                            <Label check>
+                              <Input data-cy="inputSowTermsOfService" invalid={errors.termsOfService && touched.termsOfService ? true : false} name="termsOfService" id="termsOfService" type="checkbox"
+                                onChange={(event) => setFieldValue("termsOfService", event.target.checked)}
+                              />
+                              Terms of Service *
+                              {errors.termsOfService && touched.termsOfService ? (
+                                <FormFeedback>{errors.termsOfService}</FormFeedback>
+                              ) : null}
+                            </Label>
+                          </FormGroup>
+                          <FormGroup check>
+                            <Label check>
+                              <Input data-cy="inputSowCodeOfConduct" invalid={errors.codeOfConduct && touched.codeOfConduct ? true : false} name="codeOfConduct" id="codeOfConduct" type="checkbox"
+                                onChange={(event) => setFieldValue("codeOfConduct", event.target.checked)}
+                              />
+                              Code of Conduct *
+                              {errors.codeOfConduct && touched.codeOfConduct ? (
+                                <FormFeedback>{errors.codeOfConduct}</FormFeedback>
+                              ) : null}
+                            </Label>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+
                       <Row>
                         <Col><ActivityButton data-cy="inputSowSubmit" type="submit" name="submitSow" color="primary" block>{t('sow.submitStatementOfWork')}</ActivityButton></Col>
                       </Row>
                       <Row className="mt-2">
-                        <Col><Button color="primary" block outline name="draftSow" onClick={() => dispatch(SowActions.willDraftStatementOfWork({ sow: values, history: history }))}>Save draft</Button></Col>
+                        <Col><Button color="primary" block outline name="draftSow" onClick={() => dispatch(SowActions.willDraftStatementOfWork({ sow: values/* , history: history */ }))}>Save draft</Button></Col>
                         <Col><Button color="primary" block to="/" outline tag={Link}>Cancel</Button></Col>
                       </Row>
                     </Form>

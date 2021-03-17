@@ -81,8 +81,11 @@ describe('Chat', () => {
       .contains('Confirm')
       .click()
 
+    cy.get('[data-cy=licenseTerms-option1]')
+      .check()
+
     cy.get('[data-cy=inputSowExpiration]')
-      .select('3 months')
+      .select('1 day')
 
     cy.get('[data-cy=inputSowTermsOfService]')
       .check()
@@ -114,11 +117,11 @@ describe('Chat', () => {
       cy.wait(2000)
       cy.get('[data-cy=customerTab]').click()
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
-      cy.get('[data-cy=REJECTModal]').click()
-      cy.wait(1000)
       cy.get('[data-cy=REJECT]').click()
       cy.wait(1000)
-      cy.get('[data-cy=rejectComplete]').click()
+      cy.get('[data-cy=willReject]').click()
+      cy.wait(1000)
+      cy.get('[data-cy=closeReject]').click()
       cy.wait(5000)
       cy.get('[class=rce-mbox-text]')
         .contains('REJECT')

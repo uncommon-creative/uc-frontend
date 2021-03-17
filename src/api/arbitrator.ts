@@ -1,6 +1,10 @@
 import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
 import * as _ from 'lodash';
+
+import { configuration } from '../config'
+
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 const axios = require('axios')
 
 export const getArbitrator = async (user: any) => {
@@ -30,7 +34,7 @@ export const getArbitratorsList = async () => {
 }
 
 export const getFullArbitratorsList = async () => {
-  const url = "https://dbyc3f5xvj.execute-api.eu-west-1.amazonaws.com/dev/arbitrators"
+  const url = configuration[stage].arbitrators_list_webhook
   try {
     const axiosResponse = await axios.get(url);
     // console.log("getFullArbitratorsList axiosResponse: ", axiosResponse)

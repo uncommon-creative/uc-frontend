@@ -12,7 +12,9 @@ mutation draftSow(
   $tags: [String],
   $termsOfService: Boolean,
   $title: String,
-  $sowExpiration: Int
+  $sowExpiration: Int,
+  $licenseTermsOption: String,
+  $licenseTermsNotes: String
 ) {
   draftSow(
     sow: $sow
@@ -28,7 +30,9 @@ mutation draftSow(
     tags: $tags,
     termsOfService: $termsOfService,
     title: $title,
-    sowExpiration: $sowExpiration
+    sowExpiration: $sowExpiration,
+    licenseTermsOption: $licenseTermsOption,
+    licenseTermsNotes: $licenseTermsNotes
   ) {
     sow
     arbitrators
@@ -48,5 +52,7 @@ mutation draftSow(
     seller
     sowExpiration
     submittedDate
+    licenseTermsOption
+    licenseTermsNotes
   }
 }

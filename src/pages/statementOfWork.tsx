@@ -1,14 +1,13 @@
 import * as React from 'react';
 import {
   Card, CardText, CardBody, CardTitle, CardSubtitle,
-  Button, Container, Col, Row, Spinner,
-  Modal, ModalHeader, ModalBody, ModalFooter,
-  ListGroup, ListGroupItemHeading, ListGroupItem, Jumbotron,
+  Button, Container, Col, Row, Tooltip, ListGroupItem, Jumbotron,
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams, useHistory } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 
+import { actions as NotificationActions } from '../store/slices/notification'
 import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
@@ -20,6 +19,7 @@ import { ActivityButton } from '../components/common/ActivityButton'
 import { RefreshButton } from '../components/common/RefreshButton'
 import { FileButton } from '../components/common/FileButton';
 import { selectors as UISelectors } from '../store/slices/ui'
+import { SowDetails } from '../components/sow/SowDetails'
 import { AcceptSow } from '../components/transaction/AcceptSow'
 import { ClaimMilestoneMet } from '../components/transaction/ClaimMilestoneMet'
 import { AcceptMilestone } from '../components/transaction/AcceptMilestone'
@@ -36,23 +36,31 @@ export const StatementOfWorkPage = () => {
   let { code }: any = useParams();
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
+  let history = useHistory();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   console.log("in statementOfWorkPage currentSow: ", currentSow)
+  const userAttributes = useSelector(ProfileSelectors.getProfile)
   const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators);
+  const currentChosenArbitrator = useSelector(ArbitratorSelectors.getCurrentChosenArbitrator)
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const user = useSelector(AuthSelectors.getUser)
   const users = useSelector(ProfileSelectors.getUsers)
+  const [modalOpenSowDetails, setModalOpenSowDetails] = React.useState(false);
   const [modalOpenAcceptSow, setModalOpenAcceptSow] = React.useState(false);
   const [modalOpenClaimMilestoneMet, setModalOpenClaimMilestoneMet] = React.useState(false);
   const [modalOpenAcceptMilestone, setModalOpenAcceptMilestone] = React.useState(false);
   const [modalOpenReject, setModalOpenReject] = React.useState(false);
   const [modalOpenRequestReview, setModalOpenRequestReview] = React.useState(false);
 
+  const toggleModalSowDetails = () => setModalOpenSowDetails(!modalOpenSowDetails);
   const toggleModalAcceptSow = () => setModalOpenAcceptSow(!modalOpenAcceptSow);
   const toggleModalClaimMilestoneMet = () => setModalOpenClaimMilestoneMet(!modalOpenClaimMilestoneMet);
   const toggleModalAcceptMilestone = () => setModalOpenAcceptMilestone(!modalOpenAcceptMilestone);
   const toggleModalReject = () => setModalOpenReject(!modalOpenReject);
   const toggleModalRequestReview = () => setModalOpenRequestReview(!modalOpenRequestReview);
+
+  const [tooltipOpenAcceptAndPay, setTooltipOpenAcceptAndPay] = React.useState(false);
+  const toggleAcceptAndPay = () => setTooltipOpenAcceptAndPay(!tooltipOpenAcceptAndPay);
 
   React.useEffect(() => {
     console.log("in statementOfWorkPage currentSow: ", currentSow)
@@ -69,11 +77,11 @@ export const StatementOfWorkPage = () => {
         <Container>
           <Card>
             <CardBody>
-              <Row>
+              <Row className="mb-3">
                 <Col className="col-11">
-                  <CardTitle tag="h5" className="text-center">Statement of Work</CardTitle>
-                  <CardSubtitle tag="h5" className="mb-2 text-muted text-center">{currentSow.title}</CardSubtitle>
-                  <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{currentSow.sow}</CardSubtitle>
+                  <CardTitle tag="h5" className="text-center">{currentSow.title}</CardTitle>
+                  {/* <CardSubtitle tag="h5" className="mb-3 text-muted text-center">{currentSow.title}</CardSubtitle> */}
+                  {/* <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{currentSow.sow}</CardSubtitle> */}
                 </Col>
                 <Col className="col-1">
                   <RefreshButton data-cy='getSow' type="submit" name="getSow" color="primary"
@@ -94,18 +102,19 @@ export const StatementOfWorkPage = () => {
                 <Col className="col-md-4 col-12">
                   <Row>
                     <Col className="col-12">
-                      <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Details</CardSubtitle>
+                      <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Summary</CardSubtitle>
+
                       <Jumbotron>
                         {currentSow.seller == user.username && currentSow.status == SowStatus.SUBMITTED &&
                           <Button color="primary" block to="/create-statement-of-work" outline tag={Link}>Edit</Button>
                         }
                         {/* <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{currentSow.title}</CardSubtitle> */}
                         {currentSow.seller == user.username ?
-                          <Row>
-                            <Col className="col-12 col-lg-4">
+                          <Row className="d-flex justify-content-between">
+                            <Col className="col-12 col-lg-auto">
                               <CardText>Buyer:</CardText>
                             </Col>
-                            <Col className="col-12 col-lg-8 text-lg-right">
+                            <Col className="col-12 col-lg-auto text-lg-right">
                               <CardText color="primary">
                                 {validateEmail(currentSow.buyer) ?
                                   currentSow.buyer
@@ -116,11 +125,11 @@ export const StatementOfWorkPage = () => {
                             </Col>
                           </Row>
                           :
-                          <Row>
-                            <Col className="col-12 col-lg-4">
+                          <Row className="d-flex justify-content-between">
+                            <Col className="col-12 col-lg-auto">
                               <CardText>Seller:</CardText>
                             </Col>
-                            <Col className="col-12 col-lg-8 text-lg-right">
+                            <Col className="col-12 col-lg-auto text-lg-right">
                               <CardText color="primary">
                                 {validateEmail(currentSow.seller) ?
                                   currentSow.seller
@@ -132,62 +141,60 @@ export const StatementOfWorkPage = () => {
                           </Row>
                         }
                         {currentSow.arbitrator &&
-                          <Row>
-                            <Col className="col-12 col-lg-6">
+                          <Row className="d-flex justify-content-between">
+                            <Col className="col-12 col-lg-auto">
                               <CardText>Arbitrator:</CardText>
                             </Col>
-                            <Col className="col-12 col-lg-6 text-lg-right">
+                            <Col className="col-12 col-lg-auto text-lg-right">
                               <CardText color="primary">
                                 {users[currentSow.arbitrator].given_name + ' ' + users[currentSow.arbitrator].family_name}
                               </CardText>
                             </Col>
-                          </Row>}
-                        <Row>
-                          <Col className="col-12 col-lg-5">
+                          </Row>
+                        }
+                        <Row className="d-flex justify-content-between">
+                          <Col className="col-12 col-lg-auto">
                             <CardText>Deadline:</CardText>
                           </Col>
-                          <Col className="col-12 col-lg-7 text-lg-right">
+                          <Col className="col-12 col-lg-auto text-lg-right">
                             <CardText color="primary">{new Date(currentSow.deadline).toLocaleDateString()}</CardText>
                           </Col>
                         </Row>
-                        <Row>
-                          <Col className="col-12 col-lg-4">
+                        <Row className="d-flex justify-content-between">
+                          <Col className="col-12 col-lg-auto">
                             <CardText>Price:</CardText>
                           </Col>
-                          <Col className="col-12 col-lg-8 text-lg-right">
+                          <Col className="col-12 col-lg-auto text-lg-right">
                             <CardText color="primary">{currentSow.price} {currentSow.currency}</CardText>
                           </Col>
                         </Row>
-                        <Row>
-                          <Col className="col-12 col-lg-4">
+                        <Row className="d-flex justify-content-between">
+                          <Col className="col-12 col-lg-auto">
                             <CardText>Created:</CardText>
                           </Col>
-                          <Col className="col-12 col-lg-8 text-lg-right">
+                          <Col className="col-12 col-lg-auto text-lg-right">
                             <CardText color="primary">{new Date(currentSow.createdAt).toLocaleDateString()}</CardText>
                           </Col>
                         </Row>
-                        <Row>
-                          <Col className="col-12 col-lg-4">
-                            <CardText>Updated:</CardText>
-                          </Col>
-                          <Col className="col-12 col-lg-8 text-lg-right">
-                            <CardText color="primary">{new Date(currentSow.updatedAt).toLocaleDateString()}</CardText>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col className="col-12 col-lg-5">
+                        <Row className="d-flex justify-content-between">
+                          <Col className="col-12 col-lg-auto">
                             <CardText>Expiration:</CardText>
                           </Col>
-                          <Col className="col-12 col-lg-7 text-lg-right">
+                          <Col className="col-12 col-lg-auto text-lg-right">
                             <CardText color="primary">{new Date(currentSow.sowExpiration).toLocaleDateString()}</CardText>
                           </Col>
                         </Row>
-                        <Row>
-                          <Col className="col-12 col-lg-4">
+                        <Row className="d-flex justify-content-between">
+                          <Col className="col-12 col-lg-auto">
                             <CardText>Status:</CardText>
                           </Col>
-                          <Col className="col-12 col-lg-8 text-lg-right">
+                          <Col className="col-12 col-lg-auto text-lg-right">
                             <CardText color="primary">{currentSow.status}</CardText>
+                          </Col>
+                        </Row>
+                        <Row className="mt-3">
+                          <Col className="text-lg-right">
+                            <Button color="link" onClick={toggleModalSowDetails}>view details</Button>
                           </Col>
                         </Row>
 
@@ -201,7 +208,7 @@ export const StatementOfWorkPage = () => {
                         <Jumbotron>
                           {currentArbitrators.map((element: any, index: any) => {
                             return (
-                              <ListGroupItem data-cy={`selectArbitrator${element.given_name}`} className={currentSow.arbitrator == element.user ? 'border border-primary bg-light' : 'border'} key={index}
+                              <ListGroupItem data-cy={`selectArbitrator${element.given_name}`} className={currentChosenArbitrator == element.user ? 'border border-primary bg-light' : 'border'} key={index}
                                 onClick={() => {
                                   console.log("selecting arbitrator: ", element)
                                 }}>
@@ -246,9 +253,23 @@ export const StatementOfWorkPage = () => {
                           {currentSow.buyer == user.username &&
                             <>
                               {currentSow.status == SowStatus.SUBMITTED &&
-                                <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={currentSow.arbitrator == null} block color="primary" name={SowCommands.ACCEPT_AND_PAY}
-                                  onClick={toggleModalAcceptSow}
-                                >{currentSow.arbitrator == null ? "Select an arbitrator" : "Accept and pay"}</ActivityButton>
+                                <>
+                                  <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={currentChosenArbitrator == ''} block color="primary" name={SowCommands.ACCEPT_AND_PAY}
+                                    onClick={
+                                      userAttributes.address ? toggleModalAcceptSow
+                                        : () => {
+                                          history.push('/profile')
+                                          dispatch(NotificationActions.willShowNotification({ message: "Please complete your profile before accept and pay.", type: "info" }));
+                                        }
+                                    }
+                                  >
+                                    <span id={SowCommands.ACCEPT_AND_PAY}>Accept and pay</span>
+                                    <Tooltip placement="top" isOpen={tooltipOpenAcceptAndPay} target={SowCommands.ACCEPT_AND_PAY} toggle={currentChosenArbitrator == '' ? toggleAcceptAndPay : () => { }}>
+                                      Please choose an arbitrator
+                                    </Tooltip>
+                                  </ActivityButton>
+                                </>
+
                               }
                               {currentSow.status == SowStatus.ACCEPTED_PAID &&
                                 <CardText className="text-muted text-center">
@@ -262,7 +283,7 @@ export const StatementOfWorkPage = () => {
                                 >Request review</ActivityButton>
                               }
                               {(currentSow.status == SowStatus.SUBMITTED || currentSow.status == SowStatus.MILESTONE_CLAIMED) &&
-                                <ActivityButton data-cy={SowCommands.REJECT + "Modal"} block color="primary" name={SowCommands.REJECT}
+                                <ActivityButton data-cy={SowCommands.REJECT} block color="primary" name={SowCommands.REJECT}
                                   onClick={toggleModalReject}
                                 >Reject</ActivityButton>
                               }
@@ -323,6 +344,7 @@ export const StatementOfWorkPage = () => {
             </CardBody>
           </Card>
 
+          <SowDetails modal={modalOpenSowDetails} toggle={toggleModalSowDetails} />
           <AcceptSow modal={modalOpenAcceptSow} toggle={toggleModalAcceptSow} />
           <ClaimMilestoneMet modal={modalOpenClaimMilestoneMet} toggle={toggleModalClaimMilestoneMet} />
           <AcceptMilestone modal={modalOpenAcceptMilestone} toggle={toggleModalAcceptMilestone} />

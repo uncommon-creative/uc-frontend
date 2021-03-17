@@ -26,8 +26,8 @@ export const Header = ({ className }: any) => {
   const dispatch = useDispatch()
 
   return (
-    <Navbar className={className} color="secondary" light expand="md">
-      <NavbarBrand href="/" className="px-4 py-2">
+    <Navbar className={className} color="secondary" light expand="md" style={{height: '130px'}}>
+      <NavbarBrand href="/" className="px-4">
         <img src={UCLogo} height="100" alt="Uncommon Creative Logo" />
       </NavbarBrand>
       <NavbarToggler onClick={toggle} />
