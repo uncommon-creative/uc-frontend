@@ -246,8 +246,7 @@ function* willSignTransactionClaimMilestoneMet(action: any) {
     // const resultSettedMultisigTransaction = yield call(TransactionApi.setSignedMsig, action.payload.currentSow.sow, resultSignedMultisigTransaction)
     // console.log("willSignTransactionClaimMilestoneMet resultSettedMultisigTransaction: ", resultSettedMultisigTransaction)
 
-    // altro stato???
-    // yield call(willSendCommandChat, { payload: { values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: action.payload.currentSow } })
+    yield call(willSendCommandChat, { payload: { values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: action.payload.currentSow } })
 
     yield put(TransactionActions.didSignTransactionClaimMilestoneMet())
 
@@ -308,6 +307,7 @@ function* willCompleteTransactionAcceptMilestone(action: any) {
     //   console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction success: ", resultConfirmedMultisigTransaction)
     //   yield put(TransactionActions.didCompleteTransactionAcceptMilestone(resultConfirmedMultisigTransaction))
     // }
+    // altro stato?
     // yield call(willSendCommandChat, { payload: { values: { command: SowCommands.ACCEPT_MILESTONE }, sow: action.payload.currentSow } })
 
     yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
