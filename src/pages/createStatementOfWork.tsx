@@ -120,7 +120,7 @@ export const CreateStatementOfWorkPage = () => {
                 initialValues={{
                   sow: currentSow.sow ? currentSow.sow : '',
                   status: currentSow.status,
-                  seller: users[currentSow.seller].email,
+                  seller: users[currentSow.seller] ? users[currentSow.seller].email : '',
                   buyer:
                     validateEmail(currentSow.buyer) ? currentSow.buyer
                       : currentSow.buyer != 'not_set' ? currentSow.buyer
