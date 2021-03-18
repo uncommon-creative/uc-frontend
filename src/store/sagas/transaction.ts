@@ -247,7 +247,7 @@ function* willSignTransactionClaimMilestoneMet(action: any) {
     // console.log("willSignTransactionClaimMilestoneMet resultSettedMultisigTransaction: ", resultSettedMultisigTransaction)
 
     // altro stato???
-    yield call(willSendCommandChat, { payload: { values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: action.payload.currentSow } })
+    // yield call(willSendCommandChat, { payload: { values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: action.payload.currentSow } })
 
     yield put(TransactionActions.didSignTransactionClaimMilestoneMet())
 
@@ -297,6 +297,7 @@ function* willCompleteTransactionAcceptMilestone(action: any) {
 
     const resultConfirmedMultisigTransaction = yield call(TransactionApi.algorandFinalizeTransaction, signedMsig.hash_round, signedMsig.round_sow, resultAppendSignMultisigTransaction)
     console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction: ", resultConfirmedMultisigTransaction)
+    yield put(TransactionActions.didCompleteTransactionAcceptMilestone(resultConfirmedMultisigTransaction))
 
     // if (resultConfirmedMultisigTransaction === "sendTxFailed" || resultConfirmedMultisigTransaction === "TransactionPool.Remember: txn dead:") {
     //   console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction fail: ", resultConfirmedMultisigTransaction)
@@ -307,13 +308,13 @@ function* willCompleteTransactionAcceptMilestone(action: any) {
     //   console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction success: ", resultConfirmedMultisigTransaction)
     //   yield put(TransactionActions.didCompleteTransactionAcceptMilestone(resultConfirmedMultisigTransaction))
     // }
-
-    yield call(willSendCommandChat, { payload: { values: { command: SowCommands.ACCEPT_MILESTONE }, sow: action.payload.currentSow } })
+    // yield call(willSendCommandChat, { payload: { values: { command: SowCommands.ACCEPT_MILESTONE }, sow: action.payload.currentSow } })
 
     yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
 
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptMilestone ", error)
+      yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail("Algorand multisig transaction failed"))
   }
   yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptMilestone'));
 }
