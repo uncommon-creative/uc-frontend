@@ -251,7 +251,7 @@ export const ProfilePage = () => {
                       <CardTitle tag="h6" className="text-center">Arbitrator Settings</CardTitle>
                       <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Change your arbitrator settings</CardSubtitle>
 
-                      {values && console.log("values: ", values)}
+                      {/* {values && console.log("values: ", values)} */}
                       <Row>
                         <Col className="col-md-2 col-12">
                           <FormGroup>

@@ -148,9 +148,6 @@ function* willCompleteTransactionAcceptAndPayQR(action: any) {
 
   try {
     yield call(willAlgorandPollAccountAmount, action)
-
-    // const resultAlgorandPollAccountAmount = yield call(TransactionApi.algorandPollAccountAmount, action.payload.currentSow.sow, action.payload.multiSigAddress, action.payload.total)
-    // console.log("willCompleteTransactionAcceptAndPayQR resultAlgorandPollAccountAmount: ", resultAlgorandPollAccountAmount)
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptAndPayQR ", error)
   }
@@ -243,8 +240,6 @@ function* willSignTransactionClaimMilestoneMet(action: any) {
 
     const resultPutMultisigTransaction = yield call(TransactionApi.algorandPutTransaction, action.payload.currentSow.sow, resultSignedMultisigTransaction)
     console.log("willCompleteTransactionAcceptMilestone resultSignedMultisigTransaction: ", resultPutMultisigTransaction)
-    // const resultSettedMultisigTransaction = yield call(TransactionApi.setSignedMsig, action.payload.currentSow.sow, resultSignedMultisigTransaction)
-    // console.log("willSignTransactionClaimMilestoneMet resultSettedMultisigTransaction: ", resultSettedMultisigTransaction)
 
     yield call(willSendCommandChat, { payload: { values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: action.payload.currentSow } })
 
@@ -297,18 +292,6 @@ function* willCompleteTransactionAcceptMilestone(action: any) {
     const resultConfirmedMultisigTransaction = yield call(TransactionApi.algorandFinalizeTransaction, signedMsig.hash_round, signedMsig.round_sow, resultAppendSignMultisigTransaction)
     console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction: ", resultConfirmedMultisigTransaction)
     yield put(TransactionActions.didCompleteTransactionAcceptMilestone(resultConfirmedMultisigTransaction))
-
-    // if (resultConfirmedMultisigTransaction === "sendTxFailed" || resultConfirmedMultisigTransaction === "TransactionPool.Remember: txn dead:") {
-    //   console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction fail: ", resultConfirmedMultisigTransaction)
-    //   yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail("Algorand multisig transaction expired"))
-    //   yield put(NotificationActions.willShowNotification({ message: resultConfirmedMultisigTransaction, type: "danger" }));
-    // }
-    // else {
-    //   console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction success: ", resultConfirmedMultisigTransaction)
-    //   yield put(TransactionActions.didCompleteTransactionAcceptMilestone(resultConfirmedMultisigTransaction))
-    // }
-    // altro stato?
-    // yield call(willSendCommandChat, { payload: { values: { command: SowCommands.ACCEPT_MILESTONE }, sow: action.payload.currentSow } })
 
     yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
 
