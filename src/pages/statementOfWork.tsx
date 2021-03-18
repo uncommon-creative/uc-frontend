@@ -230,6 +230,11 @@ export const StatementOfWorkPage = () => {
                               {t('chat.emptyComandsWithoutDate', { given_name: users[currentSow.arbitrator].given_name, family_name: users[currentSow.arbitrator].family_name })}
                             </CardText>
                           }
+                          {currentSow.status == SowStatus.PAYMENT_SENT &&
+                            <CardText className="text-muted text-center">
+                              {"Awaiting payment to complete by 7 days starting from the acceptance date by the buyer."}
+                            </CardText>
+                          }
                           {currentSow.seller == user.username &&
                             <>
                               {currentSow.status == SowStatus.SUBMITTED &&

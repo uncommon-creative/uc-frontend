@@ -19,6 +19,8 @@ export const currentSlice = createSlice({
     willGetAlgorandAccountInfo: (state, action: PayloadAction<any>) => state,
     willGetParams: (state, action: PayloadAction<any>) => void (state.transactionPage = 1),
     didGetParams: (state, action: PayloadAction<any>) => void (state.params = action.payload),
+    willGetParamsWithDelay: (state, action: PayloadAction<any>) => void (state.transactionPage = 1),
+    didGetParamsWithDelay: (state, action: PayloadAction<any>) => void (state.params = action.payload),
 
     willCreateMultiSigAddress: (state, action: PayloadAction<any>) => state,
     didCreateMultiSigAddress: (state, action: PayloadAction<any>) => void (state.multiSig = action.payload, state.transactionPage = 2),
@@ -45,6 +47,7 @@ export const currentSlice = createSlice({
     willSignTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => state,
     didSignTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionPage = 3),
 
+    willGetSignedMsig: (state, action: PayloadAction<any>) => state,
     didGetSignedMsig: (state, action: PayloadAction<any>) => void (state.signedMsig = action.payload, state.transactionPage = 2),
     willCompleteTransactionAcceptMilestone: (state, action: PayloadAction<any>) => state,
     didCompleteTransactionAcceptMilestone: (state, action: PayloadAction<any>) => void (state.transactionAcceptMilestone = action.payload, state.transactionPage = 3),
