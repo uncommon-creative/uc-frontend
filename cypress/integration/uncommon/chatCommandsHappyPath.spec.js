@@ -212,7 +212,7 @@ describe('Chat', () => {
       cy.get('[data-cy=closeAcceptMilestone]').click()
       cy.wait(10000)
       cy.get('[class=rce-mbox-text]')
-        .contains('ACCEPT_MILESTONE')
+        .contains('FINALIZE_MSIG_TRANSACTION')
       cy.logout()
     })
   })
