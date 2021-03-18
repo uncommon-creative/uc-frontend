@@ -8,7 +8,7 @@ import {
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQrcode, faKey, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
+import { faQrcode, faKey } from '@fortawesome/free-solid-svg-icons'
 import qrcode from 'qrcode-generator';
 
 import { API, graphqlOperation } from 'aws-amplify';
@@ -23,7 +23,6 @@ import { actions as UIActions } from '../../store/slices/ui'
 import { ActivityButton } from '../common/ActivityButton';
 import { Payment } from './Payment'
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
-
 
 declare var AlgoSigner: any;
 
@@ -162,7 +161,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
                   </Card>
                 </Col>
                 <Col>
-                  <Card disabled onClick={() => {
+                  <Card onClick={() => {
                     isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, total: payment.total }))
                       : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
                   }}>
