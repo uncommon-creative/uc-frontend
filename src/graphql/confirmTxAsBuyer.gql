@@ -1,9 +1,0 @@
-mutation confirmTxAsBuyer(
-  $sow: ID,
-  $tx: String
-) {
-  confirmTxAsBuyer(
-    sow: $sow,
-    tx: $tx
-  )
-}

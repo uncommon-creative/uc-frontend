@@ -78,6 +78,7 @@ export enum SowStatus {
   REVIEW_REQUIRED = 'REVIEW_REQUIRED',
   DISPUTED = 'DISPUTED',
   EXPIRED = 'EXPIRED',
+  PAYMENT_SENT = 'PAYMENT_SENT'
 }
 
 export enum SowCommands {

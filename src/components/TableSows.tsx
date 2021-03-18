@@ -20,6 +20,16 @@ function validateEmail(email: any) {
   return re.test(email);
 }
 
+const getColumnWidth = (rows: any, accessor: any, headerText: any) => {
+  const maxWidth = 239
+  const magicSpacing = 10
+  const cellLength = Math.max(
+    ...rows.map(row => (`${row[accessor]}` || '').length),
+    headerText.length,
+  )
+  return Math.max(maxWidth, cellLength * magicSpacing)
+}
+
 export const TableSows = ({ tabId, data }: any) => {
 
   const dispatch = useDispatch();
@@ -30,9 +40,6 @@ export const TableSows = ({ tabId, data }: any) => {
   const columns = React.useMemo(
     () => [
       {
-        minWidth: 175,
-        width: 175,
-        maxWidth: 175,
         Header: 'Title',
         accessor: (row: any) =>
           <Row className="d-flex" tag={Link} onClick={() => dispatch(SowActions.willSelectSow({ sow: row, history: history }))}>
@@ -44,7 +51,8 @@ export const TableSows = ({ tabId, data }: any) => {
             <Col className="col-10">
               {row.title}
             </Col>
-          </Row>
+          </Row>,
+        width: getColumnWidth(data, 'accessor', 'Status'),
       },
       {
         Header: 'Customer',
@@ -87,7 +95,8 @@ export const TableSows = ({ tabId, data }: any) => {
       },
       {
         Header: 'Status',
-        accessor: 'status'
+        accessor: 'status',
+        width: getColumnWidth(data, 'accessor', 'Status'),
       },
     ],
     [users]

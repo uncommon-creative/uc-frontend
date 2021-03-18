@@ -34,6 +34,18 @@ export const algorandGetTxParams = async () => {
   }
 }
 
+export const algorandGetTxParamsWithDelay = async () => {
+  const query = loader('../graphql/algorandGetTxParamsWithDelay.gql');
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(query));
+    // console.log('algorandGetTxParamsWithDelay with result: ', result);
+    return result.data.algorandGetTxParamsWithDelay
+  } catch (error) {
+    throw error
+  }
+}
+
 export function createMultiSigAddress(payload: { seller: string, buyer: string, arbitrator: string, backup: string }): string {
   console.log("createMultiSigAddress payload: ", payload)
   const mparams = {
@@ -147,7 +159,7 @@ export function appendSignMultisigTransaction(signedMsig: any, mnemonicSecretKey
   try {
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
-    const buffer = Uint8Array.from(signedMsig.split(',') as any);
+    const buffer = Uint8Array.from(signedMsig.blob.split(',') as any);
 
     const directsig = algosdk.appendSignMultisigTransaction(buffer, msigparams, secret_key.sk);
     // console.log("in appendSignMultisigTransaction directsig: ", directsig)
@@ -158,15 +170,15 @@ export function appendSignMultisigTransaction(signedMsig: any, mnemonicSecretKey
   }
 }
 
-export const confirmTxAsBuyer = async (sow: any, tx: any) => {
-  const mutation = loader('../graphql/confirmTxAsBuyer.gql')
+export const algorandPutTransaction = async (sow: any, tx: any) => {
+  const mutation = loader('../graphql/algorandPutTransaction.gql')
 
   try {
-    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, tx: tx.blob.toString() }))
-    // console.log("confirmTxAsBuyer result: ", result)
-    return result.data.confirmTxAsBuyer
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, blob: tx.blob.toString() }))
+    console.log("algorandPutTransaction result: ", result)
+    return result.data.algorandPutTransaction
   } catch (error) {
-    console.log("confirmTxAsBuyer API error: ", error)
+    console.log("algorandPutTransaction API error: ", error)
     throw error
   }
 }
@@ -276,6 +288,32 @@ export const requestReview = async (sow: any, notes: any) => {
     return result.data.requestReview
   } catch (error) {
     console.log("requestReview API error: ", error)
+    throw error
+  }
+}
+
+export const algorandGetTx = async (sow: any) => {
+  const query = loader('../graphql/algorandGetTx.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(query, { sow: sow }))
+    console.log("algorandGetTx result: ", result)
+    return result.data.algorandGetTx
+  } catch (error) {
+    console.log("algorandGetTx API error: ", error)
+    throw error
+  }
+}
+
+export const algorandFinalizeTransaction = async (hash_round: any, round_sow: any, tx: any) => {
+  const mutation = loader('../graphql/algorandFinalizeTransaction.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { hash_round: hash_round, round_sow: round_sow, blob: tx.blob.toString() }))
+    console.log("algorandFinalizeTransaction result: ", result)
+    return result.data.algorandFinalizeTransaction
+  } catch (error) {
+    console.log("algorandFinalizeTransaction API error: ", error)
     throw error
   }
 }

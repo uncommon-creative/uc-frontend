@@ -1,0 +1,12 @@
+query algorandGetTx(
+  $sow: ID!
+){
+  algorandGetTx(
+    sow: $sow
+  ) {
+    hash_round
+    round_sow
+    blob
+    sow
+  }
+}

@@ -1,0 +1,9 @@
+mutation algorandPutTransaction(
+  $sow: String,
+  $blob: String
+) {
+  algorandPutTransaction(
+    sow: $sow,
+    blob: $blob
+  )
+}

@@ -27,7 +27,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
   const params = useSelector(TransactionSelectors.getParams)
 
   React.useEffect(() => {
-    modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
+    modal && dispatch(TransactionActions.willGetParamsWithDelay({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
 
     return () => {
       setAcceptedConditions(false)
