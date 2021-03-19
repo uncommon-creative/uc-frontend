@@ -10,7 +10,8 @@ export const currentSlice = createSlice({
     sowsAsSeller: [] as any,
     sowsAsBuyer: [] as any,
     sowsAsArbitrator: [] as any,
-    html: ''
+    html: '',
+    pdfHash: ''
   },
   reducers: {
     willConfirmArbitrators: (state, action: PayloadAction<any>) => void (state.currentArbitrators = action.payload.arbitrators),
@@ -47,6 +48,9 @@ export const currentSlice = createSlice({
 
     willBuildHtml: (state, action: PayloadAction<any>) => state,
     didBuildHtml: (state, action: PayloadAction<any>) => void (state.html = action.payload),
+    willBuildPdf: (state, action: PayloadAction<any>) => state,
+    didBuildPdf: (state, action: PayloadAction<any>) => void (state.pdfHash = action.payload),
+    
   }
 })
 
@@ -65,7 +69,8 @@ export const selectors = {
   getListSowsArbitrator: (state: any) => state.statementOfWork.sowsAsArbitrator,
   getAttachments: (state: any) => state.statementOfWork.attachments,
   getNewAttachments: (state: any) => state.statementOfWork.newAttachments,
-  getHtml: (state: any) => state.statementOfWork.html
+  getHtml: (state: any) => state.statementOfWork.html,
+  getPdfHash: (state: any) => state.statementOfWork.pdfHash
 }
 
 export enum SowStatus {

@@ -280,3 +280,15 @@ export const buildHtmlBackend = async (sow: any) => {
     throw error
   }
 }
+
+export const buildPdf = async (sow: any) => {
+  const mutation = loader('../graphql/buildPdf.gql');
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow }));
+    console.log('buildPdf with result: ', result);
+    return result.data.buildPdf
+  } catch (error) {
+    throw error
+  }
+}
