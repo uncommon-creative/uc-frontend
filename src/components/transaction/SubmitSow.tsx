@@ -20,6 +20,7 @@ import { selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
 import { actions as NotificationActions } from '../../store/slices/notification'
 import { actions as UIActions } from '../../store/slices/ui'
+import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { ActivityButton } from '../common/ActivityButton';
 import { Payment } from './Payment'
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
@@ -32,6 +33,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
   const dispatch = useDispatch();
   let history = useHistory();
   const { t, i18n } = useTranslation();
+  const userAttributes = useSelector(ProfileSelectors.getProfile)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   const currentChosenArbitrator = useSelector(ArbitratorSelectors.getCurrentChosenArbitrator)
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
@@ -41,7 +43,6 @@ export const SubmitSow = ({ modal, toggle }: any) => {
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const params = useSelector(TransactionSelectors.getParams)
   const pdfHash = useSelector(SowSelectors.getPdfHash)
-  const payment = useSelector(TransactionSelectors.getPayment)
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
   const [currentFromAlgoSigner, setCurrentFromAlgoSigner] = React.useState('');
 
@@ -91,9 +92,8 @@ export const SubmitSow = ({ modal, toggle }: any) => {
               </Col>
               <Col>
                 <Card onClick={() => {
-                  // isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, total: payment.total }))
-                  //   : 
-                  dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
+                  isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionSubmitAlgoSigner())
+                    : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
                 }}>
                   <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
                     <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner</CardSubtitle>
@@ -130,16 +130,14 @@ export const SubmitSow = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {/* {transactionPage == 4 &&
+      {transactionPage == 4 &&
         <>
-          <ModalHeader toggle={toggle}>Fund the wallet with AlgoSigner</ModalHeader>
+          <ModalHeader toggle={toggle}>Sign with AlgoSigner</ModalHeader>
           <ModalBody>
-            <Payment />
-
-            <CardSubtitle tag="h6" className="pt-5 text-muted text-center">Select one of your AlgoSigner accounts</CardSubtitle>
+            <CardSubtitle tag="h6" className="pt-5 text-muted text-center">Select AlgoSigner accounts associated to your Uncommon Creative profile</CardSubtitle>
             {algoSigner.accounts.map((element: any, index: any) => {
               return (
-                <ListGroupItem disabled={element.amount < payment.toPay} className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
+                <ListGroupItem disabled={element.address != userAttributes.public_key} className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
                   onClick={() => {
                     console.log("select currentFromAlgoSigner: ", element.address)
                     setCurrentFromAlgoSigner(element.address)
@@ -156,13 +154,12 @@ export const SubmitSow = ({ modal, toggle }: any) => {
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionAcceptAndPayAlgoSigner" color="primary"
               onClick={() => {
-                dispatch(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, toPay: payment.toPay, sow: currentSow.sow }))
-                // subscribeOnAmountChecked()
+                dispatch(TransactionActions.willCompleteTransactionSubmitAlgoSigner({ params: params, address: currentFromAlgoSigner, currentSow: currentSow, pdfHash: pdfHash }))
               }}
             >Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
-      } */}
+      }
       {
         transactionPage == 5 &&
         <>

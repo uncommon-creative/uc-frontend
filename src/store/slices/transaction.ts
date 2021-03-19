@@ -60,6 +60,9 @@ export const currentSlice = createSlice({
     didRequestReview: (state, action: PayloadAction<any>) => void (state.transactionPage = 2),
 
     willCompleteTransactionSubmitMnemonic: (state, action: PayloadAction<any>) => state,
+    willPrepareTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => state,
+    didPrepareTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 4),
+    willCompleteTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => state,
     didCompleteTransactionSubmit: (state, action: PayloadAction<any>) => void (state.submitToken = action.payload, state.transactionPage = 5),
     didCompleteTransactionSubmitFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 6),
   }

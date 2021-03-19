@@ -31,6 +31,8 @@ export function* sagas() {
   yield takeLatest(TransactionActions.willRequestReview.type, willRequestReview)
   yield takeLatest(TransactionActions.willGetSignedMsig.type, willGetSignedMsig)
   yield takeLatest(TransactionActions.willCompleteTransactionSubmitMnemonic.type, willCompleteTransactionSubmitMnemonic)
+  yield takeLatest(TransactionActions.willPrepareTransactionSubmitAlgoSigner.type, willPrepareTransactionSubmitAlgoSigner)
+  yield takeLatest(TransactionActions.willCompleteTransactionSubmitAlgoSigner.type, willCompleteTransactionSubmitAlgoSigner)
   console.log('in sow saga');
 }
 
@@ -381,4 +383,63 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
     yield put(TransactionActions.didCompleteTransactionSubmitFail())
   }
   yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
+}
+
+function* willPrepareTransactionSubmitAlgoSigner() {
+  console.log("in willPrepareTransactionSubmitAlgoSigner")
+  yield put(UIActions.startActivityRunning('willPrepareTransactionSubmitAlgoSigner'));
+
+  try {
+    const resultAlgoConnect = yield call(TransactionApi.algoConnect)
+    console.log("willPrepareTransactionSubmitAlgoSigner resultAlgoConnect: ", resultAlgoConnect)
+
+    let resultAccounts = yield call(TransactionApi.algoGetAccounts)
+    console.log("willPrepareTransactionSubmitAlgoSigner resultAccounts: ", resultAccounts)
+
+    yield put(TransactionActions.didPrepareTransactionSubmitAlgoSigner(resultAccounts))
+  } catch (error) {
+    console.log("error in willPrepareTransactionSubmitAlgoSigner ", error)
+  }
+}
+
+function* willCompleteTransactionSubmitAlgoSigner(action: any) {
+  console.log("in willCompleteTransactionSubmitAlgoSigner")
+  yield put(UIActions.startActivityRunning('willCompleteTransactionSubmitAlgoSigner'));
+  const users = yield select(ProfileSelectors.getUsers)
+
+  const tokenName = uuidv4().substring(0, 8)
+  const hash = action.payload.pdfHash
+  const note = undefined;
+  const defaultFrozen = false;
+  const addr = users[action.payload.currentSow.seller].public_key;
+  const decimals = 0;
+  const totalIssuance = 1;
+  const unitName = tokenName;
+  const assetName = tokenName;
+  const assetURL = "https://www.example.com/" + tokenName;
+  const assetMetadataHash = Buffer.from(hash, "base64")
+  console.log("willCompleteTransactionSubmitAlgoSigner assetMetadataHash: ", assetMetadataHash)
+  // Specified address can change reserve, freeze, clawback, and manager
+  const manager = users[action.payload.currentSow.seller].public_key;
+  // Specified address is considered the asset reserve
+  // (it has no special privileges, this is only informational)
+  const reserve = users[action.payload.currentSow.seller].public_key;
+  // Specified address can freeze or unfreeze user asset holdings 
+  const freeze = users[action.payload.currentSow.seller].public_key;
+  // Specified address can revoke user asset holdings and send 
+  // them to other addresses    
+  const clawback = users[action.payload.currentSow.seller].public_key;
+
+  try {
+    const resultSignedTransaction = yield call(TransactionApi.algoSignSubmit,
+      action.payload.params, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
+    )
+    console.log("in willCompleteTransactionSubmitAlgoSigner resultSignedTransaction: ", resultSignedTransaction)
+
+    // const result = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction.toString())
+
+    // yield put(TransactionActions.didCompleteTransactionSubmit(result))
+  } catch (error) {
+    console.log("error in willCompleteTransactionSubmitAlgoSigner ", error)
+  }
 }
