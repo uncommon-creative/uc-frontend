@@ -4,14 +4,8 @@ import {
   Col, Row, CardSubtitle
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQrcode, faKey, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
-import qrcode from 'qrcode-generator';
 
-import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
-import { actions as ChatActions, selectors as ChatSelectors } from '../../store/slices/chat'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
-import { ActivityButton } from '../common/ActivityButton';
 
 export const Payment = ({ modal, toggle }: any) => {
 

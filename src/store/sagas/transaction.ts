@@ -12,6 +12,7 @@ import { TransactionFee } from '../slices/transaction'
 import { configuration } from '../../config'
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
+const { "v4": uuidv4 } = require('uuid');
 declare var AlgoSigner: any;
 
 export function* sagas() {
@@ -29,6 +30,7 @@ export function* sagas() {
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptMilestone.type, willCompleteTransactionAcceptMilestone)
   yield takeLatest(TransactionActions.willRequestReview.type, willRequestReview)
   yield takeLatest(TransactionActions.willGetSignedMsig.type, willGetSignedMsig)
+  yield takeLatest(TransactionActions.willCompleteTransactionSubmitMnemonic.type, willCompleteTransactionSubmitMnemonic)
   console.log('in sow saga');
 }
 
@@ -45,13 +47,13 @@ function* willGetAlgorandAccountInfo(action: any) {
   }
 }
 
-function* willGetParams(action: any) {
+export function* willGetParams(action: any) {
   console.log("in willGetParams with: ", action)
 
   try {
-    yield call(willGetUserProfile, { user: action.payload.seller })
-    yield call(willGetUserProfile, { user: action.payload.buyer })
-    yield call(willGetUserProfile, { user: action.payload.arbitrator })
+    action.payload.seller && (yield call(willGetUserProfile, { user: action.payload.seller }))
+    action.payload.buyer && (yield call(willGetUserProfile, { user: action.payload.buyer }))
+    action.payload.arbitrator && (yield call(willGetUserProfile, { user: action.payload.arbitrator }))
 
     const result = yield call(TransactionApi.algorandGetTxParams);
     console.log("result willGetParams: ", result)
@@ -297,7 +299,7 @@ function* willCompleteTransactionAcceptMilestone(action: any) {
 
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptMilestone ", error)
-      yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail("Algorand multisig transaction failed"))
+    yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail("Algorand multisig transaction failed"))
   }
   yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptMilestone'));
 }
@@ -334,4 +336,49 @@ function* willAlgorandPollAccountAmount(action: any) {
   } catch (error) {
     console.log("error in willAlgorandPollAccountAmount ", error)
   }
+}
+
+function* willCompleteTransactionSubmitMnemonic(action: any) {
+  console.log("in willCompleteTransactionSubmitMnemonic with: ", action)
+  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
+  const users = yield select(ProfileSelectors.getUsers)
+
+  const tokenName = uuidv4().substring(0, 8)
+  const hash = action.payload.pdfHash
+  const note = undefined;
+  const defaultFrozen = false;
+  const addr = users[action.payload.currentSow.seller].public_key;
+  const decimals = 0;
+  const totalIssuance = 1;
+  const unitName = tokenName;
+  const assetName = tokenName;
+  const assetURL = "https://www.example.com/" + tokenName;
+  const assetMetadataHash = Buffer.from(hash, "base64")
+  console.log("willCompleteTransactionSubmitMnemonic assetMetadataHash: ", assetMetadataHash)
+  // Specified address can change reserve, freeze, clawback, and manager
+  const manager = users[action.payload.currentSow.seller].public_key;
+  // Specified address is considered the asset reserve
+  // (it has no special privileges, this is only informational)
+  const reserve = users[action.payload.currentSow.seller].public_key;
+  // Specified address can freeze or unfreeze user asset holdings 
+  const freeze = users[action.payload.currentSow.seller].public_key;
+  // Specified address can revoke user asset holdings and send 
+  // them to other addresses    
+  const clawback = users[action.payload.currentSow.seller].public_key;
+
+  try {
+    const resultSignedTransaction = yield call(TransactionApi.signTxn,
+      action.payload.mnemonicSecretKey, action.payload.params, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
+    )
+    console.log("in willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
+
+    const result = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction.toString())
+
+    yield put(TransactionActions.didCompleteTransactionSubmit(result))
+
+  } catch (error) {
+    console.log("error in willCompleteTransactionSubmitMnemonic ", error)
+    yield put(TransactionActions.didCompleteTransactionSubmitFail())
+  }
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
 }

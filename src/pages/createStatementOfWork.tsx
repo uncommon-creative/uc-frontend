@@ -16,13 +16,14 @@ import { ActivityButton } from '../components/common/ActivityButton'
 import { TagsInput } from '../components/TagsInput'
 import { ArbitratorsSelect } from '../components/arbitrator/ArbitratorsSelect'
 import { ArbitratorDetailMD } from '../components/arbitrator/ArbitratorDetailMD'
-
 import { SowAttachments } from '../components/SowAttachments'
 import { DescriptionEditor } from '../components/DescriptionEditor'
 import { actions as SowActions, selectors as SowSelectors, SowStatus } from '../store/slices/sow'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
+import { actions as TransactionActions, selectors as TransactionSelectors } from '../store/slices/transaction'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as UISelectors } from '../store/slices/ui'
+import { SubmitSow } from '../components/transaction/SubmitSow'
 
 var DatePicker = require("reactstrap-date-picker");
 
@@ -108,6 +109,9 @@ export const CreateStatementOfWorkPage = () => {
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
   const toggleModal = () => setModalOpen(!modalOpen);
 
+  const [modalOpenSubmitSow, setModalOpenSubmitSow] = React.useState(false);
+  const toggleModalSubmitSow = () => setModalOpenSubmitSow(!modalOpenSubmitSow);
+
   return (
     <>
       {!isLoading &&
@@ -149,6 +153,8 @@ export const CreateStatementOfWorkPage = () => {
                 onSubmit={values => {
                   console.log('in onsubmit with: ', values)
                   dispatch(SowActions.willSubmitStatementOfWork({ sow: values/* , history: history */ }));
+                  dispatch(TransactionActions.goToTransactionPage(0))
+                  toggleModalSubmitSow()
                 }}
               >
                 {({ errors, touched, setFieldValue, values }) => {
@@ -450,6 +456,8 @@ export const CreateStatementOfWorkPage = () => {
               </Formik>
             </CardBody>
           </Card>
+
+          <SubmitSow modal={modalOpenSubmitSow} toggle={toggleModalSubmitSow} />
         </Container>
       }
     </>

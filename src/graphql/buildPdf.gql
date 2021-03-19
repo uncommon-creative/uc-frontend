@@ -1,0 +1,7 @@
+mutation buildPdf(
+  $sow: ID!
+){
+  buildPdf(
+    sow: $sow
+  )
+}

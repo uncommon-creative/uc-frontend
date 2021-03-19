@@ -12,6 +12,7 @@ export const currentSlice = createSlice({
     signedMsig: {} as any,
     payment: {} as any,
     activePolls: {} as any,
+    submitToken: "",
     error: ''
   },
   reducers: {
@@ -57,6 +58,10 @@ export const currentSlice = createSlice({
 
     willRequestReview: (state, action: PayloadAction<any>) => state,
     didRequestReview: (state, action: PayloadAction<any>) => void (state.transactionPage = 2),
+
+    willCompleteTransactionSubmitMnemonic: (state, action: PayloadAction<any>) => state,
+    didCompleteTransactionSubmit: (state, action: PayloadAction<any>) => void (state.submitToken = action.payload, state.transactionPage = 5),
+    didCompleteTransactionSubmitFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 6),
   }
 })
 
@@ -81,6 +86,7 @@ export const selectors = {
   getSignedMsig: (state: any) => state.transaction.signedMsig,
   getPayment: (state: any) => state.transaction.payment,
   getActivePolls: (state: any) => state.transaction.activePolls,
+  getSubmitToken: (state: any) => state.transaction.submitToken,
   getError: (state: any) => state.transaction.error,
 }
 

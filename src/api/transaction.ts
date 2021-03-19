@@ -317,3 +317,47 @@ export const algorandFinalizeTransaction = async (hash_round: any, round_sow: an
     throw error
   }
 }
+
+export function signTxn(mnemonicSecretKey: any, params: any, addr: any, note: any, totalIssuance: any, decimals: any, defaultFrozen: any, manager: any, reserve: any, freeze: any, clawback: any, unitName: any, assetName: any, assetURL: any, assetMetadataHash: any) {
+  try {
+    let creationTxn = algosdk.makeAssetCreateTxnWithSuggestedParams(
+      addr,
+      note,
+      totalIssuance,
+      decimals,
+      defaultFrozen,
+      manager,
+      reserve,
+      freeze,
+      clawback,
+      unitName,
+      assetName,
+      assetURL,
+      assetMetadataHash,
+      params
+    );
+    // console.log("signTxn txn: ", creationTxn)
+
+    const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
+    const rawSignedCreationTxn = creationTxn.signTxn(secret_key.sk);
+    // console.log("signTxn rawSignedCreationTxn: ", rawSignedCreationTxn)
+
+    return rawSignedCreationTxn
+  } catch (error) {
+    console.log("signTxn API error: ", error)
+    throw error
+  }
+}
+
+export const algorandSendTokenCreationTx = async (sow: any, tx: any) => {
+  const mutation = loader('../graphql/algorandSendTokenCreationTx.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, tx: tx }))
+    console.log("algorandSendTokenCreationTx result: ", result)
+    return result.data.algorandSendTokenCreationTx
+  } catch (error) {
+    console.log("algorandSendTokenCreationTx API error: ", error)
+    throw error
+  }
+}

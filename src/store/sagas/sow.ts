@@ -7,11 +7,13 @@ import { actions as SowActions, SowStatus, SowCommands } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as ChatActions } from '../slices/chat'
 import { actions as ProfileActions, selectors as ProfileSelectors } from '../slices/profile'
+import { actions as TransactionActions, selectors as TransactionSelectors } from '../slices/transaction'
 import { actions as UIActions } from '../slices/ui'
 import * as ArbitratorApi from '../../api/arbitrator'
 import { willGetUserProfile } from '../sagas/profile'
 import { configuration } from '../../config'
-import { current } from 'immer';
+
+import { willGetParams } from './transaction'
 
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
@@ -143,7 +145,12 @@ function* willSubmitStatementOfWork(action: any) {
 
       yield call(willGetUserProfile, { user: result.buyer })
       yield put(SowActions.didSubmitStatementOfWork(result))
-      yield put(push("/home"))
+
+      yield call(willBuildPdf, { payload: { sow: result.sow } })
+      yield call(willGetParams, { payload: { seller: result.seller, buyer: result.buyer } })
+      yield put(TransactionActions.goToTransactionPage(2))
+
+      // yield put(push("/home"))
       yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
     }
     else {
@@ -448,4 +455,20 @@ function* willBuildHtml(action: any) {
     console.log("error in willBuildHtml ", error)
   }
   yield put(UIActions.stopActivityRunning("willBuildHtml"));
+}
+
+function* willBuildPdf(action: any) {
+  console.log("in willBuildPdf with: ", action)
+  yield put(UIActions.startActivityRunning("willBuildPdf"));
+
+  try {
+    const resultPdf = yield call(SowApi.buildPdf, action.payload.sow);
+    console.log("result resultPdf: ", resultPdf)
+
+    yield put(SowActions.didBuildPdf(resultPdf))
+
+  } catch (error) {
+    console.log("error in willBuildPdf ", error)
+  }
+  yield put(UIActions.stopActivityRunning("willBuildPdf"));
 }
