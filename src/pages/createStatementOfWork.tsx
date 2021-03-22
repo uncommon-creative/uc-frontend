@@ -39,7 +39,7 @@ const StatementOfWorkSchema = Yup.object().shape({
     is: 'DRAFT',
     then: Yup.string()
       .test('Should not contain your email address', 'Should not contain your email address', (value, context) => value != context.parent.seller)
-      .email()
+      // .email()
       .min(2, 'Too Short!')
       .max(50, 'Too Long!')
       .required('Required')
@@ -358,7 +358,7 @@ export const CreateStatementOfWorkPage = () => {
                           <FormGroup check>
                             <Input data-cy="licenseTerms-option1" type="radio" name="licenseTerms" id="licenseTerms-option1" checked={values.licenseTermsOption == 'option1'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
                               onClick={(event: any) => {
-                                console.log("event1: ", event.target.checked)
+                                // console.log("event1: ", event.target.checked)
                                 setFieldValue("licenseTermsOption", 'option1')
                                 setFieldValue("licenseTermsNotes", t('sow.input.sowLicenseTermsLabelOption1'))
                               }}
@@ -370,7 +370,7 @@ export const CreateStatementOfWorkPage = () => {
                           <FormGroup check>
                             <Input data-cy="licenseTerms-option2" type="radio" name="licenseTerms" id="licenseTerms-option2" checked={values.licenseTermsOption == 'option2'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
                               onClick={(event: any) => {
-                                console.log("event2: ", event.target.checked)
+                                // console.log("event2: ", event.target.checked)
                                 setFieldValue("licenseTermsOption", 'option2')
                                 setFieldValue("licenseTermsNotes", '')
                               }} />
@@ -398,7 +398,7 @@ export const CreateStatementOfWorkPage = () => {
                             <Label for="sowExpiration">{t('sow.input.sowExpirationLabel')} *</Label>
                             <CustomInput data-cy="inputSowExpiration" type="select" name="sowExpiration" id="sowExpiration"
                               onChange={(event) => {
-                                console.log("event.target.value: ", event.target.value)
+                                // console.log("event.target.value: ", event.target.value)
                                 setFieldValue("sowExpiration", parseInt(event.target.value, 10))
                               }}
                             >

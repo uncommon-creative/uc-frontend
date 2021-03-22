@@ -374,9 +374,17 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
     )
     console.log("in willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
 
-    const result = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction.toString())
+    const resultAlgorandSendTokenCreationTx = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction.toString())
+    console.log("willCompleteTransactionSubmitMnemonic resultAlgorandSendTokenCreationTx: ", resultAlgorandSendTokenCreationTx)
 
-    yield put(TransactionActions.didCompleteTransactionSubmit(result))
+    if (resultAlgorandSendTokenCreationTx.error) {
+      console.log("willCompleteTransactionSubmitMnemonic fail")
+      yield put(TransactionActions.didCompleteTransactionSubmitFail(resultAlgorandSendTokenCreationTx.error))
+    }
+    else {
+      console.log("willCompleteTransactionSubmitMnemonic success")
+      yield put(TransactionActions.didCompleteTransactionSubmit(resultAlgorandSendTokenCreationTx.assetId))
+    }
 
   } catch (error) {
     console.log("error in willCompleteTransactionSubmitMnemonic ", error)
