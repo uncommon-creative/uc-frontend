@@ -3,6 +3,7 @@ describe('Chat', () => {
   before(() => {
     cy.login(Cypress.env('userSeller'))
     cy.wait(2000)
+
     cy.get('[data-cy=createSow]').contains('new project').click()
 
     cy.get('[data-cy="inputSowID"]')
@@ -95,7 +96,20 @@ describe('Chat', () => {
 
     cy.get('[data-cy=inputSowSubmit]')
       .click()
+    cy.wait(30000)
+    cy.get('[data-cy=mnemonicSubmit]')
+      .click()
+    cy.get('[data-cy=mnemonicSecretKey]')
+      .type(Cypress.env('userSellerMnemonic'), { timeout: 15000 })
+      .should('have.value', Cypress.env('userSellerMnemonic'))
 
+    cy.get('[data-cy=willCompleteTransactionSubmitMnemonic]')
+      .click()
+    cy.wait(30000)
+    cy.get('[data-cy=sowSubmitSuccess]')
+      .contains("Statement of Work submitted")
+    cy.get('[data-cy=closeSubmit]')
+      .click()
     cy.wait(5000)
 
     assert.exists(
@@ -125,12 +139,18 @@ describe('Chat', () => {
       cy.get('[data-cy=acceptConditions]').check()
       cy.get('[data-cy=continueTransaction]').click()
       cy.wait(2000)
-      cy.get('[data-cy=mnemonicAcceptAndPay]').click()
-      cy.get('[data-cy=mnemonicSecretKey]')
-        .type(Cypress.env('userBuyerMnemonic'), { timeout: 15000 })
-        .should('have.value', Cypress.env('userBuyerMnemonic'))
-      cy.get('[data-cy=willCompleteTransactionAcceptAndPayMnemonic]').click()
+      cy.get('[data-cy=acceptAndPay]').click()
       cy.wait(10000)
+      // if toPay>0
+      cy.get('[data-cy=acceptAndPayModal]').then((body) => {
+        if (body.text().includes('Fund the wallet with mnemonic secret key')) {
+          cy.get('[data-cy=mnemonicSecretKey]')
+            .type(Cypress.env('userBuyerMnemonic'), { timeout: 15000 })
+            .should('have.value', Cypress.env('userBuyerMnemonic'))
+          cy.get('[data-cy=willCompleteTransactionAcceptAndPayMnemonic]').click()
+          cy.wait(10000)
+        }
+      })
       cy.get('[data-cy=closeAcceptAndPay]').click()
       cy.wait(10000)
       cy.get('[class=rce-mbox-text]')

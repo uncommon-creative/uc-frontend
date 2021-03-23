@@ -81,7 +81,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
           <ModalBody>
             <Row>
               <Col>
-                <Card data-cy='mnemonicAcceptAndPay' onClick={() => {
+                <Card data-cy='mnemonicSubmit' onClick={() => {
                   dispatch(TransactionActions.goToTransactionPage(3))
                 }}>
                   <CardBody className="text-center">
@@ -125,7 +125,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willCompleteTransactionAcceptAndPayMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptAndPayMnemonic" color="primary" onClick={async () => {
+            <ActivityButton data-cy='willCompleteTransactionSubmitMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionSubmitMnemonic" color="primary" onClick={async () => {
               dispatch(TransactionActions.willCompleteTransactionSubmitMnemonic({ params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, pdfHash: pdfHash }))
             }}>Sign</ActivityButton>
           </ModalFooter>
@@ -153,7 +153,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willCompleteTransactionAcceptAndPayAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionAcceptAndPayAlgoSigner" color="primary"
+            <ActivityButton data-cy='willCompleteTransactionSubmitAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionSubmitAlgoSigner" color="primary"
               onClick={() => {
                 dispatch(TransactionActions.willCompleteTransactionSubmitAlgoSigner({ params: params, address: currentFromAlgoSigner, currentSow: currentSow, pdfHash: pdfHash }))
               }}
@@ -164,7 +164,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
       {
         transactionPage == 5 &&
         <>
-          <ModalHeader toggle={toggle}>Statement of Work submitted</ModalHeader>
+          <ModalHeader toggle={toggle} data-cy="sowSubmitSuccess">Statement of Work submitted</ModalHeader>
           <ModalBody>
             <Jumbotron>
               <CardText>
@@ -180,7 +180,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
       {
         transactionPage == 6 &&
         <>
-          <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
+          <ModalHeader toggle={toggle}>Submission failed</ModalHeader>
           <ModalBody>
             <Jumbotron>
               <CardText>

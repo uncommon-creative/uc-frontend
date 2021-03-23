@@ -109,7 +109,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   }, [transactionPage])
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl">
+    <Modal isOpen={modal} toggle={toggle} size="xl" data-cy='acceptAndPayModal'>
       {transactionPage == 1 &&
         <>
           <ModalHeader toggle={toggle}>Accept the conditions</ModalHeader>
@@ -152,7 +152,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
                   </Card>
                 </Col>
                 <Col>
-                  <Card data-cy='mnemonicAcceptAndPay' onClick={() => {
+                  <Card data-cy='acceptAndPay' onClick={() => {
                     dispatch(TransactionActions.goToTransactionPage(4))
                   }}>
                     <CardBody className="text-center">
@@ -178,7 +178,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           </ModalBody>
           {payment.toPay <= 0 &&
             <ModalFooter>
-              <ActivityButton data-cy='completeAcceptAndPay' disabled={!acceptedConditions} name="completeAcceptAndPay" color="primary" onClick={() => {
+              <ActivityButton data-cy='acceptAndPay' disabled={!acceptedConditions} name="completeAcceptAndPay" color="primary" onClick={() => {
                 dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_AND_PAY }, sow: currentSow }));
                 dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentChosenArbitrator }))
                 dispatch(TransactionActions.goToTransactionPage(6))
