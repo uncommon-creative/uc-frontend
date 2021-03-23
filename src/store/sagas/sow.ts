@@ -123,7 +123,7 @@ function* willSubmitStatementOfWork(action: any) {
   try {
     if (userAttributes.address) {
       const result = yield call(
-        SowApi.submitStatementOfWork,
+        SowApi.draftStatementOfWork, // submitStatementOfWork
         action.payload.sow.sow,
         arbitratorsParsed,
         action.payload.sow.codeOfConduct,

@@ -361,3 +361,52 @@ export const algorandSendTokenCreationTx = async (sow: any, tx: any) => {
     throw error
   }
 }
+
+export const algoSignSubmit = async (params: any, addr: any, note: any, totalIssuance: any, decimals: any, defaultFrozen: any, manager: any, reserve: any, freeze: any, clawback: any, unitName: any, assetName: any, assetURL: any, assetMetadataHash: any) => {
+  try {
+    let paramsAlgoSigner = await AlgoSigner.algod({
+      ledger: configuration[stage].algorand_net,
+      path: '/v2/transactions/params',
+    });
+
+    let creationTxn = algosdk.makeAssetCreateTxnWithSuggestedParams(
+      addr,
+      note,
+      totalIssuance,
+      decimals,
+      defaultFrozen,
+      manager,
+      reserve,
+      freeze,
+      clawback,
+      unitName,
+      assetName,
+      assetURL,
+      assetMetadataHash,
+      params
+    );
+    console.log("algoSignSubmit creationTxn: ", creationTxn)
+
+    const algoTxn = {
+      from: addr,
+      assetName: creationTxn.assetName,
+      assetUnitName: creationTxn.assetUnitName,
+      assetTotal: creationTxn.assetTotal,
+      assetDecimals: creationTxn.assetDecimals,
+      note: creationTxn.note,
+      type: creationTxn.type,
+      fee: creationTxn.fee,
+      firstRound: creationTxn.firstRound,
+      lastRound: creationTxn.lastRound,
+      genesisID: creationTxn.genesisID,
+      genesisHash: creationTxn.genesisHash
+    }
+
+    let result = await AlgoSigner.sign(algoTxn)
+    console.log("algoSign result: ", result);
+    return result;
+  } catch (error) {
+    console.log("algoSign error: ", error)
+    throw error
+  }
+}

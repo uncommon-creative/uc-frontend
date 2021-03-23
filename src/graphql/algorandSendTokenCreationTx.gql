@@ -5,5 +5,8 @@ mutation algorandSendTokenCreationTx(
   algorandSendTokenCreationTx(
     sow: $sow,
     tx: $tx
-  )
+  ) {
+    assetId
+    error
+  }
 }

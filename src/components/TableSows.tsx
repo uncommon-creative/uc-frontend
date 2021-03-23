@@ -56,7 +56,7 @@ export const TableSows = ({ tabId, data }: any) => {
       },
       {
         Header: 'Customer',
-        accessor: 'seller',
+        accessor: 'buyer',
         Cell: ({ value }: any) => (
           validateEmail(value) ?
             value
@@ -66,7 +66,7 @@ export const TableSows = ({ tabId, data }: any) => {
       },
       {
         Header: 'Freelance',
-        accessor: 'buyer',
+        accessor: 'seller',
         Cell: ({ value }: any) => (
           value ?
             value == 'not_set' ?
