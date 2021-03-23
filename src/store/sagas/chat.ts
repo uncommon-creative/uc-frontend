@@ -7,6 +7,7 @@ import { actions as ChatActions, selectors as ChatSelectors } from '../slices/ch
 import { actions as SowActions } from '../slices/sow'
 import { actions as UIActions } from '../slices/ui'
 import * as SowApi from '../../api/sow'
+import { willGetUserProfile } from '../sagas/profile'
 
 export function* sagas() {
   yield takeLatest(ChatActions.willRefreshSowChat.type, willRefreshSowChat)
@@ -40,6 +41,7 @@ function* willReadSowChat(action: any) {
     console.log("result willReadSowChat: ", result)
 
     for (var msg of result.messages) {
+      yield call(willGetUserProfile, { user: msg.from })
       if (msg.attachmentMessage) {
         let tmp = msg.attachmentMessage.key.split('/')
         const downloadUrl = yield call(SowApi.getDownloadUrl, tmp[0], msg.attachmentMessage.key, 600)
