@@ -462,10 +462,17 @@ function* willBuildPdf(action: any) {
   yield put(UIActions.startActivityRunning("willBuildPdf"));
 
   try {
-    const resultPdf = yield call(SowApi.buildPdf, action.payload.sow);
-    console.log("result resultPdf: ", resultPdf)
+    const resultPdfHash = yield call(SowApi.buildPdf, action.payload.sow);
+    console.log("result resultPdf: ", resultPdfHash)
 
-    yield put(SowActions.didBuildPdf(resultPdf))
+    const resultDownloadUrl = yield call(SowApi.getDownloadUrl, action.payload.sow, action.payload.sow + '/' + configuration[stage].works_agreement_key, 600)
+
+    const worksAgreementPdf = {
+      pdfHash: resultPdfHash,
+      downloadUrl: resultDownloadUrl
+    }
+
+    yield put(SowActions.didBuildPdf(worksAgreementPdf))
 
   } catch (error) {
     console.log("error in willBuildPdf ", error)

@@ -21,7 +21,9 @@ export const configuration: any = {
     'host': 'https://app.uncommon-demo.com',
     'algorand_net': 'TestNet',
     'algorand_poll_account_amount_time': 120000,
-    'legal_document_template_key': 'vtl_templates/legal_sow_doc.vtl'
+    'legal_document_template_key': 'vtl_templates/legal_sow_doc.vtl',
+    'works_agreement_key': 'sow_1st_document.pdf',
+    'uc_backup_public_key': '3IB3QQKFQACYNQDD2G2CVV7I7ZZDY5ZLFW7SOJQVQG6I4CPCOVE2UU35OA'
   },
   demo: {
     Auth: {
@@ -45,6 +47,7 @@ export const configuration: any = {
     'host': 'https://demo.uncommon-demo.com',
     'algorand_net': 'TestNet',
     'algorand_poll_account_amount_time': 120000,
-    'legal_document_template_key': 'vtl_templates/legal_sow_doc.vtl'
+    'legal_document_template_key': 'vtl_templates/legal_sow_doc.vtl',
+    'uc_backup_public_key': '3IB3QQKFQACYNQDD2G2CVV7I7ZZDY5ZLFW7SOJQVQG6I4CPCOVE2UU35OA'
   }
 }

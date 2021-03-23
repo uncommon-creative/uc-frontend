@@ -39,7 +39,7 @@ const StatementOfWorkSchema = Yup.object().shape({
     is: 'DRAFT',
     then: Yup.string()
       .test('Should not contain your email address', 'Should not contain your email address', (value, context) => value != context.parent.seller)
-      // .email()
+      .email()
       .min(2, 'Too Short!')
       .max(50, 'Too Long!')
       .required('Required')
@@ -127,7 +127,7 @@ export const CreateStatementOfWorkPage = () => {
                   seller: users[currentSow.seller] ? users[currentSow.seller].email : '',
                   buyer:
                     validateEmail(currentSow.buyer) ? currentSow.buyer
-                      : currentSow.buyer != 'not_set' ? currentSow.buyer
+                      : currentSow.buyer != 'not_set' ? users[currentSow.buyer].email
                         : '',
                   buyerName:
                     validateEmail(currentSow.buyer) ? currentSow.buyer

@@ -42,7 +42,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
   const transactionError = useSelector(TransactionSelectors.getError)
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const params = useSelector(TransactionSelectors.getParams)
-  const pdfHash = useSelector(SowSelectors.getPdfHash)
+  const worksAgreementPdf = useSelector(SowSelectors.getWorksAgreementPdf)
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
   const [currentFromAlgoSigner, setCurrentFromAlgoSigner] = React.useState('');
 
@@ -77,8 +77,9 @@ export const SubmitSow = ({ modal, toggle }: any) => {
       }
       {transactionPage == 2 &&
         <>
-          <ModalHeader toggle={toggle}>Choose the sign method</ModalHeader>
+          <ModalHeader toggle={toggle}>Choose how to sign</ModalHeader>
           <ModalBody>
+            <CardSubtitle tag="h6" className="py-3 text-muted text-center">You are signing the quote and committing to provide the service as described in the <a target="_blank" href={worksAgreementPdf.downloadUrl}>works agreement</a>.</CardSubtitle>
             <Row>
               <Col>
                 <Card data-cy='mnemonicSubmit' onClick={() => {
@@ -111,7 +112,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Sign with mnemonic secret key</ModalHeader>
           <ModalBody>
-
+            <CardSubtitle tag="h6" className="py-3 text-muted text-center">You are signing the quote and committing to provide the service as described in the <a target="_blank" href={worksAgreementPdf.downloadUrl}>works agreement</a>.</CardSubtitle>
             <FormGroup>
               <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
               <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
@@ -126,7 +127,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionSubmitMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionSubmitMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionSubmitMnemonic({ params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, pdfHash: pdfHash }))
+              dispatch(TransactionActions.willCompleteTransactionSubmitMnemonic({ params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, pdfHash: worksAgreementPdf.pdfHash }))
             }}>Sign</ActivityButton>
           </ModalFooter>
         </>
@@ -135,7 +136,8 @@ export const SubmitSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Sign with AlgoSigner</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="pt-5 text-muted text-center">Select AlgoSigner accounts associated to your Uncommon Creative profile</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-3 text-muted text-center">You are signing the quote and committing to provide the service as described in the <a target="_blank" href={worksAgreementPdf.downloadUrl}>works agreement</a>.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-3 text-muted text-center">Select AlgoSigner accounts associated to your Uncommon Creative profile</CardSubtitle>
             {algoSigner.accounts.map((element: any, index: any) => {
               return (
                 <ListGroupItem disabled={element.address != userAttributes.public_key} className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
@@ -155,7 +157,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionSubmitAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionSubmitAlgoSigner" color="primary"
               onClick={() => {
-                dispatch(TransactionActions.willCompleteTransactionSubmitAlgoSigner({ params: params, address: currentFromAlgoSigner, currentSow: currentSow, pdfHash: pdfHash }))
+                dispatch(TransactionActions.willCompleteTransactionSubmitAlgoSigner({ params: params, address: currentFromAlgoSigner, currentSow: currentSow, pdfHash: worksAgreementPdf.pdfHash }))
               }}
             >Complete the transaction</ActivityButton>
           </ModalFooter>

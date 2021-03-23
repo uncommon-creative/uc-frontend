@@ -92,7 +92,7 @@ function* willCreateMultiSigAddress(action: any) {
   const seller_public_key = users[action.payload.seller].public_key
   const buyer_public_key = users[action.payload.buyer].public_key
   const arbitrator_public_key = users[action.payload.arbitrator].public_key
-  const backup_public_key = "T7AVQFK7NJFFBPBZR5YPCI7KMFUPRHBOL4AV5RADWHPWC4VBVVE6PSVJXQ"
+  const backup_public_key = configuration[stage].uc_backup_public_key
 
   console.log("sellerData: ", seller_public_key)
   console.log("buyerData: ", buyer_public_key)
@@ -234,7 +234,7 @@ function* willSignTransactionClaimMilestoneMet(action: any) {
       users[action.payload.currentSow.seller].public_key,
       users[action.payload.currentSow.buyer].public_key,
       users[action.payload.currentSow.arbitrator].public_key,
-      "T7AVQFK7NJFFBPBZR5YPCI7KMFUPRHBOL4AV5RADWHPWC4VBVVE6PSVJXQ"
+      configuration[stage].uc_backup_public_key
     ],
   };
 
@@ -284,7 +284,7 @@ function* willCompleteTransactionAcceptMilestone(action: any) {
       users[action.payload.currentSow.seller].public_key,
       users[action.payload.currentSow.buyer].public_key,
       users[action.payload.currentSow.arbitrator].public_key,
-      "T7AVQFK7NJFFBPBZR5YPCI7KMFUPRHBOL4AV5RADWHPWC4VBVVE6PSVJXQ"
+      configuration[stage].uc_backup_public_key
     ],
   };
 
@@ -342,7 +342,7 @@ function* willAlgorandPollAccountAmount(action: any) {
 
 function* willCompleteTransactionSubmitMnemonic(action: any) {
   console.log("in willCompleteTransactionSubmitMnemonic with: ", action)
-  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
+  yield put(UIActions.startActivityRunning('willCompleteTransactionSubmitMnemonic'));
   const users = yield select(ProfileSelectors.getUsers)
 
   const tokenName = uuidv4().substring(0, 8)
@@ -390,7 +390,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
     console.log("error in willCompleteTransactionSubmitMnemonic ", error)
     yield put(TransactionActions.didCompleteTransactionSubmitFail())
   }
-  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionSubmitMnemonic'));
 }
 
 function* willPrepareTransactionSubmitAlgoSigner() {
