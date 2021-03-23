@@ -166,6 +166,7 @@ describe('Chat', () => {
       cy.get('[data-cy=acceptConditions]').check()
       cy.get('[data-cy=continueTransaction]').click()
       cy.wait(1000)
+      cy.get('[data-cy=mnemonicClaimMilestoneMet]').click()
       cy.get('[data-cy=mnemonicSecretKey]')
         .type(Cypress.env('userSellerMnemonic'))
         .should('have.value', Cypress.env('userSellerMnemonic'))

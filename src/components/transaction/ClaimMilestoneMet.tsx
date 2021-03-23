@@ -85,7 +85,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           <ModalBody>
             <Row>
               <Col>
-                <Card data-cy='mnemonicAcceptAndPay' onClick={() => {
+                <Card data-cy='mnemonicClaimMilestoneMet' onClick={() => {
                   dispatch(TransactionActions.goToTransactionPage(3))
                 }}>
                   <CardBody className="text-center">
