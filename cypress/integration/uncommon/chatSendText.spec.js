@@ -125,6 +125,7 @@ describe('Chat', () => {
 
       cy.wait(5000)
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
+      cy.wait(3000)
       cy.get('[class="rce-input rce-input-textarea"]')
         .type('test cypress invio messaggio seller')
         .should('have.value', 'test cypress invio messaggio seller')
@@ -138,9 +139,6 @@ describe('Chat', () => {
       cy.wait(5000)
 
       cy.get('[data-cy=customerTab]').click()
-      // cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`).parents('tr').within(() => {
-      //   cy.get('[data-cy=unreadMessagesSowBuyer]').contains(1)
-      // })
 
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
       cy.wait(5000)
@@ -168,9 +166,7 @@ describe('Chat', () => {
       cy.wait(5000)
 
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
-      // cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`).parents('tr').within(() => {
-      //   cy.get('[data-cy=unreadMessagesSowSeller]').contains(2)
-      // })
+      cy.wait(3000)
 
       cy.get('[class="rce-mbox-text"]')
         .contains('test cypress invio messaggio buyer DUE')

@@ -134,6 +134,7 @@ describe('Attachment', () => {
       cy.wait(5000)
       // seller
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
+      cy.wait(3000)
       // seller test sow attachment
       cy.get('[data-cy=attachmentsSow]')
         .get('[data-cy=attachment]')
@@ -153,6 +154,7 @@ describe('Attachment', () => {
       cy.wait(2000)
       cy.get('[data-cy=customerTab]').click()
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
+      cy.wait(3000)
       // buyer test sow attachment
       cy.get('[data-cy=attachmentsSow]')
         .get('[data-cy=attachment]')

@@ -130,6 +130,7 @@ describe('Chat', () => {
       cy.wait(2000)
       cy.get('[data-cy=customerTab]').click()
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
+      cy.wait(3000)
       cy.get('[data-cy=REJECT]').click()
       cy.wait(1000)
       cy.get('[data-cy=willReject]').click()
