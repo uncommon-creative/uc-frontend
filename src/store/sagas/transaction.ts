@@ -342,7 +342,7 @@ function* willAlgorandPollAccountAmount(action: any) {
 
 function* willCompleteTransactionSubmitMnemonic(action: any) {
   console.log("in willCompleteTransactionSubmitMnemonic with: ", action)
-  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
+  yield put(UIActions.startActivityRunning('willCompleteTransactionSubmitMnemonic'));
   const users = yield select(ProfileSelectors.getUsers)
 
   const tokenName = uuidv4().substring(0, 8)
@@ -390,7 +390,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
     console.log("error in willCompleteTransactionSubmitMnemonic ", error)
     yield put(TransactionActions.didCompleteTransactionSubmitFail())
   }
-  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionSubmitMnemonic'));
 }
 
 function* willPrepareTransactionSubmitAlgoSigner() {
