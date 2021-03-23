@@ -98,7 +98,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
                   dispatch(NotificationActions.willShowNotification({ message: "In development", type: "info" }));
                 }}>
                   <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
-                    <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner</CardSubtitle>
+                    <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner (in development)</CardSubtitle>
                     {!isAlgoSignInstalled && <CardSubtitle tag="h6" className="mb-2 text-muted text-center">(not installed)</CardSubtitle>}
                     <img src={AlgoSignerLogo} height="80" alt="AlgoSigner Logo" />
                   </CardBody>
@@ -138,18 +138,20 @@ export const SubmitSow = ({ modal, toggle }: any) => {
           <ModalBody>
             <CardSubtitle tag="h6" className="py-3 text-muted text-center">You are signing the quote and committing to provide the service as described in the <a target="_blank" href={worksAgreementPdf.downloadUrl}>works agreement</a>.</CardSubtitle>
             <CardSubtitle tag="h6" className="py-3 text-muted text-center">Select AlgoSigner accounts associated to your Uncommon Creative profile</CardSubtitle>
-            {algoSigner.accounts.map((element: any, index: any) => {
-              return (
-                <ListGroupItem disabled={element.address != userAttributes.public_key} className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
-                  onClick={() => {
-                    console.log("select currentFromAlgoSigner: ", element.address)
-                    setCurrentFromAlgoSigner(element.address)
-                  }}
-                >
-                  {element.address + ': ' + t('transaction.payment.algo', { value: element.amount / 1000000 })}
-                </ListGroupItem>
-              )
-            })}
+            {algoSigner.accounts &&
+              algoSigner.accounts.map((element: any, index: any) => {
+                return (
+                  <ListGroupItem disabled={element.address != userAttributes.public_key} className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
+                    onClick={() => {
+                      console.log("select currentFromAlgoSigner: ", element.address)
+                      setCurrentFromAlgoSigner(element.address)
+                    }}
+                  >
+                    {element.address + ': ' + t('transaction.payment.algo', { value: element.amount / 1000000 })}
+                  </ListGroupItem>
+                )
+              })
+            }
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {

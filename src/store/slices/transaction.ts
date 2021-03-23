@@ -35,25 +35,24 @@ export const currentSlice = createSlice({
     willAlgorandPollAccountAmount: (state, action: PayloadAction<any>) => state,
     didAlgorandPollAccountAmount: (state, action: PayloadAction<any>) => void (state.activePolls[action.payload.sow] = action.payload.timestamp),
 
-    didCompleteTransactionAcceptAndPay: (state, action: PayloadAction<any>) => void (state.transactionAcceptAndPay = action.payload, state.transactionPage = 6),
-    didCompleteTransactionAcceptAndPayFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
-
     willCompleteTransactionAcceptAndPayQR: (state, action: PayloadAction<any>) => void (state.transactionPage = 3),
     willCompleteTransactionAcceptAndPayMnemonic: (state, action: PayloadAction<any>) => state,
-
     willPrepareTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => state,
     didPrepareTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 5),
     willCompleteTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => state,
+    didCompleteTransactionAcceptAndPay: (state, action: PayloadAction<any>) => void (state.transactionAcceptAndPay = action.payload, state.transactionPage = 6),
+    didCompleteTransactionAcceptAndPayFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
 
-    willSignTransactionClaimMilestoneMetMnemonic: (state, action: PayloadAction<any>) => state,
-    willPrepareSignTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => state,
-    didPrepareSignTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 4),
-    willSignTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => state,
-    didSignTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionPage = 5),
+    willCompleteTransactionClaimMilestoneMetMnemonic: (state, action: PayloadAction<any>) => state,
+    willPrepareTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => state,
+    didPrepareTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 4),
+    willCompleteTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => state,
+    didCompleteTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionPage = 5),
+    didCompleteTransactionClaimMilestoneMetFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 6),
 
     willGetSignedMsig: (state, action: PayloadAction<any>) => state,
     didGetSignedMsig: (state, action: PayloadAction<any>) => void (state.signedMsig = action.payload, state.transactionPage = 2),
-    willCompleteTransactionAcceptMilestone: (state, action: PayloadAction<any>) => state,
+    willCompleteTransactionAcceptMilestoneMnemonic: (state, action: PayloadAction<any>) => state,
     didCompleteTransactionAcceptMilestone: (state, action: PayloadAction<any>) => void (state.transactionAcceptMilestone = action.payload, state.transactionPage = 3),
     didCompleteTransactionAcceptMilestoneFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 4),
 
@@ -78,8 +77,8 @@ export const {
   didCompleteTransactionAcceptAndPay, didCompleteTransactionAcceptAndPayFail,
   willCompleteTransactionAcceptAndPayQR, willCompleteTransactionAcceptAndPayMnemonic,
   willPrepareTransactionAcceptAndPayAlgoSigner, didPrepareTransactionAcceptAndPayAlgoSigner, willCompleteTransactionAcceptAndPayAlgoSigner,
-  willSignTransactionClaimMilestoneMetMnemonic, didSignTransactionClaimMilestoneMet,
-  didGetSignedMsig, willCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestoneFail,
+  willCompleteTransactionClaimMilestoneMetMnemonic, didCompleteTransactionClaimMilestoneMet,
+  didGetSignedMsig, willCompleteTransactionAcceptMilestoneMnemonic, didCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestoneFail,
   willReject, willRequestReview, didRequestReview
 } = actions
 export const selectors = {

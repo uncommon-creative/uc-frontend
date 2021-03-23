@@ -81,8 +81,8 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage(1))
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willCompleteTransactionAcceptMilestone' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptMilestone" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionAcceptMilestone({ signedMsig: signedMsig, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
+            <ActivityButton data-cy='willCompleteTransactionAcceptMilestoneMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptMilestoneMnemonic" color="primary" onClick={async () => {
+              dispatch(TransactionActions.willCompleteTransactionAcceptMilestoneMnemonic({ signedMsig: signedMsig, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -112,7 +112,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
             <Jumbotron>
               <CardText>
-                {t('transaction.transactionFailed', { errorText: transactionError })}
+                {t('transaction.transactionFailed', { errorMessage: transactionError })}
               </CardText>
             </Jumbotron>
           </ModalBody>

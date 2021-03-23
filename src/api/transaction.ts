@@ -410,3 +410,15 @@ export const algoSignSubmit = async (params: any, addr: any, note: any, totalIss
     throw error
   }
 }
+
+export function mnemonicToSecretKey(mnemonicSecretKey: any ) {
+  try {
+    const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
+    // console.log("mnemonicToSecretKey secret_key: ", secret_key)
+
+    return secret_key
+  } catch (error) {
+    console.log("mnemonicToSecretKey API error: ", error)
+    throw error
+  }
+}

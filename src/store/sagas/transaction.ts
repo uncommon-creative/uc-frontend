@@ -26,10 +26,10 @@ export function* sagas() {
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic.type, willCompleteTransactionAcceptAndPayMnemonic)
   yield takeLatest(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner.type, willPrepareTransactionAcceptAndPayAlgoSigner)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner.type, willCompleteTransactionAcceptAndPayAlgoSigner)
-  yield takeLatest(TransactionActions.willSignTransactionClaimMilestoneMetMnemonic.type, willSignTransactionClaimMilestoneMetMnemonic)
-  yield takeLatest(TransactionActions.willPrepareSignTransactionClaimMilestoneMetAlgoSigner.type, willPrepareSignTransactionClaimMilestoneMetAlgoSigner)
-  yield takeLatest(TransactionActions.willSignTransactionClaimMilestoneMetAlgoSigner.type, willSignTransactionClaimMilestoneMetAlgoSigner)
-  yield takeLatest(TransactionActions.willCompleteTransactionAcceptMilestone.type, willCompleteTransactionAcceptMilestone)
+  yield takeLatest(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic.type, willCompleteTransactionClaimMilestoneMetMnemonic)
+  yield takeLatest(TransactionActions.willPrepareTransactionClaimMilestoneMetAlgoSigner.type, willPrepareTransactionClaimMilestoneMetAlgoSigner)
+  yield takeLatest(TransactionActions.willCompleteTransactionClaimMilestoneMetAlgoSigner.type, willCompleteTransactionClaimMilestoneMetAlgoSigner)
+  yield takeLatest(TransactionActions.willCompleteTransactionAcceptMilestoneMnemonic.type, willCompleteTransactionAcceptMilestoneMnemonic)
   yield takeLatest(TransactionActions.willRequestReview.type, willRequestReview)
   yield takeLatest(TransactionActions.willGetSignedMsig.type, willGetSignedMsig)
   yield takeLatest(TransactionActions.willCompleteTransactionSubmitMnemonic.type, willCompleteTransactionSubmitMnemonic)
@@ -164,26 +164,34 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
   yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
 
   try {
-    const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.arbitrator)
-    console.log("willCompleteTransactionAcceptAndPayMnemonic resultSetSowArbitrator: ", resultSetSowArbitrator)
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: action.payload })
+    console.log("willCompleteTransactionAcceptAndPayMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
-    const resultSignedTransaction = yield call(TransactionApi.signTransaction, action.payload.multiSigAddress.address, action.payload.params, action.payload.mnemonicSecretKey, action.payload.toPay)
-    console.log("willCompleteTransactionAcceptAndPayMnemonic resultSignedTransaction: ", resultSignedTransaction)
+    if (resultCheckAccountTransaction.check) {
+      const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.arbitrator)
+      console.log("willCompleteTransactionAcceptAndPayMnemonic resultSetSowArbitrator: ", resultSetSowArbitrator)
 
-    const resultSentTransaction = yield call(TransactionApi.sendTransaction, action.payload.currentSow.sow, resultSignedTransaction)
-    console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction: ", resultSentTransaction)
+      const resultSignedTransaction = yield call(TransactionApi.signTransaction, action.payload.multiSigAddress.address, action.payload.params, action.payload.mnemonicSecretKey, action.payload.toPay)
+      console.log("willCompleteTransactionAcceptAndPayMnemonic resultSignedTransaction: ", resultSignedTransaction)
 
-    if (resultSentTransaction === "sendTxFailed") {
-      console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction fail: ", resultSentTransaction)
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSentTransaction))
-      yield put(NotificationActions.willShowNotification({ message: resultSentTransaction, type: "danger" }));
+      const resultSentTransaction = yield call(TransactionApi.sendTransaction, action.payload.currentSow.sow, resultSignedTransaction)
+      console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction: ", resultSentTransaction)
+
+      if (resultSentTransaction === "sendTxFailed") {
+        console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction fail: ", resultSentTransaction)
+        yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSentTransaction))
+        yield put(NotificationActions.willShowNotification({ message: resultSentTransaction, type: "danger" }));
+      }
+      else {
+        console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction success: ", resultSentTransaction)
+        yield put(TransactionActions.didCompleteTransactionAcceptAndPay(resultSentTransaction))
+      }
+      yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
     }
     else {
-      console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction success: ", resultSentTransaction)
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPay(resultSentTransaction))
+      console.log("willCompleteTransactionAcceptAndPayMnemonic fail")
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultCheckAccountTransaction.error))
     }
-    yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
-
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptAndPayMnemonic ", error)
   }
@@ -224,9 +232,9 @@ function* willCompleteTransactionAcceptAndPayAlgoSigner(action: any) {
   }
 }
 
-function* willSignTransactionClaimMilestoneMetMnemonic(action: any) {
-  console.log("in willSignTransactionClaimMilestoneMetMnemonic with: ", action)
-  yield put(UIActions.startActivityRunning('willSignTransactionClaimMilestoneMetMnemonic'));
+function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
+  console.log("in willCompleteTransactionClaimMilestoneMetMnemonic with: ", action)
+  yield put(UIActions.startActivityRunning('willCompleteTransactionClaimMilestoneMetMnemonic'));
   const users = yield select(ProfileSelectors.getUsers)
 
   const mparams = {
@@ -241,45 +249,54 @@ function* willSignTransactionClaimMilestoneMetMnemonic(action: any) {
   };
 
   try {
-    const resultSignedMultisigTransaction = yield call(TransactionApi.signMultisigTransaction, action.payload.multiSigAddress.address, action.payload.sellerAddress, action.payload.params, action.payload.mnemonicSecretKey, action.payload.currentSow.price, mparams)
-    console.log("willSignTransactionClaimMilestoneMetMnemonic resultSignedMultisigTransaction: ", resultSignedMultisigTransaction)
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: action.payload })
+    console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
-    const resultPutMultisigTransaction = yield call(TransactionApi.algorandPutTransaction, action.payload.currentSow.sow, resultSignedMultisigTransaction)
-    console.log("willCompleteTransactionAcceptMilestone resultSignedMultisigTransaction: ", resultPutMultisigTransaction)
+    if (resultCheckAccountTransaction.check) {
+      const resultSignedMultisigTransaction = yield call(TransactionApi.signMultisigTransaction, action.payload.multiSigAddress.address, action.payload.sellerAddress, action.payload.params, action.payload.mnemonicSecretKey, action.payload.currentSow.price, mparams)
+      console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultSignedMultisigTransaction: ", resultSignedMultisigTransaction)
 
-    yield call(willSendCommandChat, { payload: { values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: action.payload.currentSow } })
+      const resultPutMultisigTransaction = yield call(TransactionApi.algorandPutTransaction, action.payload.currentSow.sow, resultSignedMultisigTransaction)
+      console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultSignedMultisigTransaction: ", resultPutMultisigTransaction)
 
-    yield put(TransactionActions.didSignTransactionClaimMilestoneMet())
+      yield call(willSendCommandChat, { payload: { values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: action.payload.currentSow } })
+
+      yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet())
+    }
+    else {
+      console.log("willCompleteTransactionClaimMilestoneMetMnemonic fail")
+      yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail(resultCheckAccountTransaction.error))
+    }
   } catch (error) {
-    console.log("error in willSignTransactionClaimMilestoneMetMnemonic ", error)
+    console.log("error in willCompleteTransactionClaimMilestoneMetMnemonic ", error)
   }
-  yield put(UIActions.stopActivityRunning('willSignTransactionClaimMilestoneMetMnemonic'));
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionClaimMilestoneMetMnemonic'));
 }
 
-function* willPrepareSignTransactionClaimMilestoneMetAlgoSigner(action: any) {
-  console.log("in willPrepareSignTransactionClaimMilestoneMetAlgoSigner with: ", action)
-  yield put(UIActions.startActivityRunning('willPrepareSignTransactionClaimMilestoneMetAlgoSigner'));
+function* willPrepareTransactionClaimMilestoneMetAlgoSigner(action: any) {
+  console.log("in willPrepareTransactionClaimMilestoneMetAlgoSigner with: ", action)
+  yield put(UIActions.startActivityRunning('willPrepareTransactionClaimMilestoneMetAlgoSigner'));
 
   try {
 
-    yield put(TransactionActions.didPrepareSignTransactionClaimMilestoneMetAlgoSigner())
+    yield put(TransactionActions.didPrepareTransactionClaimMilestoneMetAlgoSigner())
   } catch (error) {
-    console.log("error in willPrepareSignTransactionClaimMilestoneMetAlgoSigner ", error)
+    console.log("error in willPrepareTransactionClaimMilestoneMetAlgoSigner ", error)
   }
-  yield put(UIActions.stopActivityRunning('willPrepareSignTransactionClaimMilestoneMetAlgoSigner'));
+  yield put(UIActions.stopActivityRunning('willPrepareTransactionClaimMilestoneMetAlgoSigner'));
 }
 
-function* willSignTransactionClaimMilestoneMetAlgoSigner(action: any) {
-  console.log("in willSignTransactionClaimMilestoneMetAlgoSigner with: ", action)
-  yield put(UIActions.startActivityRunning('willSignTransactionClaimMilestoneMetAlgoSigner'));
+function* willCompleteTransactionClaimMilestoneMetAlgoSigner(action: any) {
+  console.log("in willCompleteTransactionClaimMilestoneMetAlgoSigner with: ", action)
+  yield put(UIActions.startActivityRunning('willCompleteTransactionClaimMilestoneMetAlgoSigner'));
 
   try {
 
-    yield put(TransactionActions.didSignTransactionClaimMilestoneMet())
+    yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet())
   } catch (error) {
-    console.log("error in willSignTransactionClaimMilestoneMetAlgoSigner ", error)
+    console.log("error in willCompleteTransactionClaimMilestoneMetAlgoSigner ", error)
   }
-  yield put(UIActions.stopActivityRunning('willSignTransactionClaimMilestoneMetAlgoSigner'));
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionClaimMilestoneMetAlgoSigner'));
 }
 
 function* willGetSignedMsig(action: any) {
@@ -298,9 +315,9 @@ function* willGetSignedMsig(action: any) {
   yield put(UIActions.stopActivityRunning('willGetSignedMsig'));
 }
 
-function* willCompleteTransactionAcceptMilestone(action: any) {
-  console.log("in willCompleteTransactionAcceptMilestone with: ", action)
-  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptMilestone'));
+function* willCompleteTransactionAcceptMilestoneMnemonic(action: any) {
+  console.log("in willCompleteTransactionAcceptMilestoneMnemonic with: ", action)
+  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptMilestoneMnemonic'));
   const users = yield select(ProfileSelectors.getUsers)
   const signedMsig = yield select(TransactionSelectors.getSignedMsig)
 
@@ -316,21 +333,29 @@ function* willCompleteTransactionAcceptMilestone(action: any) {
   };
 
   try {
-    const resultAppendSignMultisigTransaction = yield call(TransactionApi.appendSignMultisigTransaction, action.payload.signedMsig, action.payload.mnemonicSecretKey, msigparams)
-    console.log("willCompleteTransactionAcceptMilestone resultAppendSignMultisigTransaction: ", resultAppendSignMultisigTransaction)
-    console.log("willCompleteTransactionAcceptMilestone resultAppendSignMultisigTransaction.blob.toString()): ", resultAppendSignMultisigTransaction.blob.toString())
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: action.payload })
+    console.log("willCompleteTransactionAcceptMilestoneMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
-    const resultConfirmedMultisigTransaction = yield call(TransactionApi.algorandFinalizeTransaction, signedMsig.hash_round, signedMsig.round_sow, resultAppendSignMultisigTransaction)
-    console.log("willCompleteTransactionAcceptMilestone resultConfirmedMultisigTransaction: ", resultConfirmedMultisigTransaction)
-    yield put(TransactionActions.didCompleteTransactionAcceptMilestone(resultConfirmedMultisigTransaction))
+    if (resultCheckAccountTransaction.check) {
+      const resultAppendSignMultisigTransaction = yield call(TransactionApi.appendSignMultisigTransaction, action.payload.signedMsig, action.payload.mnemonicSecretKey, msigparams)
+      console.log("willCompleteTransactionAcceptMilestoneMnemonic resultAppendSignMultisigTransaction: ", resultAppendSignMultisigTransaction)
+      console.log("willCompleteTransactionAcceptMilestoneMnemonic resultAppendSignMultisigTransaction.blob.toString()): ", resultAppendSignMultisigTransaction.blob.toString())
 
-    yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
+      const resultConfirmedMultisigTransaction = yield call(TransactionApi.algorandFinalizeTransaction, signedMsig.hash_round, signedMsig.round_sow, resultAppendSignMultisigTransaction)
+      console.log("willCompleteTransactionAcceptMilestoneMnemonic resultConfirmedMultisigTransaction: ", resultConfirmedMultisigTransaction)
+      yield put(TransactionActions.didCompleteTransactionAcceptMilestone(resultConfirmedMultisigTransaction))
 
+      yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
+    }
+    else {
+      console.log("willCompleteTransactionAcceptMilestoneMnemonic fail")
+      yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail(resultCheckAccountTransaction.error))
+    }
   } catch (error) {
-    console.log("error in willCompleteTransactionAcceptMilestone ", error)
+    console.log("error in willCompleteTransactionAcceptMilestoneMnemonic ", error)
     yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail("Algorand multisig transaction failed"))
   }
-  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptMilestone'));
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptMilestoneMnemonic'));
 }
 
 function* willRequestReview(action: any) {
@@ -396,23 +421,31 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
   const clawback = users[action.payload.currentSow.seller].public_key;
 
   try {
-    const resultSignedTransaction = yield call(TransactionApi.signTxn,
-      action.payload.mnemonicSecretKey, action.payload.params, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
-    )
-    console.log("in willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: action.payload })
+    console.log("willCompleteTransactionSubmitMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
-    const resultAlgorandSendTokenCreationTx = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction.toString())
-    console.log("willCompleteTransactionSubmitMnemonic resultAlgorandSendTokenCreationTx: ", resultAlgorandSendTokenCreationTx)
+    if (resultCheckAccountTransaction.check) {
+      const resultSignedTransaction = yield call(TransactionApi.signTxn,
+        action.payload.mnemonicSecretKey, action.payload.params, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
+      )
+      console.log("in willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
 
-    if (resultAlgorandSendTokenCreationTx.error) {
-      console.log("willCompleteTransactionSubmitMnemonic fail")
-      yield put(TransactionActions.didCompleteTransactionSubmitFail(resultAlgorandSendTokenCreationTx.error))
+      const resultAlgorandSendTokenCreationTx = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction.toString())
+      console.log("willCompleteTransactionSubmitMnemonic resultAlgorandSendTokenCreationTx: ", resultAlgorandSendTokenCreationTx)
+
+      if (resultAlgorandSendTokenCreationTx.error) {
+        console.log("willCompleteTransactionSubmitMnemonic fail")
+        yield put(TransactionActions.didCompleteTransactionSubmitFail(resultAlgorandSendTokenCreationTx.error))
+      }
+      else {
+        console.log("willCompleteTransactionSubmitMnemonic success")
+        yield put(TransactionActions.didCompleteTransactionSubmit(resultAlgorandSendTokenCreationTx.assetId))
+      }
     }
     else {
-      console.log("willCompleteTransactionSubmitMnemonic success")
-      yield put(TransactionActions.didCompleteTransactionSubmit(resultAlgorandSendTokenCreationTx.assetId))
+      console.log("willCompleteTransactionSubmitMnemonic fail")
+      yield put(TransactionActions.didCompleteTransactionSubmitFail(resultCheckAccountTransaction.error))
     }
-
   } catch (error) {
     console.log("error in willCompleteTransactionSubmitMnemonic ", error)
     yield put(TransactionActions.didCompleteTransactionSubmitFail())
@@ -476,5 +509,38 @@ function* willCompleteTransactionSubmitAlgoSigner(action: any) {
     // yield put(TransactionActions.didCompleteTransactionSubmit(result))
   } catch (error) {
     console.log("error in willCompleteTransactionSubmitAlgoSigner ", error)
+  }
+}
+
+export function* willCheckAccountTransaction(action: any) {
+  console.log("in willCheckAccountTransaction with: ", action)
+
+  const userAttributes = yield select(ProfileSelectors.getProfile)
+  console.log("in willCheckAccountTransaction userAttributes: ", userAttributes)
+  // userAttributes.public_key
+
+  // action.payload.mnemonic
+  // action.payload.toPay
+
+  try {
+    const resultMnemonicToSecretKey = yield call(TransactionApi.mnemonicToSecretKey, action.payload.mnemonicSecretKey)
+    console.log("willCheckAccountTransaction resultMnemonicToSecretKey: ", resultMnemonicToSecretKey)
+
+    if (resultMnemonicToSecretKey.addr != userAttributes.public_key) {
+      return {
+        check: false,
+        error: "The mnemonic secret key inserted doesn't match your public address."
+      }
+    }
+    else {
+      return {
+        check: true,
+        error: null
+      }
+    }
+
+    return
+  } catch (error) {
+    console.log("error in willCheckAccountTransaction ", error)
   }
 }

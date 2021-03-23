@@ -97,11 +97,12 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
               <Col>
                 <Card onClick={() => {
                   console.log("willPrepareTransactionClaimMilestoneMetAlgoSigner onClick")
-                  // isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareSignTransactionClaimMilestoneMetAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, total: payment.total }))
-                    /* : */ dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
+                  // isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionClaimMilestoneMetAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, total: payment.total }))
+                  // : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
+                  dispatch(NotificationActions.willShowNotification({ message: "In development", type: "info" }));
                 }}>
                   <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
-                    <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner</CardSubtitle>
+                    <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner (in development)</CardSubtitle>
                     {!isAlgoSignInstalled && <CardSubtitle tag="h6" className="mb-2 text-muted text-center">(not installed)</CardSubtitle>}
                     <img src={AlgoSignerLogo} height="80" alt="AlgoSigner Logo" />
                   </CardBody>
@@ -131,8 +132,8 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willSignTransactionClaimMilestoneMetMnemonic' disabled={mnemonicSecretKey == ''} name="willSignTransactionClaimMilestoneMetMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willSignTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig, sellerAddress: users[currentSow.seller].public_key, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
+            <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionClaimMilestoneMetMnemonic" color="primary" onClick={async () => {
+              dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig, sellerAddress: users[currentSow.seller].public_key, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
             }}>Sign the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -141,29 +142,30 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Claim milestone met with mnemonic Secret Key</ModalHeader>
           <ModalBody>
-
             <CardSubtitle tag="h6" className="pt-5 text-muted text-center">Select one of your AlgoSigner accounts</CardSubtitle>
-            {algoSigner.accounts.map((element: any, index: any) => {
-              return (
-                <ListGroupItem disabled className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
-                  onClick={() => {
-                    console.log("select currentFromAlgoSigner: ", element.address)
-                    setCurrentFromAlgoSigner(element.address)
-                  }}
-                >
-                  {element.address + ': ' + t('transaction.payment.algo', { value: element.amount / 1000000 })}
-                </ListGroupItem>
-              )
-            })}
+            {algoSigner.accounts &&
+              algoSigner.accounts.map((element: any, index: any) => {
+                return (
+                  <ListGroupItem disabled className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
+                    onClick={() => {
+                      console.log("select currentFromAlgoSigner: ", element.address)
+                      setCurrentFromAlgoSigner(element.address)
+                    }}
+                  >
+                    {element.address + ': ' + t('transaction.payment.algo', { value: element.amount / 1000000 })}
+                  </ListGroupItem>
+                )
+              })
+            }
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willSignTransactionClaimMilestoneMetAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willSignTransactionClaimMilestoneMetAlgoSigner" color="primary"
+            <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionClaimMilestoneMetAlgoSigner" color="primary"
               onClick={() => {
-                console.log("willSignTransactionClaimMilestoneMetAlgoSigner onClick")
-                // dispatch(TransactionActions.willSignTransactionClaimMilestoneMetAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, toPay: payment.toPay, sow: currentSow.sow }))
+                console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner onClick")
+                // dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, toPay: payment.toPay, sow: currentSow.sow }))
                 // subscribeOnAmountChecked()
               }}
             >Complete the transaction</ActivityButton>
@@ -187,15 +189,15 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {/* {transactionPage == 4 &&
+      {transactionPage == 6 &&
         <>
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSigAddress.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSigAddress.amount/1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
             <Jumbotron>
               <CardText>
-                {t('transaction.transactionFailed', {errorText: transactionError})}
+                {t('transaction.transactionFailed', { errorMessage: transactionError })}
               </CardText>
             </Jumbotron>
           </ModalBody>
@@ -203,7 +205,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             <ActivityButton name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
           </ModalFooter>
         </>
-      } */}
+      }
     </Modal>
   )
 }

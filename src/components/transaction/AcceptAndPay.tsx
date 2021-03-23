@@ -250,18 +250,20 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
             <Payment />
 
             <CardSubtitle tag="h6" className="pt-5 text-muted text-center">Select one of your AlgoSigner accounts</CardSubtitle>
-            {algoSigner.accounts.map((element: any, index: any) => {
-              return (
-                <ListGroupItem disabled={element.amount < payment.toPay} className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
-                  onClick={() => {
-                    console.log("select currentFromAlgoSigner: ", element.address)
-                    setCurrentFromAlgoSigner(element.address)
-                  }}
-                >
-                  {element.address + ': ' + t('transaction.payment.algo', { value: element.amount / 1000000 })}
-                </ListGroupItem>
-              )
-            })}
+            {algoSigner.accounts &&
+              algoSigner.accounts.map((element: any, index: any) => {
+                return (
+                  <ListGroupItem disabled={element.amount < payment.toPay} className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
+                    onClick={() => {
+                      console.log("select currentFromAlgoSigner: ", element.address)
+                      setCurrentFromAlgoSigner(element.address)
+                    }}
+                  >
+                    {element.address + ': ' + t('transaction.payment.algo', { value: element.amount / 1000000 })}
+                  </ListGroupItem>
+                )
+              })
+            }
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
