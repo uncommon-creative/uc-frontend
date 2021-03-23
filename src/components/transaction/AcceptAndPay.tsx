@@ -24,7 +24,6 @@ import { ActivityButton } from '../common/ActivityButton';
 import { Payment } from './Payment'
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
 
-
 declare var AlgoSigner: any;
 
 export const AcceptAndPay = ({ modal, toggle }: any) => {

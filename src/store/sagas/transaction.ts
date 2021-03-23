@@ -26,7 +26,9 @@ export function* sagas() {
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic.type, willCompleteTransactionAcceptAndPayMnemonic)
   yield takeLatest(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner.type, willPrepareTransactionAcceptAndPayAlgoSigner)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner.type, willCompleteTransactionAcceptAndPayAlgoSigner)
-  yield takeLatest(TransactionActions.willSignTransactionClaimMilestoneMet.type, willSignTransactionClaimMilestoneMet)
+  yield takeLatest(TransactionActions.willSignTransactionClaimMilestoneMetMnemonic.type, willSignTransactionClaimMilestoneMetMnemonic)
+  yield takeLatest(TransactionActions.willPrepareSignTransactionClaimMilestoneMetAlgoSigner.type, willPrepareSignTransactionClaimMilestoneMetAlgoSigner)
+  yield takeLatest(TransactionActions.willSignTransactionClaimMilestoneMetAlgoSigner.type, willSignTransactionClaimMilestoneMetAlgoSigner)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptMilestone.type, willCompleteTransactionAcceptMilestone)
   yield takeLatest(TransactionActions.willRequestReview.type, willRequestReview)
   yield takeLatest(TransactionActions.willGetSignedMsig.type, willGetSignedMsig)
@@ -222,9 +224,9 @@ function* willCompleteTransactionAcceptAndPayAlgoSigner(action: any) {
   }
 }
 
-function* willSignTransactionClaimMilestoneMet(action: any) {
-  console.log("in willSignTransactionClaimMilestoneMet with: ", action)
-  yield put(UIActions.startActivityRunning('willSignTransactionClaimMilestoneMet'));
+function* willSignTransactionClaimMilestoneMetMnemonic(action: any) {
+  console.log("in willSignTransactionClaimMilestoneMetMnemonic with: ", action)
+  yield put(UIActions.startActivityRunning('willSignTransactionClaimMilestoneMetMnemonic'));
   const users = yield select(ProfileSelectors.getUsers)
 
   const mparams = {
@@ -240,7 +242,7 @@ function* willSignTransactionClaimMilestoneMet(action: any) {
 
   try {
     const resultSignedMultisigTransaction = yield call(TransactionApi.signMultisigTransaction, action.payload.multiSigAddress.address, action.payload.sellerAddress, action.payload.params, action.payload.mnemonicSecretKey, action.payload.currentSow.price, mparams)
-    console.log("willSignTransactionClaimMilestoneMet resultSignedMultisigTransaction: ", resultSignedMultisigTransaction)
+    console.log("willSignTransactionClaimMilestoneMetMnemonic resultSignedMultisigTransaction: ", resultSignedMultisigTransaction)
 
     const resultPutMultisigTransaction = yield call(TransactionApi.algorandPutTransaction, action.payload.currentSow.sow, resultSignedMultisigTransaction)
     console.log("willCompleteTransactionAcceptMilestone resultSignedMultisigTransaction: ", resultPutMultisigTransaction)
@@ -248,11 +250,36 @@ function* willSignTransactionClaimMilestoneMet(action: any) {
     yield call(willSendCommandChat, { payload: { values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: action.payload.currentSow } })
 
     yield put(TransactionActions.didSignTransactionClaimMilestoneMet())
-
   } catch (error) {
-    console.log("error in willSignTransactionClaimMilestoneMet ", error)
+    console.log("error in willSignTransactionClaimMilestoneMetMnemonic ", error)
   }
-  yield put(UIActions.stopActivityRunning('willSignTransactionClaimMilestoneMet'));
+  yield put(UIActions.stopActivityRunning('willSignTransactionClaimMilestoneMetMnemonic'));
+}
+
+function* willPrepareSignTransactionClaimMilestoneMetAlgoSigner(action: any) {
+  console.log("in willPrepareSignTransactionClaimMilestoneMetAlgoSigner with: ", action)
+  yield put(UIActions.startActivityRunning('willPrepareSignTransactionClaimMilestoneMetAlgoSigner'));
+
+  try {
+
+    yield put(TransactionActions.didPrepareSignTransactionClaimMilestoneMetAlgoSigner())
+  } catch (error) {
+    console.log("error in willPrepareSignTransactionClaimMilestoneMetAlgoSigner ", error)
+  }
+  yield put(UIActions.stopActivityRunning('willPrepareSignTransactionClaimMilestoneMetAlgoSigner'));
+}
+
+function* willSignTransactionClaimMilestoneMetAlgoSigner(action: any) {
+  console.log("in willSignTransactionClaimMilestoneMetAlgoSigner with: ", action)
+  yield put(UIActions.startActivityRunning('willSignTransactionClaimMilestoneMetAlgoSigner'));
+
+  try {
+
+    yield put(TransactionActions.didSignTransactionClaimMilestoneMet())
+  } catch (error) {
+    console.log("error in willSignTransactionClaimMilestoneMetAlgoSigner ", error)
+  }
+  yield put(UIActions.stopActivityRunning('willSignTransactionClaimMilestoneMetAlgoSigner'));
 }
 
 function* willGetSignedMsig(action: any) {
