@@ -538,8 +538,6 @@ export function* willCheckAccountTransaction(action: any) {
         error: null
       }
     }
-
-    return
   } catch (error) {
     console.log("error in willCheckAccountTransaction ", error)
   }
