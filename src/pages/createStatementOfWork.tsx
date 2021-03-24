@@ -291,6 +291,12 @@ export const CreateStatementOfWorkPage = () => {
                         </Row>
                         <Row>
                           <Col>
+                            <Label for="attachments">
+                              Specification Document
+                              <CardSubtitle className="fs-5 text-muted" style={{ fontSize: 12 }}>
+                                Only one file allowed, create a compressed archive with multiple files if needed.
+                              </CardSubtitle>
+                            </Label>
                             <SowAttachments currentSow={currentSow} />
                           </Col>
                         </Row>

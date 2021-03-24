@@ -8,6 +8,7 @@ query listSowAttachments(
       key
       size
       type
+      etag
     }
     nextToken
   }

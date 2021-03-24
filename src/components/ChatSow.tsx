@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  Row, Col, Card
+  Row, Col, Card, Label
 } from 'reactstrap';
 import { Formik } from 'formik';
 import 'react-chat-elements/dist/main.css';
@@ -130,6 +130,7 @@ export const ChatSow = ({ currentSow }: any) => {
       >
         <Row>
           <Col>
+            <Label for="attachments">Attachments</Label>
             <SowAttachments currentSow={currentSow} />
           </Col>
         </Row>

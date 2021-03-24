@@ -171,7 +171,7 @@ function* willPrepareUploadAttachment(action: any) {
   let tmpFileList = [] as any
   let tmpAttachment = {} as any
   const key = action.payload.sow.status == SowStatus.DRAFT ?
-    action.payload.sow.sow + '/' + action.payload.attachment.name
+    action.payload.sow.sow + '/' + configuration[stage].specs_document_key
     : action.payload.sow.sow + '/' + action.payload.username + '/' + action.payload.attachment.name
   const owner = action.payload.sow.status == SowStatus.DRAFT ?
     action.payload.sow.sow
@@ -205,7 +205,7 @@ function* willPrepareUploadAttachment(action: any) {
     console.log("in willPrepareUploadAttachment with result: ", result)
 
     yield call(SowApi.uploadFileToS3, result, action.payload.attachment)
-    yield put(ChatActions.willSendAttachmentChat({ values: { key: key, size: action.payload.attachment.size, type: action.payload.attachment.type }, sow: action.payload.sow }))
+    action.payload.sow.status != SowStatus.DRAFT && (yield put(ChatActions.willSendAttachmentChat({ values: { key: key, size: action.payload.attachment.size, type: action.payload.attachment.type }, sow: action.payload.sow })))
     yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow.sow } });
   } catch (error) {
     console.log("error in willPrepareUploadAttachment ", error)
@@ -354,7 +354,7 @@ function* willGetSowAttachmentsList(action: any) {
 
   try {
     const result = yield call(SowApi.getSowAttachmentsList, action.payload.sow);
-    console.log("result willGetSowAttachmentsList: ", result)
+    console.log("willGetSowAttachmentsList result: ", result)
     const attachmentsSplitted = [] as any
     for (const attachment of result) {
       let tmp = attachment.key.split('/')
@@ -367,11 +367,12 @@ function* willGetSowAttachmentsList(action: any) {
           'key': attachment.key,
           'downloadUrl': downloadUrl,
           'size': attachment.size,
-          'type': attachment.type
+          'type': attachment.type,
+          'etag': attachment.etag
         }
       )
     }
-    console.log("attachmentsSplitted: ", attachmentsSplitted)
+    console.log("willGetSowAttachmentsList attachmentsSplitted: ", attachmentsSplitted)
     yield put(SowActions.didGetSowAttachmentsList(attachmentsSplitted))
 
   } catch (error) {
@@ -463,7 +464,7 @@ function* willBuildPdf(action: any) {
 
   try {
     const resultPdfHash = yield call(SowApi.buildPdf, action.payload.sow);
-    console.log("result resultPdf: ", resultPdfHash)
+    // console.log("result resultPdf: ", resultPdfHash)
 
     const resultDownloadUrl = yield call(SowApi.getDownloadUrl, action.payload.sow, action.payload.sow + '/' + configuration[stage].works_agreement_key, 600)
 
