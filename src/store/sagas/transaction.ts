@@ -8,7 +8,7 @@ import { actions as UIActions } from '../slices/ui'
 import * as TransactionApi from '../../api/transaction'
 import { willGetUserProfile } from '../sagas/profile'
 import { willSendCommandChat } from '../sagas/chat'
-import { TransactionFee, AlgorandFee } from '../slices/transaction'
+import { TransactionFee, AlgorandFee, AlgorandMinBalance } from '../slices/transaction'
 import { configuration } from '../../config'
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
@@ -44,7 +44,6 @@ function* willGetAlgorandAccountInfo(action: any) {
   try {
     const result = yield call(TransactionApi.algorandGetAccountInfo, action);
     console.log("result willGetAlgorandAccountInfo: ", result)
-    // yield put(TransactionActions.didGetParams(result))
     return result
   } catch (error) {
     console.log("error in willGetAlgorandAccountInfo ", error)
@@ -536,6 +535,8 @@ export function* willCheckAccountTransaction(action: any) {
     else {
       const addressInfo = yield call(willGetAlgorandAccountInfo, resultMnemonicToSecretKey.addr)
       console.log("willCheckAccountTransaction addressInfo: ", addressInfo)
+      const accountMinBalance = addressInfo.assets.length * AlgorandMinBalance + addressInfo.createdAssets.length * AlgorandMinBalance + AlgorandMinBalance
+      console.log("in willCheckAccountTransaction accountMinBalance: ", accountMinBalance)
 
       if (addressInfo.amount == 0) {
         return {
@@ -543,10 +544,10 @@ export function* willCheckAccountTransaction(action: any) {
           error: "Your account has not the necessary balance to complete the transaction."
         }
       }
-      else if ((addressInfo.amount - action.payload.toPay) < 100000) {
+      else if ((addressInfo.amount - action.payload.toPay) < accountMinBalance) {
         return {
           check: false,
-          error: "After the transaction your account would result in a balance lower than the minimum balance of 0.1 Algo allowed by Algorand."
+          error: `After the transaction your account would result in a balance lower than the minimum balance of ${accountMinBalance / 1000000} Algo allowed by Algorand.`
         }
       }
       else {

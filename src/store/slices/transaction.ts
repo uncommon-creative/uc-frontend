@@ -96,5 +96,6 @@ export const selectors = {
 }
 
 export const AlgorandFee = 1000;
+export const AlgorandMinBalance = 100000;
 // export const TransactionFee = 1000;
 export const TransactionFee = 1000000;
