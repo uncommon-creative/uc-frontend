@@ -7,8 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { useTable, useFlexLayout } from 'react-table';
 import { Link, useHistory } from "react-router-dom";
 
-import { ActivityButton } from './common/ActivityButton'
-import { SowAttachments } from './SowAttachments'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as SowSelectors } from '../store/slices/sow'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'

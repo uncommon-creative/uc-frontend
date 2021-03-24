@@ -28,7 +28,7 @@ export const SowAttachments = ({ currentSow }: any) => {
   return (
     <>
       <FormGroup>
-        <Label for="attachments">Attachments</Label>
+        {/* <Label for="attachments">Attachments</Label> */}
         <Input data-cy="inputAttachment" type="file" name="attachments" id="attachments"
           onChange={(event: any) => {
             console.log("event.target.files: ", event.target.files)
