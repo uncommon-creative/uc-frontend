@@ -98,7 +98,7 @@ describe('Attachment', () => {
     cy.wait(1000)
     cy.get('[data-cy=attachmentsSow]')
       .get('[data-cy=attachment]')
-      .contains('CypressSow.txt')
+      .contains('specs_document')
 
     cy.get('[data-cy=inputSowSubmit]')
       .click()
@@ -138,7 +138,7 @@ describe('Attachment', () => {
       // seller test sow attachment
       cy.get('[data-cy=attachmentsSow]')
         .get('[data-cy=attachment]')
-        .contains('CypressSow.txt')
+        .contains('specs_document')
       // seller attachment upload
       cy.get('[data-cy=inputAttachment]')
         .attachFile('CypressSeller.txt');
@@ -158,7 +158,7 @@ describe('Attachment', () => {
       // buyer test sow attachment
       cy.get('[data-cy=attachmentsSow]')
         .get('[data-cy=attachment]')
-        .contains('CypressSow.txt')
+        .contains('specs_document')
       // buyer attachment upload
       cy.get('[data-cy=inputAttachment]')
         .attachFile('CypressBuyer.txt');
