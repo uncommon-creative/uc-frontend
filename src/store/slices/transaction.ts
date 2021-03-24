@@ -95,5 +95,6 @@ export const selectors = {
   getError: (state: any) => state.transaction.error,
 }
 
+export const AlgorandFee = 1000;
 // export const TransactionFee = 1000;
 export const TransactionFee = 1000000;

@@ -8,7 +8,7 @@ import { actions as UIActions } from '../slices/ui'
 import * as TransactionApi from '../../api/transaction'
 import { willGetUserProfile } from '../sagas/profile'
 import { willSendCommandChat } from '../sagas/chat'
-import { TransactionFee } from '../slices/transaction'
+import { TransactionFee, AlgorandFee } from '../slices/transaction'
 import { configuration } from '../../config'
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
@@ -164,7 +164,7 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
   yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
 
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: action.payload })
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: action.payload.toPay } })
     console.log("willCompleteTransactionAcceptAndPayMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
@@ -249,7 +249,7 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
   };
 
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: action.payload })
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: 0 } })
     console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
@@ -333,7 +333,7 @@ function* willCompleteTransactionAcceptMilestoneMnemonic(action: any) {
   };
 
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: action.payload })
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: 0 } })
     console.log("willCompleteTransactionAcceptMilestoneMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
@@ -421,7 +421,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
   const clawback = users[action.payload.currentSow.seller].public_key;
 
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: action.payload })
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: AlgorandFee } })
     console.log("willCompleteTransactionSubmitMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
@@ -504,9 +504,9 @@ function* willCompleteTransactionSubmitAlgoSigner(action: any) {
     )
     console.log("in willCompleteTransactionSubmitAlgoSigner resultSignedTransaction: ", resultSignedTransaction)
 
-    // const result = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction.toString())
+    const result = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction.toString())
 
-    // yield put(TransactionActions.didCompleteTransactionSubmit(result))
+    yield put(TransactionActions.didCompleteTransactionSubmit(result))
   } catch (error) {
     console.log("error in willCompleteTransactionSubmitAlgoSigner ", error)
   }
@@ -526,6 +526,7 @@ export function* willCheckAccountTransaction(action: any) {
     const resultMnemonicToSecretKey = yield call(TransactionApi.mnemonicToSecretKey, action.payload.mnemonicSecretKey)
     console.log("willCheckAccountTransaction resultMnemonicToSecretKey: ", resultMnemonicToSecretKey)
 
+
     if (resultMnemonicToSecretKey.addr != userAttributes.public_key) {
       return {
         check: false,
@@ -533,9 +534,26 @@ export function* willCheckAccountTransaction(action: any) {
       }
     }
     else {
-      return {
-        check: true,
-        error: null
+      const addressInfo = yield call(willGetAlgorandAccountInfo, resultMnemonicToSecretKey.addr)
+      console.log("willCheckAccountTransaction addressInfo: ", addressInfo)
+
+      if (addressInfo.amount == 0) {
+        return {
+          check: false,
+          error: "Your account has not the necessary balance to complete the transaction."
+        }
+      }
+      else if ((addressInfo.amount - action.payload.toPay) < 100000) {
+        return {
+          check: false,
+          error: "After the transaction your account would result in a balance lower than the minimum balance of 0.1 Algo allowed by Algorand."
+        }
+      }
+      else {
+        return {
+          check: true,
+          error: null
+        }
       }
     }
   } catch (error) {
