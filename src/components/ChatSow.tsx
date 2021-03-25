@@ -1,7 +1,8 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  Row, Col, Card, Label
+  Row, Col, Card, Label,
+  CardTitle, CardSubtitle, CardText
 } from 'reactstrap';
 import { Formik } from 'formik';
 import 'react-chat-elements/dist/main.css';
@@ -15,7 +16,7 @@ import { SowAttachments } from '../components/SowAttachments'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { selectors as AuthSelectors } from '../store/slices/auth'
-import { actions as SowActions } from "../store/slices/sow";
+import { actions as SowActions, SowStatus, SowCommands } from "../store/slices/sow";
 
 function updateScroll() {
   var element: any = document.getElementById("chatMessages");
@@ -64,18 +65,72 @@ export const ChatSow = ({ currentSow }: any) => {
                     key={index}
                     data-cy='messageChat'
                     className='chatMessage'
-                    title={users[msg.from].given_name + ' ' + users[msg.from].family_name}
+                    title={msg.from == "SYSADMIN" ? msg.from : users[msg.from].given_name + ' ' + users[msg.from].family_name}
                     position={user.username == msg.from ? 'right' : 'left'}
                     type={(msg.type == 'TEXT' || msg.type == 'COMMAND') ? 'text' : msg.type == 'ATTACHMENT' && 'file'}
-                    text={msg.textMessage ? msg.textMessage.message
-                      : msg.commandMessage ?
-                        msg.commandMessage.data ?
-                          msg.commandMessage.command + ' (#' + JSON.parse(msg.commandMessage.data).reviews_left + '): \n' + JSON.parse(msg.commandMessage.data).message
-                          : msg.commandMessage.command
-                        : msg.attachmentMessage.key.split('/').pop().length > 20 ?
-                          msg.attachmentMessage.key.split('/').pop().substring(0, 16) + '... ' + msg.attachmentMessage.key.split('/').pop().substring(msg.attachmentMessage.key.split('/').pop().length - 4, msg.attachmentMessage.key.split('/').pop().length)
-                          : msg.attachmentMessage.key.split('/').pop()
+                    text={
+                      <>
+                        {msg.textMessage ?
+                          <CardText>
+                            {msg.textMessage.message}
+                          </CardText>
+                          : msg.commandMessage ?
+                            <>
+                              <CardTitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-primary font-weight-bold" : "text-primary font-weight-bold"}>
+                                {msg.commandMessage.command}
+                              </CardTitle>
+                              {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).tx &&
+                                <CardSubtitle className="text-center text-muted text-break">
+                                  {'transaction: ' + JSON.parse(msg.commandMessage.data).tx}
+                                </CardSubtitle>
+                              }
+                              {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).reviews_left &&
+                                <CardSubtitle className="text-center text-muted text-break">
+                                  {'#' + JSON.parse(msg.commandMessage.data).reviews_left + '\n' + JSON.parse(msg.commandMessage.data).message}
+                                </CardSubtitle>
+                              }
+                              <CardText>
+                                {t(`chat.SowCommands.${msg.commandMessage.command}_info`)}
+                              </CardText>
+                            </>
+
+
+
+                            //     msg.commandMessage.command == SowCommands.REQUEST_REVIEW ?
+                            //       msg.commandMessage.command + ' (#' + JSON.parse(msg.commandMessage.data).reviews_left + '): \n' + JSON.parse(msg.commandMessage.data).message
+                            //       : msg.commandMessage.command == SowCommands.SYSTEM_SIGN ?
+                            //         <>
+                            //   <CardTitle className="text-center text-primary">
+                            //     {msg.commandMessage.command}
+                            //   </CardTitle>
+                            //   <CardSubtitle className="text-center text-muted text-break">
+                            //     {'transaction: ' + JSON.parse(msg.commandMessage.data).tx}
+                            //   </CardSubtitle>
+                            //   <CardText>
+                            //     {t(`chat.SowCommands.${SowCommands.SYSTEM_SIGN}_info`)}
+                            //   </CardText>
+                            // </>
+                            //         : msg.commandMessage.command
+
+
+
+                            : msg.attachmentMessage.key.split('/').pop().length > 20 ?
+                              msg.attachmentMessage.key.split('/').pop().substring(0, 16) + '... ' + msg.attachmentMessage.key.split('/').pop().substring(msg.attachmentMessage.key.split('/').pop().length - 4, msg.attachmentMessage.key.split('/').pop().length)
+                              : msg.attachmentMessage.key.split('/').pop()
+
+
+                          // msg.textMessage ? msg.textMessage.message
+                          //   : msg.commandMessage ?
+                          //     msg.commandMessage.data ?
+                          //       msg.commandMessage.command + ' (#' + JSON.parse(msg.commandMessage.data).reviews_left + '): \n' + JSON.parse(msg.commandMessage.data).message
+                          //       : msg.commandMessage.command
+                          //     : msg.attachmentMessage.key.split('/').pop().length > 20 ?
+                          //       msg.attachmentMessage.key.split('/').pop().substring(0, 16) + '... ' + msg.attachmentMessage.key.split('/').pop().substring(msg.attachmentMessage.key.split('/').pop().length - 4, msg.attachmentMessage.key.split('/').pop().length)
+                          //       : msg.attachmentMessage.key.split('/').pop()
+                        }
+                      </>
                     }
+                    notch={msg.commandMessage && msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? false : true}
                     date={new Date(msg.createdAt)}
                     data={msg.type == 'ATTACHMENT' ?
                       {

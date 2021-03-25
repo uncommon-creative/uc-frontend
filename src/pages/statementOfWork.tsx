@@ -220,7 +220,7 @@ export const StatementOfWorkPage = () => {
                       </Col>
                     </Row>
                   }
-                  {(currentSow.status != SowStatus.REJECTED && currentSow.status != SowStatus.EXPIRED && currentSow.status != SowStatus.MILESTONE_ACCEPTED) &&
+                  {(currentSow.status != SowStatus.REJECTED && currentSow.status != SowStatus.EXPIRED && currentSow.status != SowStatus.MILESTONE_ACCEPTED && currentSow.status != SowStatus.SYSTEM_SIGNED) &&
                     <Row>
                       <Col className="col-12">
                         <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Special commands</CardSubtitle>
@@ -296,6 +296,11 @@ export const StatementOfWorkPage = () => {
                                 <ActivityButton data-cy={SowCommands.ACCEPT_MILESTONE} block color="primary" name={SowCommands.ACCEPT_MILESTONE}
                                   onClick={toggleModalAcceptMilestone}
                                 >Accept milestone</ActivityButton>
+                              }
+                              {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
+                                <CardText className="text-muted text-center">
+                                  {t('chat.buyerMilestoneClaimedInfo')}
+                                </CardText>
                               }
                               {currentSow.status == SowStatus.REVIEW_REQUIRED &&
                                 <CardText className="text-muted text-center">
