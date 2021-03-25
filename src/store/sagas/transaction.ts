@@ -234,6 +234,17 @@ function* willCompleteTransactionAcceptAndPayAlgoSigner(action: any) {
 
     const resultSentTransaction = yield call(TransactionApi.sendTransaction, action.payload.sow, splittedResultAlgoSign)
     console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultSentTransaction: ", resultSentTransaction)
+
+    if (resultSentTransaction === "sendTxFailed") {
+      console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction fail: ", resultSentTransaction)
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSentTransaction))
+      yield put(NotificationActions.willShowNotification({ message: resultSentTransaction, type: "danger" }));
+    }
+    else {
+      console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction success: ", resultSentTransaction)
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPay(resultSentTransaction))
+    }
+    yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptAndPayAlgoSigner ", error)
   }
