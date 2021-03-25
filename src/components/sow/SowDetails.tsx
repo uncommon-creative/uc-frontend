@@ -7,9 +7,6 @@ import {
   FormGroup, Label, Input, Jumbotron, CardSubtitle, CardText
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQrcode, faKey, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
-import qrcode from 'qrcode-generator';
 
 import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'

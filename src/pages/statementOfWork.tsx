@@ -20,7 +20,7 @@ import { RefreshButton } from '../components/common/RefreshButton'
 import { FileButton } from '../components/common/FileButton';
 import { selectors as UISelectors } from '../store/slices/ui'
 import { SowDetails } from '../components/sow/SowDetails'
-import { AcceptSow } from '../components/transaction/AcceptSow'
+import { AcceptAndPay } from '../components/transaction/AcceptAndPay'
 import { ClaimMilestoneMet } from '../components/transaction/ClaimMilestoneMet'
 import { AcceptMilestone } from '../components/transaction/AcceptMilestone'
 import { Reject } from '../components/transaction/Reject'
@@ -230,6 +230,11 @@ export const StatementOfWorkPage = () => {
                               {t('chat.emptyComandsWithoutDate', { given_name: users[currentSow.arbitrator].given_name, family_name: users[currentSow.arbitrator].family_name })}
                             </CardText>
                           }
+                          {currentSow.status == SowStatus.PAYMENT_SENT &&
+                            <CardText className="text-muted text-center">
+                              {"Awaiting payment to complete by 7 days starting from the acceptance date by the buyer."}
+                            </CardText>
+                          }
                           {currentSow.seller == user.username &&
                             <>
                               {currentSow.status == SowStatus.SUBMITTED &&
@@ -345,7 +350,7 @@ export const StatementOfWorkPage = () => {
           </Card>
 
           <SowDetails modal={modalOpenSowDetails} toggle={toggleModalSowDetails} />
-          <AcceptSow modal={modalOpenAcceptSow} toggle={toggleModalAcceptSow} />
+          <AcceptAndPay modal={modalOpenAcceptSow} toggle={toggleModalAcceptSow} />
           <ClaimMilestoneMet modal={modalOpenClaimMilestoneMet} toggle={toggleModalClaimMilestoneMet} />
           <AcceptMilestone modal={modalOpenAcceptMilestone} toggle={toggleModalAcceptMilestone} />
           <Reject modal={modalOpenReject} toggle={toggleModalReject} />

@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as ChatSelectors } from '../store/slices/chat'
+import { TableSows } from '../components/TableSows';
 import { ActivityButton } from '../components/common/ActivityButton';
 import { RefreshButton } from '../components/common/RefreshButton'
 import { selectors as UISelectors } from '../store/slices/ui'
@@ -75,7 +76,7 @@ function TableData({ tabId, data }: any) {
                   }</td>}
                   <td>{element.deadline ? new Date(element.deadline).toLocaleDateString() : '-'}</td>
                   <td>{element.price ? element.price + ' ' + element.currency : '-'}</td>
-                  <td>{element.createdAt ? new Date(element.createdAt).toLocaleString() : '-'}</td>
+                  <td>{element.createdAt ? new Date(element.createdAt).toLocaleDateString() : '-'}</td>
                   <td data-cy='submittedSowStatus'>{element.status}</td>
                 </tr>
               )
@@ -181,7 +182,7 @@ export const HomePage = () => {
                     onClick={() => dispatch(SowActions.willCreateStatementOfWork({ history: history }))}
                   >{t('sow.newStatementOfWork')}</ActivityButton>
                 }
-                <RefreshButton data-cy='getSowsList' type="submit" name="getSowsList" color="primary" className="ml-sm-2"
+                <RefreshButton data-cy='willGetSowsList' type="submit" name="willGetSowsList" color="primary" className="ml-sm-2"
                   onClick={() => {
                     console.log('in refreshSowsList')
                     dispatch(SowActions.willGetSowsList())
@@ -191,15 +192,19 @@ export const HomePage = () => {
             </Row>
             <TabContent activeTab={activeTab}>
               <TabPane tabId="1">
-                <TableData tabId="1" data={sowsAsSeller} />
+                {/* <TableData tabId="1" data={sowsAsSeller} /> */}
+                <TableSows tabId="1" data={sowsAsSeller} />
               </TabPane>
               <TabPane tabId="2">
-                <TableData tabId="2" data={sowsAsBuyer} />
+                {/* <TableData tabId="2" data={sowsAsBuyer} /> */}
+                <TableSows tabId="2" data={sowsAsBuyer} />
               </TabPane>
               <TabPane tabId="3">
-                <TableData tabId="3" data={sowsAsArbitrator} />
+                {/* <TableData tabId="3" data={sowsAsArbitrator} /> */}
+                <TableSows tabId="3" data={sowsAsArbitrator} />
               </TabPane>
             </TabContent>
+
 
           </Card>
         </Container>

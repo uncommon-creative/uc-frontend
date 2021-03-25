@@ -7,10 +7,12 @@ export const currentSlice = createSlice({
     attachments: [],
     newAttachments: [],
     currentSow: {} as any,
-    sowsAsSeller: [],
-    sowsAsBuyer: [],
-    sowsAsArbitrator: [],
-    html: ''
+    sowsAsSeller: [] as any,
+    sowsAsBuyer: [] as any,
+    sowsAsArbitrator: [] as any,
+    html: '',
+    // pdfHash: '',
+    worksAgreementPdf: {} as any
   },
   reducers: {
     willConfirmArbitrators: (state, action: PayloadAction<any>) => void (state.currentArbitrators = action.payload.arbitrators),
@@ -47,6 +49,9 @@ export const currentSlice = createSlice({
 
     willBuildHtml: (state, action: PayloadAction<any>) => state,
     didBuildHtml: (state, action: PayloadAction<any>) => void (state.html = action.payload),
+    willBuildPdf: (state, action: PayloadAction<any>) => state,
+    didBuildPdf: (state, action: PayloadAction<any>) => void (state.worksAgreementPdf = action.payload),
+
   }
 })
 
@@ -65,7 +70,8 @@ export const selectors = {
   getListSowsArbitrator: (state: any) => state.statementOfWork.sowsAsArbitrator,
   getAttachments: (state: any) => state.statementOfWork.attachments,
   getNewAttachments: (state: any) => state.statementOfWork.newAttachments,
-  getHtml: (state: any) => state.statementOfWork.html
+  getHtml: (state: any) => state.statementOfWork.html,
+  getWorksAgreementPdf: (state: any) => state.statementOfWork.worksAgreementPdf
 }
 
 export enum SowStatus {
@@ -78,6 +84,8 @@ export enum SowStatus {
   REVIEW_REQUIRED = 'REVIEW_REQUIRED',
   DISPUTED = 'DISPUTED',
   EXPIRED = 'EXPIRED',
+  PAYMENT_SENT = 'PAYMENT_SENT',
+  SYSTEM_SIGNED = 'SYSTEM_SIGNED'
 }
 
 export enum SowCommands {
@@ -86,4 +94,6 @@ export enum SowCommands {
   CLAIM_MILESTONE_MET = 'CLAIM_MILESTONE_MET',
   REJECT = 'REJECT',
   REQUEST_REVIEW = 'REQUEST_REVIEW',
+  FINALIZE_MSIG_TRANSACTION = 'FINALIZE_MSIG_TRANSACTION',
+  SYSTEM_SIGN = 'SYSTEM_SIGN'
 }

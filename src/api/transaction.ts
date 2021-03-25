@@ -34,6 +34,18 @@ export const algorandGetTxParams = async () => {
   }
 }
 
+export const algorandGetTxParamsWithDelay = async () => {
+  const query = loader('../graphql/algorandGetTxParamsWithDelay.gql');
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(query));
+    // console.log('algorandGetTxParamsWithDelay with result: ', result);
+    return result.data.algorandGetTxParamsWithDelay
+  } catch (error) {
+    throw error
+  }
+}
+
 export function createMultiSigAddress(payload: { seller: string, buyer: string, arbitrator: string, backup: string }): string {
   console.log("createMultiSigAddress payload: ", payload)
   const mparams = {
@@ -147,7 +159,7 @@ export function appendSignMultisigTransaction(signedMsig: any, mnemonicSecretKey
   try {
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
-    const buffer = Uint8Array.from(signedMsig.split(',') as any);
+    const buffer = Uint8Array.from(signedMsig.blob.split(',') as any);
 
     const directsig = algosdk.appendSignMultisigTransaction(buffer, msigparams, secret_key.sk);
     // console.log("in appendSignMultisigTransaction directsig: ", directsig)
@@ -158,15 +170,15 @@ export function appendSignMultisigTransaction(signedMsig: any, mnemonicSecretKey
   }
 }
 
-export const confirmTxAsBuyer = async (sow: any, tx: any) => {
-  const mutation = loader('../graphql/confirmTxAsBuyer.gql')
+export const algorandPutTransaction = async (sow: any, tx: any) => {
+  const mutation = loader('../graphql/algorandPutTransaction.gql')
 
   try {
-    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, tx: tx.blob.toString() }))
-    // console.log("confirmTxAsBuyer result: ", result)
-    return result.data.confirmTxAsBuyer
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, blob: tx.blob.toString() }))
+    console.log("algorandPutTransaction result: ", result)
+    return result.data.algorandPutTransaction
   } catch (error) {
-    console.log("confirmTxAsBuyer API error: ", error)
+    console.log("algorandPutTransaction API error: ", error)
     throw error
   }
 }
@@ -276,6 +288,137 @@ export const requestReview = async (sow: any, notes: any) => {
     return result.data.requestReview
   } catch (error) {
     console.log("requestReview API error: ", error)
+    throw error
+  }
+}
+
+export const algorandGetTx = async (sow: any) => {
+  const query = loader('../graphql/algorandGetTx.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(query, { sow: sow }))
+    console.log("algorandGetTx result: ", result)
+    return result.data.algorandGetTx
+  } catch (error) {
+    console.log("algorandGetTx API error: ", error)
+    throw error
+  }
+}
+
+export const algorandFinalizeTransaction = async (hash_round: any, round_sow: any, tx: any) => {
+  const mutation = loader('../graphql/algorandFinalizeTransaction.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { hash_round: hash_round, round_sow: round_sow, blob: tx.blob.toString() }))
+    console.log("algorandFinalizeTransaction result: ", result)
+    return result.data.algorandFinalizeTransaction
+  } catch (error) {
+    console.log("algorandFinalizeTransaction API error: ", error)
+    throw error
+  }
+}
+
+export function signTxn(mnemonicSecretKey: any, params: any, addr: any, note: any, totalIssuance: any, decimals: any, defaultFrozen: any, manager: any, reserve: any, freeze: any, clawback: any, unitName: any, assetName: any, assetURL: any, assetMetadataHash: any) {
+  try {
+    let creationTxn = algosdk.makeAssetCreateTxnWithSuggestedParams(
+      addr,
+      note,
+      totalIssuance,
+      decimals,
+      defaultFrozen,
+      manager,
+      reserve,
+      freeze,
+      clawback,
+      unitName,
+      assetName,
+      assetURL,
+      assetMetadataHash,
+      params
+    );
+    // console.log("signTxn txn: ", creationTxn)
+
+    const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
+    const rawSignedCreationTxn = creationTxn.signTxn(secret_key.sk);
+    // console.log("signTxn rawSignedCreationTxn: ", rawSignedCreationTxn)
+
+    return rawSignedCreationTxn
+  } catch (error) {
+    console.log("signTxn API error: ", error)
+    throw error
+  }
+}
+
+export const algorandSendTokenCreationTx = async (sow: any, tx: any) => {
+  const mutation = loader('../graphql/algorandSendTokenCreationTx.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, tx: tx }))
+    console.log("algorandSendTokenCreationTx result: ", result)
+    return result.data.algorandSendTokenCreationTx
+  } catch (error) {
+    console.log("algorandSendTokenCreationTx API error: ", error)
+    throw error
+  }
+}
+
+export const algoSignSubmit = async (params: any, addr: any, note: any, totalIssuance: any, decimals: any, defaultFrozen: any, manager: any, reserve: any, freeze: any, clawback: any, unitName: any, assetName: any, assetURL: any, assetMetadataHash: any) => {
+  try {
+    let paramsAlgoSigner = await AlgoSigner.algod({
+      ledger: configuration[stage].algorand_net,
+      path: '/v2/transactions/params',
+    });
+
+    let creationTxn = algosdk.makeAssetCreateTxnWithSuggestedParams(
+      addr,
+      note,
+      totalIssuance,
+      decimals,
+      defaultFrozen,
+      manager,
+      reserve,
+      freeze,
+      clawback,
+      unitName,
+      assetName,
+      assetURL,
+      assetMetadataHash,
+      params
+    );
+    console.log("algoSignSubmit creationTxn: ", creationTxn)
+
+    const algoTxn = {
+      from: addr,
+      assetName: creationTxn.assetName,
+      assetUnitName: creationTxn.assetUnitName,
+      assetTotal: creationTxn.assetTotal,
+      assetDecimals: creationTxn.assetDecimals,
+      note: creationTxn.note,
+      type: creationTxn.type,
+      fee: creationTxn.fee,
+      firstRound: creationTxn.firstRound,
+      lastRound: creationTxn.lastRound,
+      genesisID: creationTxn.genesisID,
+      genesisHash: creationTxn.genesisHash
+    }
+
+    let result = await AlgoSigner.sign(algoTxn)
+    console.log("algoSign result: ", result);
+    return result;
+  } catch (error) {
+    console.log("algoSign error: ", error)
+    throw error
+  }
+}
+
+export function mnemonicToSecretKey(mnemonicSecretKey: any ) {
+  try {
+    const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
+    // console.log("mnemonicToSecretKey secret_key: ", secret_key)
+
+    return secret_key
+  } catch (error) {
+    console.log("mnemonicToSecretKey API error: ", error)
     throw error
   }
 }

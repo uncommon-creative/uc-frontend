@@ -46,7 +46,7 @@ export const Header = ({ className }: any) => {
               <DropdownToggle data-cy='headerProfileToggler' nav caret>{userAttributes.given_name} {userAttributes.family_name}</DropdownToggle>
               <DropdownMenu right>
                 <DropdownItem header>Email: {userAttributes.email}</DropdownItem>
-                <DropdownItem header>AL: {userAttributes.public_key}</DropdownItem>
+                <DropdownItem header>ALGO: {userAttributes.public_key}</DropdownItem>
                 <DropdownItem header>KUDOS: 12</DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem data-cy='profile' onClick={() => {

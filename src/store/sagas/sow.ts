@@ -7,11 +7,13 @@ import { actions as SowActions, SowStatus, SowCommands } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as ChatActions } from '../slices/chat'
 import { actions as ProfileActions, selectors as ProfileSelectors } from '../slices/profile'
+import { actions as TransactionActions, selectors as TransactionSelectors } from '../slices/transaction'
 import { actions as UIActions } from '../slices/ui'
 import * as ArbitratorApi from '../../api/arbitrator'
 import { willGetUserProfile } from '../sagas/profile'
 import { configuration } from '../../config'
-import { current } from 'immer';
+
+import { willGetParams } from './transaction'
 
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
@@ -121,7 +123,7 @@ function* willSubmitStatementOfWork(action: any) {
   try {
     if (userAttributes.address) {
       const result = yield call(
-        SowApi.submitStatementOfWork,
+        SowApi.draftStatementOfWork, // submitStatementOfWork
         action.payload.sow.sow,
         arbitratorsParsed,
         action.payload.sow.codeOfConduct,
@@ -143,7 +145,12 @@ function* willSubmitStatementOfWork(action: any) {
 
       yield call(willGetUserProfile, { user: result.buyer })
       yield put(SowActions.didSubmitStatementOfWork(result))
-      yield put(push("/home"))
+
+      yield call(willBuildPdf, { payload: { sow: result.sow } })
+      yield call(willGetParams, { payload: { seller: result.seller, buyer: result.buyer } })
+      yield put(TransactionActions.goToTransactionPage(2))
+
+      // yield put(push("/home"))
       yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
     }
     else {
@@ -164,7 +171,7 @@ function* willPrepareUploadAttachment(action: any) {
   let tmpFileList = [] as any
   let tmpAttachment = {} as any
   const key = action.payload.sow.status == SowStatus.DRAFT ?
-    action.payload.sow.sow + '/' + action.payload.attachment.name
+    action.payload.sow.sow + '/' + configuration[stage].specs_document_key
     : action.payload.sow.sow + '/' + action.payload.username + '/' + action.payload.attachment.name
   const owner = action.payload.sow.status == SowStatus.DRAFT ?
     action.payload.sow.sow
@@ -198,7 +205,7 @@ function* willPrepareUploadAttachment(action: any) {
     console.log("in willPrepareUploadAttachment with result: ", result)
 
     yield call(SowApi.uploadFileToS3, result, action.payload.attachment)
-    yield put(ChatActions.willSendAttachmentChat({ values: { key: key, size: action.payload.attachment.size, type: action.payload.attachment.type }, sow: action.payload.sow }))
+    action.payload.sow.status != SowStatus.DRAFT && (yield put(ChatActions.willSendAttachmentChat({ values: { key: key, size: action.payload.attachment.size, type: action.payload.attachment.type }, sow: action.payload.sow })))
     yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow.sow } });
   } catch (error) {
     console.log("error in willPrepareUploadAttachment ", error)
@@ -228,7 +235,7 @@ function* willDeleteAttachment(action: any) {
 
 function* willGetSowsList() {
   console.log("in willGetSowsList")
-  yield put(UIActions.startActivityRunning("getSowsList"));
+  yield put(UIActions.startActivityRunning("willGetSowsList"));
   try {
     yield call(willGetSowsListSeller)
     yield call(willGetSowsListBuyer)
@@ -236,7 +243,7 @@ function* willGetSowsList() {
   } catch (error) {
     console.log("error in willGetSowsList ", error)
   }
-  yield put(UIActions.stopActivityRunning("getSowsList"));
+  yield put(UIActions.stopActivityRunning("willGetSowsList"));
 }
 
 function* willGetSowsListSeller() {
@@ -347,7 +354,7 @@ function* willGetSowAttachmentsList(action: any) {
 
   try {
     const result = yield call(SowApi.getSowAttachmentsList, action.payload.sow);
-    console.log("result willGetSowAttachmentsList: ", result)
+    console.log("willGetSowAttachmentsList result: ", result)
     const attachmentsSplitted = [] as any
     for (const attachment of result) {
       let tmp = attachment.key.split('/')
@@ -360,11 +367,12 @@ function* willGetSowAttachmentsList(action: any) {
           'key': attachment.key,
           'downloadUrl': downloadUrl,
           'size': attachment.size,
-          'type': attachment.type
+          'type': attachment.type,
+          'etag': attachment.etag
         }
       )
     }
-    console.log("attachmentsSplitted: ", attachmentsSplitted)
+    console.log("willGetSowAttachmentsList attachmentsSplitted: ", attachmentsSplitted)
     yield put(SowActions.didGetSowAttachmentsList(attachmentsSplitted))
 
   } catch (error) {
@@ -448,4 +456,27 @@ function* willBuildHtml(action: any) {
     console.log("error in willBuildHtml ", error)
   }
   yield put(UIActions.stopActivityRunning("willBuildHtml"));
+}
+
+function* willBuildPdf(action: any) {
+  console.log("in willBuildPdf with: ", action)
+  yield put(UIActions.startActivityRunning("willBuildPdf"));
+
+  try {
+    const resultPdfHash = yield call(SowApi.buildPdf, action.payload.sow);
+    // console.log("result resultPdf: ", resultPdfHash)
+
+    const resultDownloadUrl = yield call(SowApi.getDownloadUrl, action.payload.sow, action.payload.sow + '/' + configuration[stage].works_agreement_key, 600)
+
+    const worksAgreementPdf = {
+      pdfHash: resultPdfHash,
+      downloadUrl: resultDownloadUrl
+    }
+
+    yield put(SowActions.didBuildPdf(worksAgreementPdf))
+
+  } catch (error) {
+    console.log("error in willBuildPdf ", error)
+  }
+  yield put(UIActions.stopActivityRunning("willBuildPdf"));
 }

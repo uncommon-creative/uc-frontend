@@ -94,8 +94,21 @@ describe('Chat', () => {
 
     cy.get('[data-cy=inputSowSubmit]')
       .click()
+    cy.wait(30000)
+    cy.get('[data-cy=mnemonicSubmit]')
+      .click()
+    cy.get('[data-cy=mnemonicSecretKey]')
+      .type(Cypress.env('userSellerMnemonic'), { timeout: 15000 })
+      .should('have.value', Cypress.env('userSellerMnemonic'))
 
-    cy.wait(2000)
+    cy.get('[data-cy=willCompleteTransactionSubmitMnemonic]')
+      .click()
+    cy.wait(30000)
+    cy.get('[data-cy=sowSubmitSuccess]')
+      .contains("Statement of Work submitted")
+    cy.get('[data-cy=closeSubmit]')
+      .click()
+    cy.wait(5000)
 
     assert.exists(
       cy.get('[data-cy=createSow]')
@@ -112,6 +125,7 @@ describe('Chat', () => {
 
       cy.wait(5000)
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
+      cy.wait(3000)
       cy.get('[class="rce-input rce-input-textarea"]')
         .type('test cypress invio messaggio seller')
         .should('have.value', 'test cypress invio messaggio seller')
@@ -125,9 +139,6 @@ describe('Chat', () => {
       cy.wait(5000)
 
       cy.get('[data-cy=customerTab]').click()
-      // cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`).parents('tr').within(() => {
-      //   cy.get('[data-cy=unreadMessagesSowBuyer]').contains(1)
-      // })
 
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
       cy.wait(5000)
@@ -155,9 +166,7 @@ describe('Chat', () => {
       cy.wait(5000)
 
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
-      // cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`).parents('tr').within(() => {
-      //   cy.get('[data-cy=unreadMessagesSowSeller]').contains(2)
-      // })
+      cy.wait(3000)
 
       cy.get('[class="rce-mbox-text"]')
         .contains('test cypress invio messaggio buyer DUE')

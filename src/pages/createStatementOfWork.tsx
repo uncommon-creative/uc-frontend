@@ -16,13 +16,14 @@ import { ActivityButton } from '../components/common/ActivityButton'
 import { TagsInput } from '../components/TagsInput'
 import { ArbitratorsSelect } from '../components/arbitrator/ArbitratorsSelect'
 import { ArbitratorDetailMD } from '../components/arbitrator/ArbitratorDetailMD'
-
 import { SowAttachments } from '../components/SowAttachments'
 import { DescriptionEditor } from '../components/DescriptionEditor'
 import { actions as SowActions, selectors as SowSelectors, SowStatus } from '../store/slices/sow'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
+import { actions as TransactionActions, selectors as TransactionSelectors } from '../store/slices/transaction'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as UISelectors } from '../store/slices/ui'
+import { SubmitSow } from '../components/transaction/SubmitSow'
 
 var DatePicker = require("reactstrap-date-picker");
 
@@ -30,12 +31,14 @@ function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
   return re.test(email);
 }
+
 const StatementOfWorkSchema = Yup.object().shape({
   sow: Yup.string()
     .required('Required'),
   buyer: Yup.string().when('status', {
     is: 'DRAFT',
     then: Yup.string()
+      .test('Should not contain your email address', 'Should not contain your email address', (value, context) => value != context.parent.seller)
       .email()
       .min(2, 'Too Short!')
       .max(50, 'Too Long!')
@@ -75,6 +78,7 @@ const StatementOfWorkSchema = Yup.object().shape({
     .oneOf([true], "The Code of Conduct must be accepted.")
     .required('Required'),
   arbitrators: Yup.array()
+    .test('Should not contain the buyer', 'Should not contain the buyer', (value: any, context) => !(value.some((arb: any) => arb.email == context.parent.buyer)))
     .length(3, 'Three arbitrators required!')
     .required('Required'),
   sowExpiration: Yup.number()
@@ -105,6 +109,9 @@ export const CreateStatementOfWorkPage = () => {
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
   const toggleModal = () => setModalOpen(!modalOpen);
 
+  const [modalOpenSubmitSow, setModalOpenSubmitSow] = React.useState(false);
+  const toggleModalSubmitSow = () => setModalOpenSubmitSow(!modalOpenSubmitSow);
+
   return (
     <>
       {!isLoading &&
@@ -117,9 +124,10 @@ export const CreateStatementOfWorkPage = () => {
                 initialValues={{
                   sow: currentSow.sow ? currentSow.sow : '',
                   status: currentSow.status,
+                  seller: users[currentSow.seller] ? users[currentSow.seller].email : '',
                   buyer:
                     validateEmail(currentSow.buyer) ? currentSow.buyer
-                      : currentSow.buyer != 'not_set' ? currentSow.buyer
+                      : currentSow.buyer != 'not_set' ? users[currentSow.buyer].email
                         : '',
                   buyerName:
                     validateEmail(currentSow.buyer) ? currentSow.buyer
@@ -145,12 +153,14 @@ export const CreateStatementOfWorkPage = () => {
                 onSubmit={values => {
                   console.log('in onsubmit with: ', values)
                   dispatch(SowActions.willSubmitStatementOfWork({ sow: values/* , history: history */ }));
+                  dispatch(TransactionActions.goToTransactionPage(0))
+                  toggleModalSubmitSow()
                 }}
               >
                 {({ errors, touched, setFieldValue, values }) => {
                   return (
                     <Form>
-                      {values && console.log("values: ", values)}
+                      {/* {values && console.log("values: ", values)} */}
                       <FormGroup>
                         <Label for="sow">Sow</Label>
                         <Input data-cy="inputSowID" disabled invalid={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
@@ -281,6 +291,12 @@ export const CreateStatementOfWorkPage = () => {
                         </Row>
                         <Row>
                           <Col>
+                            <Label for="attachments">
+                              Specification Document
+                              <CardSubtitle className="fs-5 text-muted" style={{ fontSize: 12 }}>
+                                Only one file allowed, create a compressed archive with multiple files if needed.
+                              </CardSubtitle>
+                            </Label>
                             <SowAttachments currentSow={currentSow} />
                           </Col>
                         </Row>
@@ -344,41 +360,41 @@ export const CreateStatementOfWorkPage = () => {
                       <Row>
                         <Col>
                           {/* <FormGroup> */}
-                            <Label for="licenseTerms">{t('sow.input.sowLicenseTermsLabel')} *</Label>
-                            <FormGroup check>
-                              <Input data-cy="licenseTerms-option1" type="radio" name="licenseTerms" id="licenseTerms-option1" checked={values.licenseTermsOption == 'option1'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
-                                onClick={(event: any) => {
-                                  console.log("event1: ", event.target.checked)
-                                  setFieldValue("licenseTermsOption", 'option1')
-                                  setFieldValue("licenseTermsNotes", t('sow.input.sowLicenseTermsLabelOption1'))
-                                }}
-                              />
-                              <Label check for="licenseTerms-option1">
-                                {t('sow.input.sowLicenseTermsLabelOption1')}
-                              </Label>
-                            </FormGroup>
-                            <FormGroup check>
-                              <Input data-cy="licenseTerms-option2" type="radio" name="licenseTerms" id="licenseTerms-option2" checked={values.licenseTermsOption == 'option2'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
-                                onClick={(event: any) => {
-                                  console.log("event2: ", event.target.checked)
-                                  setFieldValue("licenseTermsOption", 'option2')
-                                  setFieldValue("licenseTermsNotes", '')
-                                }} />
-                              <Label check for="licenseTerms-option2">
-                                {t('sow.input.sowLicenseTermsLabelOption2')}
-                              </Label>
-                              <Input hidden={values.licenseTermsOption != 'option2'} value={values.licenseTermsNotes} type="textarea" name="licenseTermsNotes" id="licenseTermsNotes" placeholder="licenseTermsNotes" invalid={errors.licenseTermsNotes && touched.licenseTermsNotes ? true : false}
-                                onChange={(event: any) => {
-                                  setFieldValue("licenseTermsNotes", event.target.value)
-                                }}
-                              />
-                              {errors.licenseTermsOption && touched.licenseTermsOption ? (
-                                <FormFeedback>{errors.licenseTermsOption}</FormFeedback>
-                              ) : null}
-                              {errors.licenseTermsNotes && touched.licenseTermsNotes ? (
-                                <FormFeedback hidden={values.licenseTermsOption != 'option2'}>{errors.licenseTermsNotes}</FormFeedback>
-                              ) : null}
-                            </FormGroup>
+                          <Label for="licenseTerms">{t('sow.input.sowLicenseTermsLabel')} *</Label>
+                          <FormGroup check>
+                            <Input data-cy="licenseTerms-option1" type="radio" name="licenseTerms" id="licenseTerms-option1" checked={values.licenseTermsOption == 'option1'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
+                              onClick={(event: any) => {
+                                // console.log("event1: ", event.target.checked)
+                                setFieldValue("licenseTermsOption", 'option1')
+                                setFieldValue("licenseTermsNotes", t('sow.input.sowLicenseTermsLabelOption1'))
+                              }}
+                            />
+                            <Label check for="licenseTerms-option1">
+                              {t('sow.input.sowLicenseTermsLabelOption1')}
+                            </Label>
+                          </FormGroup>
+                          <FormGroup check>
+                            <Input data-cy="licenseTerms-option2" type="radio" name="licenseTerms" id="licenseTerms-option2" checked={values.licenseTermsOption == 'option2'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
+                              onClick={(event: any) => {
+                                // console.log("event2: ", event.target.checked)
+                                setFieldValue("licenseTermsOption", 'option2')
+                                setFieldValue("licenseTermsNotes", '')
+                              }} />
+                            <Label check for="licenseTerms-option2">
+                              {t('sow.input.sowLicenseTermsLabelOption2')}
+                            </Label>
+                            <Input hidden={values.licenseTermsOption != 'option2'} value={values.licenseTermsNotes} type="textarea" name="licenseTermsNotes" id="licenseTermsNotes" placeholder="licenseTermsNotes" invalid={errors.licenseTermsNotes && touched.licenseTermsNotes ? true : false}
+                              onChange={(event: any) => {
+                                setFieldValue("licenseTermsNotes", event.target.value)
+                              }}
+                            />
+                            {errors.licenseTermsOption && touched.licenseTermsOption ? (
+                              <FormFeedback>{errors.licenseTermsOption}</FormFeedback>
+                            ) : null}
+                            {errors.licenseTermsNotes && touched.licenseTermsNotes ? (
+                              <FormFeedback hidden={values.licenseTermsOption != 'option2'}>{errors.licenseTermsNotes}</FormFeedback>
+                            ) : null}
+                          </FormGroup>
                           {/* </FormGroup> */}
                         </Col>
                       </Row>
@@ -388,7 +404,7 @@ export const CreateStatementOfWorkPage = () => {
                             <Label for="sowExpiration">{t('sow.input.sowExpirationLabel')} *</Label>
                             <CustomInput data-cy="inputSowExpiration" type="select" name="sowExpiration" id="sowExpiration"
                               onChange={(event) => {
-                                console.log("event.target.value: ", event.target.value)
+                                // console.log("event.target.value: ", event.target.value)
                                 setFieldValue("sowExpiration", parseInt(event.target.value, 10))
                               }}
                             >
@@ -446,6 +462,8 @@ export const CreateStatementOfWorkPage = () => {
               </Formik>
             </CardBody>
           </Card>
+
+          <SubmitSow modal={modalOpenSubmitSow} toggle={toggleModalSubmitSow} />
         </Container>
       }
     </>

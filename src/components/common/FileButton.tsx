@@ -1,16 +1,24 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button, Spinner, FormText, Row, Col } from 'reactstrap';
+import { Button, Spinner, FormText, Row, Col, Tooltip, CardSubtitle } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileWord, faFileVideo, faFilePowerpoint, faFilePdf, faFileImage, faFileCode, faFileAudio, faFileArchive, faFileAlt, faFileCsv, faFile, faFileExcel, } from '@fortawesome/free-solid-svg-icons'
 
+import { configuration } from '../../config'
 import { selectors as UISelectors } from '../../store/slices/ui'
+
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
 export const FileButton = ({ file, disabled, children, ...rest }: any) => {
 
   const isActivityRunning = useSelector(state => UISelectors.activityRunningSelector(state, file.key));
   var fileIcon = {} as any
+
+  const [tooltipOpenMd5HashSpecsDoc, setTooltipOpenMd5HashSpecsDoc] = React.useState(false);
+  const toggleMd5HashSpecsDoc = () => setTooltipOpenMd5HashSpecsDoc(!tooltipOpenMd5HashSpecsDoc);
+  const [tooltipOpenMd5HashWorksAgreement, setTooltipOpenMd5HashWorksAgreement] = React.useState(false);
+  const toggleMd5HashWorksAgreement = () => setTooltipOpenMd5HashWorksAgreement(!tooltipOpenMd5HashWorksAgreement);
 
   switch (file.type) {
     case '.pdf':
@@ -82,27 +90,53 @@ export const FileButton = ({ file, disabled, children, ...rest }: any) => {
             </Row >
           </FormText >
         ) : (
-            <FormText color="muted">
-              <Row>
-                <Col>
-                  <a target="_blank" href={file.downloadUrl}>
+          <FormText color="muted">
+            <Row>
+              <Col>
+                <a target="_blank" href={file.downloadUrl}>
+                  <Row>
+                    <Col className='d-flex justify-content-center'>
+                      <FontAwesomeIcon icon={fileIcon} size='2x' />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col data-cy="attachment" className='d-flex justify-content-center'>
+                      {file.filename.length > 20 ?
+                        file.filename.substring(0, 16) + '... ' + file.filename.substring(file.filename.length - 4, file.filename.length)
+                        : file.filename}
+                    </Col>
+                  </Row>
+                  {file.owner == file.sow &&
                     <Row>
                       <Col className='d-flex justify-content-center'>
-                        <FontAwesomeIcon icon={fileIcon} size='2x' />
+                        {file.filename == configuration[stage].works_agreement_key &&
+                          <>
+                            <span id="FileMd5HashWorksAgreement" style={{ fontSize: 11 }}>
+                              md5 hash: {file.etag.substring(0, 6) + '... '}
+                            </span>
+                            <Tooltip placement="bottom" isOpen={tooltipOpenMd5HashWorksAgreement} target="FileMd5HashWorksAgreement" toggle={toggleMd5HashWorksAgreement}>
+                              {file.etag}
+                            </Tooltip>
+                          </>
+                        }
+                        {file.filename == configuration[stage].specs_document_key &&
+                          <>
+                            <span id="FileMd5HashSpecsDoc" style={{ fontSize: 11 }}>
+                              md5 hash: {file.etag.substring(0, 6) + '... '}
+                            </span>
+                            <Tooltip placement="bottom" isOpen={tooltipOpenMd5HashSpecsDoc} target="FileMd5HashSpecsDoc" toggle={toggleMd5HashSpecsDoc}>
+                              {file.etag}
+                            </Tooltip>
+                          </>
+                        }
                       </Col>
                     </Row>
-                    <Row>
-                      <Col data-cy="attachment" className='d-flex justify-content-center'>
-                        {file.filename.length > 20 ?
-                          file.filename.substring(0, 16) + '... ' + file.filename.substring(file.filename.length - 4, file.filename.length)
-                          : file.filename}
-                      </Col>
-                    </Row>
-                  </a>
-                </Col>
-              </Row>
-            </FormText>
-          )
+                  }
+                </a>
+              </Col>
+            </Row>
+          </FormText>
+        )
       }
     </>
   )

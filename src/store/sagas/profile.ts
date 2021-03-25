@@ -48,9 +48,9 @@ function* willRetrieveProfileData(action: any) {
       yield call(willGenerateAlgoAccount)
       yield put(push("/create-algo-account"))
     }
-    else {
-      console.log('with public_key')
-    }
+    // else {
+    //   console.log('with public_key')
+    // }
 
   } catch (error) {
     console.log('Error retriving profile data', error);

@@ -98,12 +98,25 @@ describe('Attachment', () => {
     cy.wait(1000)
     cy.get('[data-cy=attachmentsSow]')
       .get('[data-cy=attachment]')
-      .contains('CypressSow.txt')
+      .contains('specs_document')
 
     cy.get('[data-cy=inputSowSubmit]')
       .click()
+    cy.wait(30000)
+    cy.get('[data-cy=mnemonicSubmit]')
+      .click()
+    cy.get('[data-cy=mnemonicSecretKey]')
+      .type(Cypress.env('userSellerMnemonic'), { timeout: 15000 })
+      .should('have.value', Cypress.env('userSellerMnemonic'))
 
-    cy.wait(2000)
+    cy.get('[data-cy=willCompleteTransactionSubmitMnemonic]')
+      .click()
+    cy.wait(30000)
+    cy.get('[data-cy=sowSubmitSuccess]')
+      .contains("Statement of Work submitted")
+    cy.get('[data-cy=closeSubmit]')
+      .click()
+    cy.wait(5000)
 
     assert.exists(
       cy.get('[data-cy=createSow]')
@@ -121,10 +134,11 @@ describe('Attachment', () => {
       cy.wait(5000)
       // seller
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
+      cy.wait(3000)
       // seller test sow attachment
       cy.get('[data-cy=attachmentsSow]')
         .get('[data-cy=attachment]')
-        .contains('CypressSow.txt')
+        .contains('specs_document')
       // seller attachment upload
       cy.get('[data-cy=inputAttachment]')
         .attachFile('CypressSeller.txt');
@@ -140,10 +154,11 @@ describe('Attachment', () => {
       cy.wait(2000)
       cy.get('[data-cy=customerTab]').click()
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
+      cy.wait(3000)
       // buyer test sow attachment
       cy.get('[data-cy=attachmentsSow]')
         .get('[data-cy=attachment]')
-        .contains('CypressSow.txt')
+        .contains('specs_document')
       // buyer attachment upload
       cy.get('[data-cy=inputAttachment]')
         .attachFile('CypressBuyer.txt');

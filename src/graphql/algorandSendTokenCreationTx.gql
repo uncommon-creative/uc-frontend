@@ -1,0 +1,12 @@
+mutation algorandSendTokenCreationTx(
+  $sow: ID,
+  $tx: String
+) {
+  algorandSendTokenCreationTx(
+    sow: $sow,
+    tx: $tx
+  ) {
+    assetId
+    error
+  }
+}

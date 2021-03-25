@@ -5,6 +5,8 @@ query algorandGetAccountInfo(
     account: $account
   ) {
     address
+    assets
+    createdAssets
     amount
     error
   }

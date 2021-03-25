@@ -8,7 +8,7 @@ import {
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQrcode, faKey, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
+import { faQrcode, faKey } from '@fortawesome/free-solid-svg-icons'
 import qrcode from 'qrcode-generator';
 
 import { API, graphqlOperation } from 'aws-amplify';
@@ -24,10 +24,9 @@ import { ActivityButton } from '../common/ActivityButton';
 import { Payment } from './Payment'
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
 
-
 declare var AlgoSigner: any;
 
-export const AcceptSow = ({ modal, toggle }: any) => {
+export const AcceptAndPay = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
@@ -109,7 +108,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
   }, [transactionPage])
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl">
+    <Modal isOpen={modal} toggle={toggle} size="xl" data-cy='acceptAndPayModal'>
       {transactionPage == 1 &&
         <>
           <ModalHeader toggle={toggle}>Accept the conditions</ModalHeader>
@@ -152,7 +151,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
                   </Card>
                 </Col>
                 <Col>
-                  <Card data-cy='mnemonicAcceptAndPay' onClick={() => {
+                  <Card data-cy='acceptAndPay' onClick={() => {
                     dispatch(TransactionActions.goToTransactionPage(4))
                   }}>
                     <CardBody className="text-center">
@@ -162,7 +161,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
                   </Card>
                 </Col>
                 <Col>
-                  <Card disabled onClick={() => {
+                  <Card onClick={() => {
                     isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, total: payment.total }))
                       : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
                   }}>
@@ -178,7 +177,7 @@ export const AcceptSow = ({ modal, toggle }: any) => {
           </ModalBody>
           {payment.toPay <= 0 &&
             <ModalFooter>
-              <ActivityButton data-cy='completeAcceptAndPay' disabled={!acceptedConditions} name="completeAcceptAndPay" color="primary" onClick={() => {
+              <ActivityButton data-cy='acceptAndPay' disabled={!acceptedConditions} name="completeAcceptAndPay" color="primary" onClick={() => {
                 dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_AND_PAY }, sow: currentSow }));
                 dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentChosenArbitrator }))
                 dispatch(TransactionActions.goToTransactionPage(6))
@@ -251,18 +250,20 @@ export const AcceptSow = ({ modal, toggle }: any) => {
             <Payment />
 
             <CardSubtitle tag="h6" className="pt-5 text-muted text-center">Select one of your AlgoSigner accounts</CardSubtitle>
-            {algoSigner.accounts.map((element: any, index: any) => {
-              return (
-                <ListGroupItem disabled={element.amount < payment.toPay} className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
-                  onClick={() => {
-                    console.log("select currentFromAlgoSigner: ", element.address)
-                    setCurrentFromAlgoSigner(element.address)
-                  }}
-                >
-                  {element.address + ': ' + t('transaction.payment.algo', { value: element.amount / 1000000 })}
-                </ListGroupItem>
-              )
-            })}
+            {algoSigner.accounts &&
+              algoSigner.accounts.map((element: any, index: any) => {
+                return (
+                  <ListGroupItem disabled={element.amount < payment.toPay} className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
+                    onClick={() => {
+                      console.log("select currentFromAlgoSigner: ", element.address)
+                      setCurrentFromAlgoSigner(element.address)
+                    }}
+                  >
+                    {element.address + ': ' + t('transaction.payment.algo', { value: element.amount / 1000000 })}
+                  </ListGroupItem>
+                )
+              })
+            }
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
