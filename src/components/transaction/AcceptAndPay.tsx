@@ -104,7 +104,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
   }, [modal])
 
   React.useEffect(() => {
-    (transactionPage == 3 || transactionPage == 5) && subscribeOnAmountChecked()
+    (transactionPage == 3/*  || transactionPage == 5 */) && subscribeOnAmountChecked()
   }, [transactionPage])
 
   return (
@@ -272,7 +272,6 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionAcceptAndPayAlgoSigner" color="primary"
               onClick={() => {
                 dispatch(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, toPay: payment.toPay, sow: currentSow.sow }))
-                // subscribeOnAmountChecked()
               }}
             >Complete the transaction</ActivityButton>
           </ModalFooter>

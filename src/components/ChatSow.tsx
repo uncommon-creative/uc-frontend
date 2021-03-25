@@ -76,11 +76,11 @@ export const ChatSow = ({ currentSow }: any) => {
                           </CardText>
                           : msg.commandMessage ?
                             <>
-                              <CardTitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-primary font-weight-bold" : "text-primary font-weight-bold"}>
+                              <CardTitle data-cy="chatCommand" className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-primary font-weight-bold" : "text-primary font-weight-bold"}>
                                 {msg.commandMessage.command}
                               </CardTitle>
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).tx &&
-                                <CardSubtitle className="text-center text-muted text-break">
+                                <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-muted text-break" : "text-muted text-break"}>
                                   {'transaction: ' + JSON.parse(msg.commandMessage.data).tx}
                                 </CardSubtitle>
                               }

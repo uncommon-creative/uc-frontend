@@ -210,7 +210,7 @@ function* willPrepareTransactionAcceptAndPayAlgoSigner(action: any) {
 
     yield put(TransactionActions.didPrepareTransactionAcceptAndPayAlgoSigner(resultAccounts))
 
-    yield call(willAlgorandPollAccountAmount, action)
+    // yield call(willAlgorandPollAccountAmount, action)
   } catch (error) {
     console.log("error in willPrepareTransactionAcceptAndPayAlgoSigner ", error)
   }
@@ -224,8 +224,16 @@ function* willCompleteTransactionAcceptAndPayAlgoSigner(action: any) {
     const resultAlgoSign = yield call(TransactionApi.algoSign, action.payload.from, action.payload.multiSigAddress, action.payload.toPay, action.payload.sow)
     console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultAlgoSign: ", resultAlgoSign)
 
-    const resultAlgoSendTx = yield call(TransactionApi.algoSendTx, resultAlgoSign)
-    console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultAlgoSendTx: ", resultAlgoSendTx)
+    // const resultAlgoSendTx = yield call(TransactionApi.algoSendTx, resultAlgoSign)
+    // console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultAlgoSendTx: ", resultAlgoSendTx)
+
+    const splittedResultAlgoSign = {
+      txID: resultAlgoSign.txID,
+      blob: atob(resultAlgoSign.blob).split("").map((x: any) => x.charCodeAt(0))
+    }
+
+    const resultSentTransaction = yield call(TransactionApi.sendTransaction, action.payload.sow, splittedResultAlgoSign)
+    console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultSentTransaction: ", resultSentTransaction)
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptAndPayAlgoSigner ", error)
   }
@@ -516,10 +524,6 @@ export function* willCheckAccountTransaction(action: any) {
 
   const userAttributes = yield select(ProfileSelectors.getProfile)
   console.log("in willCheckAccountTransaction userAttributes: ", userAttributes)
-  // userAttributes.public_key
-
-  // action.payload.mnemonic
-  // action.payload.toPay
 
   try {
     const resultMnemonicToSecretKey = yield call(TransactionApi.mnemonicToSecretKey, action.payload.mnemonicSecretKey)
