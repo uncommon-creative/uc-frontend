@@ -172,7 +172,13 @@ export const SubmitSow = ({ modal, toggle }: any) => {
           <ModalBody>
             <Jumbotron>
               <CardText>
-                The Statement of work was submitted successfully: {submitToken}
+                The Statement of Work was submitted successfully, the following asset was created.
+              </CardText>
+              <CardText>
+                Asset Id: {submitToken.assetId}
+              </CardText>
+              <CardText>
+                Transaction Id: {submitToken.tx}
               </CardText>
             </Jumbotron>
           </ModalBody>

@@ -84,6 +84,11 @@ export const ChatSow = ({ currentSow }: any) => {
                                   {'transaction: ' + JSON.parse(msg.commandMessage.data).tx}
                                 </CardSubtitle>
                               }
+                              {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).assetId &&
+                                <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-muted text-break" : "text-muted text-break"}>
+                                  {'assetId: ' + JSON.parse(msg.commandMessage.data).assetId}
+                                </CardSubtitle>
+                              }
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).reviews_left &&
                                 <CardSubtitle className="text-center text-muted text-break">
                                   {'#' + JSON.parse(msg.commandMessage.data).reviews_left + '\n' + JSON.parse(msg.commandMessage.data).message}

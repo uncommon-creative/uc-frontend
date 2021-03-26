@@ -89,6 +89,7 @@ export enum SowStatus {
 }
 
 export enum SowCommands {
+  SUBMIT = 'SUBMIT',
   ACCEPT_AND_PAY = 'ACCEPT_AND_PAY',
   ACCEPT_MILESTONE = 'ACCEPT_MILESTONE',
   CLAIM_MILESTONE_MET = 'CLAIM_MILESTONE_MET',
