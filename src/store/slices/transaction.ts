@@ -67,6 +67,8 @@ export const currentSlice = createSlice({
     willCompleteTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => state,
     didCompleteTransactionSubmit: (state, action: PayloadAction<any>) => void (state.submitToken = action.payload, state.transactionPage = 5),
     didCompleteTransactionSubmitFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 6),
+
+    willDestroyAndCreateAsset: (state, action: PayloadAction<any>) => state,
   }
 })
 

@@ -15,7 +15,7 @@ export function* sagas() {
   yield takeLatest(ChatActions.willSendTextChat.type, willSendTextChat)
   yield takeLatest(ChatActions.willSendCommandChat.type, willSendCommandChat)
   yield takeLatest(ChatActions.willSendAttachmentChat.type, willSendAttachmentChat)
-  console.log('in sow saga');
+  console.log('in chat saga');
 }
 
 function* willRefreshSowChat(action: any) {
