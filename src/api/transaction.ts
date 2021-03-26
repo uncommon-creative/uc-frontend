@@ -354,7 +354,7 @@ export const algorandSendTokenCreationTx = async (sow: any, tx: any) => {
 
   try {
     const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, tx: tx }))
-    console.log("algorandSendTokenCreationTx result: ", result)
+    // console.log("algorandSendTokenCreationTx result: ", result)
     return result.data.algorandSendTokenCreationTx
   } catch (error) {
     console.log("algorandSendTokenCreationTx API error: ", error)
@@ -411,7 +411,7 @@ export const algoSignSubmit = async (params: any, addr: any, note: any, totalIss
   }
 }
 
-export function mnemonicToSecretKey(mnemonicSecretKey: any ) {
+export function mnemonicToSecretKey(mnemonicSecretKey: any) {
   try {
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
     // console.log("mnemonicToSecretKey secret_key: ", secret_key)
@@ -419,6 +419,46 @@ export function mnemonicToSecretKey(mnemonicSecretKey: any ) {
     return secret_key
   } catch (error) {
     console.log("mnemonicToSecretKey API error: ", error)
+    throw error
+  }
+}
+
+export const destroyAndCreateAsset = async (mnemonicSecretKey: any, addr: any, note: any, assetID: any, params: any,
+  totalIssuance: any, decimals: any, defaultFrozen: any, manager: any, reserve: any, freeze: any, clawback: any, unitName: any, assetName: any, assetURL: any, assetMetadataHash: any) => {
+  try {
+
+    const destroyTxn = algosdk.makeAssetDestroyTxnWithSuggestedParams(addr, note, assetID, params);
+    console.log("destroyAndCreateAsset dtxn: ", destroyTxn);
+
+    const creationTxn = algosdk.makeAssetCreateTxnWithSuggestedParams(
+      addr,
+      note,
+      totalIssuance,
+      decimals,
+      defaultFrozen,
+      manager,
+      reserve,
+      freeze,
+      clawback,
+      unitName,
+      assetName,
+      assetURL,
+      assetMetadataHash,
+      params
+    );
+    console.log("destroyAndCreateAsset creationTxn: ", creationTxn);
+
+    let gid = algosdk.assignGroupID([destroyTxn, creationTxn]);
+
+    const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
+
+    const signedDestroyTxn = destroyTxn.signTxn(secret_key.sk);
+    const signedCreationTxn = creationTxn.signTxn(secret_key.sk);
+    const signedGroup = [signedDestroyTxn.toString(), signedCreationTxn.toString()]
+
+    return signedGroup
+  } catch (error) {
+    console.log("destroyAndCreateAsset error: ", error)
     throw error
   }
 }

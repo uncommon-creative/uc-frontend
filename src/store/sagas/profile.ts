@@ -22,6 +22,7 @@ export function* sagas() {
   yield takeEvery(ProfileActions.willGetUserProfile.type, willGetUserProfile)
   yield takeEvery(ProfileActions.willUploadPortrait.type, willUploadPortrait)
   yield takeEvery(ProfileActions.willSubmitProfile.type, willSubmitProfile)
+  console.log('in profile saga');
 }
 
 function* willGoToProfile(action: any) {
