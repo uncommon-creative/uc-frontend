@@ -425,7 +425,8 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
   const unitName = tokenName;
   const assetName = tokenName;
   const assetURL = "https://www.example.com/" + tokenName;
-  const assetMetadataHash = Buffer.from(hash, "base64")
+  // const assetMetadataHash = Buffer.from(hash, "base64")
+  const assetMetadataHash = Buffer.from(hash)
   console.log("willCompleteTransactionSubmitMnemonic assetMetadataHash: ", assetMetadataHash)
   // Specified address can change reserve, freeze, clawback, and manager
   const manager = users[action.payload.currentSow.seller].public_key;
@@ -457,6 +458,21 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
       }
       else {
         console.log("willCompleteTransactionSubmitMnemonic success")
+
+        // console.log("willCompleteTransactionSubmitMnemonic resultCheckAccountTransaction.addressInfo: ", resultCheckAccountTransaction.addressInfo)
+        // console.log("willCompleteTransactionSubmitMnemonic resultCheckAccountTransaction.addressInfo.createdAssets: ", resultCheckAccountTransaction.addressInfo.createdAssets)
+        // console.log("willCompleteTransactionSubmitMnemonic resultCheckAccountTransaction.addressInfo.createdAssets[0]: ", resultCheckAccountTransaction.addressInfo.createdAssets[0])
+        // console.log("willCompleteTransactionSubmitMnemonic resultCheckAccountTransaction.addressInfo.createdAssets[0] json parse: ", JSON.parse(resultCheckAccountTransaction.addressInfo.createdAssets[0]))
+
+
+        if (resultCheckAccountTransaction.addressInfo.createdAssets.some((asset: any) => JSON.parse(asset).params['unit-name'] === "UC-" + action.payload.currentSow.sow.substring(0, 5))) {
+          // if (resultCheckAccountTransaction.addressInfo.createdAssets.some((asset: any) => JSON.parse(asset).params['unit-name'] === "c2bdf2c2")) {
+          console.log("willCompleteTransactionSubmitMnemonic ASSET FOUND")
+        }
+        else {
+          console.log("willCompleteTransactionSubmitMnemonic ASSET NOT FOUND")
+        }
+
         yield put(TransactionActions.didCompleteTransactionSubmit(resultAlgorandSendTokenCreationTx))
       }
     }
@@ -568,7 +584,8 @@ export function* willCheckAccountTransaction(action: any) {
       else {
         return {
           check: true,
-          error: null
+          error: null,
+          addressInfo: addressInfo
         }
       }
     }
