@@ -20,7 +20,7 @@
       "ACCEPT_MILESTONE": "ACCEPT_MILESTONE",
       "ACCEPT_MILESTONE_info": "The seller was paid.",
       "CLAIM_MILESTONE_MET": "CLAIM_MILESTONE_MET",
-      "CLAIM_MILESTONE_MET_info": "The seller claimed the milestone as met.",
+      "CLAIM_MILESTONE_MET_info": "The seller claimed the milestone as met.\nThe buyer has 7 days starting from today to take an action, otherwise the system will accept the milestone and complete the payment.",
       "REJECT": "REJECT",
       "REJECT_info": "The statement of work was rejected.",
       "REQUEST_REVIEW": "REQUEST_REVIEW",
