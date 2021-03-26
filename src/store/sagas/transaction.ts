@@ -457,7 +457,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
       }
       else {
         console.log("willCompleteTransactionSubmitMnemonic success")
-        yield put(TransactionActions.didCompleteTransactionSubmit(resultAlgorandSendTokenCreationTx.assetId))
+        yield put(TransactionActions.didCompleteTransactionSubmit(resultAlgorandSendTokenCreationTx))
       }
     }
     else {
