@@ -115,7 +115,6 @@ describe('Chat', () => {
         .contains("new project"),
       'user submitted sow successfully'
     )
-
   })
 
   it('Send message as seller', () => {
