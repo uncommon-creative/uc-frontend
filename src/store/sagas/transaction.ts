@@ -462,7 +462,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
         resultSignedTransaction = yield call(TransactionApi.signTxn,
           action.payload.mnemonicSecretKey, action.payload.params, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
         )
-        resultSignedTransaction = [resultSignedTransaction.toString()]
+        resultSignedTransaction = [resultSignedTransaction]
         console.log("in willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
       }
 

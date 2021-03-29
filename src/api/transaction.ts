@@ -339,10 +339,12 @@ export function signTxn(mnemonicSecretKey: any, params: any, addr: any, note: an
     // console.log("signTxn txn: ", creationTxn)
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
-    const rawSignedCreationTxn = creationTxn.signTxn(secret_key.sk);
-    // console.log("signTxn rawSignedCreationTxn: ", rawSignedCreationTxn)
+    // const rawSignedCreationTxn = creationTxn.signTxn(secret_key.sk);
+    let signedCreationTxn = algosdk.signTransaction(creationTxn, secret_key.sk)
+    signedCreationTxn.blob = signedCreationTxn.blob.toString()
+    console.log("signTxn signedCreationTxn: ", signedCreationTxn)
 
-    return rawSignedCreationTxn
+    return signedCreationTxn
   } catch (error) {
     console.log("signTxn API error: ", error)
     throw error
@@ -354,7 +356,7 @@ export const algorandSendTokenCreationTx = async (sow: any, tx: any) => {
 
   try {
     const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, tx: tx }))
-    // console.log("algorandSendTokenCreationTx result: ", result)
+    console.log("algorandSendTokenCreationTx result: ", result)
     return result.data.algorandSendTokenCreationTx
   } catch (error) {
     console.log("algorandSendTokenCreationTx API error: ", error)
@@ -452,9 +454,13 @@ export const destroyAndCreateAsset = async (mnemonicSecretKey: any, addr: any, n
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
 
-    const signedDestroyTxn = destroyTxn.signTxn(secret_key.sk);
-    const signedCreationTxn = creationTxn.signTxn(secret_key.sk);
-    const signedGroup = [signedDestroyTxn.toString(), signedCreationTxn.toString()]
+    // const signedDestroyTxn = destroyTxn.signTxn(secret_key.sk);
+    // const signedCreationTxn = creationTxn.signTxn(secret_key.sk);
+    let signedDestroyTxn = algosdk.signTransaction(destroyTxn, secret_key.sk)
+    signedDestroyTxn.blob = signedDestroyTxn.blob.toString()
+    let signedCreationTxn = algosdk.signTransaction(creationTxn, secret_key.sk)
+    signedCreationTxn.blob = signedCreationTxn.blob.toString()
+    const signedGroup = [signedDestroyTxn, signedCreationTxn]
 
     return signedGroup
   } catch (error) {
