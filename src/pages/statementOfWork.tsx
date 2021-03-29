@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams, useHistory } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 
+import { configuration } from '../config'
 import { actions as NotificationActions } from '../store/slices/notification'
 import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
@@ -25,6 +26,8 @@ import { ClaimMilestoneMet } from '../components/transaction/ClaimMilestoneMet'
 import { AcceptMilestone } from '../components/transaction/AcceptMilestone'
 import { Reject } from '../components/transaction/Reject'
 import { RequestReview } from '../components/transaction/RequestReview'
+
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -45,6 +48,7 @@ export const StatementOfWorkPage = () => {
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const user = useSelector(AuthSelectors.getUser)
   const users = useSelector(ProfileSelectors.getUsers)
+  const messagesCommands = useSelector(ChatSelectors.getMessagesCommands)
   const [modalOpenSowDetails, setModalOpenSowDetails] = React.useState(false);
   const [modalOpenAcceptSow, setModalOpenAcceptSow] = React.useState(false);
   const [modalOpenClaimMilestoneMet, setModalOpenClaimMilestoneMet] = React.useState(false);
@@ -61,6 +65,8 @@ export const StatementOfWorkPage = () => {
 
   const [tooltipOpenAcceptAndPay, setTooltipOpenAcceptAndPay] = React.useState(false);
   const toggleAcceptAndPay = () => setTooltipOpenAcceptAndPay(!tooltipOpenAcceptAndPay);
+  const [tooltipOpenAssetId, setTooltipOpenAssetId] = React.useState(false);
+  const toggleAssetId = () => setTooltipOpenAssetId(!tooltipOpenAssetId);
 
   React.useEffect(() => {
     console.log("in statementOfWorkPage currentSow: ", currentSow)
@@ -316,6 +322,14 @@ export const StatementOfWorkPage = () => {
                     <Col className="col-12">
                       <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Attachments</CardSubtitle>
                       <Jumbotron>
+                        {messagesCommands[SowCommands.SUBMIT] &&
+                          <a target="_blank" href={configuration[stage].goalseeker_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>
+                            <CardText id="assetId">Asset: {JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</CardText>
+                            <Tooltip placement="top" isOpen={tooltipOpenAssetId} target="assetId" toggle={toggleAssetId}>
+                              Check if the asset contains the works_agreement.pdf's base64 md5 in "METADATA HASH".
+                            </Tooltip>
+                          </a>
+                        }
                         {newAttachments.map((attachment: any, index: any) => {
                           return (
                             attachment.owner === currentSow.sow &&
