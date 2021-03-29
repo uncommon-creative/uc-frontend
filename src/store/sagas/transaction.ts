@@ -23,6 +23,7 @@ export function* sagas() {
   yield takeLatest(TransactionActions.willPreparePayment.type, willPreparePayment)
   yield takeLatest(TransactionActions.willSetSowArbitrator.type, willSetSowArbitrator)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayQR.type, willCompleteTransactionAcceptAndPayQR)
+  yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayPaid.type, willCompleteTransactionAcceptAndPayPaid)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic.type, willCompleteTransactionAcceptAndPayMnemonic)
   yield takeLatest(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner.type, willPrepareTransactionAcceptAndPayAlgoSigner)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner.type, willCompleteTransactionAcceptAndPayAlgoSigner)
@@ -162,6 +163,7 @@ function* willCompleteTransactionAcceptAndPayQR(action: any) {
 function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
   console.log("in willCompleteTransactionAcceptAndPayMnemonic with: ", action)
   yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
+  const users = yield select(ProfileSelectors.getUsers)
 
   try {
     const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: action.payload.toPay } })
@@ -171,10 +173,10 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
       const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.arbitrator)
       console.log("willCompleteTransactionAcceptAndPayMnemonic resultSetSowArbitrator: ", resultSetSowArbitrator)
 
-      const resultSignedTransaction = yield call(TransactionApi.signTransaction, action.payload.multiSigAddress.address, action.payload.params, action.payload.mnemonicSecretKey, action.payload.toPay)
+      const resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonic, action.payload.multiSigAddress.address, action.payload.params, action.payload.mnemonicSecretKey, action.payload.toPay, users[action.payload.currentSow.buyer].public_key, users[action.payload.currentSow.seller].public_key, action.payload.assetId)
       console.log("willCompleteTransactionAcceptAndPayMnemonic resultSignedTransaction: ", resultSignedTransaction)
 
-      const resultSentTransaction = yield call(TransactionApi.sendTransaction, action.payload.currentSow.sow, resultSignedTransaction)
+      const resultSentTransaction = yield call(TransactionApi.algorandSendAcceptAndPayTx, action.payload.currentSow.sow, resultSignedTransaction)
       console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction: ", resultSentTransaction)
 
       if (resultSentTransaction === "sendTxFailed") {
@@ -196,6 +198,46 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
     console.log("error in willCompleteTransactionAcceptAndPayMnemonic ", error)
   }
   yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
+}
+
+function* willCompleteTransactionAcceptAndPayPaid(action: any) {
+  console.log("in willCompleteTransactionAcceptAndPayPaid with: ", action)
+  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayPaid'));
+  const users = yield select(ProfileSelectors.getUsers)
+
+  try {
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: action.payload.toPay } })
+    console.log("willCompleteTransactionAcceptAndPayPaid resultCheckAccountTransaction: ", resultCheckAccountTransaction)
+
+    if (resultCheckAccountTransaction.check) {
+      const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.arbitrator)
+      console.log("willCompleteTransactionAcceptAndPayPaid resultSetSowArbitrator: ", resultSetSowArbitrator)
+
+      const resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayPaid, action.payload.params, action.payload.mnemonicSecretKey, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
+      console.log("willCompleteTransactionAcceptAndPayPaid resultSignedTransaction: ", resultSignedTransaction)
+
+      const resultSentTransaction = yield call(TransactionApi.algorandSendAcceptAndPayTx, action.payload.currentSow.sow, resultSignedTransaction)
+      console.log("willCompleteTransactionAcceptAndPayPaid resultSentTransaction: ", resultSentTransaction)
+
+      if (resultSentTransaction === "sendTxFailed") {
+        console.log("willCompleteTransactionAcceptAndPayPaid resultSentTransaction fail: ", resultSentTransaction)
+        yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSentTransaction))
+        yield put(NotificationActions.willShowNotification({ message: resultSentTransaction, type: "danger" }));
+      }
+      else {
+        console.log("willCompleteTransactionAcceptAndPayPaid resultSentTransaction success: ", resultSentTransaction)
+        yield put(TransactionActions.didCompleteTransactionAcceptAndPay(resultSentTransaction))
+      }
+      yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
+    }
+    else {
+      console.log("willCompleteTransactionAcceptAndPayPaid fail")
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultCheckAccountTransaction.error))
+    }
+  } catch (error) {
+    console.log("error in willCompleteTransactionAcceptAndPayPaid ", error)
+  }
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayPaid'));
 }
 
 function* willPrepareTransactionAcceptAndPayAlgoSigner(action: any) {
@@ -233,7 +275,7 @@ function* willCompleteTransactionAcceptAndPayAlgoSigner(action: any) {
       blob: atob(resultAlgoSign.blob).split("").map((x: any) => x.charCodeAt(0))
     }
 
-    const resultSentTransaction = yield call(TransactionApi.sendTransaction, action.payload.sow, splittedResultAlgoSign)
+    const resultSentTransaction = yield call(TransactionApi.algorandSendAcceptAndPayTx, action.payload.sow, splittedResultAlgoSign)
     console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultSentTransaction: ", resultSentTransaction)
 
     if (resultSentTransaction === "sendTxFailed") {
@@ -550,13 +592,12 @@ function* willCompleteTransactionSubmitAlgoSigner(action: any) {
 
 export function* willCheckAccountTransaction(action: any) {
   console.log("in willCheckAccountTransaction with: ", action)
-
   const userAttributes = yield select(ProfileSelectors.getProfile)
-  console.log("in willCheckAccountTransaction userAttributes: ", userAttributes)
+  // console.log("in willCheckAccountTransaction userAttributes: ", userAttributes)
 
   try {
     const resultMnemonicToSecretKey = yield call(TransactionApi.mnemonicToSecretKey, action.payload.mnemonicSecretKey)
-    console.log("willCheckAccountTransaction resultMnemonicToSecretKey: ", resultMnemonicToSecretKey)
+    // console.log("willCheckAccountTransaction resultMnemonicToSecretKey: ", resultMnemonicToSecretKey)
 
 
     if (resultMnemonicToSecretKey.addr != userAttributes.public_key) {
@@ -569,7 +610,7 @@ export function* willCheckAccountTransaction(action: any) {
       const addressInfo = yield call(willGetAlgorandAccountInfo, resultMnemonicToSecretKey.addr)
       console.log("willCheckAccountTransaction addressInfo: ", addressInfo)
       const accountMinBalance = addressInfo.assets.length * AlgorandMinBalance + addressInfo.createdAssets.length * AlgorandMinBalance + AlgorandMinBalance
-      console.log("in willCheckAccountTransaction accountMinBalance: ", accountMinBalance)
+      // console.log("in willCheckAccountTransaction accountMinBalance: ", accountMinBalance)
 
       if (addressInfo.amount == 0) {
         return {

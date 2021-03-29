@@ -15,7 +15,7 @@ import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
 
 import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
-import { actions as ChatActions } from '../../store/slices/chat'
+import { actions as ChatActions, selectors as ChatSelectors } from '../../store/slices/chat'
 import { selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
 import { actions as NotificationActions } from '../../store/slices/notification'
@@ -31,6 +31,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
+  const messagesCommands = useSelector(ChatSelectors.getMessagesCommands)
   const currentChosenArbitrator = useSelector(ArbitratorSelectors.getCurrentChosenArbitrator)
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
   const multiSig = useSelector(TransactionSelectors.getMultiSig)
@@ -140,7 +141,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
 
             {payment.toPay > 0 &&
               <Row>
-                <Col>
+                {/* <Col>
                   <Card outline onClick={() => {
                     dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, total: payment.total, sow: currentSow.sow }))
                   }}>
@@ -149,7 +150,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
                       <FontAwesomeIcon icon={faQrcode} size="5x" />
                     </CardBody>
                   </Card>
-                </Col>
+                </Col> */}
                 <Col>
                   <Card data-cy='acceptAndPay' onClick={() => {
                     dispatch(TransactionActions.goToTransactionPage(4))
@@ -162,11 +163,12 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
                 </Col>
                 <Col>
                   <Card onClick={() => {
-                    isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, total: payment.total }))
-                      : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
+                    // isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, total: payment.total }))
+                    //   : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
+                    dispatch(NotificationActions.willShowNotification({ message: "In development", type: "info" }));
                   }}>
                     <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
-                      <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner</CardSubtitle>
+                      <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner (in development)</CardSubtitle>
                       {!isAlgoSignInstalled && <CardSubtitle tag="h6" className="mb-2 text-muted text-center">(not installed)</CardSubtitle>}
                       <img src={AlgoSignerLogo} height="80" alt="AlgoSigner Logo" />
                     </CardBody>
@@ -177,16 +179,14 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           </ModalBody>
           {payment.toPay <= 0 &&
             <ModalFooter>
-              <ActivityButton data-cy='acceptAndPay' disabled={!acceptedConditions} name="completeAcceptAndPay" color="primary" onClick={() => {
-                dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.ACCEPT_AND_PAY }, sow: currentSow }));
-                dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentChosenArbitrator }))
-                dispatch(TransactionActions.goToTransactionPage(6))
+              <ActivityButton data-cy='acceptAndPay' disabled={!acceptedConditions} name="willCompleteTransactionAcceptAndPayPaid" color="primary" onClick={() => {
+                dispatch(TransactionActions.willCompleteTransactionAcceptAndPayPaid({ params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
               }}>Complete</ActivityButton>
             </ModalFooter>
           }
         </>
       }
-      {transactionPage == 3 &&
+      {/* {transactionPage == 3 &&
         <>
           <ModalHeader toggle={toggle}>Fund the wallet with QR</ModalHeader>
           <ModalBody>
@@ -217,7 +217,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
-      }
+      } */}
       {transactionPage == 4 &&
         <>
           <ModalHeader toggle={toggle}>Fund the wallet with mnemonic secret key</ModalHeader>
@@ -238,7 +238,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(2))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptAndPayMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, toPay: payment.toPay, arbitrator: currentChosenArbitrator }))
+              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, toPay: payment.toPay, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>

@@ -1,0 +1,12 @@
+mutation algorandSendAcceptAndPayTx(
+  $sow: ID,
+  $tx: [TransactionInput]
+) {
+  algorandSendAcceptAndPayTx(
+    sow: $sow,
+    tx: $tx
+  ) {
+    tx
+    error
+  }
+}

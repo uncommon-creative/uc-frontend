@@ -36,6 +36,7 @@ export const currentSlice = createSlice({
     didAlgorandPollAccountAmount: (state, action: PayloadAction<any>) => void (state.activePolls[action.payload.sow] = action.payload.timestamp),
 
     willCompleteTransactionAcceptAndPayQR: (state, action: PayloadAction<any>) => void (state.transactionPage = 3),
+    willCompleteTransactionAcceptAndPayPaid: (state, action: PayloadAction<any>) => state,
     willCompleteTransactionAcceptAndPayMnemonic: (state, action: PayloadAction<any>) => state,
     willPrepareTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => state,
     didPrepareTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 5),
