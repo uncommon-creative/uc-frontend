@@ -7,24 +7,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams, useHistory } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 
+import { configuration } from '../config'
 import { actions as NotificationActions } from '../store/slices/notification'
 import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
-import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { ChatSow } from '../components/ChatSow'
 import { ArbitratorDetailXS } from '../components/arbitrator/ArbitratorDetailXS'
 import { ActivityButton } from '../components/common/ActivityButton'
 import { RefreshButton } from '../components/common/RefreshButton'
-import { FileButton } from '../components/common/FileButton';
-import { selectors as UISelectors } from '../store/slices/ui'
+import { FileButton } from '../components/common/FileButton'
 import { SowDetails } from '../components/sow/SowDetails'
 import { AcceptAndPay } from '../components/transaction/AcceptAndPay'
 import { ClaimMilestoneMet } from '../components/transaction/ClaimMilestoneMet'
 import { AcceptMilestone } from '../components/transaction/AcceptMilestone'
 import { Reject } from '../components/transaction/Reject'
 import { RequestReview } from '../components/transaction/RequestReview'
+
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;

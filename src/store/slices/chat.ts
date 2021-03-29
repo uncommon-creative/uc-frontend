@@ -5,6 +5,7 @@ export const currentSlice = createSlice({
   name: 'chat',
   initialState: {
     messages: [] as any,
+    messagesCommands: {} as any,
     message: '',
     unreadMessages: {
       asSeller: 0,
@@ -19,7 +20,7 @@ export const currentSlice = createSlice({
     willWriteMessage: (state, action: PayloadAction<any>) => void (state.message = action.payload),
 
     willReadSowChat: (state, action: PayloadAction<any>) => state,
-    didReadSowChat: (state, action: PayloadAction<any>) => void (state.messages = action.payload),
+    didReadSowChat: (state, action: PayloadAction<any>) => void (state.messages = action.payload.messages, state.messagesCommands = action.payload.messagesCommands),
 
     willSendTextChat: (state, action: PayloadAction<any>) => state,
     didSendTextChat: (state, action: PayloadAction<any>) => void (state.message = ''),
@@ -29,6 +30,8 @@ export const currentSlice = createSlice({
     didCountUnreadMessagesSeller: (state, action: PayloadAction<any>) => void (state.unreadMessages.asSeller = action.payload),
     didCountUnreadMessagesBuyer: (state, action: PayloadAction<any>) => void (state.unreadMessages.asBuyer = action.payload),
     didCountUnreadMessagesArbitrator: (state, action: PayloadAction<any>) => void (state.unreadMessages.asArbitrator = action.payload),
+
+    willGetMessageCommand: (state, action: PayloadAction<any>) => state,
   }
 })
 
@@ -42,4 +45,5 @@ export const selectors = {
   getMessages: (state: any) => state.chat.messages,
   getMessage: (state: any) => state.chat.message,
   getUnreadMessages: (state: any) => state.chat.unreadMessages,
+  getMessagesCommands: (state: any) => state.chat.messagesCommands,
 }
