@@ -7,11 +7,14 @@ import { faFileWord, faFileVideo, faFilePowerpoint, faFilePdf, faFileImage, faFi
 
 import { configuration } from '../../config'
 import { selectors as UISelectors } from '../../store/slices/ui'
+import { selectors as ChatSelectors } from '../../store/slices/chat'
+import { SowCommands } from '../../store/slices/sow'
 
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
 export const FileButton = ({ file, disabled, children, ...rest }: any) => {
 
+  const messagesCommands = useSelector(ChatSelectors.getMessagesCommands)
   const isActivityRunning = useSelector(state => UISelectors.activityRunningSelector(state, file.key));
   var fileIcon = {} as any
 
@@ -137,6 +140,12 @@ export const FileButton = ({ file, disabled, children, ...rest }: any) => {
                 </>
               }
             </a>
+            {file.filename == configuration[stage].works_agreement_key && messagesCommands[SowCommands.SUBMIT] &&
+              <a target="_blank" style={{ fontSize: 11 }} className='d-flex justify-content-center mt-1'
+                href={configuration[stage].AlgoExplorer_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>
+                Verify on Block Explorer{/* : {JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId} */}
+              </a>
+            }
           </FormText>
         )
       }

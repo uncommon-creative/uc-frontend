@@ -12,14 +12,12 @@ import { actions as NotificationActions } from '../store/slices/notification'
 import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
-import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { ChatSow } from '../components/ChatSow'
 import { ArbitratorDetailXS } from '../components/arbitrator/ArbitratorDetailXS'
 import { ActivityButton } from '../components/common/ActivityButton'
 import { RefreshButton } from '../components/common/RefreshButton'
-import { FileButton } from '../components/common/FileButton';
-import { selectors as UISelectors } from '../store/slices/ui'
+import { FileButton } from '../components/common/FileButton'
 import { SowDetails } from '../components/sow/SowDetails'
 import { AcceptAndPay } from '../components/transaction/AcceptAndPay'
 import { ClaimMilestoneMet } from '../components/transaction/ClaimMilestoneMet'
@@ -48,7 +46,6 @@ export const StatementOfWorkPage = () => {
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const user = useSelector(AuthSelectors.getUser)
   const users = useSelector(ProfileSelectors.getUsers)
-  const messagesCommands = useSelector(ChatSelectors.getMessagesCommands)
   const [modalOpenSowDetails, setModalOpenSowDetails] = React.useState(false);
   const [modalOpenAcceptSow, setModalOpenAcceptSow] = React.useState(false);
   const [modalOpenClaimMilestoneMet, setModalOpenClaimMilestoneMet] = React.useState(false);
@@ -65,8 +62,6 @@ export const StatementOfWorkPage = () => {
 
   const [tooltipOpenAcceptAndPay, setTooltipOpenAcceptAndPay] = React.useState(false);
   const toggleAcceptAndPay = () => setTooltipOpenAcceptAndPay(!tooltipOpenAcceptAndPay);
-  const [tooltipOpenAssetId, setTooltipOpenAssetId] = React.useState(false);
-  const toggleAssetId = () => setTooltipOpenAssetId(!tooltipOpenAssetId);
 
   React.useEffect(() => {
     console.log("in statementOfWorkPage currentSow: ", currentSow)
@@ -322,14 +317,6 @@ export const StatementOfWorkPage = () => {
                     <Col className="col-12">
                       <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Attachments</CardSubtitle>
                       <Jumbotron>
-                        {messagesCommands[SowCommands.SUBMIT] &&
-                          <a target="_blank" href={configuration[stage].goalseeker_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>
-                            <CardText id="assetId">Asset: {JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</CardText>
-                            <Tooltip placement="top" isOpen={tooltipOpenAssetId} target="assetId" toggle={toggleAssetId}>
-                              Check if the asset contains the works_agreement.pdf's base64 md5 in "METADATA HASH".
-                            </Tooltip>
-                          </a>
-                        }
                         {newAttachments.map((attachment: any, index: any) => {
                           return (
                             attachment.owner === currentSow.sow &&

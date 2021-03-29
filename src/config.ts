@@ -22,9 +22,9 @@ export const configuration: any = {
     'uc_backup_public_key': '3IB3QQKFQACYNQDD2G2CVV7I7ZZDY5ZLFW7SOJQVQG6I4CPCOVE2UU35OA',
     'submitToken_unitName': 'UC-',
     'submitToken_assetName': 'UC project ',
-    'goalseeker_transaction_link': 'https://goalseeker.purestake.io/algorand/testnet/transaction/',
-    'goalseeker_account_link': 'https://goalseeker.purestake.io/algorand/testnet/account/',
-    'goalseeker_asset_link': 'https://goalseeker.purestake.io/algorand/testnet/asset/'
+    'AlgoExplorer_tx_link': 'https://testnet.algoexplorer.io/tx/',
+    'AlgoExplorer_address_link': 'https://testnet.algoexplorer.io/address/',
+    'AlgoExplorer_asset_link': 'https://testnet.algoexplorer.io/asset/'
   },
   demo: {
     Auth: {
@@ -49,8 +49,8 @@ export const configuration: any = {
     'uc_backup_public_key': '3IB3QQKFQACYNQDD2G2CVV7I7ZZDY5ZLFW7SOJQVQG6I4CPCOVE2UU35OA',
     'submitToken_unitName': 'UC-',
     'submitToken_assetName': 'UC project ',
-    'goalseeker_transaction_link': 'https://goalseeker.purestake.io/algorand/testnet/transaction/',
-    'goalseeker_account_link': 'https://goalseeker.purestake.io/algorand/testnet/account/',
-    'goalseeker_asset_link': 'https://goalseeker.purestake.io/algorand/testnet/asset/'
+    'AlgoExplorer_tx_link': 'https://testnet.algoexplorer.io/tx/',
+    'AlgoExplorer_address_link': 'https://testnet.algoexplorer.io/address/',
+    'AlgoExplorer_asset_link': 'https://testnet.algoexplorer.io/asset/'
   }
 }
