@@ -162,6 +162,7 @@ describe('Chat', () => {
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
       cy.wait(3000)
       cy.get('[data-cy=CLAIM_MILESTONE_MET]').click()
+      cy.wait(500)
       cy.get('[data-cy=acceptConditions]').check()
       cy.get('[data-cy=continueTransaction]').click()
       cy.wait(10000)
