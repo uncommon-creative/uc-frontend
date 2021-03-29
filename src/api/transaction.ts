@@ -339,10 +339,12 @@ export function signTxn(mnemonicSecretKey: any, params: any, addr: any, note: an
     // console.log("signTxn txn: ", creationTxn)
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
-    const rawSignedCreationTxn = creationTxn.signTxn(secret_key.sk);
-    // console.log("signTxn rawSignedCreationTxn: ", rawSignedCreationTxn)
+    // const rawSignedCreationTxn = creationTxn.signTxn(secret_key.sk);
+    let signedCreationTxn = algosdk.signTransaction(creationTxn, secret_key.sk)
+    signedCreationTxn.blob = signedCreationTxn.blob.toString()
+    console.log("signTxn signedCreationTxn: ", signedCreationTxn)
 
-    return rawSignedCreationTxn
+    return signedCreationTxn
   } catch (error) {
     console.log("signTxn API error: ", error)
     throw error
@@ -411,7 +413,7 @@ export const algoSignSubmit = async (params: any, addr: any, note: any, totalIss
   }
 }
 
-export function mnemonicToSecretKey(mnemonicSecretKey: any ) {
+export function mnemonicToSecretKey(mnemonicSecretKey: any) {
   try {
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
     // console.log("mnemonicToSecretKey secret_key: ", secret_key)
@@ -419,6 +421,50 @@ export function mnemonicToSecretKey(mnemonicSecretKey: any ) {
     return secret_key
   } catch (error) {
     console.log("mnemonicToSecretKey API error: ", error)
+    throw error
+  }
+}
+
+export const destroyAndCreateAsset = async (mnemonicSecretKey: any, addr: any, note: any, assetID: any, params: any,
+  totalIssuance: any, decimals: any, defaultFrozen: any, manager: any, reserve: any, freeze: any, clawback: any, unitName: any, assetName: any, assetURL: any, assetMetadataHash: any) => {
+  try {
+
+    const destroyTxn = algosdk.makeAssetDestroyTxnWithSuggestedParams(addr, note, assetID, params);
+    console.log("destroyAndCreateAsset dtxn: ", destroyTxn);
+
+    const creationTxn = algosdk.makeAssetCreateTxnWithSuggestedParams(
+      addr,
+      note,
+      totalIssuance,
+      decimals,
+      defaultFrozen,
+      manager,
+      reserve,
+      freeze,
+      clawback,
+      unitName,
+      assetName,
+      assetURL,
+      assetMetadataHash,
+      params
+    );
+    console.log("destroyAndCreateAsset creationTxn: ", creationTxn);
+
+    let gid = algosdk.assignGroupID([destroyTxn, creationTxn]);
+
+    const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
+
+    // const signedDestroyTxn = destroyTxn.signTxn(secret_key.sk);
+    // const signedCreationTxn = creationTxn.signTxn(secret_key.sk);
+    let signedDestroyTxn = algosdk.signTransaction(destroyTxn, secret_key.sk)
+    signedDestroyTxn.blob = signedDestroyTxn.blob.toString()
+    let signedCreationTxn = algosdk.signTransaction(creationTxn, secret_key.sk)
+    signedCreationTxn.blob = signedCreationTxn.blob.toString()
+    const signedGroup = [signedDestroyTxn, signedCreationTxn]
+
+    return signedGroup
+  } catch (error) {
+    console.log("destroyAndCreateAsset error: ", error)
     throw error
   }
 }

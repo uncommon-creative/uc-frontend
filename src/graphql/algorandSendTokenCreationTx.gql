@@ -1,6 +1,6 @@
 mutation algorandSendTokenCreationTx(
   $sow: ID,
-  $tx: String
+  $tx: [TransactionInput]
 ) {
   algorandSendTokenCreationTx(
     sow: $sow,
