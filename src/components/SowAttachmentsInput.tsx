@@ -16,7 +16,7 @@ import { actions as SowActions, selectors as SowSelectors, SowStatus } from '../
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { FileButton } from './common/FileButton';
 
-export const SowAttachments = ({ currentSow }: any) => {
+export const SowAttachmentsInput = ({ currentSow }: any) => {
 
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();

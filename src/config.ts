@@ -22,9 +22,14 @@ export const configuration: any = {
     'uc_backup_public_key': '3IB3QQKFQACYNQDD2G2CVV7I7ZZDY5ZLFW7SOJQVQG6I4CPCOVE2UU35OA',
     'submitToken_unitName': 'UC-',
     'submitToken_assetName': 'UC project ',
-    'AlgoExplorer_tx_link': 'https://testnet.algoexplorer.io/tx/',
-    'AlgoExplorer_address_link': 'https://testnet.algoexplorer.io/address/',
-    'AlgoExplorer_asset_link': 'https://testnet.algoexplorer.io/asset/'
+    'AlgoExplorer_link': {
+      'tx': 'https://testnet.algoexplorer.io/tx/',
+      'address': 'https://testnet.algoexplorer.io/address/',
+      'asset': 'https://testnet.algoexplorer.io/asset/'
+    }
+    // 'AlgoExplorer_tx_link': 'https://testnet.algoexplorer.io/tx/',
+    // 'AlgoExplorer_address_link': 'https://testnet.algoexplorer.io/address/',
+    // 'AlgoExplorer_asset_link': 'https://testnet.algoexplorer.io/asset/'
   },
   demo: {
     Auth: {
@@ -49,8 +54,13 @@ export const configuration: any = {
     'uc_backup_public_key': '3IB3QQKFQACYNQDD2G2CVV7I7ZZDY5ZLFW7SOJQVQG6I4CPCOVE2UU35OA',
     'submitToken_unitName': 'UC-',
     'submitToken_assetName': 'UC project ',
-    'AlgoExplorer_tx_link': 'https://testnet.algoexplorer.io/tx/',
-    'AlgoExplorer_address_link': 'https://testnet.algoexplorer.io/address/',
-    'AlgoExplorer_asset_link': 'https://testnet.algoexplorer.io/asset/'
+    'AlgoExplorer_link': {
+      'tx': 'https://testnet.algoexplorer.io/tx/',
+      'address': 'https://testnet.algoexplorer.io/address/',
+      'asset': 'https://testnet.algoexplorer.io/asset/'
+    }
+    // 'AlgoExplorer_tx_link': 'https://testnet.algoexplorer.io/tx/',
+    // 'AlgoExplorer_address_link': 'https://testnet.algoexplorer.io/address/',
+    // 'AlgoExplorer_asset_link': 'https://testnet.algoexplorer.io/asset/'
   }
 }

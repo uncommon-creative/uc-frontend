@@ -12,7 +12,8 @@ import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from 'react-i18next';
 
 import { ActivityButton } from './common/ActivityButton'
-import { SowAttachments } from '../components/SowAttachments'
+import { SowAttachmentsInput } from './SowAttachmentsInput'
+import { LinkBlockExplorer } from './common/LinkBlockExplorer'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { selectors as AuthSelectors } from '../store/slices/auth'
@@ -83,16 +84,17 @@ export const ChatSow = ({ currentSow }: any) => {
                                 <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-muted text-break" : "text-muted text-break"}>
                                   {msg.commandMessage.command == SowCommands.ACCEPT_AND_PAY ?
                                     <>
-                                      {`Opt-in transaction: \n${JSON.parse(msg.commandMessage.data).tx[0]}`}
-                                      {JSON.parse(msg.commandMessage.data).tx[1] && `\nPayment transaction:\n${JSON.parse(msg.commandMessage.data).tx[1]}`}
+                                      <LinkBlockExplorer title={`Opt-in transaction: \n${JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
+                                      {JSON.parse(msg.commandMessage.data).tx[1] && <LinkBlockExplorer title={`\nPayment transaction:\n${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />}
                                     </>
                                     :
-                                    'transaction:\n' + JSON.parse(msg.commandMessage.data).tx}
+                                    <LinkBlockExplorer title={'Transaction:\n' + JSON.parse(msg.commandMessage.data).tx.substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx} />
+                                  }
                                 </CardSubtitle>
                               }
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).assetId &&
                                 <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-muted text-break mt-1" : "text-muted text-break mt-1"}>
-                                  {'assetId:\n' + JSON.parse(msg.commandMessage.data).assetId}
+                                  <LinkBlockExplorer title={'Asset:\n' + JSON.parse(msg.commandMessage.data).assetId} type="asset" id={JSON.parse(msg.commandMessage.data).assetId} />
                                 </CardSubtitle>
                               }
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).reviews_left &&
@@ -166,7 +168,7 @@ export const ChatSow = ({ currentSow }: any) => {
         <Row>
           <Col>
             <Label for="attachments">Attachments</Label>
-            <SowAttachments currentSow={currentSow} />
+            <SowAttachmentsInput currentSow={currentSow} />
           </Col>
         </Row>
       </Formik>
