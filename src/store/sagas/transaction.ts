@@ -45,7 +45,7 @@ function* willGetAlgorandAccountInfo(action: any) {
 
   try {
     const result = yield call(TransactionApi.algorandGetAccountInfo, action);
-    console.log("result willGetAlgorandAccountInfo: ", result)
+    // console.log("result willGetAlgorandAccountInfo: ", result)
     return result
   } catch (error) {
     console.log("error in willGetAlgorandAccountInfo ", error)
@@ -162,7 +162,7 @@ function* willCompleteTransactionAcceptAndPayQR(action: any) {
 
 function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
   console.log("in willCompleteTransactionAcceptAndPayMnemonic with: ", action)
-  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
+  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPay'));
   const users = yield select(ProfileSelectors.getUsers)
 
   try {
@@ -179,10 +179,10 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
       const resultSentTransaction = yield call(TransactionApi.algorandSendAcceptAndPayTx, action.payload.currentSow.sow, resultSignedTransaction)
       console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction: ", resultSentTransaction)
 
-      if (resultSentTransaction === "sendTxFailed") {
+      if (resultSentTransaction.error) {
         console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction fail: ", resultSentTransaction)
-        yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSentTransaction))
-        yield put(NotificationActions.willShowNotification({ message: resultSentTransaction, type: "danger" }));
+        yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSentTransaction.error))
+        yield put(NotificationActions.willShowNotification({ message: resultSentTransaction.error, type: "danger" }));
       }
       else {
         console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction success: ", resultSentTransaction)
@@ -193,16 +193,19 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
     else {
       console.log("willCompleteTransactionAcceptAndPayMnemonic fail")
       yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultCheckAccountTransaction.error))
+      yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
     }
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptAndPayMnemonic ", error)
+    yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(error))
+    yield put(NotificationActions.willShowNotification({ message: error, type: "danger" }));
   }
-  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayMnemonic'));
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPay'));
 }
 
 function* willCompleteTransactionAcceptAndPayPaid(action: any) {
   console.log("in willCompleteTransactionAcceptAndPayPaid with: ", action)
-  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayPaid'));
+  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPay'));
   const users = yield select(ProfileSelectors.getUsers)
 
   try {
@@ -237,7 +240,7 @@ function* willCompleteTransactionAcceptAndPayPaid(action: any) {
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptAndPayPaid ", error)
   }
-  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPayPaid'));
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPay'));
 }
 
 function* willPrepareTransactionAcceptAndPayAlgoSigner(action: any) {
@@ -514,6 +517,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
       if (resultAlgorandSendTokenCreationTx.error) {
         console.log("willCompleteTransactionSubmitMnemonic fail")
         yield put(TransactionActions.didCompleteTransactionSubmitFail(resultAlgorandSendTokenCreationTx.error))
+        yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendTokenCreationTx.error, type: "danger" }));
       }
       else {
         console.log("willCompleteTransactionSubmitMnemonic success")
@@ -523,10 +527,12 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
     else {
       console.log("willCompleteTransactionSubmitMnemonic fail")
       yield put(TransactionActions.didCompleteTransactionSubmitFail(resultCheckAccountTransaction.error))
+      yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
     }
   } catch (error) {
     console.log("error in willCompleteTransactionSubmitMnemonic ", error)
-    yield put(TransactionActions.didCompleteTransactionSubmitFail())
+    yield put(TransactionActions.didCompleteTransactionSubmitFail(error))
+    yield put(NotificationActions.willShowNotification({ message: error, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning('willCompleteTransactionSubmitMnemonic'));
 }
@@ -608,7 +614,7 @@ export function* willCheckAccountTransaction(action: any) {
     }
     else {
       const addressInfo = yield call(willGetAlgorandAccountInfo, resultMnemonicToSecretKey.addr)
-      console.log("willCheckAccountTransaction addressInfo: ", addressInfo)
+      // console.log("willCheckAccountTransaction addressInfo: ", addressInfo)
       const accountMinBalance = addressInfo.assets.length * AlgorandMinBalance + addressInfo.createdAssets.length * AlgorandMinBalance + AlgorandMinBalance
       // console.log("in willCheckAccountTransaction accountMinBalance: ", accountMinBalance)
 

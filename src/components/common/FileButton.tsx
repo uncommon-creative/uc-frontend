@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Button, Spinner, FormText, Row, Col, Tooltip, CardSubtitle } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFileWord, faFileVideo, faFilePowerpoint, faFilePdf, faFileImage, faFileCode, faFileAudio, faFileArchive, faFileAlt, faFileCsv, faFile, faFileExcel, } from '@fortawesome/free-solid-svg-icons'
+import { faExternalLinkAlt, faFileWord, faFileVideo, faFilePowerpoint, faFilePdf, faFileImage, faFileCode, faFileAudio, faFileArchive, faFileAlt, faFileCsv, faFile, faFileExcel, } from '@fortawesome/free-solid-svg-icons'
 
 import { configuration } from '../../config'
 import { selectors as UISelectors } from '../../store/slices/ui'
@@ -139,11 +139,18 @@ export const FileButton = ({ file, disabled, children, ...rest }: any) => {
                   }
                 </>
               }
+              {/* d-flex align-items-center */}
             </a>
             {file.filename == configuration[stage].works_agreement_key && messagesCommands[SowCommands.SUBMIT] &&
-              <a target="_blank" style={{ fontSize: 11 }} className='d-flex justify-content-center mt-1'
+              <a target="_blank" style={{ fontSize: 11 }} className='d-flex justify-content-center mt-1 align-items-baseline'
                 href={configuration[stage].AlgoExplorer_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>
-                Verify on Block Explorer{/* : {JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId} */}
+                Asset on Block Explorer <FontAwesomeIcon className="ml-1" icon={faExternalLinkAlt} size='1x' />
+              </a>
+            }
+            {file.filename == configuration[stage].works_agreement_key && messagesCommands[SowCommands.ACCEPT_AND_PAY] &&
+              <a target="_blank" style={{ fontSize: 11 }} className='d-flex justify-content-center mt-1 align-items-baseline'
+                href={configuration[stage].AlgoExplorer_tx_link + JSON.parse(messagesCommands[SowCommands.ACCEPT_AND_PAY].commandMessage.data).tx[0]}>
+                Opt-in on Block Explorer <FontAwesomeIcon className="ml-1" icon={faExternalLinkAlt} size='1x' />
               </a>
             }
           </FormText>

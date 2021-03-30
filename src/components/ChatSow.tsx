@@ -81,12 +81,18 @@ export const ChatSow = ({ currentSow }: any) => {
                               </CardTitle>
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).tx &&
                                 <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-muted text-break" : "text-muted text-break"}>
-                                  {'transaction: ' + JSON.parse(msg.commandMessage.data).tx}
+                                  {msg.commandMessage.command == SowCommands.ACCEPT_AND_PAY ?
+                                    <>
+                                      {`Opt-in transaction: \n${JSON.parse(msg.commandMessage.data).tx[0]}`}
+                                      {JSON.parse(msg.commandMessage.data).tx[1] && `\nPayment transaction:\n${JSON.parse(msg.commandMessage.data).tx[1]}`}
+                                    </>
+                                    :
+                                    'transaction:\n' + JSON.parse(msg.commandMessage.data).tx}
                                 </CardSubtitle>
                               }
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).assetId &&
-                                <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-muted text-break" : "text-muted text-break"}>
-                                  {'assetId: ' + JSON.parse(msg.commandMessage.data).assetId}
+                                <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-muted text-break mt-1" : "text-muted text-break mt-1"}>
+                                  {'assetId:\n' + JSON.parse(msg.commandMessage.data).assetId}
                                 </CardSubtitle>
                               }
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).reviews_left &&
@@ -94,44 +100,13 @@ export const ChatSow = ({ currentSow }: any) => {
                                   {'#' + JSON.parse(msg.commandMessage.data).reviews_left + '\n' + JSON.parse(msg.commandMessage.data).message}
                                 </CardSubtitle>
                               }
-                              <CardText>
+                              <CardText className="mt-3">
                                 {t(`chat.SowCommands.${msg.commandMessage.command}_info`)}
                               </CardText>
                             </>
-
-
-
-                            //     msg.commandMessage.command == SowCommands.REQUEST_REVIEW ?
-                            //       msg.commandMessage.command + ' (#' + JSON.parse(msg.commandMessage.data).reviews_left + '): \n' + JSON.parse(msg.commandMessage.data).message
-                            //       : msg.commandMessage.command == SowCommands.SYSTEM_SIGN ?
-                            //         <>
-                            //   <CardTitle className="text-center text-primary">
-                            //     {msg.commandMessage.command}
-                            //   </CardTitle>
-                            //   <CardSubtitle className="text-center text-muted text-break">
-                            //     {'transaction: ' + JSON.parse(msg.commandMessage.data).tx}
-                            //   </CardSubtitle>
-                            //   <CardText>
-                            //     {t(`chat.SowCommands.${SowCommands.SYSTEM_SIGN}_info`)}
-                            //   </CardText>
-                            // </>
-                            //         : msg.commandMessage.command
-
-
-
                             : msg.attachmentMessage.key.split('/').pop().length > 20 ?
                               msg.attachmentMessage.key.split('/').pop().substring(0, 16) + '... ' + msg.attachmentMessage.key.split('/').pop().substring(msg.attachmentMessage.key.split('/').pop().length - 4, msg.attachmentMessage.key.split('/').pop().length)
                               : msg.attachmentMessage.key.split('/').pop()
-
-
-                          // msg.textMessage ? msg.textMessage.message
-                          //   : msg.commandMessage ?
-                          //     msg.commandMessage.data ?
-                          //       msg.commandMessage.command + ' (#' + JSON.parse(msg.commandMessage.data).reviews_left + '): \n' + JSON.parse(msg.commandMessage.data).message
-                          //       : msg.commandMessage.command
-                          //     : msg.attachmentMessage.key.split('/').pop().length > 20 ?
-                          //       msg.attachmentMessage.key.split('/').pop().substring(0, 16) + '... ' + msg.attachmentMessage.key.split('/').pop().substring(msg.attachmentMessage.key.split('/').pop().length - 4, msg.attachmentMessage.key.split('/').pop().length)
-                          //       : msg.attachmentMessage.key.split('/').pop()
                         }
                       </>
                     }
