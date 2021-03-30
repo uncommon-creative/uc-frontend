@@ -19,6 +19,7 @@ import { ActivityButton } from '../components/common/ActivityButton'
 import { RefreshButton } from '../components/common/RefreshButton'
 import { FileButton } from '../components/common/FileButton'
 import { SowDetails } from '../components/sow/SowDetails'
+import { SowAttachments } from '../components/sow/SowAttachments'
 import { AcceptAndPay } from '../components/transaction/AcceptAndPay'
 import { ClaimMilestoneMet } from '../components/transaction/ClaimMilestoneMet'
 import { AcceptMilestone } from '../components/transaction/AcceptMilestone'
@@ -43,7 +44,7 @@ export const StatementOfWorkPage = () => {
   const userAttributes = useSelector(ProfileSelectors.getProfile)
   const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators);
   const currentChosenArbitrator = useSelector(ArbitratorSelectors.getCurrentChosenArbitrator)
-  const newAttachments = useSelector(SowSelectors.getNewAttachments);
+  const newAttachments = useSelector(SowSelectors.getNewAttachments)
   const user = useSelector(AuthSelectors.getUser)
   const users = useSelector(ProfileSelectors.getUsers)
   const [modalOpenSowDetails, setModalOpenSowDetails] = React.useState(false);
@@ -312,42 +313,11 @@ export const StatementOfWorkPage = () => {
                           }
                         </Jumbotron>
                       </Col>
-                    </Row>}
+                    </Row>
+                  }
                   <Row>
                     <Col className="col-12">
-                      <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Attachments</CardSubtitle>
-                      <Jumbotron>
-                        {newAttachments.map((attachment: any, index: any) => {
-                          return (
-                            attachment.owner === currentSow.sow &&
-                            <ListGroupItem data-cy="attachmentsSow" key={index}>
-                              <FileButton file={attachment} />
-                            </ListGroupItem>
-                          )
-                        })}
-
-                        <CardText>Seller's:</CardText>
-                        {newAttachments.map((attachment: any, index: any) => {
-                          return (attachment.owner === currentSow.seller &&
-                            <>
-                              <ListGroupItem data-cy="attachmentsSeller" key={index} >
-                                <FileButton file={attachment} />
-                              </ListGroupItem>
-                            </>
-                          )
-                        })}
-
-                        <CardText>Buyer's:</CardText>
-                        {newAttachments.map((attachment: any, index: any) => {
-                          return (attachment.owner === currentSow.buyer &&
-                            <>
-                              <ListGroupItem data-cy="attachmentsBuyer" key={index}>
-                                <FileButton file={attachment} />
-                              </ListGroupItem>
-                            </>
-                          )
-                        })}
-                      </Jumbotron>
+                      <SowAttachments />
                     </Col>
                   </Row>
                 </Col>
