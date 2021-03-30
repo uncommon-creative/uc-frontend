@@ -141,15 +141,15 @@ describe('Chat', () => {
       cy.get('[data-cy=acceptAndPay]').click()
       cy.wait(10000)
       // if toPay>0
-      cy.get('[data-cy=acceptAndPayModal]').then((body) => {
-        if (body.text().includes('Fund the wallet with mnemonic secret key')) {
-          cy.get('[data-cy=mnemonicSecretKey]')
-            .type(Cypress.env('userBuyerMnemonic'), { timeout: 15000 })
-            .should('have.value', Cypress.env('userBuyerMnemonic'))
-          cy.get('[data-cy=willCompleteTransactionAcceptAndPayMnemonic]').click()
-          cy.wait(10000)
-        }
-      })
+      // cy.get('[data-cy=acceptAndPayModal]').then((body) => {
+      //   if (body.text().includes('Fund the wallet with mnemonic secret key')) {
+      cy.get('[data-cy=mnemonicSecretKey]')
+        .type(Cypress.env('userBuyerMnemonic'), { timeout: 15000 })
+        .should('have.value', Cypress.env('userBuyerMnemonic'))
+      cy.get('[data-cy=willCompleteTransactionAcceptAndPay]').click()
+      cy.wait(10000)
+      //   }
+      // })
       cy.get('[data-cy=closeAcceptAndPay]').click()
       cy.wait(10000)
       cy.get('[class=rce-mbox-text]')
