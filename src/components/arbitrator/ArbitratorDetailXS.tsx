@@ -22,7 +22,7 @@ export const ArbitratorDetailXS = ({ arbitrator, index }: any) => {
   const { t, i18n } = useTranslation();
   const [modalOpen, setModalOpen] = React.useState(false);
   const selectingOneArbitrator = useSelector(ArbitratorSelectors.isSelectingOneArbitrator)
-  console.log("in ArbitratorDetailXS", arbitrator)
+  // console.log("in ArbitratorDetailXS", arbitrator)
 
   const toggleModal = () => setModalOpen(!modalOpen);
   const addDefaultSrc = (ev: any) => { ev.target.src = Portrait }
