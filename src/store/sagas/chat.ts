@@ -4,7 +4,7 @@ import update from 'immutability-helper';
 
 import * as ChatApi from '../../api/chat'
 import { actions as ChatActions, selectors as ChatSelectors } from '../slices/chat'
-import { actions as SowActions } from '../slices/sow'
+import { actions as SowActions, SowCommands } from '../slices/sow'
 import { actions as UIActions } from '../slices/ui'
 import * as SowApi from '../../api/sow'
 import { willGetUserProfile } from '../sagas/profile'
@@ -15,7 +15,8 @@ export function* sagas() {
   yield takeLatest(ChatActions.willSendTextChat.type, willSendTextChat)
   yield takeLatest(ChatActions.willSendCommandChat.type, willSendCommandChat)
   yield takeLatest(ChatActions.willSendAttachmentChat.type, willSendAttachmentChat)
-  console.log('in sow saga');
+  yield takeLatest(ChatActions.willGetMessageCommand.type, willGetMessageCommand)
+  console.log('in chat saga');
 }
 
 function* willRefreshSowChat(action: any) {
@@ -40,17 +41,22 @@ function* willReadSowChat(action: any) {
     var result = yield call(ChatApi.listSowChatMessages, action.payload.sow, null);
     console.log("result willReadSowChat: ", result)
 
+    let messagesCommands = {} as any
+
     for (var msg of result.messages) {
       yield call(willGetUserProfile, { user: msg.from })
       if (msg.attachmentMessage) {
         let tmp = msg.attachmentMessage.key.split('/')
         const downloadUrl = yield call(SowApi.getDownloadUrl, tmp[0], msg.attachmentMessage.key, 600)
-
         msg.attachmentMessage['downloadUrl'] = downloadUrl
+      }
+      
+      if (msg.commandMessage) {
+        messagesCommands[msg.commandMessage.command] = msg
       }
     }
 
-    yield put(ChatActions.didReadSowChat(result.messages))
+    yield put(ChatActions.didReadSowChat({messages: result.messages, messagesCommands: messagesCommands}))
   } catch (error) {
     console.log("error in willReadSowChat ", error)
   }
@@ -110,4 +116,17 @@ function* willSendAttachmentChat(action: any) {
     console.log("error in willSendAttachmentChat ", error)
   }
   yield put(UIActions.stopActivityRunning(action.payload.values.key));
+}
+
+export function* willGetMessageCommand(action: any) {
+  console.log("in willGetMessageCommand with: ", action)
+  const messages = yield select(ChatSelectors.getMessages)
+  console.log("in willGetMessageCommand messages: ", messages)
+
+  try {
+    const messageCommand = messages.slice().reverse().find((msg: any) => msg.commandMessage.command=== SowCommands[action.payload.command])
+    console.log("willGetMessageCommand messageCommand: ", messageCommand)
+  } catch (error) {
+    console.log("error in willGetMessageCommand ", error)
+  }
 }

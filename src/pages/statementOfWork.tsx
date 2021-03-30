@@ -7,24 +7,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams, useHistory } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 
+import { configuration } from '../config'
 import { actions as NotificationActions } from '../store/slices/notification'
 import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../store/slices/sow'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
-import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
 import { ChatSow } from '../components/ChatSow'
 import { ArbitratorDetailXS } from '../components/arbitrator/ArbitratorDetailXS'
 import { ActivityButton } from '../components/common/ActivityButton'
 import { RefreshButton } from '../components/common/RefreshButton'
-import { FileButton } from '../components/common/FileButton';
-import { selectors as UISelectors } from '../store/slices/ui'
+import { FileButton } from '../components/common/FileButton'
 import { SowDetails } from '../components/sow/SowDetails'
 import { AcceptAndPay } from '../components/transaction/AcceptAndPay'
 import { ClaimMilestoneMet } from '../components/transaction/ClaimMilestoneMet'
 import { AcceptMilestone } from '../components/transaction/AcceptMilestone'
 import { Reject } from '../components/transaction/Reject'
 import { RequestReview } from '../components/transaction/RequestReview'
+
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -220,7 +221,7 @@ export const StatementOfWorkPage = () => {
                       </Col>
                     </Row>
                   }
-                  {(currentSow.status != SowStatus.REJECTED && currentSow.status != SowStatus.EXPIRED && currentSow.status != SowStatus.MILESTONE_ACCEPTED) &&
+                  {(currentSow.status != SowStatus.REJECTED && currentSow.status != SowStatus.EXPIRED && currentSow.status != SowStatus.MILESTONE_ACCEPTED && currentSow.status != SowStatus.SYSTEM_SIGNED) &&
                     <Row>
                       <Col className="col-12">
                         <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Special commands</CardSubtitle>
@@ -296,6 +297,11 @@ export const StatementOfWorkPage = () => {
                                 <ActivityButton data-cy={SowCommands.ACCEPT_MILESTONE} block color="primary" name={SowCommands.ACCEPT_MILESTONE}
                                   onClick={toggleModalAcceptMilestone}
                                 >Accept milestone</ActivityButton>
+                              }
+                              {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
+                                <CardText className="text-muted text-center">
+                                  {t('chat.buyerMilestoneClaimedInfo')}
+                                </CardText>
                               }
                               {currentSow.status == SowStatus.REVIEW_REQUIRED &&
                                 <CardText className="text-muted text-center">

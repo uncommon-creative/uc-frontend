@@ -7,11 +7,14 @@ import { faFileWord, faFileVideo, faFilePowerpoint, faFilePdf, faFileImage, faFi
 
 import { configuration } from '../../config'
 import { selectors as UISelectors } from '../../store/slices/ui'
+import { selectors as ChatSelectors } from '../../store/slices/chat'
+import { SowCommands } from '../../store/slices/sow'
 
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
 export const FileButton = ({ file, disabled, children, ...rest }: any) => {
 
+  const messagesCommands = useSelector(ChatSelectors.getMessagesCommands)
   const isActivityRunning = useSelector(state => UISelectors.activityRunningSelector(state, file.key));
   var fileIcon = {} as any
 
@@ -19,6 +22,8 @@ export const FileButton = ({ file, disabled, children, ...rest }: any) => {
   const toggleMd5HashSpecsDoc = () => setTooltipOpenMd5HashSpecsDoc(!tooltipOpenMd5HashSpecsDoc);
   const [tooltipOpenMd5HashWorksAgreement, setTooltipOpenMd5HashWorksAgreement] = React.useState(false);
   const toggleMd5HashWorksAgreement = () => setTooltipOpenMd5HashWorksAgreement(!tooltipOpenMd5HashWorksAgreement);
+  const [tooltipOpenBase64Md5HashWorksAgreement, setTooltipOpenBase64Md5HashWorksAgreement] = React.useState(false);
+  const toggleBase64Md5HashWorksAgreement = () => setTooltipOpenBase64Md5HashWorksAgreement(!tooltipOpenBase64Md5HashWorksAgreement);
 
   switch (file.type) {
     case '.pdf':
@@ -91,50 +96,56 @@ export const FileButton = ({ file, disabled, children, ...rest }: any) => {
           </FormText >
         ) : (
           <FormText color="muted">
-            <Row>
-              <Col>
-                <a target="_blank" href={file.downloadUrl}>
-                  <Row>
-                    <Col className='d-flex justify-content-center'>
-                      <FontAwesomeIcon icon={fileIcon} size='2x' />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col data-cy="attachment" className='d-flex justify-content-center'>
-                      {file.filename.length > 20 ?
-                        file.filename.substring(0, 16) + '... ' + file.filename.substring(file.filename.length - 4, file.filename.length)
-                        : file.filename}
-                    </Col>
-                  </Row>
-                  {file.owner == file.sow &&
-                    <Row>
-                      <Col className='d-flex justify-content-center'>
-                        {file.filename == configuration[stage].works_agreement_key &&
-                          <>
-                            <span id="FileMd5HashWorksAgreement" style={{ fontSize: 11 }}>
-                              md5 hash: {file.etag.substring(0, 6) + '... '}
-                            </span>
-                            <Tooltip placement="bottom" isOpen={tooltipOpenMd5HashWorksAgreement} target="FileMd5HashWorksAgreement" toggle={toggleMd5HashWorksAgreement}>
-                              {file.etag}
-                            </Tooltip>
-                          </>
-                        }
-                        {file.filename == configuration[stage].specs_document_key &&
-                          <>
-                            <span id="FileMd5HashSpecsDoc" style={{ fontSize: 11 }}>
-                              md5 hash: {file.etag.substring(0, 6) + '... '}
-                            </span>
-                            <Tooltip placement="bottom" isOpen={tooltipOpenMd5HashSpecsDoc} target="FileMd5HashSpecsDoc" toggle={toggleMd5HashSpecsDoc}>
-                              {file.etag}
-                            </Tooltip>
-                          </>
-                        }
-                      </Col>
+            <a target="_blank" href={file.downloadUrl}>
+              <Row>
+                <Col className='d-flex justify-content-center'>
+                  <FontAwesomeIcon icon={fileIcon} size='2x' />
+                </Col>
+              </Row>
+              <Row>
+                <Col data-cy="attachment" className='d-flex justify-content-center'>
+                  {file.filename.length > 20 ?
+                    file.filename.substring(0, 16) + '... ' + file.filename.substring(file.filename.length - 4, file.filename.length)
+                    : file.filename}
+                </Col>
+              </Row>
+              {file.owner == file.sow &&
+                <>
+                  {file.filename == configuration[stage].works_agreement_key &&
+                    <Row className="d-flex justify-content-center">
+                      <span id="FileMd5HashWorksAgreement" style={{ fontSize: 11 }}>
+                        md5 hash: {file.etag.substring(0, 6) + '... '}
+                      </span>
+                      <Tooltip placement="bottom" isOpen={tooltipOpenMd5HashWorksAgreement} target="FileMd5HashWorksAgreement" toggle={toggleMd5HashWorksAgreement}>
+                        {file.etag}
+                      </Tooltip>
+                      <span id="FileBase64Md5HashWorksAgreement" style={{ fontSize: 11 }}>
+                        base64 md5: {Buffer.from(file.etag).toString("base64").substring(0, 6) + '... '}
+                      </span>
+                      <Tooltip placement="bottom" isOpen={tooltipOpenBase64Md5HashWorksAgreement} target="FileBase64Md5HashWorksAgreement" toggle={toggleBase64Md5HashWorksAgreement}>
+                        {Buffer.from(file.etag).toString("base64")}
+                      </Tooltip>
                     </Row>
                   }
-                </a>
-              </Col>
-            </Row>
+                  {file.filename == configuration[stage].specs_document_key &&
+                    <Row className="d-flex justify-content-center">
+                      <span id="FileMd5HashSpecsDoc" style={{ fontSize: 11 }}>
+                        md5 hash: {file.etag.substring(0, 6) + '... '}
+                      </span>
+                      <Tooltip placement="bottom" isOpen={tooltipOpenMd5HashSpecsDoc} target="FileMd5HashSpecsDoc" toggle={toggleMd5HashSpecsDoc}>
+                        {file.etag}
+                      </Tooltip>
+                    </Row>
+                  }
+                </>
+              }
+            </a>
+            {file.filename == configuration[stage].works_agreement_key && messagesCommands[SowCommands.SUBMIT] &&
+              <a target="_blank" style={{ fontSize: 11 }} className='d-flex justify-content-center mt-1'
+                href={configuration[stage].AlgoExplorer_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>
+                Verify on Block Explorer{/* : {JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId} */}
+              </a>
+            }
           </FormText>
         )
       }
