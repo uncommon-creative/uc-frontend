@@ -479,3 +479,16 @@ export const destroyAndCreateAsset = async (mnemonicSecretKey: any, addr: any, n
     throw error
   }
 }
+
+export const algorandSendDeliverableTokenCreationTx = async (sow: any, tx: any) => {
+  const mutation = loader('../graphql/algorandSendDeliverableTokenCreationTx.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, tx: tx }))
+    console.log("algorandSendDeliverableTokenCreationTx result: ", result)
+    return result.data.algorandSendDeliverableTokenCreationTx
+  } catch (error) {
+    console.log("algorandSendDeliverableTokenCreationTx API error: ", error)
+    throw error
+  }
+}

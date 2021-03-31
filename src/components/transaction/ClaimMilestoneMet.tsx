@@ -42,6 +42,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
 
   React.useEffect(() => {
     modal && dispatch(TransactionActions.willGetParamsWithDelay({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
+    modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
 
     return () => {
       setAcceptedConditions(false)
@@ -171,14 +172,14 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(3))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionClaimMilestoneMetMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig, sellerAddress: users[currentSow.seller].public_key, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
+              dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag }))
             }}>Sign the transaction</ActivityButton>
           </ModalFooter>
         </>
       }
       {transactionPage == 5 &&
         <>
-          <ModalHeader toggle={toggle}>Claim milestone met with mnemonic Secret Key</ModalHeader>
+          <ModalHeader toggle={toggle}>Claim milestone met with AlgoSigner</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="pt-5 text-muted text-center">Select one of your AlgoSigner accounts</CardSubtitle>
             {algoSigner.accounts &&

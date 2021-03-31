@@ -21,8 +21,10 @@ export const configuration: any = {
     'specs_document_key': 'specs_document',
     'deliverable_key': 'deliverable',
     'uc_backup_public_key': '3IB3QQKFQACYNQDD2G2CVV7I7ZZDY5ZLFW7SOJQVQG6I4CPCOVE2UU35OA',
-    'submitToken_unitName': 'UC-',
-    'submitToken_assetName': 'UC project ',
+    'submitAsset_unitName': 'UC-',
+    'submitAsset_assetName': 'UC project ',
+    'deliverableAsset_unitName': 'UCDLV-',
+    'deliverableAsset_assetName': 'UCDLV project ',
     'AlgoExplorer_link': {
       'tx': 'https://testnet.algoexplorer.io/tx/',
       'address': 'https://testnet.algoexplorer.io/address/',
@@ -51,8 +53,8 @@ export const configuration: any = {
     'specs_document_key': 'specs_document',
     'deliverable_key': 'deliverable',
     'uc_backup_public_key': '3IB3QQKFQACYNQDD2G2CVV7I7ZZDY5ZLFW7SOJQVQG6I4CPCOVE2UU35OA',
-    'submitToken_unitName': 'UC-',
-    'submitToken_assetName': 'UC project ',
+    'submitAsset_unitName': 'UC-',
+    'submitAsset_assetName': 'UC project ',
     'AlgoExplorer_link': {
       'tx': 'https://testnet.algoexplorer.io/tx/',
       'address': 'https://testnet.algoexplorer.io/address/',
