@@ -16,7 +16,7 @@ import { ActivityButton } from '../components/common/ActivityButton'
 import { TagsInput } from '../components/TagsInput'
 import { ArbitratorsSelect } from '../components/arbitrator/ArbitratorsSelect'
 import { ArbitratorDetailMD } from '../components/arbitrator/ArbitratorDetailMD'
-import { SowAttachments } from '../components/SowAttachments'
+import { SowAttachmentsInput } from '../components/SowAttachmentsInput'
 import { DescriptionEditor } from '../components/DescriptionEditor'
 import { actions as SowActions, selectors as SowSelectors, SowStatus } from '../store/slices/sow'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
@@ -297,7 +297,7 @@ export const CreateStatementOfWorkPage = () => {
                                 Only one file allowed, create a compressed archive with multiple files if needed.
                               </CardSubtitle>
                             </Label>
-                            <SowAttachments currentSow={currentSow} />
+                            <SowAttachmentsInput currentSow={currentSow} />
                           </Col>
                         </Row>
                       </Jumbotron>

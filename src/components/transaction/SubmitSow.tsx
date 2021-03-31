@@ -22,7 +22,7 @@ import { actions as NotificationActions } from '../../store/slices/notification'
 import { actions as UIActions } from '../../store/slices/ui'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { ActivityButton } from '../common/ActivityButton';
-import { Payment } from './Payment'
+import { LinkBlockExplorer } from '../common/LinkBlockExplorer'
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
 
 
@@ -175,10 +175,8 @@ export const SubmitSow = ({ modal, toggle }: any) => {
                 The Statement of Work was submitted successfully, the following asset was created.
               </CardText>
               <CardText>
-                Asset Id: {submitToken.assetId}
-              </CardText>
-              <CardText>
-                Transaction Id: {submitToken.tx}
+                <LinkBlockExplorer title={'Asset: ' + submitToken.assetId} type="asset" id={submitToken.assetId} />
+                <LinkBlockExplorer title={'Transaction: ' + submitToken.tx} type="tx" id={submitToken.tx} />
               </CardText>
             </Jumbotron>
           </ModalBody>
