@@ -50,7 +50,7 @@ export const SowAttachments = () => {
             </Row>
           </ListGroupItem>
           <Collapse isOpen={isOpenAgreement}>
-            <Card>
+            <Card className='d-flex justify-content-center col-auto' style={{ fontSize: 11 }} >
               {messagesCommands[SowCommands.SUBMIT] &&
                 <LinkBlockExplorer title="Asset on Block Explorer" type="asset" id={JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId} />
               }

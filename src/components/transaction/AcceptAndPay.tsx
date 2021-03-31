@@ -22,6 +22,7 @@ import { actions as NotificationActions } from '../../store/slices/notification'
 import { actions as UIActions } from '../../store/slices/ui'
 import { ActivityButton } from '../common/ActivityButton';
 import { Payment } from './Payment'
+import { LinkBlockExplorer } from '../common/LinkBlockExplorer'
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
 
 declare var AlgoSigner: any;
@@ -294,9 +295,9 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
                 {t('transaction.transactionCompleted')}
               </CardText>
               <CardText>
-                {`Asset: \n${<a target="_blank" href={configuration[stage].AlgoExplorer_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>{JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</a>}`}
-                {`Opt-in transaction: \n${transactionAcceptAndPay.tx[0]}`}
-                {transactionAcceptAndPay.tx[1] && `\nPayment transaction:\n${transactionAcceptAndPay.tx[1]}`}
+                <LinkBlockExplorer title={'Asset: ' + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId} type="asset" id={JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId} />
+                <LinkBlockExplorer title={'Opt-in transaction: ' + transactionAcceptAndPay.tx[0]} type="tx" id={transactionAcceptAndPay.tx[0]} />
+                {transactionAcceptAndPay.tx[1] && <LinkBlockExplorer title={'nPayment transaction: ' + transactionAcceptAndPay.tx[1]} type="tx" id={transactionAcceptAndPay.tx[1]} />}
               </CardText>
             </Jumbotron>
           </ModalBody>

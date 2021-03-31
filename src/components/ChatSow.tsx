@@ -81,20 +81,20 @@ export const ChatSow = ({ currentSow }: any) => {
                                 {msg.commandMessage.command}
                               </CardTitle>
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).tx &&
-                                <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-muted text-break" : "text-muted text-break"}>
+                                <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center" : ""}>
                                   {msg.commandMessage.command == SowCommands.ACCEPT_AND_PAY ?
                                     <>
-                                      <LinkBlockExplorer title={`Opt-in transaction: \n${JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
-                                      {JSON.parse(msg.commandMessage.data).tx[1] && <LinkBlockExplorer title={`\nPayment transaction:\n${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />}
+                                      <LinkBlockExplorer title={`Opt-in transaction: ${JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
+                                      {JSON.parse(msg.commandMessage.data).tx[1] && <LinkBlockExplorer title={`\nPayment transaction: ${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />}
                                     </>
                                     :
-                                    <LinkBlockExplorer title={'Transaction:\n' + JSON.parse(msg.commandMessage.data).tx.substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx} />
+                                    <LinkBlockExplorer title={'Transaction: ' + JSON.parse(msg.commandMessage.data).tx.substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx} />
                                   }
                                 </CardSubtitle>
                               }
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).assetId &&
-                                <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-muted text-break mt-1" : "text-muted text-break mt-1"}>
-                                  <LinkBlockExplorer title={'Asset:\n' + JSON.parse(msg.commandMessage.data).assetId} type="asset" id={JSON.parse(msg.commandMessage.data).assetId} />
+                                <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center mt-1" : "mt-1"}>
+                                  <LinkBlockExplorer title={'Asset: ' + JSON.parse(msg.commandMessage.data).assetId} type="asset" id={JSON.parse(msg.commandMessage.data).assetId} />
                                 </CardSubtitle>
                               }
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).reviews_left &&
