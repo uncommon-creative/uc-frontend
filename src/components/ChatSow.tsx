@@ -85,7 +85,7 @@ export const ChatSow = ({ currentSow }: any) => {
                                   {msg.commandMessage.command == SowCommands.ACCEPT_AND_PAY ?
                                     <>
                                       <LinkBlockExplorer title={`Opt-in transaction: ${JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
-                                      {JSON.parse(msg.commandMessage.data).tx[1] && <LinkBlockExplorer title={`\nPayment transaction: ${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />}
+                                      {JSON.parse(msg.commandMessage.data).tx[1] && <LinkBlockExplorer title={`Payment transaction: ${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />}
                                     </>
                                     :
                                     <LinkBlockExplorer title={'Transaction: ' + JSON.parse(msg.commandMessage.data).tx.substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx} />

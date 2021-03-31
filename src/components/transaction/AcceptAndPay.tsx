@@ -297,7 +297,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
               <CardText>
                 <LinkBlockExplorer title={'Asset: ' + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId} type="asset" id={JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId} />
                 <LinkBlockExplorer title={'Opt-in transaction: ' + transactionAcceptAndPay.tx[0]} type="tx" id={transactionAcceptAndPay.tx[0]} />
-                {transactionAcceptAndPay.tx[1] && <LinkBlockExplorer title={'nPayment transaction: ' + transactionAcceptAndPay.tx[1]} type="tx" id={transactionAcceptAndPay.tx[1]} />}
+                {transactionAcceptAndPay.tx[1] && <LinkBlockExplorer title={'Payment transaction: ' + transactionAcceptAndPay.tx[1]} type="tx" id={transactionAcceptAndPay.tx[1]} />}
               </CardText>
             </Jumbotron>
           </ModalBody>
