@@ -60,7 +60,7 @@ export const SowAttachments = () => {
             </Card>
             {newAttachments.map((attachment: any, index: any) => {
               return (
-                attachment.owner === currentSow.sow &&
+                attachment.owner === currentSow.sow && attachment.filename != configuration[stage].deliverable_key &&
                 <ListGroupItem data-cy="attachmentsSow" key={index}>
                   <FileButton file={attachment} />
                 </ListGroupItem>
@@ -78,7 +78,16 @@ export const SowAttachments = () => {
             </Row>
           </ListGroupItem>
           <Collapse isOpen={isOpenDeliverable}>
-            <CardText className="text-muted text-center">No file found</CardText>
+            {newAttachments.some((file: any) => file.filename == configuration[stage].deliverable_key) ?
+              newAttachments.map((attachment: any, index: any) => {
+                return (attachment.filename == configuration[stage].deliverable_key &&
+                  <ListGroupItem data-cy="attachmentsSeller" key={index} >
+                    <FileButton file={attachment} />
+                  </ListGroupItem>
+                )
+              })
+              : <CardText className="text-muted text-center">No file found</CardText>
+            }
           </Collapse>
           <ListGroupItem onClick={toggleSellersAttachments}>
             <Row>

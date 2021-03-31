@@ -12,6 +12,7 @@ import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 
+import { configuration } from '../config'
 import { ActivityButton } from '../components/common/ActivityButton'
 import { TagsInput } from '../components/TagsInput'
 import { ArbitratorsSelect } from '../components/arbitrator/ArbitratorsSelect'
@@ -26,6 +27,7 @@ import { selectors as UISelectors } from '../store/slices/ui'
 import { SubmitSow } from '../components/transaction/SubmitSow'
 
 var DatePicker = require("reactstrap-date-picker");
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -297,7 +299,7 @@ export const CreateStatementOfWorkPage = () => {
                                 Only one file allowed, create a compressed archive with multiple files if needed.
                               </CardSubtitle>
                             </Label>
-                            <SowAttachmentsInput currentSow={currentSow} />
+                            <SowAttachmentsInput currentSow={currentSow} keyAttachment={configuration[stage].specs_document_key} />
                           </Col>
                         </Row>
                       </Jumbotron>

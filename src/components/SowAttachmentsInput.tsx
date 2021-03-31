@@ -16,7 +16,7 @@ import { actions as SowActions, selectors as SowSelectors, SowStatus } from '../
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { FileButton } from './common/FileButton';
 
-export const SowAttachmentsInput = ({ currentSow }: any) => {
+export const SowAttachmentsInput = ({ currentSow, keyAttachment }: any) => {
 
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
@@ -28,12 +28,11 @@ export const SowAttachmentsInput = ({ currentSow }: any) => {
   return (
     <>
       <FormGroup>
-        {/* <Label for="attachments">Attachments</Label> */}
         <Input data-cy="inputAttachment" type="file" name="attachments" id="attachments"
           onChange={(event: any) => {
             console.log("event.target.files: ", event.target.files)
             if (event.target.files.length) {
-              dispatch(SowActions.willPrepareUploadAttachment({ sow: currentSow, attachment: event.target.files[0], username: user.username, newAttachments: newAttachments }))
+              dispatch(SowActions.willPrepareUploadAttachment({ sow: currentSow, attachment: event.target.files[0], username: user.username, newAttachments: newAttachments, keyAttachment: keyAttachment }))
             }
           }}
         />

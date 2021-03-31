@@ -109,7 +109,7 @@ export const FileButton = ({ file, disabled, children, ...rest }: any) => {
                   </Row>
                   {file.owner == file.sow &&
                     <>
-                      {file.filename == configuration[stage].works_agreement_key &&
+                      {(file.filename == configuration[stage].works_agreement_key || file.filename == configuration[stage].deliverable_key) &&
                         <>
                           <Row>
                             <Col>

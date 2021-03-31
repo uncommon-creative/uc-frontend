@@ -6,18 +6,23 @@ import {
   ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText,
   FormGroup, Label, Input, Jumbotron, CardSubtitle, CardText
 } from 'reactstrap';
+import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faKey } from '@fortawesome/free-solid-svg-icons'
 
+import { configuration } from '../../config'
 import { actions as SowActions, selectors as SowSelectors } from '../../store/slices/sow'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
 import { actions as NotificationActions } from '../../store/slices/notification'
-import { ActivityButton } from '../common/ActivityButton';
+import { ActivityButton } from '../common/ActivityButton'
+import { FileButton } from '../common/FileButton'
+import { SowAttachmentsInput } from '../SowAttachmentsInput'
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
 
 declare var AlgoSigner: any;
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
 export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
 
@@ -33,6 +38,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
   const params = useSelector(TransactionSelectors.getParams)
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
   const [currentFromAlgoSigner, setCurrentFromAlgoSigner] = React.useState('');
+  const newAttachments = useSelector(SowSelectors.getNewAttachments)
 
   React.useEffect(() => {
     modal && dispatch(TransactionActions.willGetParamsWithDelay({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
@@ -46,7 +52,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
 
   const [isAlgoSignInstalled, setAlgo] = React.useState(false);
   React.useEffect(() => {
-    if (transactionPage == 2) {
+    if (transactionPage == 3) {
       if (typeof AlgoSigner !== 'undefined') {
         setAlgo(true);
       }
@@ -78,15 +84,47 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {
-        transactionPage == 2 &&
+      {transactionPage == 2 &&
+        <>
+          <ModalHeader toggle={toggle}>Upload the deliverable</ModalHeader>
+          <ModalBody>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">As an alternative to a non-digital work, upload a final report of the work done.</CardSubtitle>
+            <Formik
+              initialValues={{}}
+              onSubmit={() => { }}
+            >
+              <>
+                <Label for="attachments">
+                  Deliverable
+                  <CardSubtitle className="fs-5 text-muted" style={{ fontSize: 12 }}>
+                    Only one file allowed, create a compressed archive with multiple files if needed.
+                  </CardSubtitle>
+                </Label>
+                <SowAttachmentsInput currentSow={currentSow} keyAttachment={configuration[stage].deliverable_key} />
+              </>
+            </Formik>
+            {newAttachments.some((file: any) => file.filename == configuration[stage].deliverable_key) &&
+              <ListGroupItem>
+                <FileButton file={newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key)} />
+              </ListGroupItem>
+            }
+
+          </ModalBody>
+          <ModalFooter>
+            <ActivityButton data-cy='continueTransaction' disabled={!(newAttachments.some((file: any) => file.filename == configuration[stage].deliverable_key))} name="continueTransaction" color="primary" onClick={() => {
+              dispatch(TransactionActions.goToTransactionPage(3))
+            }}>Continue</ActivityButton>
+          </ModalFooter>
+        </>
+      }
+      {transactionPage == 3 &&
         <>
           <ModalHeader toggle={toggle}>Choose the method to sign the multisig</ModalHeader>
           <ModalBody>
             <Row>
               <Col>
                 <Card data-cy='mnemonicClaimMilestoneMet' onClick={() => {
-                  dispatch(TransactionActions.goToTransactionPage(3))
+                  dispatch(TransactionActions.goToTransactionPage(4))
                 }}>
                   <CardBody className="text-center">
                     <CardSubtitle tag="h5" className="mb-2 text-muted text-center">Mnemonic</CardSubtitle>
@@ -112,7 +150,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalBody>
         </>
       }
-      {transactionPage == 3 &&
+      {transactionPage == 4 &&
         <>
           <ModalHeader toggle={toggle}>Claim milestone met with mnemonic Secret Key</ModalHeader>
           <ModalBody>
@@ -130,7 +168,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.goToTransactionPage(2))
+              dispatch(TransactionActions.goToTransactionPage(3))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionClaimMilestoneMetMnemonic" color="primary" onClick={async () => {
               dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig, sellerAddress: users[currentSow.seller].public_key, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
@@ -138,7 +176,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage == 4 &&
+      {transactionPage == 5 &&
         <>
           <ModalHeader toggle={toggle}>Claim milestone met with mnemonic Secret Key</ModalHeader>
           <ModalBody>
@@ -160,7 +198,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.goToTransactionPage(2))
+              dispatch(TransactionActions.goToTransactionPage(3))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionClaimMilestoneMetAlgoSigner" color="primary"
               onClick={() => {
@@ -172,7 +210,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage == 5 &&
+      {transactionPage == 6 &&
         <>
           <ModalHeader toggle={toggle}>Transaction signed</ModalHeader>
           <ModalBody>
@@ -189,7 +227,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage == 6 &&
+      {transactionPage == 7 &&
         <>
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>

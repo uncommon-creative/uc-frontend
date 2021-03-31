@@ -46,10 +46,10 @@ export const currentSlice = createSlice({
 
     willCompleteTransactionClaimMilestoneMetMnemonic: (state, action: PayloadAction<any>) => state,
     willPrepareTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => state,
-    didPrepareTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 4),
+    didPrepareTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 5),
     willCompleteTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => state,
-    didCompleteTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionPage = 5),
-    didCompleteTransactionClaimMilestoneMetFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 6),
+    didCompleteTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionPage = 6),
+    didCompleteTransactionClaimMilestoneMetFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
 
     willGetSignedMsig: (state, action: PayloadAction<any>) => state,
     didGetSignedMsig: (state, action: PayloadAction<any>) => void (state.signedMsig = action.payload, state.transactionPage = 2),
