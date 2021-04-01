@@ -470,7 +470,6 @@ function* willCompleteTransactionAcceptMilestoneMnemonic(action: any) {
   console.log("in willCompleteTransactionAcceptMilestoneMnemonic with: ", action)
   yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptMilestoneMnemonic'));
   const users = yield select(ProfileSelectors.getUsers)
-  const signedMsig = yield select(TransactionSelectors.getSignedMsig)
 
   const msigparams = {
     version: 1,
@@ -488,11 +487,10 @@ function* willCompleteTransactionAcceptMilestoneMnemonic(action: any) {
     console.log("willCompleteTransactionAcceptMilestoneMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
-      const resultAppendSignMultisigTransaction = yield call(TransactionApi.appendSignMultisigTransaction, action.payload.signedMsig, action.payload.mnemonicSecretKey, msigparams)
-      console.log("willCompleteTransactionAcceptMilestoneMnemonic resultAppendSignMultisigTransaction: ", resultAppendSignMultisigTransaction)
-      console.log("willCompleteTransactionAcceptMilestoneMnemonic resultAppendSignMultisigTransaction.blob.toString()): ", resultAppendSignMultisigTransaction.blob.toString())
+      const resultSignGroupAcceptMilestone = yield call(TransactionApi.signGroupAcceptMilestone, action.payload.signedMsig, action.payload.mnemonicSecretKey, msigparams)
+      console.log("willCompleteTransactionAcceptMilestoneMnemonic resultSignGroupAcceptMilestone: ", resultSignGroupAcceptMilestone)
 
-      const resultConfirmedMultisigTransaction = yield call(TransactionApi.algorandFinalizeTransaction, signedMsig.hash_round, signedMsig.round_sow, resultAppendSignMultisigTransaction)
+      const resultConfirmedMultisigTransaction = yield call(TransactionApi.algorandFinalizeTransaction, action.payload.signedMsig.hash_round, action.payload.signedMsig.round_sow, resultSignGroupAcceptMilestone)
       console.log("willCompleteTransactionAcceptMilestoneMnemonic resultConfirmedMultisigTransaction: ", resultConfirmedMultisigTransaction)
       yield put(TransactionActions.didCompleteTransactionAcceptMilestone(resultConfirmedMultisigTransaction))
 

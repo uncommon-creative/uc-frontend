@@ -77,7 +77,6 @@ export function signTransactionsAcceptAndPayMnemonic(multiSigAddress: any, param
     console.log("signTransactionsAcceptAndPayMnemonic txnPayment: ", txnPayment)
 
     let gid = algosdk.assignGroupID([txnOptin, txnPayment]);
-
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
     let signedOptinTxn = algosdk.signTransaction(txnOptin, secret_key.sk)
     signedOptinTxn.blob = signedOptinTxn.blob.toString()
@@ -172,17 +171,23 @@ export const setSignedMsig = async (sow: any, signedMsig: any) => {
   }
 }
 
-export function appendSignMultisigTransaction(signedMsig: any, mnemonicSecretKey: any, msigparams: any) {
+export function signGroupAcceptMilestone(signedMsig: any, mnemonicSecretKey: any, msigparams: any) {
   try {
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
-    const buffer = Uint8Array.from(signedMsig.blob.split(',') as any);
+    const bufferMultisig = Uint8Array.from(signedMsig.tx[0].blob.split(',') as any);
+    let signedMultisig = algosdk.appendSignMultisigTransaction(bufferMultisig, msigparams, secret_key.sk);
+    signedMultisig.blob = signedMultisig.blob.toString()
+    console.log("in signGroupAcceptMilestone signedMultisig: ", signedMultisig)
 
-    const directsig = algosdk.appendSignMultisigTransaction(buffer, msigparams, secret_key.sk);
-    // console.log("in appendSignMultisigTransaction directsig: ", directsig)
-    return directsig
+    const bufferOptin: any = Uint8Array.from(signedMsig.tx[1].blob.split(',') as any);
+    let signedOptinTxn = algosdk.signTransaction(algosdk.decodeUnsignedTransaction(bufferOptin), secret_key.sk)
+    signedOptinTxn.blob = signedOptinTxn.blob.toString()
+    console.log("in signGroupAcceptMilestone signedOptinTxn: ", signedOptinTxn)
+
+    return [signedMultisig, signedOptinTxn]
   } catch (error) {
-    console.log("appendSignMultisigTransaction API error: ", error)
+    console.log("signGroupAcceptMilestone API error: ", error)
     throw error
   }
 }
@@ -323,7 +328,7 @@ export const algorandFinalizeTransaction = async (hash_round: any, round_sow: an
   const mutation = loader('../graphql/algorandFinalizeTransaction.gql')
 
   try {
-    const result: any = await API.graphql(graphqlOperation(mutation, { hash_round: hash_round, round_sow: round_sow, blob: tx.blob.toString() }))
+    const result: any = await API.graphql(graphqlOperation(mutation, { hash_round: hash_round, round_sow: round_sow, tx: tx }))
     console.log("algorandFinalizeTransaction result: ", result)
     return result.data.algorandFinalizeTransaction
   } catch (error) {

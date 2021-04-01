@@ -1,16 +1,24 @@
 mutation algorandFinalizeTransaction(
   $hash_round: String, 
   $round_sow: String, 
-  $blob:String
+  $tx:[TransactionInput]
 ) {
   algorandFinalizeTransaction(
     hash_round: $hash_round,
     round_sow: $round_sow
-    blob: $blob
+    tx: $tx
   ){
-    hash_round
+    hash_round 
     round_sow
-    blob
+    tx {
+      txID
+      blob
+    }
+    backupTx {
+      txID
+      blob
+    }
     sow
+    status 
   }
 }
