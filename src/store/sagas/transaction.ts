@@ -302,7 +302,7 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
   const users = yield select(ProfileSelectors.getUsers)
 
   const hash = action.payload.hash
-  const note = new Uint8Array(0);
+  const note = undefined;
   const defaultFrozen = false;
   const addr = users[action.payload.currentSow.seller].public_key;
   const decimals = 0;
@@ -310,8 +310,7 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
   const unitName = configuration[stage].deliverableAsset_unitName + action.payload.currentSow.sow.substring(0, 2)
   const assetName = configuration[stage].deliverableAsset_assetName + action.payload.currentSow.sow.substring(0, 2)
   const assetURL = "https://www.example.com/" + unitName;
-  // const assetMetadataHash = Buffer.from(hash).toString("base64")
-  const assetMetadataHash = undefined
+  const assetMetadataHash = Buffer.from(hash)
   console.log("willCompleteTransactionClaimMilestoneMetMnemonic assetMetadataHash: ", assetMetadataHash)
   // Specified address can change reserve, freeze, clawback, and manager
   const manager = users[action.payload.currentSow.seller].public_key;
@@ -575,7 +574,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
       else {
         console.log("willCompleteTransactionSubmitMnemonic ASSET NOT FOUND")
         resultSignedTransaction = yield call(TransactionApi.signTxn,
-          action.payload.mnemonicSecretKey, action.payload.params, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
+          action.payload.mnemonicSecretKey, action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
         )
         resultSignedTransaction = [resultSignedTransaction]
         console.log("in willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
