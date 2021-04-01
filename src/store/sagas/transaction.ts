@@ -173,7 +173,7 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
       const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.arbitrator)
       console.log("willCompleteTransactionAcceptAndPayMnemonic resultSetSowArbitrator: ", resultSetSowArbitrator)
 
-      const resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonic, action.payload.multiSigAddress.address, action.payload.params.withoutDelay, action.payload.mnemonicSecretKey, action.payload.toPay, users[action.payload.currentSow.buyer].public_key, users[action.payload.currentSow.seller].public_key, action.payload.assetId)
+      const resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonic, action.payload.multiSigAddress.address, action.payload.params.withoutDelay, action.payload.mnemonicSecretKey, action.payload.toPay, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
       console.log("willCompleteTransactionAcceptAndPayMnemonic resultSignedTransaction: ", resultSignedTransaction)
 
       const resultSentTransaction = yield call(TransactionApi.algorandSendAcceptAndPayTx, action.payload.currentSow.sow, resultSignedTransaction)
@@ -354,12 +354,30 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
       console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultalgorandSendDeliverableTokenCreationTx: ", resultAlgorandSendDeliverableTokenCreationTx)
 
       if (resultAlgorandSendDeliverableTokenCreationTx.error) {
-        console.log("willCompleteTransactionClaimMilestoneMetMnemonic fail")
+        console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendDeliverableTokenCreationTx fail")
         yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail(resultAlgorandSendDeliverableTokenCreationTx.error))
         yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendDeliverableTokenCreationTx.error, type: "danger" }));
       }
       else {
-        console.log("willCompleteTransactionClaimMilestoneMetMnemonic success")
+        console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendDeliverableTokenCreationTx success")
+
+        const mparams = {
+          version: 1,
+          threshold: 2,
+          addrs: [
+            users[action.payload.currentSow.seller].public_key,
+            users[action.payload.currentSow.buyer].public_key,
+            users[action.payload.currentSow.arbitrator].public_key,
+            configuration[stage].uc_backup_public_key
+          ],
+        };
+
+        const resultClaimMilestoneMetTxGroup = yield call(TransactionApi.signTransactionsClaimMilestoneMetMnemonic, action.payload.multiSigAddress.address, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, action.payload.mnemonicSecretKey, action.payload.currentSow.price, mparams, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
+        console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultSignedMultisigTransaction: ", resultClaimMilestoneMetTxGroup)
+
+        const resultAlgorandSendClaimMilestoneMet = yield call(TransactionApi.algorandSendClaimMilestoneMet, action.payload.currentSow.sow, resultClaimMilestoneMetTxGroup.tx, resultClaimMilestoneMetTxGroup.backupTx)
+        console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendClaimMilestoneMet: ", resultAlgorandSendClaimMilestoneMet)
+
         yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet(resultAlgorandSendDeliverableTokenCreationTx))
       }
     }

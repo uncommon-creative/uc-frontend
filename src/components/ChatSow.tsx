@@ -167,7 +167,12 @@ export const ChatSow = ({ currentSow }: any) => {
       >
         <Row>
           <Col>
-            <Label for="attachments">Attachments</Label>
+            <Label for="attachments">
+              Attachments
+              {/* <CardSubtitle className="fs-5 text-muted" style={{ fontSize: 12 }}>
+                Don't upload the deliverable here, but only while claiming milestone.
+              </CardSubtitle> */}
+            </Label>
             <SowAttachmentsInput currentSow={currentSow} />
           </Col>
         </Row>

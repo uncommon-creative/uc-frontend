@@ -1,0 +1,11 @@
+mutation algorandSendClaimMilestoneMet(
+  $sow: ID,
+  $tx: [TransactionInput]
+  $backupTx: [TransactionInput]
+) {
+  algorandSendClaimMilestoneMet(
+    sow: $sow,
+    tx: $tx,
+    backupTx: $backupTx
+  )
+}

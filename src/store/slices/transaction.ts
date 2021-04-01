@@ -13,6 +13,7 @@ export const currentSlice = createSlice({
     payment: {} as any,
     activePolls: {} as any,
     submitToken: "",
+    transactionClaimMilestoneMet: {} as any,
     error: ''
   },
   reducers: {
@@ -48,7 +49,7 @@ export const currentSlice = createSlice({
     willPrepareTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => state,
     didPrepareTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 5),
     willCompleteTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => state,
-    didCompleteTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionPage = 6),
+    didCompleteTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionClaimMilestoneMet= action.payload, state.transactionPage = 6),
     didCompleteTransactionClaimMilestoneMetFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
 
     willGetSignedMsig: (state, action: PayloadAction<any>) => state,
@@ -91,6 +92,7 @@ export const selectors = {
   getTransactionAcceptAndPay: (state: any) => state.transaction.transactionAcceptAndPay,
   getAlgoSigner: (state: any) => state.transaction.algoSigner,
   getTransactionAcceptMilestone: (state: any) => state.transaction.transactionAcceptMilestone,
+  getTransactionClaimMilestoneMet: (state: any) => state.transaction.transactionClaimMilestoneMet,
   getSignedMsig: (state: any) => state.transaction.signedMsig,
   getPayment: (state: any) => state.transaction.payment,
   getActivePolls: (state: any) => state.transaction.activePolls,

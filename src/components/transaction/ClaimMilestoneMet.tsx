@@ -12,13 +12,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faKey } from '@fortawesome/free-solid-svg-icons'
 
 import { configuration } from '../../config'
-import { actions as SowActions, selectors as SowSelectors } from '../../store/slices/sow'
+import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
+import { selectors as ChatSelectors } from '../../store/slices/chat'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
 import { actions as NotificationActions } from '../../store/slices/notification'
 import { ActivityButton } from '../common/ActivityButton'
 import { FileButton } from '../common/FileButton'
 import { SowAttachmentsInput } from '../SowAttachmentsInput'
+import { LinkBlockExplorer } from '../common/LinkBlockExplorer'
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
 
 declare var AlgoSigner: any;
@@ -30,8 +32,10 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
   const { t, i18n } = useTranslation();
   const users = useSelector(ProfileSelectors.getUsers)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
+  const messagesCommands = useSelector(ChatSelectors.getMessagesCommands)
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
   const multiSig = useSelector(TransactionSelectors.getMultiSig)
+  const transactionClaimMilestoneMet = useSelector(TransactionSelectors.getTransactionClaimMilestoneMet)
   const transactionError = useSelector(TransactionSelectors.getError)
   const [acceptedConditions, setAcceptedConditions] = React.useState(false);
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
@@ -172,7 +176,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage(3))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionClaimMilestoneMetMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag }))
+              dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
             }}>Sign the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -220,6 +224,11 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionSigned')}
+
+              </CardText>
+              <CardText>
+                <LinkBlockExplorer title={'Asset: ' + transactionClaimMilestoneMet.assetId} type="asset" id={transactionClaimMilestoneMet.assetId} />
+                <LinkBlockExplorer title={'Transaction: ' + transactionClaimMilestoneMet.tx} type="tx" id={transactionClaimMilestoneMet.tx} />
               </CardText>
             </Jumbotron>
           </ModalBody>
