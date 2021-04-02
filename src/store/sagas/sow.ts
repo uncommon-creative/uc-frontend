@@ -170,12 +170,10 @@ function* willPrepareUploadAttachment(action: any) {
 
   let tmpFileList = [] as any
   let tmpAttachment = {} as any
-  const key = action.payload.sow.status == SowStatus.DRAFT ?
-    action.payload.sow.sow + '/' + configuration[stage].specs_document_key
-    : action.payload.sow.sow + '/' + action.payload.username + '/' + action.payload.attachment.name
-  const owner = action.payload.sow.status == SowStatus.DRAFT ?
-    action.payload.sow.sow
-    : action.payload.username
+  const key =
+    action.payload.keyAttachment ? action.payload.sow.sow + '/' + action.payload.keyAttachment
+      : action.payload.sow.sow + '/' + action.payload.username + '/' + action.payload.attachment.name
+  const owner = action.payload.keyAttachment ? action.payload.sow.sow : action.payload.username
 
   yield put(UIActions.startActivityRunning(key));
 
@@ -205,7 +203,8 @@ function* willPrepareUploadAttachment(action: any) {
     console.log("in willPrepareUploadAttachment with result: ", result)
 
     yield call(SowApi.uploadFileToS3, result, action.payload.attachment)
-    action.payload.sow.status != SowStatus.DRAFT && (yield put(ChatActions.willSendAttachmentChat({ values: { key: key, size: action.payload.attachment.size, type: action.payload.attachment.type }, sow: action.payload.sow })))
+    !(action.payload.keyAttachment) && (yield put(ChatActions.willSendAttachmentChat({ values: { key: key, size: action.payload.attachment.size, type: action.payload.attachment.type }, sow: action.payload.sow })))
+    yield put(NotificationActions.willShowNotification({ message: "File uploaded", type: "info" }));
     yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow.sow } });
   } catch (error) {
     console.log("error in willPrepareUploadAttachment ", error)

@@ -25,6 +25,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
   const transactionError = useSelector(TransactionSelectors.getError)
   const [acceptedConditions, setAcceptedConditions] = React.useState(false);
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
+  const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const params = useSelector(TransactionSelectors.getParams)
 
   React.useEffect(() => {
@@ -56,7 +57,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='continueTransaction' disabled={!acceptedConditions} name="willGetSignedMsig" color="primary" onClick={() => {
-              dispatch(TransactionActions.willGetSignedMsig({sow: currentSow.sow}))
+              dispatch(TransactionActions.willGetSignedMsig({ sow: currentSow.sow }))
             }}>Continue</ActivityButton>
           </ModalFooter>
         </>
@@ -65,6 +66,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Accept milestone</ModalHeader>
           <ModalBody>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are accepting the milestone approving the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "deliverable").downloadUrl}>deliverable</a> as the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
             {/* <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle> */}
 
@@ -100,7 +102,12 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy='closeAcceptMilestone' name="closeAcceptMilestone" color="primary" onClick={toggle}>Close</ActivityButton>
+            <ActivityButton data-cy='closeAcceptMilestone' name="closeAcceptMilestone" color="primary" onClick={() => {
+              dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
+              toggle()
+            }
+            }
+            >Close</ActivityButton>
           </ModalFooter>
         </>
       }

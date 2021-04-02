@@ -38,7 +38,7 @@ export const Reject = ({ modal, toggle }: any) => {
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-          <ActivityButton data-cy='cancel' name="cancel" outline color="primary" onClick={() => {
+            <ActivityButton data-cy='cancel' name="cancel" outline color="primary" onClick={() => {
               toggle()
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy={"willReject"} name={"willReject"} color="primary" onClick={() => {
@@ -53,11 +53,16 @@ export const Reject = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Rejected</ModalHeader>
           <ModalBody>
             <Jumbotron>
-            <CardText name="transactionConditions">{t('transaction.rejectCompleted')}</CardText>
+              <CardText name="transactionConditions">{t('transaction.rejectCompleted')}</CardText>
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy="closeReject" name="closeReject" color="primary" onClick={toggle}>Close</ActivityButton>
+            <ActivityButton data-cy="closeReject" name="closeReject" color="primary" onClick={() => {
+              dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
+              toggle()
+            }
+            }
+            >Close</ActivityButton>
           </ModalFooter>
         </>
       }

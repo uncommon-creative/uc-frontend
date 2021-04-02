@@ -34,14 +34,14 @@ export const ChatSow = ({ currentSow }: any) => {
   const messages = useSelector(ChatSelectors.getMessages)
   let inputRef: any = React.createRef();
 
-  React.useEffect(() => {
-    const refreshChat = setInterval(() => {
-      dispatch(ChatActions.willRefreshSowChat({ messages: messages, sow: currentSow.sow }))
-      dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
-    }, 30000);
+  // React.useEffect(() => {
+  //   const refreshChat = setInterval(() => {
+  //     dispatch(ChatActions.willRefreshSowChat({ messages: messages, sow: currentSow.sow }))
+  //     dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
+  //   }, 30000);
 
-    return () => clearInterval(refreshChat)
-  }, []);
+  //   return () => clearInterval(refreshChat)
+  // }, []);
 
   React.useEffect(() => {
     updateScroll()
@@ -78,17 +78,23 @@ export const ChatSow = ({ currentSow }: any) => {
                           : msg.commandMessage ?
                             <>
                               <CardTitle data-cy="chatCommand" className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-primary font-weight-bold" : "text-primary font-weight-bold"}>
-                                {msg.commandMessage.command}
+                                {t(`chat.SowCommands.${msg.commandMessage.command}`)}
                               </CardTitle>
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).tx &&
                                 <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center" : ""}>
                                   {msg.commandMessage.command == SowCommands.ACCEPT_AND_PAY ?
                                     <>
                                       <LinkBlockExplorer title={`Opt-in transaction: ${JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
-                                      {JSON.parse(msg.commandMessage.data).tx[1] && <LinkBlockExplorer title={`\nPayment transaction: ${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />}
+                                      {JSON.parse(msg.commandMessage.data).tx[1] && <LinkBlockExplorer title={`Payment transaction: ${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />}
                                     </>
                                     :
-                                    <LinkBlockExplorer title={'Transaction: ' + JSON.parse(msg.commandMessage.data).tx.substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx} />
+                                    msg.commandMessage.command == SowCommands.ACCEPT_MILESTONE ?
+                                      <>
+                                        <LinkBlockExplorer title={`Multisig transaction: ${JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
+                                        <LinkBlockExplorer title={`Opt-in transaction: ${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />
+                                        <LinkBlockExplorer title={`Asset transfer transaction: ${JSON.parse(msg.commandMessage.data).tx[2].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[2]} />
+                                      </>
+                                      : <LinkBlockExplorer title={'Transaction: ' + JSON.parse(msg.commandMessage.data).tx.substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx} />
                                   }
                                 </CardSubtitle>
                               }
@@ -167,7 +173,12 @@ export const ChatSow = ({ currentSow }: any) => {
       >
         <Row>
           <Col>
-            <Label for="attachments">Attachments</Label>
+            <Label for="attachments">
+              Attachments
+              {/* <CardSubtitle className="fs-5 text-muted" style={{ fontSize: 12 }}>
+                Don't upload the deliverable here, but only while claiming milestone.
+              </CardSubtitle> */}
+            </Label>
             <SowAttachmentsInput currentSow={currentSow} />
           </Col>
         </Row>

@@ -1,0 +1,13 @@
+mutation algorandSendDeliverableTokenCreationTx(
+  $sow: ID,
+  $tx: [TransactionInput]
+) {
+  algorandSendDeliverableTokenCreationTx(
+    sow: $sow,
+    tx: $tx
+  ) {
+    assetId
+    tx
+    error
+  }
+}

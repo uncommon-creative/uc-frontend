@@ -176,7 +176,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
               </CardText>
               <CardText>
                 <LinkBlockExplorer title={'Asset: ' + submitToken.assetId} type="asset" id={submitToken.assetId} />
-                <LinkBlockExplorer title={'Transaction: ' + submitToken.tx} type="tx" id={submitToken.tx} />
+                <LinkBlockExplorer title={'Transaction: ' + submitToken.tx.substring(0, 6) + '...'} type="tx" id={submitToken.tx} />
               </CardText>
             </Jumbotron>
           </ModalBody>

@@ -4,9 +4,17 @@ query algorandGetTx(
   algorandGetTx(
     sow: $sow
   ) {
-    hash_round
+    hash_round 
     round_sow
-    blob
+    tx {
+      txID
+      blob
+    } 
+    backupTx {
+      txID
+      blob
+    }
     sow
+    status
   }
 }
