@@ -126,6 +126,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Choose the method to sign the multisig</ModalHeader>
           <ModalBody>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are claiming the milestone as met committing the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
             <Row>
               <Col>
                 <Card data-cy='mnemonicClaimMilestoneMet' onClick={() => {
@@ -228,7 +229,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
               </CardText>
               <CardText>
                 <LinkBlockExplorer title={'Asset: ' + transactionClaimMilestoneMet.assetId} type="asset" id={transactionClaimMilestoneMet.assetId} />
-                <LinkBlockExplorer title={'Transaction: ' + transactionClaimMilestoneMet.tx} type="tx" id={transactionClaimMilestoneMet.tx} />
+                {transactionClaimMilestoneMet.tx && <LinkBlockExplorer title={'Transaction: ' + transactionClaimMilestoneMet.tx.substring(0, 6) + '...'} type="tx" id={transactionClaimMilestoneMet.tx} />}
               </CardText>
             </Jumbotron>
           </ModalBody>

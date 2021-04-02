@@ -7,18 +7,5 @@ mutation algorandFinalizeTransaction(
     hash_round: $hash_round,
     round_sow: $round_sow
     tx: $tx
-  ){
-    hash_round 
-    round_sow
-    tx {
-      txID
-      blob
-    }
-    backupTx {
-      txID
-      blob
-    }
-    sow
-    status 
-  }
+  )
 }

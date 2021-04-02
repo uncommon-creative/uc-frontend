@@ -379,6 +379,7 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
         console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendClaimMilestoneMet: ", resultAlgorandSendClaimMilestoneMet)
 
         yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet(resultAlgorandSendDeliverableTokenCreationTx))
+        yield put(NotificationActions.willShowNotification({ message: "Milestone claimed as met", type: "info" }));
       }
     }
     else {
@@ -386,38 +387,6 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
       yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail(resultCheckAccountTransaction.error))
       yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
     }
-
-    // old
-    // const mparams = {
-    //   version: 1,
-    //   threshold: 2,
-    //   addrs: [
-    //     users[action.payload.currentSow.seller].public_key,
-    //     users[action.payload.currentSow.buyer].public_key,
-    //     users[action.payload.currentSow.arbitrator].public_key,
-    //     configuration[stage].uc_backup_public_key
-    //   ],
-    // };
-
-    // try {
-    //   const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: 0 } })
-    //   console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
-
-    //   if (resultCheckAccountTransaction.check) {
-    //     const resultSignedMultisigTransaction = yield call(TransactionApi.signMultisigTransaction, action.payload.multiSigAddress.address, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, action.payload.mnemonicSecretKey, action.payload.currentSow.price, mparams)
-    //     console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultSignedMultisigTransaction: ", resultSignedMultisigTransaction)
-
-    //     const resultPutMultisigTransaction = yield call(TransactionApi.algorandPutTransaction, action.payload.currentSow.sow, resultSignedMultisigTransaction)
-    //     console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultSignedMultisigTransaction: ", resultPutMultisigTransaction)
-
-    //     yield call(willSendCommandChat, { payload: { values: { command: SowCommands.CLAIM_MILESTONE_MET }, sow: action.payload.currentSow } })
-
-    //     yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet())
-    //   }
-    //   else {
-    //     console.log("willCompleteTransactionClaimMilestoneMetMnemonic fail")
-    //     yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail(resultCheckAccountTransaction.error))
-    //   }
   } catch (error) {
     console.log("error in willCompleteTransactionClaimMilestoneMetMnemonic ", error)
   }
@@ -493,8 +462,7 @@ function* willCompleteTransactionAcceptMilestoneMnemonic(action: any) {
       const resultConfirmedMultisigTransaction = yield call(TransactionApi.algorandFinalizeTransaction, action.payload.signedMsig.hash_round, action.payload.signedMsig.round_sow, resultSignGroupAcceptMilestone)
       console.log("willCompleteTransactionAcceptMilestoneMnemonic resultConfirmedMultisigTransaction: ", resultConfirmedMultisigTransaction)
       yield put(TransactionActions.didCompleteTransactionAcceptMilestone(resultConfirmedMultisigTransaction))
-
-      yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
+      yield put(NotificationActions.willShowNotification({ message: "Milestone accepted", type: "info" }));
     }
     else {
       console.log("willCompleteTransactionAcceptMilestoneMnemonic fail")
@@ -515,7 +483,7 @@ function* willRequestReview(action: any) {
     const result = yield call(TransactionApi.requestReview, action.payload.sow, action.payload.notes)
     console.log("willRequestReview result: ", result)
 
-    yield put(SowActions.willGetSow({ sow: action.payload.sow }))
+    // yield put(SowActions.willGetSow({ sow: action.payload.sow }))
     yield put(TransactionActions.didRequestReview())
 
   } catch (error) {

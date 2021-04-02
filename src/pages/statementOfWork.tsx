@@ -326,9 +326,15 @@ export const StatementOfWorkPage = () => {
           </Card>
 
           <SowDetails modal={modalOpenSowDetails} toggle={toggleModalSowDetails} />
-          <AcceptAndPay modal={modalOpenAcceptSow} toggle={toggleModalAcceptSow} />
-          <ClaimMilestoneMet modal={modalOpenClaimMilestoneMet} toggle={toggleModalClaimMilestoneMet} />
-          <AcceptMilestone modal={modalOpenAcceptMilestone} toggle={toggleModalAcceptMilestone} />
+          {(currentSow.status === SowStatus.SUBMITTED || currentSow.status === SowStatus.ACCEPTED_PAID) &&
+            <AcceptAndPay modal={modalOpenAcceptSow} toggle={toggleModalAcceptSow} />
+          }
+          {(currentSow.status == SowStatus.ACCEPTED_PAID || currentSow.status == SowStatus.REVIEW_REQUIRED || currentSow.status == SowStatus.MILESTONE_CLAIMED) &&
+            <ClaimMilestoneMet modal={modalOpenClaimMilestoneMet} toggle={toggleModalClaimMilestoneMet} />
+          }
+          {(currentSow.status === SowStatus.MILESTONE_CLAIMED || currentSow.status === SowStatus.PAYMENT_SENT) &&
+            <AcceptMilestone modal={modalOpenAcceptMilestone} toggle={toggleModalAcceptMilestone} />
+          }
           <Reject modal={modalOpenReject} toggle={toggleModalReject} />
           <RequestReview modal={modalOpenRequestReview} toggle={toggleModalRequestReview} />
         </Container>

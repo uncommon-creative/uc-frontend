@@ -88,7 +88,13 @@ export const ChatSow = ({ currentSow }: any) => {
                                       {JSON.parse(msg.commandMessage.data).tx[1] && <LinkBlockExplorer title={`Payment transaction: ${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />}
                                     </>
                                     :
-                                    <LinkBlockExplorer title={'Transaction: ' + JSON.parse(msg.commandMessage.data).tx.substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx} />
+                                    msg.commandMessage.command == SowCommands.ACCEPT_MILESTONE ?
+                                      <>
+                                      <LinkBlockExplorer title={`Multisig transaction: ${JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
+                                      <LinkBlockExplorer title={`Opt-in transaction: ${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />
+                                      <LinkBlockExplorer title={`Asset transfer transaction: ${JSON.parse(msg.commandMessage.data).tx[2].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[2]} />
+                                      </>
+                                      : <LinkBlockExplorer title={'Transaction: ' + JSON.parse(msg.commandMessage.data).tx.substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx} />
                                   }
                                 </CardSubtitle>
                               }

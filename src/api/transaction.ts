@@ -176,8 +176,19 @@ export function signGroupAcceptMilestone(signedMsig: any, mnemonicSecretKey: any
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
     const bufferMultisig = Uint8Array.from(signedMsig.tx[0].blob.split(',') as any);
+
+    console.log("in signGroupAcceptMilestone signedMsig: ", signedMsig)
+    console.log("in signGroupAcceptMilestone signedMsig.tx[0]: ", signedMsig.tx[0])
+    console.log("in signGroupAcceptMilestone bufferMultisig: ", bufferMultisig)
+
+
     let signedMultisig = algosdk.appendSignMultisigTransaction(bufferMultisig, msigparams, secret_key.sk);
+
+
+    console.log("in signGroupAcceptMilestone signedMultisig: ", signedMultisig)
+
     signedMultisig.blob = signedMultisig.blob.toString()
+
     console.log("in signGroupAcceptMilestone signedMultisig: ", signedMultisig)
 
     const bufferOptin: any = Uint8Array.from(signedMsig.tx[1].blob.split(',') as any);
@@ -185,7 +196,22 @@ export function signGroupAcceptMilestone(signedMsig: any, mnemonicSecretKey: any
     signedOptinTxn.blob = signedOptinTxn.blob.toString()
     console.log("in signGroupAcceptMilestone signedOptinTxn: ", signedOptinTxn)
 
-    return [signedMultisig, signedOptinTxn]
+
+
+    // let txOptin = Buffer.from(signedOptinTxn.blob.split(','))
+    // let decodedOptin = algosdk.decodeSignedTransaction(txOptin);
+    // let txMsig = Buffer.from(signedMultisig.blob.split(','))
+    // let decodedMsig = algosdk.decodeSignedTransaction(txMsig);
+    // decodedMsig.group = decodedOptin.group
+    
+    // console.log("signGroupAcceptMilestone decodedMsig: ", decodedMsig)
+    // let decodedMsigMAKEPAYMENT = algosdk.makePaymentTxnWithSuggestedParamsFromObject(decodedMsig.txn)
+    // console.log("signGroupAcceptMilestone decodedMsigMAKEPAYMENT:", decodedMsigMAKEPAYMENT)
+    // signedMultisig.blob = algosdk.encodeObj(algosdk.makePaymentTxnWithSuggestedParamsFromObject(decodedMsig)).toString()
+    // console.log("signGroupAcceptMilestone signedMultisig after encode", signedMultisig)
+
+
+    return [signedMultisig, signedOptinTxn, signedMsig.tx[2]]
   } catch (error) {
     console.log("signGroupAcceptMilestone API error: ", error)
     throw error
@@ -500,17 +526,18 @@ export const algorandSendDeliverableTokenCreationTx = async (sow: any, tx: any) 
 
 export function signTransactionsClaimMilestoneMetMnemonic(multiSigAddress: any, sellerAddress: any, params: any, mnemonicSecretKey: any, price: any, mparams: any, buyerAddress: any, assetId: any) {
   try {
-    const txnPayment = {
-      "from": multiSigAddress,
-      "to": sellerAddress,
-      "fee": params.fee,
-      "amount": price * 1000000,
-      "firstRound": params.firstRound,
-      "lastRound": params.lastRound,
-      "genesisID": params.genesisID,
-      "genesisHash": params.genesisHash,
-      "note": new Uint8Array(0)
-    };
+    // let txnPayment: any = {
+    //   "from": multiSigAddress,
+    //   "to": sellerAddress,
+    //   "fee": params.fee,
+    //   "amount": price * 1000000,
+    //   "firstRound": params.firstRound,
+    //   "lastRound": params.lastRound,
+    //   "genesisID": params.genesisID,
+    //   "genesisHash": params.genesisHash,
+    //   "note": new Uint8Array(0)
+    // };
+    let txnPayment = algosdk.makePaymentTxnWithSuggestedParams(multiSigAddress, sellerAddress, price * 1000000, undefined, undefined, params);
     console.log("signTransactionsClaimMilestoneMetMnemonic txnPayment: ", txnPayment)
     const txnOptin = algosdk.makeAssetTransferTxnWithSuggestedParams(buyerAddress, buyerAddress, undefined, undefined, 0, undefined, assetId, params)
     console.log("signTransactionsClaimMilestoneMetMnemonic txnOptin: ", txnOptin)
@@ -520,8 +547,16 @@ export function signTransactionsClaimMilestoneMetMnemonic(multiSigAddress: any, 
     let gid = algosdk.assignGroupID([txnPayment, txnOptin, txnAsset]);
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
+    console.log("signTransactionsClaimMilestoneMetMnemonic txnPayment after group: ", txnPayment)
+    console.log("signTransactionsClaimMilestoneMetMnemonic txnOptin after group: ", txnOptin)
+    console.log("signTransactionsClaimMilestoneMetMnemonic txnAsset after group: ", txnAsset)
+    // txnPayment.group = txnOptin.group
+    // console.log("signTransactionsClaimMilestoneMetMnemonic txnPayment after group added: ", txnPayment)
+
     let signedPaymentTxn = algosdk.signMultisigTransaction(txnPayment, mparams, secret_key.sk);
+    console.log("signTransactionsClaimMilestoneMetMnemonic signedPaymentTxn: ", signedPaymentTxn)
     signedPaymentTxn.blob = signedPaymentTxn.blob.toString()
+    console.log("signTransactionsClaimMilestoneMetMnemonic signedPaymentTxn: ", signedPaymentTxn)
     let parsedOptinTxn = {
       txID: "unknown",
       blob: algosdk.encodeObj(txnOptin.get_obj_for_encoding()).toString()
