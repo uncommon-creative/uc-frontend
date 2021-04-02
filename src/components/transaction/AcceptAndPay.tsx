@@ -306,7 +306,12 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy="closeAcceptAndPay" name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
+            <ActivityButton data-cy="closeAcceptAndPay" name="closeTransaction" color="primary" onClick={() => {
+              dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
+              toggle()
+            }
+            }
+            >Close</ActivityButton>
           </ModalFooter>
         </>
       }

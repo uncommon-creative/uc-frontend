@@ -172,8 +172,6 @@ function* willPrepareUploadAttachment(action: any) {
   let tmpAttachment = {} as any
   const key =
     action.payload.keyAttachment ? action.payload.sow.sow + '/' + action.payload.keyAttachment
-      // : action.payload.sow.status == SowStatus.DRAFT ?
-      //   action.payload.sow.sow + '/' + configuration[stage].specs_document_key
       : action.payload.sow.sow + '/' + action.payload.username + '/' + action.payload.attachment.name
   const owner = action.payload.keyAttachment ? action.payload.sow.sow : action.payload.username
 
@@ -206,6 +204,7 @@ function* willPrepareUploadAttachment(action: any) {
 
     yield call(SowApi.uploadFileToS3, result, action.payload.attachment)
     !(action.payload.keyAttachment) && (yield put(ChatActions.willSendAttachmentChat({ values: { key: key, size: action.payload.attachment.size, type: action.payload.attachment.type }, sow: action.payload.sow })))
+    yield put(NotificationActions.willShowNotification({ message: "File uploaded", type: "info" }));
     yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow.sow } });
   } catch (error) {
     console.log("error in willPrepareUploadAttachment ", error)

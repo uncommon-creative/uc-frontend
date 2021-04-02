@@ -20,7 +20,7 @@
       "ACCEPT_AND_PAY": "Accept and Pay",
       "ACCEPT_AND_PAY_info": "The buyer accepted and funded the multisig.",
       "ACCEPT_MILESTONE": "Accept milestone",
-      "ACCEPT_MILESTONE_info": "The seller was paid.",
+      "ACCEPT_MILESTONE_info": "The seller was paid and the asset was transferred to the buyer.",
       "CREATE_DELIVERABLE_TOKEN": "Create deliverable token",
       "CREATE_DELIVERABLE_TOKEN_info": "The seller created the deliverable asset.",
       "CLAIM_MILESTONE_MET": "Claim milestone met",

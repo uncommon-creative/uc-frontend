@@ -93,6 +93,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Upload the deliverable</ModalHeader>
           <ModalBody>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">Upload the deliverable as the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">As an alternative to a non-digital work, upload a final report of the work done.</CardSubtitle>
             <Formik
               initialValues={{}}
@@ -108,7 +109,8 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
                 <SowAttachmentsInput currentSow={currentSow} keyAttachment={configuration[stage].deliverable_key} />
               </>
             </Formik>
-            {newAttachments.some((file: any) => file.filename == configuration[stage].deliverable_key) &&
+            {/* {newAttachments.length > 0 && newAttachments.some((file: any) => (file.filename == configuration[stage].deliverable_key || (file.owner == currentSow.sow && file.key != "01f4b372-8f44-4f8b-a2eb-64a2a3d33059/works_agreement.pdf"))) && */}
+            {newAttachments.some((file: any) => (file.filename == configuration[stage].deliverable_key)) &&
               <ListGroupItem>
                 <FileButton file={newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key)} />
               </ListGroupItem>
@@ -234,7 +236,13 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy="closeClaimMilestoneMet" name="closeClaimMilestoneMet" color="primary" onClick={toggle}>Close</ActivityButton>
+            <ActivityButton data-cy="closeClaimMilestoneMet" name="closeClaimMilestoneMet" color="primary"
+              onClick={() => {
+                dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
+                toggle()
+              }
+              }
+            >Close</ActivityButton>
           </ModalFooter>
         </>
       }

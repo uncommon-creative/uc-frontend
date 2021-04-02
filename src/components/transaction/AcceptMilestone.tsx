@@ -57,7 +57,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='continueTransaction' disabled={!acceptedConditions} name="willGetSignedMsig" color="primary" onClick={() => {
-              dispatch(TransactionActions.willGetSignedMsig({sow: currentSow.sow}))
+              dispatch(TransactionActions.willGetSignedMsig({ sow: currentSow.sow }))
             }}>Continue</ActivityButton>
           </ModalFooter>
         </>
@@ -102,7 +102,12 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy='closeAcceptMilestone' name="closeAcceptMilestone" color="primary" onClick={toggle}>Close</ActivityButton>
+            <ActivityButton data-cy='closeAcceptMilestone' name="closeAcceptMilestone" color="primary" onClick={() => {
+              dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
+              toggle()
+            }
+            }
+            >Close</ActivityButton>
           </ModalFooter>
         </>
       }
