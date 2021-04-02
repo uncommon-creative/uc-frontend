@@ -15,7 +15,6 @@ export function* sagas() {
   yield takeLatest(ChatActions.willSendTextChat.type, willSendTextChat)
   yield takeLatest(ChatActions.willSendCommandChat.type, willSendCommandChat)
   yield takeLatest(ChatActions.willSendAttachmentChat.type, willSendAttachmentChat)
-  yield takeLatest(ChatActions.willGetMessageCommand.type, willGetMessageCommand)
   console.log('in chat saga');
 }
 
@@ -116,17 +115,4 @@ function* willSendAttachmentChat(action: any) {
     console.log("error in willSendAttachmentChat ", error)
   }
   yield put(UIActions.stopActivityRunning(action.payload.values.key));
-}
-
-export function* willGetMessageCommand(action: any) {
-  console.log("in willGetMessageCommand with: ", action)
-  const messages = yield select(ChatSelectors.getMessages)
-  console.log("in willGetMessageCommand messages: ", messages)
-
-  try {
-    const messageCommand = messages.slice().reverse().find((msg: any) => msg.commandMessage.command=== SowCommands[action.payload.command])
-    console.log("willGetMessageCommand messageCommand: ", messageCommand)
-  } catch (error) {
-    console.log("error in willGetMessageCommand ", error)
-  }
 }

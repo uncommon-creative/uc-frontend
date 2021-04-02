@@ -65,7 +65,12 @@ export const RequestReview = ({ modal, toggle }: any) => {
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy="closeRequestReview" name="closeRequestReview" color="primary" onClick={toggle}>Close</ActivityButton>
+            <ActivityButton data-cy="closeRequestReview" name="closeRequestReview" color="primary" onClick={() => {
+              dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
+              toggle()
+            }
+            }
+            >Close</ActivityButton>
           </ModalFooter>
         </>
       }

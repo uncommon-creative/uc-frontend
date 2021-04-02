@@ -1,9 +1,0 @@
-mutation algorandSendTx(
-  $sow: ID,
-  $tx: String
-) {
-  algorandSendTx(
-    sow: $sow,
-    tx: $tx
-  )
-}

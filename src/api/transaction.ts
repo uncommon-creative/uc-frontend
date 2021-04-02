@@ -67,27 +67,43 @@ export function createMultiSigAddress(payload: { seller: string, buyer: string, 
   }
 }
 
-export function signTransaction(multiSigAddress: any, params: any, mnemonicSecretKey: any, toPay: any) {
+export function signTransactionsAcceptAndPayMnemonic(multiSigAddress: any, params: any, mnemonicSecretKey: any, toPay: any, buyer: any, assetId: any) {
   try {
-    console.log("signTransaction toPay: ", toPay)
-    const txn = {
-      "to": multiSigAddress,
-      "fee": params.fee,
-      "amount": toPay,
-      "firstRound": params.firstRound,
-      "lastRound": params.lastRound,
-      "genesisID": params.genesisID,
-      "genesisHash": params.genesisHash,
-      "note": new Uint8Array(0)
-    };
-    console.log("signTransaction txn: ", txn)
+
+    const txnOptin = algosdk.makeAssetTransferTxnWithSuggestedParams(buyer, buyer, undefined, undefined, 0, undefined, assetId, params)
+    console.log("signTransactionsAcceptAndPayMnemonic txnOptin: ", txnOptin)
+
+    const txnPayment = algosdk.makePaymentTxnWithSuggestedParams(buyer, multiSigAddress, toPay, undefined, undefined, params);
+    console.log("signTransactionsAcceptAndPayMnemonic txnPayment: ", txnPayment)
+
+    let gid = algosdk.assignGroupID([txnOptin, txnPayment]);
+    const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
+    let signedOptinTxn = algosdk.signTransaction(txnOptin, secret_key.sk)
+    signedOptinTxn.blob = signedOptinTxn.blob.toString()
+    let signedPaymentTxn = algosdk.signTransaction(txnPayment, secret_key.sk)
+    signedPaymentTxn.blob = signedPaymentTxn.blob.toString()
+    const signedGroup = [signedOptinTxn, signedPaymentTxn]
+
+    return signedGroup
+  } catch (error) {
+    console.log("signTransactionsAcceptAndPayMnemonic API error: ", error)
+    throw error
+  }
+}
+
+export function signTransactionsAcceptAndPayPaid(params: any, mnemonicSecretKey: any, buyer: any, assetId: any) {
+  try {
+
+    const txnOptin = algosdk.makeAssetTransferTxnWithSuggestedParams(buyer, buyer, undefined, undefined, 0, undefined, assetId, params)
+    console.log("signTransactionsAcceptAndPayPaid txnOptin: ", txnOptin)
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
-    const signedTxn = algosdk.signTransaction(txn, secret_key.sk);
+    let signedOptinTxn = algosdk.signTransaction(txnOptin, secret_key.sk)
+    signedOptinTxn.blob = signedOptinTxn.blob.toString()
 
-    return signedTxn
+    return [signedOptinTxn]
   } catch (error) {
-    console.log("signTransaction API error: ", error)
+    console.log("signTransactionsAcceptAndPayPaid API error: ", error)
     throw error
   }
 }
@@ -105,15 +121,15 @@ export const setSowArbitrator = async (sow: any, arbitrator: any) => {
   }
 }
 
-export const sendTransaction = async (sow: any, signedTxn: any) => {
-  const mutation = loader('../graphql/algorandSendTx.gql')
+export const algorandSendAcceptAndPayTx = async (sow: any, tx: any) => {
+  const mutation = loader('../graphql/algorandSendAcceptAndPayTx.gql')
 
   try {
-    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, tx: signedTxn.blob.toString() }))
-    // console.log("sendTransaction result: ", result)
-    return result.data.algorandSendTx
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, tx: tx }))
+    console.log("algorandSendAcceptAndPayTx result: ", result)
+    return result.data.algorandSendAcceptAndPayTx
   } catch (error) {
-    console.log("sendTransaction API error: ", error)
+    console.log("algorandSendAcceptAndPayTx API error: ", error)
     throw error
   }
 }
@@ -155,17 +171,49 @@ export const setSignedMsig = async (sow: any, signedMsig: any) => {
   }
 }
 
-export function appendSignMultisigTransaction(signedMsig: any, mnemonicSecretKey: any, msigparams: any) {
+export function signGroupAcceptMilestone(signedMsig: any, mnemonicSecretKey: any, msigparams: any) {
   try {
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
-    const buffer = Uint8Array.from(signedMsig.blob.split(',') as any);
+    const bufferMultisig = Uint8Array.from(signedMsig.tx[0].blob.split(',') as any);
 
-    const directsig = algosdk.appendSignMultisigTransaction(buffer, msigparams, secret_key.sk);
-    // console.log("in appendSignMultisigTransaction directsig: ", directsig)
-    return directsig
+    console.log("in signGroupAcceptMilestone signedMsig: ", signedMsig)
+    console.log("in signGroupAcceptMilestone signedMsig.tx[0]: ", signedMsig.tx[0])
+    console.log("in signGroupAcceptMilestone bufferMultisig: ", bufferMultisig)
+
+
+    let signedMultisig = algosdk.appendSignMultisigTransaction(bufferMultisig, msigparams, secret_key.sk);
+
+
+    console.log("in signGroupAcceptMilestone signedMultisig: ", signedMultisig)
+
+    signedMultisig.blob = signedMultisig.blob.toString()
+
+    console.log("in signGroupAcceptMilestone signedMultisig: ", signedMultisig)
+
+    const bufferOptin: any = Uint8Array.from(signedMsig.tx[1].blob.split(',') as any);
+    let signedOptinTxn = algosdk.signTransaction(algosdk.decodeUnsignedTransaction(bufferOptin), secret_key.sk)
+    signedOptinTxn.blob = signedOptinTxn.blob.toString()
+    console.log("in signGroupAcceptMilestone signedOptinTxn: ", signedOptinTxn)
+
+
+
+    // let txOptin = Buffer.from(signedOptinTxn.blob.split(','))
+    // let decodedOptin = algosdk.decodeSignedTransaction(txOptin);
+    // let txMsig = Buffer.from(signedMultisig.blob.split(','))
+    // let decodedMsig = algosdk.decodeSignedTransaction(txMsig);
+    // decodedMsig.group = decodedOptin.group
+    
+    // console.log("signGroupAcceptMilestone decodedMsig: ", decodedMsig)
+    // let decodedMsigMAKEPAYMENT = algosdk.makePaymentTxnWithSuggestedParamsFromObject(decodedMsig.txn)
+    // console.log("signGroupAcceptMilestone decodedMsigMAKEPAYMENT:", decodedMsigMAKEPAYMENT)
+    // signedMultisig.blob = algosdk.encodeObj(algosdk.makePaymentTxnWithSuggestedParamsFromObject(decodedMsig)).toString()
+    // console.log("signGroupAcceptMilestone signedMultisig after encode", signedMultisig)
+
+
+    return [signedMultisig, signedOptinTxn, signedMsig.tx[2]]
   } catch (error) {
-    console.log("appendSignMultisigTransaction API error: ", error)
+    console.log("signGroupAcceptMilestone API error: ", error)
     throw error
   }
 }
@@ -185,9 +233,6 @@ export const algorandPutTransaction = async (sow: any, tx: any) => {
 
 export const algorandPollAccountAmount = async (id: any, account: any, amount: any) => {
   const query = loader('../graphql/algorandPollAccountAmount.gql')
-  // console.log("in algorandPollAccountAmount id: ", id)
-  // console.log("in algorandPollAccountAmount account: ", account)
-  // console.log("in algorandPollAccountAmount amount: ", amount)
 
   try {
     const result: any = await API.graphql(graphqlOperation(query, { id: id, account: account, amount: amount }))
@@ -309,7 +354,7 @@ export const algorandFinalizeTransaction = async (hash_round: any, round_sow: an
   const mutation = loader('../graphql/algorandFinalizeTransaction.gql')
 
   try {
-    const result: any = await API.graphql(graphqlOperation(mutation, { hash_round: hash_round, round_sow: round_sow, blob: tx.blob.toString() }))
+    const result: any = await API.graphql(graphqlOperation(mutation, { hash_round: hash_round, round_sow: round_sow, tx: tx }))
     console.log("algorandFinalizeTransaction result: ", result)
     return result.data.algorandFinalizeTransaction
   } catch (error) {
@@ -342,7 +387,7 @@ export function signTxn(mnemonicSecretKey: any, params: any, addr: any, note: an
     // const rawSignedCreationTxn = creationTxn.signTxn(secret_key.sk);
     let signedCreationTxn = algosdk.signTransaction(creationTxn, secret_key.sk)
     signedCreationTxn.blob = signedCreationTxn.blob.toString()
-    console.log("signTxn signedCreationTxn: ", signedCreationTxn)
+    // console.log("signTxn signedCreationTxn: ", signedCreationTxn)
 
     return signedCreationTxn
   } catch (error) {
@@ -430,7 +475,7 @@ export const destroyAndCreateAsset = async (mnemonicSecretKey: any, addr: any, n
   try {
 
     const destroyTxn = algosdk.makeAssetDestroyTxnWithSuggestedParams(addr, note, assetID, params);
-    console.log("destroyAndCreateAsset dtxn: ", destroyTxn);
+    // console.log("destroyAndCreateAsset destroyTxn: ", destroyTxn);
 
     const creationTxn = algosdk.makeAssetCreateTxnWithSuggestedParams(
       addr,
@@ -448,14 +493,11 @@ export const destroyAndCreateAsset = async (mnemonicSecretKey: any, addr: any, n
       assetMetadataHash,
       params
     );
-    console.log("destroyAndCreateAsset creationTxn: ", creationTxn);
+    // console.log("destroyAndCreateAsset creationTxn: ", creationTxn);
 
     let gid = algosdk.assignGroupID([destroyTxn, creationTxn]);
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
-
-    // const signedDestroyTxn = destroyTxn.signTxn(secret_key.sk);
-    // const signedCreationTxn = creationTxn.signTxn(secret_key.sk);
     let signedDestroyTxn = algosdk.signTransaction(destroyTxn, secret_key.sk)
     signedDestroyTxn.blob = signedDestroyTxn.blob.toString()
     let signedCreationTxn = algosdk.signTransaction(creationTxn, secret_key.sk)
@@ -465,6 +507,81 @@ export const destroyAndCreateAsset = async (mnemonicSecretKey: any, addr: any, n
     return signedGroup
   } catch (error) {
     console.log("destroyAndCreateAsset error: ", error)
+    throw error
+  }
+}
+
+export const algorandSendDeliverableTokenCreationTx = async (sow: any, tx: any) => {
+  const mutation = loader('../graphql/algorandSendDeliverableTokenCreationTx.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, tx: tx }))
+    console.log("algorandSendDeliverableTokenCreationTx result: ", result)
+    return result.data.algorandSendDeliverableTokenCreationTx
+  } catch (error) {
+    console.log("algorandSendDeliverableTokenCreationTx API error: ", error)
+    throw error
+  }
+}
+
+export function signTransactionsClaimMilestoneMetMnemonic(multiSigAddress: any, sellerAddress: any, params: any, mnemonicSecretKey: any, price: any, mparams: any, buyerAddress: any, assetId: any) {
+  try {
+    // let txnPayment: any = {
+    //   "from": multiSigAddress,
+    //   "to": sellerAddress,
+    //   "fee": params.fee,
+    //   "amount": price * 1000000,
+    //   "firstRound": params.firstRound,
+    //   "lastRound": params.lastRound,
+    //   "genesisID": params.genesisID,
+    //   "genesisHash": params.genesisHash,
+    //   "note": new Uint8Array(0)
+    // };
+    let txnPayment = algosdk.makePaymentTxnWithSuggestedParams(multiSigAddress, sellerAddress, price * 1000000, undefined, undefined, params);
+    console.log("signTransactionsClaimMilestoneMetMnemonic txnPayment: ", txnPayment)
+    const txnOptin = algosdk.makeAssetTransferTxnWithSuggestedParams(buyerAddress, buyerAddress, undefined, undefined, 0, undefined, assetId, params)
+    console.log("signTransactionsClaimMilestoneMetMnemonic txnOptin: ", txnOptin)
+    const txnAsset = algosdk.makeAssetTransferTxnWithSuggestedParams(sellerAddress, buyerAddress, undefined, undefined, 1, undefined, assetId, params)
+    console.log("signTransactionsClaimMilestoneMetMnemonic txnAsset: ", txnAsset)
+
+    let gid = algosdk.assignGroupID([txnPayment, txnOptin, txnAsset]);
+
+    const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
+    console.log("signTransactionsClaimMilestoneMetMnemonic txnPayment after group: ", txnPayment)
+    console.log("signTransactionsClaimMilestoneMetMnemonic txnOptin after group: ", txnOptin)
+    console.log("signTransactionsClaimMilestoneMetMnemonic txnAsset after group: ", txnAsset)
+    // txnPayment.group = txnOptin.group
+    // console.log("signTransactionsClaimMilestoneMetMnemonic txnPayment after group added: ", txnPayment)
+
+    let signedPaymentTxn = algosdk.signMultisigTransaction(txnPayment, mparams, secret_key.sk);
+    console.log("signTransactionsClaimMilestoneMetMnemonic signedPaymentTxn: ", signedPaymentTxn)
+    signedPaymentTxn.blob = signedPaymentTxn.blob.toString()
+    console.log("signTransactionsClaimMilestoneMetMnemonic signedPaymentTxn: ", signedPaymentTxn)
+    let parsedOptinTxn = {
+      txID: "unknown",
+      blob: algosdk.encodeObj(txnOptin.get_obj_for_encoding()).toString()
+    }
+    let signedAssetTxn = algosdk.signTransaction(txnAsset, secret_key.sk)
+    signedAssetTxn.blob = signedAssetTxn.blob.toString()
+
+    const signedGroup = [signedPaymentTxn, parsedOptinTxn, signedAssetTxn]
+
+    return { tx: signedGroup, backupTx: [signedPaymentTxn] }
+  } catch (error) {
+    console.log("signTransactionsClaimMilestoneMetMnemonic API error: ", error)
+    throw error
+  }
+}
+
+export const algorandSendClaimMilestoneMet = async (sow: any, tx: any, backupTx: any) => {
+  const mutation = loader('../graphql/algorandSendClaimMilestoneMet.gql')
+
+  try {
+    const result: any = await API.graphql(graphqlOperation(mutation, { sow: sow, tx: tx, backupTx: backupTx }))
+    console.log("algorandSendClaimMilestoneMet result: ", result)
+    return result.data.algorandSendClaimMilestoneMet
+  } catch (error) {
+    console.log("algorandSendClaimMilestoneMet API error: ", error)
     throw error
   }
 }

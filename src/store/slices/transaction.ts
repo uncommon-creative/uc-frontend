@@ -13,15 +13,16 @@ export const currentSlice = createSlice({
     payment: {} as any,
     activePolls: {} as any,
     submitToken: "",
+    transactionClaimMilestoneMet: {} as any,
     error: ''
   },
   reducers: {
     goToTransactionPage: (state, action: PayloadAction<any>) => void (state.transactionPage = action.payload),
     willGetAlgorandAccountInfo: (state, action: PayloadAction<any>) => state,
     willGetParams: (state, action: PayloadAction<any>) => void (state.transactionPage = 1),
-    didGetParams: (state, action: PayloadAction<any>) => void (state.params = action.payload),
+    didGetParams: (state, action: PayloadAction<any>) => void (state.params.withoutDelay = action.payload),
     willGetParamsWithDelay: (state, action: PayloadAction<any>) => void (state.transactionPage = 1),
-    didGetParamsWithDelay: (state, action: PayloadAction<any>) => void (state.params = action.payload),
+    didGetParamsWithDelay: (state, action: PayloadAction<any>) => void (state.params.withDelay = action.payload),
 
     willCreateMultiSigAddress: (state, action: PayloadAction<any>) => state,
     didCreateMultiSigAddress: (state, action: PayloadAction<any>) => void (state.multiSig = action.payload, state.transactionPage = 2),
@@ -36,6 +37,7 @@ export const currentSlice = createSlice({
     didAlgorandPollAccountAmount: (state, action: PayloadAction<any>) => void (state.activePolls[action.payload.sow] = action.payload.timestamp),
 
     willCompleteTransactionAcceptAndPayQR: (state, action: PayloadAction<any>) => void (state.transactionPage = 3),
+    willCompleteTransactionAcceptAndPayPaid: (state, action: PayloadAction<any>) => state,
     willCompleteTransactionAcceptAndPayMnemonic: (state, action: PayloadAction<any>) => state,
     willPrepareTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => state,
     didPrepareTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 5),
@@ -45,10 +47,10 @@ export const currentSlice = createSlice({
 
     willCompleteTransactionClaimMilestoneMetMnemonic: (state, action: PayloadAction<any>) => state,
     willPrepareTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => state,
-    didPrepareTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 4),
+    didPrepareTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 5),
     willCompleteTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => state,
-    didCompleteTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionPage = 5),
-    didCompleteTransactionClaimMilestoneMetFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 6),
+    didCompleteTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionClaimMilestoneMet= action.payload, state.transactionPage = 6),
+    didCompleteTransactionClaimMilestoneMetFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
 
     willGetSignedMsig: (state, action: PayloadAction<any>) => state,
     didGetSignedMsig: (state, action: PayloadAction<any>) => void (state.signedMsig = action.payload, state.transactionPage = 2),
@@ -90,6 +92,7 @@ export const selectors = {
   getTransactionAcceptAndPay: (state: any) => state.transaction.transactionAcceptAndPay,
   getAlgoSigner: (state: any) => state.transaction.algoSigner,
   getTransactionAcceptMilestone: (state: any) => state.transaction.transactionAcceptMilestone,
+  getTransactionClaimMilestoneMet: (state: any) => state.transaction.transactionClaimMilestoneMet,
   getSignedMsig: (state: any) => state.transaction.signedMsig,
   getPayment: (state: any) => state.transaction.payment,
   getActivePolls: (state: any) => state.transaction.activePolls,

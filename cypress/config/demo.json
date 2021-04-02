@@ -1,0 +1,10 @@
+{
+  "env": {
+    "host": "https://demo.uncommon-demo.com",
+    "description": "This is my local machine!",
+    "user": "e2e-test@radixsites.org",
+
+    "userSeller": "d.incollu+seller@radixgroup.org",
+    "userBuyer": "d.incollu+buyer@radixgroup.org"
+  }
+}

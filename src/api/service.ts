@@ -12,7 +12,7 @@ export const getProfileData = async (user: any) => {
     const result = _.mapValues(rawResult.data, function (value: any, name: any) {
       return value && (name == 'address' ? JSON.parse(value.value) : value.value);
     });
-    console.log('getProfileData with result: ', result);
+    // console.log('getProfileData with result: ', result);
     return result
 
   } catch (error) {

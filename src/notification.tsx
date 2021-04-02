@@ -13,7 +13,7 @@ export const NotificationLayer = ({ children, ...rest }: any) => {
     <>
       {children}
       {notification.visible &&
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, zIndex: 10 }}>
+        <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 80, zIndex: 10000 }}>
           <Container>
             <Alert color={notification.type}>
               {notification.message}

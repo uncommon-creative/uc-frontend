@@ -15,7 +15,7 @@ export const currentSlice = createSlice({
   },
   reducers: {
     willRefreshSowChat: (state, action: PayloadAction<any>) => state,
-    didRefreshSowChat: (state, action: PayloadAction<any>) => void (state.messages = state.messages.concat(action.payload)),    
+    didRefreshSowChat: (state, action: PayloadAction<any>) => void (state.messages = state.messages.concat(action.payload)),
 
     willWriteMessage: (state, action: PayloadAction<any>) => void (state.message = action.payload),
 
@@ -30,8 +30,6 @@ export const currentSlice = createSlice({
     didCountUnreadMessagesSeller: (state, action: PayloadAction<any>) => void (state.unreadMessages.asSeller = action.payload),
     didCountUnreadMessagesBuyer: (state, action: PayloadAction<any>) => void (state.unreadMessages.asBuyer = action.payload),
     didCountUnreadMessagesArbitrator: (state, action: PayloadAction<any>) => void (state.unreadMessages.asArbitrator = action.payload),
-
-    willGetMessageCommand: (state, action: PayloadAction<any>) => state,
   }
 })
 

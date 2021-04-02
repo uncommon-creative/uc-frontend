@@ -12,7 +12,8 @@ import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from 'react-i18next';
 
 import { ActivityButton } from './common/ActivityButton'
-import { SowAttachments } from '../components/SowAttachments'
+import { SowAttachmentsInput } from './SowAttachmentsInput'
+import { LinkBlockExplorer } from './common/LinkBlockExplorer'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { selectors as AuthSelectors } from '../store/slices/auth'
@@ -33,14 +34,14 @@ export const ChatSow = ({ currentSow }: any) => {
   const messages = useSelector(ChatSelectors.getMessages)
   let inputRef: any = React.createRef();
 
-  React.useEffect(() => {
-    const refreshChat = setInterval(() => {
-      dispatch(ChatActions.willRefreshSowChat({ messages: messages, sow: currentSow.sow }))
-      dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
-    }, 30000);
+  // React.useEffect(() => {
+  //   const refreshChat = setInterval(() => {
+  //     dispatch(ChatActions.willRefreshSowChat({ messages: messages, sow: currentSow.sow }))
+  //     dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
+  //   }, 30000);
 
-    return () => clearInterval(refreshChat)
-  }, []);
+  //   return () => clearInterval(refreshChat)
+  // }, []);
 
   React.useEffect(() => {
     updateScroll()
@@ -77,16 +78,29 @@ export const ChatSow = ({ currentSow }: any) => {
                           : msg.commandMessage ?
                             <>
                               <CardTitle data-cy="chatCommand" className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-primary font-weight-bold" : "text-primary font-weight-bold"}>
-                                {msg.commandMessage.command}
+                                {t(`chat.SowCommands.${msg.commandMessage.command}`)}
                               </CardTitle>
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).tx &&
-                                <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-muted text-break" : "text-muted text-break"}>
-                                  {'transaction: ' + JSON.parse(msg.commandMessage.data).tx}
+                                <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center" : ""}>
+                                  {msg.commandMessage.command == SowCommands.ACCEPT_AND_PAY ?
+                                    <>
+                                      <LinkBlockExplorer title={`Opt-in transaction: ${JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
+                                      {JSON.parse(msg.commandMessage.data).tx[1] && <LinkBlockExplorer title={`Payment transaction: ${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />}
+                                    </>
+                                    :
+                                    msg.commandMessage.command == SowCommands.ACCEPT_MILESTONE ?
+                                      <>
+                                        <LinkBlockExplorer title={`Multisig transaction: ${JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
+                                        <LinkBlockExplorer title={`Opt-in transaction: ${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />
+                                        <LinkBlockExplorer title={`Asset transfer transaction: ${JSON.parse(msg.commandMessage.data).tx[2].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[2]} />
+                                      </>
+                                      : <LinkBlockExplorer title={'Transaction: ' + JSON.parse(msg.commandMessage.data).tx.substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx} />
+                                  }
                                 </CardSubtitle>
                               }
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).assetId &&
-                                <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center text-muted text-break" : "text-muted text-break"}>
-                                  {'assetId: ' + JSON.parse(msg.commandMessage.data).assetId}
+                                <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center mt-1" : "mt-1"}>
+                                  <LinkBlockExplorer title={'Asset: ' + JSON.parse(msg.commandMessage.data).assetId} type="asset" id={JSON.parse(msg.commandMessage.data).assetId} />
                                 </CardSubtitle>
                               }
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).reviews_left &&
@@ -94,44 +108,13 @@ export const ChatSow = ({ currentSow }: any) => {
                                   {'#' + JSON.parse(msg.commandMessage.data).reviews_left + '\n' + JSON.parse(msg.commandMessage.data).message}
                                 </CardSubtitle>
                               }
-                              <CardText>
+                              <CardText className="mt-3">
                                 {t(`chat.SowCommands.${msg.commandMessage.command}_info`)}
                               </CardText>
                             </>
-
-
-
-                            //     msg.commandMessage.command == SowCommands.REQUEST_REVIEW ?
-                            //       msg.commandMessage.command + ' (#' + JSON.parse(msg.commandMessage.data).reviews_left + '): \n' + JSON.parse(msg.commandMessage.data).message
-                            //       : msg.commandMessage.command == SowCommands.SYSTEM_SIGN ?
-                            //         <>
-                            //   <CardTitle className="text-center text-primary">
-                            //     {msg.commandMessage.command}
-                            //   </CardTitle>
-                            //   <CardSubtitle className="text-center text-muted text-break">
-                            //     {'transaction: ' + JSON.parse(msg.commandMessage.data).tx}
-                            //   </CardSubtitle>
-                            //   <CardText>
-                            //     {t(`chat.SowCommands.${SowCommands.SYSTEM_SIGN}_info`)}
-                            //   </CardText>
-                            // </>
-                            //         : msg.commandMessage.command
-
-
-
                             : msg.attachmentMessage.key.split('/').pop().length > 20 ?
                               msg.attachmentMessage.key.split('/').pop().substring(0, 16) + '... ' + msg.attachmentMessage.key.split('/').pop().substring(msg.attachmentMessage.key.split('/').pop().length - 4, msg.attachmentMessage.key.split('/').pop().length)
                               : msg.attachmentMessage.key.split('/').pop()
-
-
-                          // msg.textMessage ? msg.textMessage.message
-                          //   : msg.commandMessage ?
-                          //     msg.commandMessage.data ?
-                          //       msg.commandMessage.command + ' (#' + JSON.parse(msg.commandMessage.data).reviews_left + '): \n' + JSON.parse(msg.commandMessage.data).message
-                          //       : msg.commandMessage.command
-                          //     : msg.attachmentMessage.key.split('/').pop().length > 20 ?
-                          //       msg.attachmentMessage.key.split('/').pop().substring(0, 16) + '... ' + msg.attachmentMessage.key.split('/').pop().substring(msg.attachmentMessage.key.split('/').pop().length - 4, msg.attachmentMessage.key.split('/').pop().length)
-                          //       : msg.attachmentMessage.key.split('/').pop()
                         }
                       </>
                     }
@@ -190,8 +173,13 @@ export const ChatSow = ({ currentSow }: any) => {
       >
         <Row>
           <Col>
-            <Label for="attachments">Attachments</Label>
-            <SowAttachments currentSow={currentSow} />
+            <Label for="attachments">
+              Attachments
+              {/* <CardSubtitle className="fs-5 text-muted" style={{ fontSize: 12 }}>
+                Don't upload the deliverable here, but only while claiming milestone.
+              </CardSubtitle> */}
+            </Label>
+            <SowAttachmentsInput currentSow={currentSow} />
           </Col>
         </Row>
       </Formik>
