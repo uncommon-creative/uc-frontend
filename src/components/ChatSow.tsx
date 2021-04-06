@@ -34,14 +34,14 @@ export const ChatSow = ({ currentSow }: any) => {
   const messages = useSelector(ChatSelectors.getMessages)
   let inputRef: any = React.createRef();
 
-  // React.useEffect(() => {
-  //   const refreshChat = setInterval(() => {
-  //     dispatch(ChatActions.willRefreshSowChat({ messages: messages, sow: currentSow.sow }))
-  //     dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
-  //   }, 30000);
+  React.useEffect(() => {
+    const refreshChat = setInterval(() => {
+      dispatch(ChatActions.willRefreshSowChat({ messages: messages, sow: currentSow.sow }))
+      dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
+    }, 30000);
 
-  //   return () => clearInterval(refreshChat)
-  // }, []);
+    return () => clearInterval(refreshChat)
+  }, []);
 
   React.useEffect(() => {
     updateScroll()

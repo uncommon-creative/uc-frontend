@@ -23,13 +23,13 @@ export const Reject = ({ modal, toggle }: any) => {
   React.useEffect(() => {
 
     return () => {
-      dispatch(TransactionActions.goToTransactionPage(1))
+      dispatch(TransactionActions.goToTransactionPage({ transactionPage: 0, sowCommand: SowCommands.REJECT }))
     }
   }, [modal])
 
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl">
-      {transactionPage == 1 &&
+      {transactionPage[SowCommands.REJECT] == 1 &&
         <>
           <ModalHeader toggle={toggle}>Reject</ModalHeader>
           <ModalBody>
@@ -43,12 +43,12 @@ export const Reject = ({ modal, toggle }: any) => {
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy={"willReject"} name={"willReject"} color="primary" onClick={() => {
               dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REJECT }, sow: currentSow }));
-              dispatch(TransactionActions.willReject())
+              dispatch(TransactionActions.willReject({ sowCommand: SowCommands.REJECT }))
             }}>Reject</ActivityButton>
           </ModalFooter>
         </>
       }
-      {transactionPage == 2 &&
+      {transactionPage[SowCommands.REJECT] == 2 &&
         <>
           <ModalHeader toggle={toggle}>Rejected</ModalHeader>
           <ModalBody>

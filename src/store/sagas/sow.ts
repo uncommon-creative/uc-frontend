@@ -148,7 +148,7 @@ function* willSubmitStatementOfWork(action: any) {
 
       yield call(willBuildPdf, { payload: { sow: result.sow } })
       yield call(willGetParams, { payload: { seller: result.seller, buyer: result.buyer } })
-      yield put(TransactionActions.goToTransactionPage(2))
+      yield put(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.SUBMIT }))
 
       // yield put(push("/home"))
       yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));

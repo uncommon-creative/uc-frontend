@@ -48,7 +48,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
 
   const [isAlgoSignInstalled, setAlgo] = React.useState(false);
   React.useEffect(() => {
-    if (transactionPage == 2) {
+    if (transactionPage[SowCommands.SUBMIT] == 2) {
       if (typeof AlgoSigner !== 'undefined') {
         setAlgo(true);
       }
@@ -56,18 +56,18 @@ export const SubmitSow = ({ modal, toggle }: any) => {
   }, [transactionPage]);
 
   React.useEffect(() => {
-    modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentChosenArbitrator }))
+    modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentChosenArbitrator, sowCommand: SowCommands.SUBMIT }))
 
     return () => {
       setMnemonicSecretKey('')
       setCurrentFromAlgoSigner('')
-      dispatch(TransactionActions.goToTransactionPage(0))
+      dispatch(TransactionActions.goToTransactionPage({ transactionPage: 0, sowCommand: SowCommands.SUBMIT }))
     }
   }, [modal])
 
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl">
-      {transactionPage == 1 &&
+      {transactionPage[SowCommands.SUBMIT] == 1 &&
         <>
           <ModalHeader toggle={toggle}>Submitting the Statement of Work</ModalHeader>
           <ModalBody className="text-center">
@@ -75,7 +75,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
           </ModalBody>
         </>
       }
-      {transactionPage == 2 &&
+      {transactionPage[SowCommands.SUBMIT] == 2 &&
         <>
           <ModalHeader toggle={toggle}>Choose how to sign</ModalHeader>
           <ModalBody>
@@ -83,7 +83,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
             <Row>
               <Col>
                 <Card data-cy='mnemonicSubmit' onClick={() => {
-                  dispatch(TransactionActions.goToTransactionPage(3))
+                  dispatch(TransactionActions.goToTransactionPage({ transactionPage: 3, sowCommand: SowCommands.SUBMIT }))
                 }}>
                   <CardBody className="text-center">
                     <CardSubtitle tag="h5" className="mb-2 text-muted text-center">Mnemonic</CardSubtitle>
@@ -108,7 +108,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
           </ModalBody>
         </>
       }
-      {transactionPage == 3 &&
+      {transactionPage[SowCommands.SUBMIT] == 3 &&
         <>
           <ModalHeader toggle={toggle}>Sign with mnemonic secret key</ModalHeader>
           <ModalBody>
@@ -124,7 +124,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.goToTransactionPage(2))
+              dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.SUBMIT }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionSubmitMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionSubmitMnemonic" color="primary" onClick={async () => {
               dispatch(TransactionActions.willCompleteTransactionSubmitMnemonic({ params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, pdfHash: worksAgreementPdf.pdfHash }))
@@ -132,7 +132,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage == 4 &&
+      {transactionPage[SowCommands.SUBMIT] == 4 &&
         <>
           <ModalHeader toggle={toggle}>Sign with AlgoSigner</ModalHeader>
           <ModalBody>
@@ -155,7 +155,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.goToTransactionPage(2))
+              dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.SUBMIT }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionSubmitAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionSubmitAlgoSigner" color="primary"
               onClick={() => {
@@ -166,7 +166,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
         </>
       }
       {
-        transactionPage == 5 &&
+        transactionPage[SowCommands.SUBMIT] == 5 &&
         <>
           <ModalHeader toggle={toggle} data-cy="sowSubmitSuccess">Statement of Work submitted</ModalHeader>
           <ModalBody>
@@ -186,7 +186,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
         </>
       }
       {
-        transactionPage == 6 &&
+        transactionPage[SowCommands.SUBMIT] == 6 &&
         <>
           <ModalHeader toggle={toggle}>Submission failed</ModalHeader>
           <ModalBody>
