@@ -111,7 +111,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             </Formik>
             {/* {newAttachments.length > 0 && newAttachments.some((file: any) => (file.filename == configuration[stage].deliverable_key || (file.owner == currentSow.sow && file.key != "01f4b372-8f44-4f8b-a2eb-64a2a3d33059/works_agreement.pdf"))) && */}
             {newAttachments.some((file: any) => (file.filename == configuration[stage].deliverable_key)) &&
-              <ListGroupItem>
+              <ListGroupItem data-cy="attachmentDeliverable">
                 <FileButton file={newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key)} />
               </ListGroupItem>
             }

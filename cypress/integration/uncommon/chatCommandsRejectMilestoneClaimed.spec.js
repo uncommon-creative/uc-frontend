@@ -152,8 +152,8 @@ describe('Chat', () => {
       // })
       cy.get('[data-cy=closeAcceptAndPay]').click()
       cy.wait(10000)
-      cy.get('[class=rce-mbox-text]')
-        .contains('ACCEPT_AND_PAY')
+      cy.get('[data-cy=chatCommand]')
+        .contains('Accept and Pay')
       cy.logout()
 
       // seller CLAIM_MILESTONE_MET
@@ -175,8 +175,8 @@ describe('Chat', () => {
       cy.wait(10000)
       cy.get('[data-cy=closeClaimMilestoneMet]').click()
       cy.wait(5000)
-      cy.get('[class=rce-mbox-text]')
-        .contains('CLAIM_MILESTONE_MET')
+      cy.get('[data-cy=chatCommand]')
+        .contains('Claim milestone met')
       cy.logout()
 
       // buyer REJECT
@@ -191,8 +191,8 @@ describe('Chat', () => {
       cy.wait(1000)
       cy.get('[data-cy=closeReject]').click()
       cy.wait(5000)
-      cy.get('[class=rce-mbox-text]')
-        .contains('REJECT')
+      cy.get('[data-cy=chatCommand]')
+        .contains('Reject')
       cy.logout()
     })
   })

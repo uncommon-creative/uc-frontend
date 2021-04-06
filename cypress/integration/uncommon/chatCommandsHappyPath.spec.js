@@ -152,8 +152,8 @@ describe('Chat', () => {
       // })
       cy.get('[data-cy=closeAcceptAndPay]').click()
       cy.wait(10000)
-      cy.get('[class=rce-mbox-text]')
-        .contains('ACCEPT_AND_PAY')
+      cy.get('[data-cy=chatCommand]')
+        .contains('Accept and Pay')
       cy.logout()
 
       // seller CLAIM_MILESTONE_MET
@@ -166,6 +166,14 @@ describe('Chat', () => {
       cy.get('[data-cy=acceptConditions]').check()
       cy.get('[data-cy=continueTransaction]').click()
       cy.wait(10000)
+      cy.get('[data-cy=inputAttachment]')
+        .attachFile('CypressDeliverable.txt');
+      cy.wait(30000)
+      cy.get('[data-cy=attachmentDeliverable]')
+        .get('[data-cy=attachment]')
+        .contains('deliverable')
+      cy.get('[data-cy=continueTransaction]').click()
+      cy.wait(1000)
       cy.get('[data-cy=mnemonicClaimMilestoneMet]').click()
       cy.get('[data-cy=mnemonicSecretKey]')
         .type(Cypress.env('userSellerMnemonic'))
@@ -175,8 +183,8 @@ describe('Chat', () => {
       cy.wait(10000)
       cy.get('[data-cy=closeClaimMilestoneMet]').click()
       cy.wait(5000)
-      cy.get('[class=rce-mbox-text]')
-        .contains('CLAIM_MILESTONE_MET')
+      cy.get('[data-cy=chatCommand]')
+        .contains('Claim milestone met')
       cy.logout()
 
       // buyer REQUEST_REVIEW
@@ -194,8 +202,8 @@ describe('Chat', () => {
       cy.wait(2000)
       cy.get('[data-cy=closeRequestReview]').click()
       cy.wait(5000)
-      cy.get('[class=rce-mbox-text]')
-        .contains('REQUEST_REVIEW')
+      cy.get('[data-cy=chatCommand]')
+        .contains('Request review')
       cy.logout()
 
       // seller CLAIM_MILESTONE_MET
@@ -208,6 +216,14 @@ describe('Chat', () => {
       cy.get('[data-cy=acceptConditions]').check()
       cy.get('[data-cy=continueTransaction]').click()
       cy.wait(10000)
+      cy.get('[data-cy=inputAttachment]')
+        .attachFile('CypressDeliverable.txt');
+      cy.wait(30000)
+      cy.get('[data-cy=attachmentDeliverable]')
+        .get('[data-cy=attachment]')
+        .contains('deliverable')
+      cy.get('[data-cy=continueTransaction]').click()
+      cy.wait(1000)
       cy.get('[data-cy=mnemonicClaimMilestoneMet]').click()
       cy.get('[data-cy=mnemonicSecretKey]')
         .type(Cypress.env('userSellerMnemonic'))
@@ -217,8 +233,8 @@ describe('Chat', () => {
       cy.wait(10000)
       cy.get('[data-cy=closeClaimMilestoneMet]').click()
       cy.wait(5000)
-      cy.get('[class=rce-mbox-text]')
-        .contains('CLAIM_MILESTONE_MET')
+      cy.get('[data-cy=chatCommand]')
+        .contains('Claim milestone met')
       cy.logout()
 
       // buyer ACCEPT_MILESTONE
@@ -239,8 +255,8 @@ describe('Chat', () => {
       cy.wait(15000)
       cy.get('[data-cy=closeAcceptMilestone]').click()
       cy.wait(10000)
-      cy.get('[class=rce-mbox-text]')
-        .contains('FINALIZE_MSIG_TRANSACTION')
+      cy.get('[data-cy=chatCommand]')
+        .contains('Finalize multisig transaction')
       cy.logout()
     })
   })
