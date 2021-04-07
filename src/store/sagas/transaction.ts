@@ -35,8 +35,9 @@ export function* sagas() {
   yield takeLatest(TransactionActions.willGetSignedMsig.type, willGetSignedMsig)
   yield takeLatest(TransactionActions.willCompleteTransactionSubmitMnemonic.type, willCompleteTransactionSubmitMnemonic)
   yield takeLatest(TransactionActions.willPrepareTransactionSubmitAlgoSigner.type, willPrepareTransactionSubmitAlgoSigner)
-  yield takeLatest(TransactionActions.willCompleteTransactionSubmitAlgoSigner.type, willCompleteTransactionSubmitAlgoSigner)
-  yield takeLatest(TransactionActions.willDestroyAndCreateAsset.type, willDestroyAndCreateAsset)
+  yield takeLatest(TransactionActions.willCompleteTransactionSubmitAlgoSignerFirst.type, willCompleteTransactionSubmitAlgoSignerFirst)
+  yield takeLatest(TransactionActions.willCompleteTransactionSubmitAlgoSignerSecond.type, willCompleteTransactionSubmitAlgoSignerSecond)
+  yield takeLatest(TransactionActions.willDestroyAndCreateAssetMnemonic.type, willDestroyAndCreateAssetMnemonic)
   console.log('in transaction saga');
 }
 
@@ -333,7 +334,7 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
       let resultSignedTransaction = [] as any
       if (existingAsset) {
         console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
-        resultSignedTransaction = yield call(willDestroyAndCreateAsset, {
+        resultSignedTransaction = yield call(willDestroyAndCreateAssetMnemonic, {
           payload: {
             asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: action.payload.mnemonicSecretKey, params: action.payload.params.withoutDelay,
             addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
@@ -547,7 +548,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
       let resultSignedTransaction = [] as any
       if (existingAsset) {
         console.log("willCompleteTransactionSubmitMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
-        resultSignedTransaction = yield call(willDestroyAndCreateAsset, {
+        resultSignedTransaction = yield call(willDestroyAndCreateAssetMnemonic, {
           payload: {
             asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: action.payload.mnemonicSecretKey, params: action.payload.params.withoutDelay,
             addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
@@ -593,6 +594,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
 function* willPrepareTransactionSubmitAlgoSigner() {
   console.log("in willPrepareTransactionSubmitAlgoSigner")
   yield put(UIActions.startActivityRunning('willPrepareTransactionSubmitAlgoSigner'));
+  const userAttributes = yield select(ProfileSelectors.getProfile)
 
   try {
     const resultAlgoConnect = yield call(TransactionApi.algoConnect)
@@ -601,29 +603,34 @@ function* willPrepareTransactionSubmitAlgoSigner() {
     const resultAccounts = yield call(TransactionApi.algoGetAccounts)
     console.log("willPrepareTransactionSubmitAlgoSigner resultAccounts: ", resultAccounts)
 
-    yield put(TransactionActions.didPrepareTransactionSubmitAlgoSigner(resultAccounts))
+    const myAccount = resultAccounts.find((account: any) => account.address === userAttributes.public_key)
+    console.log("willPrepareTransactionSubmitAlgoSigner myAccount: ", myAccount)
+
+    myAccount ? yield put(TransactionActions.didPrepareTransactionSubmitAlgoSigner(myAccount))
+      : yield put(TransactionActions.didCompleteTransactionSubmitFail("Add your Uncommon Creative account to AlgoSigner."))
   } catch (error) {
     console.log("error in willPrepareTransactionSubmitAlgoSigner ", error)
   }
 }
 
-function* willCompleteTransactionSubmitAlgoSigner(action: any) {
-  console.log("in willCompleteTransactionSubmitAlgoSigner")
-  yield put(UIActions.startActivityRunning('willCompleteTransactionSubmitAlgoSigner'));
+function* willCompleteTransactionSubmitAlgoSignerFirst(action: any) {
+  console.log("in willCompleteTransactionSubmitAlgoSignerFirst")
+  yield put(UIActions.startActivityRunning('willCompleteTransactionSubmitAlgoSignerFirst'));
   const users = yield select(ProfileSelectors.getUsers)
+  const algoSigner = yield select(TransactionSelectors.getAlgoSigner)
 
-  const tokenName = uuidv4().substring(0, 8)
+  // const tokenName = uuidv4().substring(0, 8)
   const hash = action.payload.pdfHash
   const note = undefined;
   const defaultFrozen = false;
   const addr = users[action.payload.currentSow.seller].public_key;
   const decimals = 0;
   const totalIssuance = 1;
-  const unitName = tokenName;
-  const assetName = tokenName;
-  const assetURL = "https://www.example.com/" + tokenName;
-  const assetMetadataHash = Buffer.from(hash, "base64")
-  console.log("willCompleteTransactionSubmitAlgoSigner assetMetadataHash: ", assetMetadataHash)
+  const unitName = configuration[stage].submitAsset_unitName + action.payload.currentSow.sow.substring(0, 5)
+  const assetName = configuration[stage].submitAsset_assetName + action.payload.currentSow.sow.substring(0, 5)
+  const assetURL = "https://www.example.com/" + unitName;
+  const assetMetadataHash = Buffer.from(hash)
+  // console.log("willCompleteTransactionSubmitMnemonic assetMetadataHash: ", assetMetadataHash)
   // Specified address can change reserve, freeze, clawback, and manager
   const manager = users[action.payload.currentSow.seller].public_key;
   // Specified address is considered the asset reserve
@@ -636,16 +643,75 @@ function* willCompleteTransactionSubmitAlgoSigner(action: any) {
   const clawback = users[action.payload.currentSow.seller].public_key;
 
   try {
-    const resultSignedTransaction = yield call(TransactionApi.algoSignSubmit,
-      action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
-    )
-    console.log("in willCompleteTransactionSubmitAlgoSigner resultSignedTransaction: ", resultSignedTransaction)
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: AlgorandFee } })
+    console.log("willCompleteTransactionSubmitMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
-    const result = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction.toString())
+    if (resultCheckAccountTransaction.check) {
+      const existingAsset = resultCheckAccountTransaction.addressInfo.createdAssets.find((asset: any) => JSON.parse(asset).params['unit-name'] === configuration[stage].submitAsset_unitName + action.payload.currentSow.sow.substring(0, 5))
+      console.log("willCompleteTransactionSubmitMnemonic existingAsset: ", existingAsset)
+      let resultSignedTransaction = [] as any
+      if (existingAsset) {
+        // DUE FIRME - DESTROY AND CREATE
 
-    yield put(TransactionActions.didCompleteTransactionSubmit(result))
+        // console.log("willCompleteTransactionSubmitMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
+        // resultSignedTransaction = yield call(willDestroyAndCreateAssetMnemonic, {
+        //   payload: {
+        //     asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: action.payload.mnemonicSecretKey, params: action.payload.params.withoutDelay,
+        //     addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
+        //   }
+        // })
+        // console.log("willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
+      }
+      else {
+        // UNA FIRMA - CREATE
+
+        // console.log("willCompleteTransactionSubmitMnemonic ASSET NOT FOUND")
+        // resultSignedTransaction = yield call(TransactionApi.signTxn,
+        //   action.payload.mnemonicSecretKey, action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
+        // )
+        // resultSignedTransaction = [resultSignedTransaction]
+        // console.log("in willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
+      }
+
+      const resultAlgorandSendTokenCreationTx = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction)
+      console.log("willCompleteTransactionSubmitMnemonic resultAlgorandSendTokenCreationTx: ", resultAlgorandSendTokenCreationTx)
+    }
+    else {
+      console.log("willCompleteTransactionSubmitMnemonic fail")
+      yield put(TransactionActions.didCompleteTransactionSubmitFail(resultCheckAccountTransaction.error))
+      yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
+    }
   } catch (error) {
-    console.log("error in willCompleteTransactionSubmitAlgoSigner ", error)
+    console.log("error in willCompleteTransactionSubmitMnemonic ", error)
+    yield put(TransactionActions.didCompleteTransactionSubmitFail(error))
+    yield put(NotificationActions.willShowNotification({ message: error, type: "danger" }));
+  }
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionSubmitMnemonic'));
+
+
+
+
+
+  //   const resultSignedTransaction = yield call(TransactionApi.algoSignSubmit,
+  //     action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
+  //   )
+  //   console.log("in willCompleteTransactionSubmitAlgoSignerFirst resultSignedTransaction: ", resultSignedTransaction)
+
+  //   const result = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction.toString())
+
+  //   yield put(TransactionActions.didCompleteTransactionSubmit(result))
+  // } catch (error) {
+  //   console.log("error in willCompleteTransactionSubmitAlgoSignerFirst ", error)
+  // }
+}
+
+function* willCompleteTransactionSubmitAlgoSignerSecond(action: any) {
+  console.log("in willCompleteTransactionSubmitAlgoSignerSecond with: ", action)
+  yield put(UIActions.startActivityRunning('willCompleteTransactionSubmitAlgoSignerSecond'));
+
+  try {
+  } catch (error) {
+    console.log("error in willCompleteTransactionSubmitAlgoSignerSecond ", error)
   }
 }
 
@@ -696,11 +762,11 @@ export function* willCheckAccountTransaction(action: any) {
   }
 }
 
-export function* willDestroyAndCreateAsset(action: any) {
-  console.log("in willDestroyAndCreateAsset with: ", action)
+export function* willDestroyAndCreateAssetMnemonic(action: any) {
+  console.log("in willDestroyAndCreateAssetMnemonic with: ", action)
 
   try {
-    const resultSignedDAndCTxn = yield call(TransactionApi.destroyAndCreateAsset,
+    const resultSignedDAndCTxn = yield call(TransactionApi.destroyAndCreateAssetMnemonic,
       action.payload.mnemonicSecretKey,
       action.payload.addr,
       action.payload.note,
@@ -718,10 +784,10 @@ export function* willDestroyAndCreateAsset(action: any) {
       action.payload.assetURL,
       action.payload.assetMetadataHash,
     )
-    console.log("willDestroyAndCreateAsset resultDAndCTxn: ", resultSignedDAndCTxn)
+    console.log("willDestroyAndCreateAssetMnemonic resultDAndCTxn: ", resultSignedDAndCTxn)
 
     return resultSignedDAndCTxn
   } catch (error) {
-    console.log("error in willDestroyAndCreateAsset ", error)
+    console.log("error in willDestroyAndCreateAssetMnemonic ", error)
   }
 }

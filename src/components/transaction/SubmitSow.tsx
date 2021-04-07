@@ -93,8 +93,8 @@ export const SubmitSow = ({ modal, toggle }: any) => {
               </Col>
               <Col>
                 <Card onClick={() => {
-                  // isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionSubmitAlgoSigner())
-                  //   : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
+                  isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionSubmitAlgoSigner())
+                    : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
                   dispatch(NotificationActions.willShowNotification({ message: "In development", type: "info" }));
                 }}>
                   <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
@@ -134,24 +134,49 @@ export const SubmitSow = ({ modal, toggle }: any) => {
       }
       {transactionPage == 4 &&
         <>
-          <ModalHeader toggle={toggle}>Sign with AlgoSigner</ModalHeader>
+          <ModalHeader toggle={toggle}>Sign with AlgoSigner (1/2)</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-3 text-muted text-center">You are signing the quote and committing to provide the service as described in the <a target="_blank" href={worksAgreementPdf.downloadUrl}>works agreement</a>.</CardSubtitle>
-            <CardSubtitle tag="h6" className="py-3 text-muted text-center">Select AlgoSigner accounts associated to your Uncommon Creative profile</CardSubtitle>
-            {algoSigner.accounts &&
-              algoSigner.accounts.map((element: any, index: any) => {
-                return (
-                  <ListGroupItem disabled={element.address != userAttributes.public_key} className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
-                    onClick={() => {
-                      console.log("select currentFromAlgoSigner: ", element.address)
-                      setCurrentFromAlgoSigner(element.address)
-                    }}
-                  >
-                    {element.address + ': ' + t('transaction.payment.algo', { value: element.amount / 1000000 })}
-                  </ListGroupItem>
-                )
-              })
-            }
+            <CardSubtitle tag="h6" className="py-3 text-muted text-center">First of two signatures required</CardSubtitle>
+
+            <ListGroupItem disabled={algoSigner.account.address != userAttributes.public_key} className={currentFromAlgoSigner == algoSigner.account.address ? 'border border-primary bg-light' : 'border'}
+              onClick={() => {
+                console.log("select currentFromAlgoSigner: ", algoSigner.account.address)
+                setCurrentFromAlgoSigner(algoSigner.account.address)
+              }}
+            >
+              {algoSigner.account.address + ': ' + t('transaction.payment.algo', { value: algoSigner.account.amount / 1000000 })}
+            </ListGroupItem>
+
+          </ModalBody>
+          <ModalFooter>
+            <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
+              dispatch(TransactionActions.goToTransactionPage(2))
+            }}>Cancel</ActivityButton>
+            <ActivityButton data-cy='willCompleteTransactionSubmitAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionSubmitAlgoSigner" color="primary"
+              onClick={() => {
+                dispatch(TransactionActions.willCompleteTransactionSubmitAlgoSignerFirst({ params: params, address: currentFromAlgoSigner, currentSow: currentSow, pdfHash: worksAgreementPdf.pdfHash }))
+              }}
+            >Complete first signature</ActivityButton>
+          </ModalFooter>
+        </>
+      }
+      {transactionPage == 5 &&
+        <>
+          <ModalHeader toggle={toggle}>Sign with AlgoSigner (2/2)</ModalHeader>
+          <ModalBody>
+            <CardSubtitle tag="h6" className="py-3 text-muted text-center">You are signing the quote and committing to provide the service as described in the <a target="_blank" href={worksAgreementPdf.downloadUrl}>works agreement</a>.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-3 text-muted text-center">Second of two signatures required</CardSubtitle>
+
+            <ListGroupItem disabled={algoSigner.account.address != userAttributes.public_key} className={currentFromAlgoSigner == algoSigner.account.address ? 'border border-primary bg-light' : 'border'}
+              onClick={() => {
+                console.log("select currentFromAlgoSigner: ", algoSigner.account.address)
+                setCurrentFromAlgoSigner(algoSigner.account.address)
+              }}
+            >
+              {algoSigner.account.address + ': ' + t('transaction.payment.algo', { value: algoSigner.account.amount / 1000000 })}
+            </ListGroupItem>
+            
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
@@ -166,7 +191,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
         </>
       }
       {
-        transactionPage == 5 &&
+        transactionPage == 6 &&
         <>
           <ModalHeader toggle={toggle} data-cy="sowSubmitSuccess">Statement of Work submitted</ModalHeader>
           <ModalBody>
@@ -186,7 +211,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
         </>
       }
       {
-        transactionPage == 6 &&
+        transactionPage == 7 &&
         <>
           <ModalHeader toggle={toggle}>Submission failed</ModalHeader>
           <ModalBody>

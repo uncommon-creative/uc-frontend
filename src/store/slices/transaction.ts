@@ -49,7 +49,7 @@ export const currentSlice = createSlice({
     willPrepareTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => state,
     didPrepareTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 5),
     willCompleteTransactionClaimMilestoneMetAlgoSigner: (state, action: PayloadAction<any>) => state,
-    didCompleteTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionClaimMilestoneMet= action.payload, state.transactionPage = 6),
+    didCompleteTransactionClaimMilestoneMet: (state, action: PayloadAction<any>) => void (state.transactionClaimMilestoneMet = action.payload, state.transactionPage = 6),
     didCompleteTransactionClaimMilestoneMetFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
 
     willGetSignedMsig: (state, action: PayloadAction<any>) => state,
@@ -65,12 +65,15 @@ export const currentSlice = createSlice({
 
     willCompleteTransactionSubmitMnemonic: (state, action: PayloadAction<any>) => state,
     willPrepareTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => state,
-    didPrepareTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload, state.transactionPage = 4),
-    willCompleteTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => state,
-    didCompleteTransactionSubmit: (state, action: PayloadAction<any>) => void (state.submitToken = action.payload, state.transactionPage = 5),
-    didCompleteTransactionSubmitFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 6),
+    didPrepareTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.account = action.payload, state.transactionPage = 4),
+    willCompleteTransactionSubmitAlgoSignerFirst: (state, action: PayloadAction<any>) => state,
+    didCompleteTransactionSubmitAlgoSignerFirst: (state, action: PayloadAction<any>) => state,
+    willCompleteTransactionSubmitAlgoSignerSecond: (state, action: PayloadAction<any>) => state,
+    didCompleteTransactionSubmitAlgoSignerSecond: (state, action: PayloadAction<any>) => state,
+    didCompleteTransactionSubmit: (state, action: PayloadAction<any>) => void (state.submitToken = action.payload, state.transactionPage = 6),
+    didCompleteTransactionSubmitFail: (state, action: PayloadAction<any>) => void (state.error = action.payload, state.transactionPage = 7),
 
-    willDestroyAndCreateAsset: (state, action: PayloadAction<any>) => state,
+    willDestroyAndCreateAssetMnemonic: (state, action: PayloadAction<any>) => state,
   }
 })
 

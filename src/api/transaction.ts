@@ -470,12 +470,12 @@ export function mnemonicToSecretKey(mnemonicSecretKey: any) {
   }
 }
 
-export const destroyAndCreateAsset = async (mnemonicSecretKey: any, addr: any, note: any, assetID: any, params: any,
+export const destroyAndCreateAssetMnemonic = async (mnemonicSecretKey: any, addr: any, note: any, assetID: any, params: any,
   totalIssuance: any, decimals: any, defaultFrozen: any, manager: any, reserve: any, freeze: any, clawback: any, unitName: any, assetName: any, assetURL: any, assetMetadataHash: any) => {
   try {
 
     const destroyTxn = algosdk.makeAssetDestroyTxnWithSuggestedParams(addr, note, assetID, params);
-    // console.log("destroyAndCreateAsset destroyTxn: ", destroyTxn);
+    // console.log("destroyAndCreateAssetMnemonic destroyTxn: ", destroyTxn);
 
     const creationTxn = algosdk.makeAssetCreateTxnWithSuggestedParams(
       addr,
@@ -493,7 +493,7 @@ export const destroyAndCreateAsset = async (mnemonicSecretKey: any, addr: any, n
       assetMetadataHash,
       params
     );
-    // console.log("destroyAndCreateAsset creationTxn: ", creationTxn);
+    // console.log("destroyAndCreateAssetMnemonic creationTxn: ", creationTxn);
 
     let gid = algosdk.assignGroupID([destroyTxn, creationTxn]);
 
@@ -506,7 +506,7 @@ export const destroyAndCreateAsset = async (mnemonicSecretKey: any, addr: any, n
 
     return signedGroup
   } catch (error) {
-    console.log("destroyAndCreateAsset error: ", error)
+    console.log("destroyAndCreateAssetMnemonic error: ", error)
     throw error
   }
 }
