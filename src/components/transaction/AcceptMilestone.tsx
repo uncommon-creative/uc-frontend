@@ -8,7 +8,7 @@ import {
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
-import { actions as SowActions, selectors as SowSelectors } from '../../store/slices/sow'
+import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
 import { ActivityButton } from '../common/ActivityButton';
@@ -33,13 +33,13 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
     return () => {
       setAcceptedConditions(false)
       setMnemonicSecretKey('')
-      dispatch(TransactionActions.goToTransactionPage(1))
+      dispatch(TransactionActions.goToTransactionPage({ transactionPage: 0, sowCommand: SowCommands.ACCEPT_MILESTONE }))
     }
   }, [modal])
 
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl">
-      {transactionPage == 1 &&
+      {transactionPage[SowCommands.ACCEPT_MILESTONE] == 1 &&
         <>
           <ModalHeader toggle={toggle}>Accept the conditions</ModalHeader>
           <ModalBody>
@@ -62,7 +62,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage == 2 &&
+      {transactionPage[SowCommands.ACCEPT_MILESTONE] == 2 &&
         <>
           <ModalHeader toggle={toggle}>Accept milestone</ModalHeader>
           <ModalBody>
@@ -81,7 +81,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.goToTransactionPage(1))
+              dispatch(TransactionActions.goToTransactionPage({ transactionPage: 1, sowCommand: SowCommands.ACCEPT_MILESTONE }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptMilestoneMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptMilestoneMnemonic" color="primary" onClick={async () => {
               dispatch(TransactionActions.willCompleteTransactionAcceptMilestoneMnemonic({ signedMsig: signedMsig, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
@@ -89,7 +89,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage == 3 &&
+      {transactionPage[SowCommands.ACCEPT_MILESTONE] == 3 &&
         <>
           <ModalHeader toggle={toggle}>Transaction completed</ModalHeader>
           <ModalBody>
@@ -111,7 +111,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage == 4 &&
+      {transactionPage[SowCommands.ACCEPT_MILESTONE] == 4 &&
         <>
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>

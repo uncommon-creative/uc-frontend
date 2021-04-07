@@ -45,19 +45,19 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
   const newAttachments = useSelector(SowSelectors.getNewAttachments)
 
   React.useEffect(() => {
-    modal && dispatch(TransactionActions.willGetParamsWithDelay({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
-    modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
+    modal && dispatch(TransactionActions.willGetParamsWithDelay({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+    modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
 
     return () => {
       setAcceptedConditions(false)
       setMnemonicSecretKey('')
-      dispatch(TransactionActions.goToTransactionPage(1))
+      dispatch(TransactionActions.goToTransactionPage({ transactionPage: 0, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
     }
   }, [modal])
 
   const [isAlgoSignInstalled, setAlgo] = React.useState(false);
   React.useEffect(() => {
-    if (transactionPage == 3) {
+    if (transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 3) {
       if (typeof AlgoSigner !== 'undefined') {
         setAlgo(true);
       }
@@ -66,7 +66,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
 
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl">
-      {transactionPage == 1 &&
+      {transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 1 &&
         <>
           <ModalHeader toggle={toggle}>Accept the conditions</ModalHeader>
           <ModalBody>
@@ -84,15 +84,15 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='continueTransaction' disabled={!acceptedConditions} name="continueTransaction" color="primary" onClick={() => {
-              dispatch(TransactionActions.willCreateMultiSigAddress({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator }))
+              dispatch(TransactionActions.willCreateMultiSigAddress({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
             }}>Continue</ActivityButton>
           </ModalFooter>
         </>
       }
-      {transactionPage == 2 &&
+      {transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 2 &&
         <>
           <ModalHeader toggle={toggle}>Upload the deliverable</ModalHeader>
-          <ModalBody>
+          <ModalBody data-cy="attachmentDeliverableModal">
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">Upload the deliverable as the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">As an alternative to a non-digital work, upload a final report of the work done.</CardSubtitle>
             <Formik
@@ -118,13 +118,13 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
 
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy='continueTransaction' disabled={!(newAttachments.some((file: any) => file.filename == configuration[stage].deliverable_key))} name="continueTransaction" color="primary" onClick={() => {
-              dispatch(TransactionActions.goToTransactionPage(3))
+            <ActivityButton data-cy='completeTransaction' disabled={!(newAttachments.some((file: any) => file.filename == configuration[stage].deliverable_key))} name="completeTransaction" color="primary" onClick={() => {
+              dispatch(TransactionActions.goToTransactionPage({ transactionPage: 3, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
             }}>Continue</ActivityButton>
           </ModalFooter>
         </>
       }
-      {transactionPage == 3 &&
+      {transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 3 &&
         <>
           <ModalHeader toggle={toggle}>Choose the method to sign the multisig</ModalHeader>
           <ModalBody>
@@ -132,7 +132,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             <Row>
               <Col>
                 <Card data-cy='mnemonicClaimMilestoneMet' onClick={() => {
-                  dispatch(TransactionActions.goToTransactionPage(4))
+                  dispatch(TransactionActions.goToTransactionPage({ transactionPage: 4, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
                 }}>
                   <CardBody className="text-center">
                     <CardSubtitle tag="h5" className="mb-2 text-muted text-center">Mnemonic</CardSubtitle>
@@ -158,7 +158,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalBody>
         </>
       }
-      {transactionPage == 4 &&
+      {transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 4 &&
         <>
           <ModalHeader toggle={toggle}>Claim milestone met with mnemonic Secret Key</ModalHeader>
           <ModalBody>
@@ -176,7 +176,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.goToTransactionPage(3))
+              dispatch(TransactionActions.goToTransactionPage({ transactionPage: 3, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionClaimMilestoneMetMnemonic" color="primary" onClick={async () => {
               dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
@@ -184,7 +184,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage == 5 &&
+      {transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 5 &&
         <>
           <ModalHeader toggle={toggle}>Claim milestone met with AlgoSigner</ModalHeader>
           <ModalBody>
@@ -206,7 +206,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.goToTransactionPage(3))
+              dispatch(TransactionActions.goToTransactionPage({ transactionPage: 3, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionClaimMilestoneMetAlgoSigner" color="primary"
               onClick={() => {
@@ -218,7 +218,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage == 6 &&
+      {transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 6 &&
         <>
           <ModalHeader toggle={toggle}>Transaction signed</ModalHeader>
           <ModalBody>
@@ -246,7 +246,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage == 7 &&
+      {transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 7 &&
         <>
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>

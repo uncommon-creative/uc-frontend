@@ -24,14 +24,14 @@ export const RequestReview = ({ modal, toggle }: any) => {
   React.useEffect(() => {
 
     return () => {
-      dispatch(TransactionActions.goToTransactionPage(1))
+      dispatch(TransactionActions.goToTransactionPage({ transactionPage: 0, sowCommand: SowCommands.REQUEST_REVIEW }))
       setNotes('')
     }
   }, [modal])
 
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl">
-      {transactionPage == 1 &&
+      {transactionPage[SowCommands.REQUEST_REVIEW] == 1 &&
         <>
           <ModalHeader toggle={toggle}>Request Review</ModalHeader>
           <ModalBody>
@@ -56,7 +56,7 @@ export const RequestReview = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage == 2 &&
+      {transactionPage[SowCommands.REQUEST_REVIEW] == 2 &&
         <>
           <ModalHeader toggle={toggle}>Review requested</ModalHeader>
           <ModalBody>

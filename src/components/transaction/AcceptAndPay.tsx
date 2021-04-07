@@ -66,7 +66,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           if (value.data.onAmountChecked.status === "AMOUNT_OK") {
             console.log("onAmountChecked value success: ", value)
             dispatch(TransactionActions.willSetSowArbitrator({ sow: currentSow.sow, arbitrator: currentChosenArbitrator }))
-            dispatch(TransactionActions.didCompleteTransactionAcceptAndPay(value.data))
+            dispatch(TransactionActions.didCompleteTransactionAcceptAndPay({ tx: value.data, sowCommand: SowCommands.ACCEPT_AND_PAY }))
           }
           else if (value.data.onAmountChecked.status === "AMOUNT_NOT_OK") {
             console.log("onAmountChecked value fail: ", value)
@@ -91,7 +91,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
 
   const [isAlgoSignInstalled, setAlgo] = React.useState(false);
   React.useEffect(() => {
-    if (transactionPage == 2) {
+    if (transactionPage[SowCommands.ACCEPT_AND_PAY] == 2) {
       if (typeof AlgoSigner !== 'undefined') {
         setAlgo(true);
       }
@@ -99,23 +99,23 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
   }, [transactionPage]);
 
   React.useEffect(() => {
-    modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentChosenArbitrator }))
+    modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentChosenArbitrator, sowCommand: SowCommands.ACCEPT_AND_PAY }))
 
     return () => {
       setAcceptedConditions(false)
       setMnemonicSecretKey('')
       setCurrentFromAlgoSigner('')
-      dispatch(TransactionActions.goToTransactionPage(1))
+      dispatch(TransactionActions.goToTransactionPage({ transactionPage: 0, sowCommand: SowCommands.ACCEPT_AND_PAY }))
     }
   }, [modal])
 
   React.useEffect(() => {
-    (transactionPage == 3/*  || transactionPage == 5 */) && subscribeOnAmountChecked()
+    (transactionPage[SowCommands.ACCEPT_AND_PAY] == 3/*  || transactionPage[SowCommands.ACCEPT_AND_PAY] == 5 */) && subscribeOnAmountChecked()
   }, [transactionPage])
 
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl" data-cy='acceptAndPayModal'>
-      {transactionPage == 1 &&
+      {transactionPage[SowCommands.ACCEPT_AND_PAY] == 1 &&
         <>
           <ModalHeader toggle={toggle}>Accept the conditions</ModalHeader>
           <ModalBody>
@@ -133,12 +133,12 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='continueTransaction' disabled={!acceptedConditions} name="continueTransaction" color="primary" onClick={() => {
-              dispatch(TransactionActions.willCreateMultiSigAddress({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentChosenArbitrator, price: currentSow.price }))
+              dispatch(TransactionActions.willCreateMultiSigAddress({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentChosenArbitrator, price: currentSow.price, sowCommand: SowCommands.ACCEPT_AND_PAY }))
             }}>Continue</ActivityButton>
           </ModalFooter>
         </>
       }
-      {transactionPage == 2 &&
+      {transactionPage[SowCommands.ACCEPT_AND_PAY] == 2 &&
         <>
           <ModalHeader toggle={toggle}>Choose the payment method</ModalHeader>
           <ModalBody>
@@ -160,7 +160,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
                 </Col> */}
                 <Col>
                   <Card data-cy='acceptAndPay' onClick={() => {
-                    dispatch(TransactionActions.goToTransactionPage(4))
+                    dispatch(TransactionActions.goToTransactionPage({ transactionPage: 4, sowCommand: SowCommands.ACCEPT_AND_PAY }))
                   }}>
                     <CardBody className="text-center">
                       <CardSubtitle tag="h5" className="mb-2 text-muted text-center">Mnemonic</CardSubtitle>
@@ -187,13 +187,13 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           {payment.toPay <= 0 &&
             <ModalFooter>
               <ActivityButton data-cy='acceptAndPay' disabled={!acceptedConditions} name="willCompleteTransactionAcceptAndPayPaid" color="primary" onClick={() => {
-                dispatch(TransactionActions.goToTransactionPage(4))
+                dispatch(TransactionActions.goToTransactionPage({ transactionPage: 4, sowCommand: SowCommands.ACCEPT_AND_PAY }))
               }}>Complete</ActivityButton>
             </ModalFooter>
           }
         </>
       }
-      {/* {transactionPage == 3 &&
+      {/* {transactionPage[SowCommands.ACCEPT_AND_PAY] == 3 &&
         <>
           <ModalHeader toggle={toggle}>Fund the wallet with QR</ModalHeader>
           <ModalBody>
@@ -217,7 +217,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.goToTransactionPage(2))
+              dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.ACCEPT_AND_PAY }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayQR' name="willCompleteTransactionAcceptAndPayQR" color="primary" onClick={async () => {
               // dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, total: payment.total, sow: currentSow.sow }))
@@ -225,7 +225,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       } */}
-      {transactionPage == 4 &&
+      {transactionPage[SowCommands.ACCEPT_AND_PAY] == 4 &&
         <>
           <ModalHeader toggle={toggle}>Fund the wallet with mnemonic secret key</ModalHeader>
           <ModalBody>
@@ -242,7 +242,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.goToTransactionPage(2))
+              dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.ACCEPT_AND_PAY }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPay' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptAndPay" color="primary" onClick={async () => {
               payment.toPay <= 0 ? dispatch(TransactionActions.willCompleteTransactionAcceptAndPayPaid({ params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
@@ -251,7 +251,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage == 5 &&
+      {transactionPage[SowCommands.ACCEPT_AND_PAY] == 5 &&
         <>
           <ModalHeader toggle={toggle}>Fund the wallet with AlgoSigner</ModalHeader>
           <ModalBody>
@@ -275,7 +275,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.goToTransactionPage(2))
+              dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.ACCEPT_AND_PAY }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPayAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionAcceptAndPayAlgoSigner" color="primary"
               onClick={() => {
@@ -286,7 +286,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
         </>
       }
       {
-        transactionPage == 6 &&
+        transactionPage[SowCommands.ACCEPT_AND_PAY] == 6 &&
         <>
           <ModalHeader toggle={toggle}>Wallet funded</ModalHeader>
           <ModalBody>
@@ -316,7 +316,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
         </>
       }
       {
-        transactionPage == 7 &&
+        transactionPage[SowCommands.ACCEPT_AND_PAY] == 7 &&
         <>
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>
