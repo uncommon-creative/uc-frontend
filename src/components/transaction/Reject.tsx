@@ -21,6 +21,7 @@ export const Reject = ({ modal, toggle }: any) => {
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
 
   React.useEffect(() => {
+    dispatch(TransactionActions.goToTransactionPage({ transactionPage: 1, sowCommand: SowCommands.REJECT }))
 
     return () => {
       dispatch(TransactionActions.goToTransactionPage({ transactionPage: 0, sowCommand: SowCommands.REJECT }))

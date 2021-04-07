@@ -92,7 +92,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
       {transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 2 &&
         <>
           <ModalHeader toggle={toggle}>Upload the deliverable</ModalHeader>
-          <ModalBody>
+          <ModalBody data-cy="attachmentDeliverableModal">
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">Upload the deliverable as the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">As an alternative to a non-digital work, upload a final report of the work done.</CardSubtitle>
             <Formik
@@ -111,14 +111,14 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             </Formik>
             {/* {newAttachments.length > 0 && newAttachments.some((file: any) => (file.filename == configuration[stage].deliverable_key || (file.owner == currentSow.sow && file.key != "01f4b372-8f44-4f8b-a2eb-64a2a3d33059/works_agreement.pdf"))) && */}
             {newAttachments.some((file: any) => (file.filename == configuration[stage].deliverable_key)) &&
-              <ListGroupItem data-cy="attachmentDeliverable">
+              <ListGroupItem>
                 <FileButton file={newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key)} />
               </ListGroupItem>
             }
 
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy='continueTransaction' disabled={!(newAttachments.some((file: any) => file.filename == configuration[stage].deliverable_key))} name="continueTransaction" color="primary" onClick={() => {
+            <ActivityButton data-cy='completeTransaction' disabled={!(newAttachments.some((file: any) => file.filename == configuration[stage].deliverable_key))} name="completeTransaction" color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 3, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
             }}>Continue</ActivityButton>
           </ModalFooter>
