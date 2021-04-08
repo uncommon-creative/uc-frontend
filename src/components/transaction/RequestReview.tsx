@@ -22,6 +22,7 @@ export const RequestReview = ({ modal, toggle }: any) => {
   const [notes, setNotes] = React.useState('');
 
   React.useEffect(() => {
+    dispatch(TransactionActions.goToTransactionPage({ transactionPage: 1, sowCommand: SowCommands.REQUEST_REVIEW }))
 
     return () => {
       dispatch(TransactionActions.goToTransactionPage({ transactionPage: 0, sowCommand: SowCommands.REQUEST_REVIEW }))

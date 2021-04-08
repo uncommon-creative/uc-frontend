@@ -327,8 +327,8 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
     console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
-      const existingAsset = resultCheckAccountTransaction.addressInfo.createdAssets.find((asset: any) => JSON.parse(asset).params['unit-name'] === configuration[stage].deliverableAsset_unitName + action.payload.currentSow.sow.substring(0, 2))
-      console.log("willCompleteTransactionClaimMilestoneMetMnemonic existingAsset: ", existingAsset)
+      // const existingAsset = resultCheckAccountTransaction.addressInfo.createdAssets.find((asset: any) => JSON.parse(asset).params['unit-name'] === configuration[stage].deliverableAsset_unitName + action.payload.currentSow.sow.substring(0, 2))
+      // console.log("willCompleteTransactionClaimMilestoneMetMnemonic existingAsset: ", existingAsset)
       let resultSignedTransaction = [] as any
       // if (existingAsset) {
       //   console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
@@ -540,8 +540,8 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
     console.log("willCompleteTransactionSubmitMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
-      const existingAsset = resultCheckAccountTransaction.addressInfo.createdAssets.find((asset: any) => JSON.parse(asset).params['unit-name'] === configuration[stage].submitAsset_unitName + action.payload.currentSow.sow.substring(0, 5))
-      console.log("willCompleteTransactionSubmitMnemonic existingAsset: ", existingAsset)
+      // const existingAsset = resultCheckAccountTransaction.addressInfo.createdAssets.find((asset: any) => JSON.parse(asset).params['unit-name'] === configuration[stage].submitAsset_unitName + action.payload.currentSow.sow.substring(0, 5))
+      // console.log("willCompleteTransactionSubmitMnemonic existingAsset: ", existingAsset)
       let resultSignedTransaction = [] as any
       // if (existingAsset) {
       //   console.log("willCompleteTransactionSubmitMnemonic ASSET FOUND: ", JSON.parse(existingAsset))

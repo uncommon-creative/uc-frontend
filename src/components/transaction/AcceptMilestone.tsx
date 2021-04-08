@@ -29,6 +29,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
   const params = useSelector(TransactionSelectors.getParams)
 
   React.useEffect(() => {
+    dispatch(TransactionActions.goToTransactionPage({ transactionPage: 1, sowCommand: SowCommands.ACCEPT_MILESTONE }))
 
     return () => {
       setAcceptedConditions(false)
