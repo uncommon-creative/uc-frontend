@@ -74,13 +74,10 @@ export const currentSlice = createSlice({
 
     willCompleteTransactionSubmitMnemonic: (state, action: PayloadAction<any>) => state,
     willPrepareTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => state,
-    didPrepareTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.account = action.payload, state.transactionPage[action.payload.sowCommand] = 4),
-    willCompleteTransactionSubmitAlgoSignerFirst: (state, action: PayloadAction<any>) => state,
-    didCompleteTransactionSubmitAlgoSignerFirst: (state, action: PayloadAction<any>) => state,
-    willCompleteTransactionSubmitAlgoSignerSecond: (state, action: PayloadAction<any>) => state,
-    didCompleteTransactionSubmitAlgoSignerSecond: (state, action: PayloadAction<any>) => state,
-    didCompleteTransactionSubmit: (state, action: PayloadAction<any>) => void (state.submitToken = action.payload.asset, state.transactionPage[action.payload.sowCommand] = 6),
-    didCompleteTransactionSubmitFail: (state, action: PayloadAction<any>) => void (state.error = action.payload.error, state.transactionPage[action.payload.sowCommand] = 7),
+    didPrepareTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.account = action.payload.account, state.transactionPage[action.payload.sowCommand] = 4),
+    willCompleteTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => state,
+    didCompleteTransactionSubmit: (state, action: PayloadAction<any>) => void (state.submitToken = action.payload.asset, state.transactionPage[action.payload.sowCommand] = 5),
+    didCompleteTransactionSubmitFail: (state, action: PayloadAction<any>) => void (state.error = action.payload.error, state.transactionPage[action.payload.sowCommand] = 6),
 
     willDestroyAndCreateAssetMnemonic: (state, action: PayloadAction<any>) => state,
   }
