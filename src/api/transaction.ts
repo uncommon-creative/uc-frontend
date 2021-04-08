@@ -203,7 +203,7 @@ export function signGroupAcceptMilestone(signedMsig: any, mnemonicSecretKey: any
     // let txMsig = Buffer.from(signedMultisig.blob.split(','))
     // let decodedMsig = algosdk.decodeSignedTransaction(txMsig);
     // decodedMsig.group = decodedOptin.group
-    
+
     // console.log("signGroupAcceptMilestone decodedMsig: ", decodedMsig)
     // let decodedMsigMAKEPAYMENT = algosdk.makePaymentTxnWithSuggestedParamsFromObject(decodedMsig.txn)
     // console.log("signGroupAcceptMilestone decodedMsigMAKEPAYMENT:", decodedMsigMAKEPAYMENT)
@@ -248,9 +248,12 @@ export const algoConnect = async () => {
   try {
     let result = await AlgoSigner.connect();
     if (Object.keys(result).length === 0) {
-      // console.log("algoConnect result: ", result);
+      console.log("algoConnect result: ", result);
 
       return result;
+    }
+    else {
+      console.log("algoConnect no result: ", result);
     }
   } catch (error) {
     console.log("algoConnect error: ", error)
@@ -263,7 +266,7 @@ export const algoGetAccounts = async () => {
     let accounts = await AlgoSigner.accounts({
       ledger: configuration[stage].algorand_net
     });
-    // console.log("algoGetAccounts accounts: ", accounts)
+    console.log("algoGetAccounts accounts: ", accounts)
 
     var accountsInfo = [] as any
     for (let account of accounts) {
@@ -272,7 +275,7 @@ export const algoGetAccounts = async () => {
         path: '/v2/accounts/' + account.address,
       }))
     }
-    // console.log("algoGetAccounts accountsInfo: ", accountsInfo)
+    console.log("algoGetAccounts accountsInfo: ", accountsInfo)
 
     return accountsInfo;
   } catch (error) {
@@ -389,7 +392,7 @@ export function signTxn(mnemonicSecretKey: any, params: any, addr: any, note: an
     signedCreationTxn.blob = signedCreationTxn.blob.toString()
     // console.log("signTxn signedCreationTxn: ", signedCreationTxn)
 
-    return signedCreationTxn
+    return [signedCreationTxn]
   } catch (error) {
     console.log("signTxn API error: ", error)
     throw error
@@ -470,12 +473,12 @@ export function mnemonicToSecretKey(mnemonicSecretKey: any) {
   }
 }
 
-export const destroyAndCreateAsset = async (mnemonicSecretKey: any, addr: any, note: any, assetID: any, params: any,
+export const destroyAndCreateAssetMnemonic = async (mnemonicSecretKey: any, addr: any, note: any, assetID: any, params: any,
   totalIssuance: any, decimals: any, defaultFrozen: any, manager: any, reserve: any, freeze: any, clawback: any, unitName: any, assetName: any, assetURL: any, assetMetadataHash: any) => {
   try {
 
     const destroyTxn = algosdk.makeAssetDestroyTxnWithSuggestedParams(addr, note, assetID, params);
-    // console.log("destroyAndCreateAsset destroyTxn: ", destroyTxn);
+    // console.log("destroyAndCreateAssetMnemonic destroyTxn: ", destroyTxn);
 
     const creationTxn = algosdk.makeAssetCreateTxnWithSuggestedParams(
       addr,
@@ -493,7 +496,7 @@ export const destroyAndCreateAsset = async (mnemonicSecretKey: any, addr: any, n
       assetMetadataHash,
       params
     );
-    // console.log("destroyAndCreateAsset creationTxn: ", creationTxn);
+    // console.log("destroyAndCreateAssetMnemonic creationTxn: ", creationTxn);
 
     let gid = algosdk.assignGroupID([destroyTxn, creationTxn]);
 
@@ -506,7 +509,7 @@ export const destroyAndCreateAsset = async (mnemonicSecretKey: any, addr: any, n
 
     return signedGroup
   } catch (error) {
-    console.log("destroyAndCreateAsset error: ", error)
+    console.log("destroyAndCreateAssetMnemonic error: ", error)
     throw error
   }
 }
@@ -526,37 +529,19 @@ export const algorandSendDeliverableTokenCreationTx = async (sow: any, tx: any) 
 
 export function signTransactionsClaimMilestoneMetMnemonic(multiSigAddress: any, sellerAddress: any, params: any, mnemonicSecretKey: any, price: any, mparams: any, buyerAddress: any, assetId: any) {
   try {
-    // let txnPayment: any = {
-    //   "from": multiSigAddress,
-    //   "to": sellerAddress,
-    //   "fee": params.fee,
-    //   "amount": price * 1000000,
-    //   "firstRound": params.firstRound,
-    //   "lastRound": params.lastRound,
-    //   "genesisID": params.genesisID,
-    //   "genesisHash": params.genesisHash,
-    //   "note": new Uint8Array(0)
-    // };
     let txnPayment = algosdk.makePaymentTxnWithSuggestedParams(multiSigAddress, sellerAddress, price * 1000000, undefined, undefined, params);
-    console.log("signTransactionsClaimMilestoneMetMnemonic txnPayment: ", txnPayment)
+    // console.log("signTransactionsClaimMilestoneMetMnemonic txnPayment: ", txnPayment)
     const txnOptin = algosdk.makeAssetTransferTxnWithSuggestedParams(buyerAddress, buyerAddress, undefined, undefined, 0, undefined, assetId, params)
-    console.log("signTransactionsClaimMilestoneMetMnemonic txnOptin: ", txnOptin)
+    // console.log("signTransactionsClaimMilestoneMetMnemonic txnOptin: ", txnOptin)
     const txnAsset = algosdk.makeAssetTransferTxnWithSuggestedParams(sellerAddress, buyerAddress, undefined, undefined, 1, undefined, assetId, params)
-    console.log("signTransactionsClaimMilestoneMetMnemonic txnAsset: ", txnAsset)
+    // console.log("signTransactionsClaimMilestoneMetMnemonic txnAsset: ", txnAsset)
 
     let gid = algosdk.assignGroupID([txnPayment, txnOptin, txnAsset]);
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
-    console.log("signTransactionsClaimMilestoneMetMnemonic txnPayment after group: ", txnPayment)
-    console.log("signTransactionsClaimMilestoneMetMnemonic txnOptin after group: ", txnOptin)
-    console.log("signTransactionsClaimMilestoneMetMnemonic txnAsset after group: ", txnAsset)
-    // txnPayment.group = txnOptin.group
-    // console.log("signTransactionsClaimMilestoneMetMnemonic txnPayment after group added: ", txnPayment)
 
     let signedPaymentTxn = algosdk.signMultisigTransaction(txnPayment, mparams, secret_key.sk);
-    console.log("signTransactionsClaimMilestoneMetMnemonic signedPaymentTxn: ", signedPaymentTxn)
     signedPaymentTxn.blob = signedPaymentTxn.blob.toString()
-    console.log("signTransactionsClaimMilestoneMetMnemonic signedPaymentTxn: ", signedPaymentTxn)
     let parsedOptinTxn = {
       txID: "unknown",
       blob: algosdk.encodeObj(txnOptin.get_obj_for_encoding()).toString()
@@ -582,6 +567,123 @@ export const algorandSendClaimMilestoneMet = async (sow: any, tx: any, backupTx:
     return result.data.algorandSendClaimMilestoneMet
   } catch (error) {
     console.log("algorandSendClaimMilestoneMet API error: ", error)
+    throw error
+  }
+}
+
+export const destroyAndCreateAssetAlgoSigner = async (addr: any, note: any, assetID: any, params: any,
+  totalIssuance: any, decimals: any, defaultFrozen: any, manager: any, reserve: any, freeze: any, clawback: any, unitName: any, assetName: any, assetURL: any, assetMetadataHash: any
+) => {
+  try {
+
+    const destroyTxn = {
+      from: addr,
+      note: note,
+      assetIndex: assetID,
+      type: 'acfg',
+      fee: params.fee,
+      firstRound: params.firstRound,
+      lastRound: params.lastRound,
+      genesisID: params.genesisID,
+      genesisHash: params.genesisHash
+    }
+    const creationTxn = {
+      from: addr,
+      assetName: assetName,
+      assetUnitName: unitName,
+      assetTotal: totalIssuance,
+      assetDecimals: decimals,
+      note: note,
+      type: 'acfg',
+      fee: params.fee,
+      firstRound: params.firstRound,
+      lastRound: params.lastRound,
+      genesisID: params.genesisID,
+      genesisHash: params.genesisHash,
+      assetManager: manager,
+      assetReserve: reserve,
+      assetFreeze: freeze,
+      assetClawback: clawback,
+      assetURL: assetURL,
+      assetMetadataHash: assetMetadataHash
+    }
+
+    console.log("destroyAndCreateAssetAlgoSigner destroyTxn: ", destroyTxn);
+    console.log("destroyAndCreateAssetAlgoSigner creationTxn: ", creationTxn);
+
+    let gid = algosdk.assignGroupID([destroyTxn, creationTxn]);
+    console.log("destroyAndCreateAssetAlgoSigner gid after group: ", gid);
+    console.log("destroyAndCreateAssetAlgoSigner destroyTxn after group: ", destroyTxn);
+    console.log("destroyAndCreateAssetAlgoSigner creationTxn after group: ", creationTxn);
+
+    return [destroyTxn, creationTxn]
+
+
+    // let signedDestroyTxn = await AlgoSigner.sign(destroyTxn)
+    // signedDestroyTxn.blob = Uint8Array.from(signedDestroyTxn.blob.split("").map((x: any) => x.charCodeAt(0))).toString()
+    // console.log("destroyAndCreateAssetAlgoSigner signedDestroyTxn: ", signedDestroyTxn);
+    // let signedCreationTxn = await AlgoSigner.sign(creationTxn)
+    // signedCreationTxn.blob = Uint8Array.from(signedCreationTxn.blob.split("").map((x: any) => x.charCodeAt(0))).toString()
+    // console.log("destroyAndCreateAssetAlgoSigner signedCreationTxn: ", signedCreationTxn);
+
+    // const signedGroup = [signedDestroyTxn, signedCreationTxn]
+
+    // return signedGroup
+  } catch (error) {
+    console.log("destroyAndCreateAssetAlgoSigner error: ", error)
+    throw error
+  }
+}
+
+export const createAssetAlgoSigner = async (addr: any, note: any, params: any,
+  totalIssuance: any, decimals: any, defaultFrozen: any, manager: any, reserve: any, freeze: any, clawback: any, unitName: any, assetName: any, assetURL: any, assetMetadataHash: any) => {
+  try {
+    const creationTxn = {
+      from: addr,
+      assetName: assetName,
+      assetUnitName: unitName,
+      assetTotal: totalIssuance,
+      assetDecimals: decimals,
+      note: note,
+      type: 'acfg',
+      fee: params.fee,
+      firstRound: params.firstRound,
+      lastRound: params.lastRound,
+      genesisID: params.genesisID,
+      genesisHash: params.genesisHash,
+      assetManager: manager,
+      assetReserve: reserve,
+      assetFreeze: freeze,
+      assetClawback: clawback,
+      assetURL: assetURL,
+      assetMetadataHash: assetMetadataHash
+    }
+    // console.log("createAssetAlgoSigner creationTxn: ", creationTxn);
+
+    let signedCreationTxn = await AlgoSigner.sign(creationTxn)
+
+    // console.log("createAssetAlgoSigner signedCreationTxn after sign: ", signedCreationTxn);
+    signedCreationTxn.blob = atob(signedCreationTxn.blob).split('').map((x) => x.charCodeAt(0)).toString()
+    // console.log("createAssetAlgoSigner signedCreationTxn after split: ", signedCreationTxn);
+
+    return [signedCreationTxn]
+  } catch (error) {
+    console.log("createAssetAlgoSigner error: ", error)
+    throw error
+  }
+}
+
+export const signTxAlgoSigner = async (tx: any) => {
+  try {
+    console.log("signTxAlgoSigner tx: ", tx);
+
+    let signedTx = await AlgoSigner.sign(tx)
+    signedTx.blob = atob(signedTx.blob).split('').map((x) => x.charCodeAt(0)).toString()
+    console.log("signTxAlgoSigner signedTx after: ", signedTx);
+
+    return signedTx
+  } catch (error) {
+    console.log("signTxAlgoSigner error: ", error)
     throw error
   }
 }

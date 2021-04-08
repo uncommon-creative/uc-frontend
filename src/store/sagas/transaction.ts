@@ -36,7 +36,7 @@ export function* sagas() {
   yield takeLatest(TransactionActions.willCompleteTransactionSubmitMnemonic.type, willCompleteTransactionSubmitMnemonic)
   yield takeLatest(TransactionActions.willPrepareTransactionSubmitAlgoSigner.type, willPrepareTransactionSubmitAlgoSigner)
   yield takeLatest(TransactionActions.willCompleteTransactionSubmitAlgoSigner.type, willCompleteTransactionSubmitAlgoSigner)
-  yield takeLatest(TransactionActions.willDestroyAndCreateAsset.type, willDestroyAndCreateAsset)
+  yield takeLatest(TransactionActions.willDestroyAndCreateAssetMnemonic.type, willDestroyAndCreateAssetMnemonic)
   console.log('in transaction saga');
 }
 
@@ -62,8 +62,7 @@ export function* willGetParams(action: any) {
 
     const result = yield call(TransactionApi.algorandGetTxParams);
     console.log("result willGetParams: ", result)
-    yield put(TransactionActions.didGetParams(result))
-
+    yield put(TransactionActions.didGetParams({ params: result, sowCommand: action.payload.sowCommand }))
   } catch (error) {
     console.log("error in willGetParams ", error)
   }
@@ -79,7 +78,7 @@ function* willGetParamsWithDelay(action: any) {
 
     const result = yield call(TransactionApi.algorandGetTxParamsWithDelay);
     console.log("result willGetParamsWithDelay: ", result)
-    yield put(TransactionActions.didGetParamsWithDelay(result))
+    yield put(TransactionActions.didGetParamsWithDelay({ params: result, sowCommand: action.payload.sowCommand }))
 
   } catch (error) {
     console.log("error in willGetParamsWithDelay ", error)
@@ -109,7 +108,7 @@ function* willCreateMultiSigAddress(action: any) {
     const multiSigAddressInfo = yield call(willGetAlgorandAccountInfo, result)
     console.log("willCreateMultiSigAddress multiSigAddressInfo: ", multiSigAddressInfo)
 
-    yield put(TransactionActions.didCreateMultiSigAddress(multiSigAddressInfo))
+    yield put(TransactionActions.didCreateMultiSigAddress({ multisig: multiSigAddressInfo, sowCommand: action.payload.sowCommand }))
 
     yield call(willPreparePayment, { amount: multiSigAddressInfo.amount, price: action.payload.price, fee: TransactionFee })
   } catch (error) {
@@ -181,23 +180,23 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
 
       if (resultSentTransaction.error) {
         console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction fail: ", resultSentTransaction)
-        yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSentTransaction.error))
+        yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail({ error: resultSentTransaction.error, sowCommand: SowCommands.ACCEPT_AND_PAY }))
         yield put(NotificationActions.willShowNotification({ message: resultSentTransaction.error, type: "danger" }));
       }
       else {
         console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction success: ", resultSentTransaction)
-        yield put(TransactionActions.didCompleteTransactionAcceptAndPay(resultSentTransaction))
+        yield put(TransactionActions.didCompleteTransactionAcceptAndPay({ tx: resultSentTransaction, sowCommand: SowCommands.ACCEPT_AND_PAY }))
       }
       yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
     }
     else {
       console.log("willCompleteTransactionAcceptAndPayMnemonic fail")
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultCheckAccountTransaction.error))
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail({ error: resultCheckAccountTransaction.error, sowCommand: SowCommands.ACCEPT_AND_PAY }))
       yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
     }
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptAndPayMnemonic ", error)
-    yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(error))
+    yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail({ error: error, sowCommand: SowCommands.ACCEPT_AND_PAY }))
     yield put(NotificationActions.willShowNotification({ message: error, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptAndPay'));
@@ -224,18 +223,18 @@ function* willCompleteTransactionAcceptAndPayPaid(action: any) {
 
       if (resultSentTransaction === "sendTxFailed") {
         console.log("willCompleteTransactionAcceptAndPayPaid resultSentTransaction fail: ", resultSentTransaction)
-        yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSentTransaction))
+        yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail({ error: resultSentTransaction, sowCommand: SowCommands.ACCEPT_AND_PAY }))
         yield put(NotificationActions.willShowNotification({ message: resultSentTransaction, type: "danger" }));
       }
       else {
         console.log("willCompleteTransactionAcceptAndPayPaid resultSentTransaction success: ", resultSentTransaction)
-        yield put(TransactionActions.didCompleteTransactionAcceptAndPay(resultSentTransaction))
+        yield put(TransactionActions.didCompleteTransactionAcceptAndPay({ tx: resultSentTransaction, sowCommand: SowCommands.ACCEPT_AND_PAY }))
       }
       yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
     }
     else {
       console.log("willCompleteTransactionAcceptAndPayPaid fail")
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultCheckAccountTransaction.error))
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail({ error: resultCheckAccountTransaction.error, sowCommand: SowCommands.ACCEPT_AND_PAY }))
     }
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptAndPayPaid ", error)
@@ -254,7 +253,7 @@ function* willPrepareTransactionAcceptAndPayAlgoSigner(action: any) {
     const resultAccounts = yield call(TransactionApi.algoGetAccounts)
     console.log("willPrepareTransactionAcceptAndPayAlgoSigner resultAccounts: ", resultAccounts)
 
-    yield put(TransactionActions.didPrepareTransactionAcceptAndPayAlgoSigner(resultAccounts))
+    yield put(TransactionActions.didPrepareTransactionAcceptAndPayAlgoSigner({ accounts: resultAccounts, sowCommand: [SowCommands.ACCEPT_AND_PAY] }))
 
     // yield call(willAlgorandPollAccountAmount, action)
   } catch (error) {
@@ -283,12 +282,12 @@ function* willCompleteTransactionAcceptAndPayAlgoSigner(action: any) {
 
     if (resultSentTransaction === "sendTxFailed") {
       console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction fail: ", resultSentTransaction)
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail(resultSentTransaction))
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail({ error: resultSentTransaction, sowCommand: SowCommands.ACCEPT_AND_PAY }))
       yield put(NotificationActions.willShowNotification({ message: resultSentTransaction, type: "danger" }));
     }
     else {
       console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction success: ", resultSentTransaction)
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPay(resultSentTransaction))
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPay({ tx: resultSentTransaction, sowCommand: SowCommands.ACCEPT_AND_PAY }))
     }
     yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
   } catch (error) {
@@ -333,7 +332,7 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
       let resultSignedTransaction = [] as any
       if (existingAsset) {
         console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
-        resultSignedTransaction = yield call(willDestroyAndCreateAsset, {
+        resultSignedTransaction = yield call(willDestroyAndCreateAssetMnemonic, {
           payload: {
             asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: action.payload.mnemonicSecretKey, params: action.payload.params.withoutDelay,
             addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
@@ -355,7 +354,7 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
 
       if (resultAlgorandSendDeliverableTokenCreationTx.error) {
         console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendDeliverableTokenCreationTx fail")
-        yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail(resultAlgorandSendDeliverableTokenCreationTx.error))
+        yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail({ error: resultAlgorandSendDeliverableTokenCreationTx.error, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
         yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendDeliverableTokenCreationTx.error, type: "danger" }));
       }
       else {
@@ -378,13 +377,13 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
         const resultAlgorandSendClaimMilestoneMet = yield call(TransactionApi.algorandSendClaimMilestoneMet, action.payload.currentSow.sow, resultClaimMilestoneMetTxGroup.tx, resultClaimMilestoneMetTxGroup.backupTx)
         console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendClaimMilestoneMet: ", resultAlgorandSendClaimMilestoneMet)
 
-        yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet(resultAlgorandSendDeliverableTokenCreationTx))
+        yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet({ tx: resultAlgorandSendDeliverableTokenCreationTx, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
         yield put(NotificationActions.willShowNotification({ message: "Milestone claimed as met", type: "info" }));
       }
     }
     else {
       console.log("willCompleteTransactionClaimMilestoneMetMnemonic fail")
-      yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail(resultCheckAccountTransaction.error))
+      yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail({ error: resultCheckAccountTransaction.error, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
       yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
     }
   } catch (error) {
@@ -399,7 +398,7 @@ function* willPrepareTransactionClaimMilestoneMetAlgoSigner(action: any) {
 
   try {
 
-    yield put(TransactionActions.didPrepareTransactionClaimMilestoneMetAlgoSigner())
+    yield put(TransactionActions.didPrepareTransactionClaimMilestoneMetAlgoSigner({ sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
   } catch (error) {
     console.log("error in willPrepareTransactionClaimMilestoneMetAlgoSigner ", error)
   }
@@ -412,7 +411,7 @@ function* willCompleteTransactionClaimMilestoneMetAlgoSigner(action: any) {
 
   try {
 
-    yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet())
+    yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet({ sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
   } catch (error) {
     console.log("error in willCompleteTransactionClaimMilestoneMetAlgoSigner ", error)
   }
@@ -427,7 +426,7 @@ function* willGetSignedMsig(action: any) {
     const result = yield call(TransactionApi.algorandGetTx, action.payload.sow)
     console.log("willGetSignedMsig result: ", result)
 
-    yield put(TransactionActions.didGetSignedMsig(result))
+    yield put(TransactionActions.didGetSignedMsig({ signedMsig: result, sowCommand: SowCommands.ACCEPT_MILESTONE }))
 
   } catch (error) {
     console.log("error in willGetSignedMsig ", error)
@@ -461,16 +460,16 @@ function* willCompleteTransactionAcceptMilestoneMnemonic(action: any) {
 
       const resultConfirmedMultisigTransaction = yield call(TransactionApi.algorandFinalizeTransaction, action.payload.signedMsig.hash_round, action.payload.signedMsig.round_sow, resultSignGroupAcceptMilestone)
       console.log("willCompleteTransactionAcceptMilestoneMnemonic resultConfirmedMultisigTransaction: ", resultConfirmedMultisigTransaction)
-      yield put(TransactionActions.didCompleteTransactionAcceptMilestone(resultConfirmedMultisigTransaction))
+      yield put(TransactionActions.didCompleteTransactionAcceptMilestone({ tx: resultConfirmedMultisigTransaction, sowCommand: SowCommands.ACCEPT_MILESTONE }))
       yield put(NotificationActions.willShowNotification({ message: "Milestone accepted", type: "info" }));
     }
     else {
       console.log("willCompleteTransactionAcceptMilestoneMnemonic fail")
-      yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail(resultCheckAccountTransaction.error))
+      yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail({ error: resultCheckAccountTransaction.error, sowCommand: SowCommands.ACCEPT_MILESTONE }))
     }
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptMilestoneMnemonic ", error)
-    yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail("Algorand multisig transaction failed"))
+    yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail({ error: "Algorand multisig transaction failed", sowCommand: SowCommands.ACCEPT_MILESTONE }))
   }
   yield put(UIActions.stopActivityRunning('willCompleteTransactionAcceptMilestoneMnemonic'));
 }
@@ -484,7 +483,7 @@ function* willRequestReview(action: any) {
     console.log("willRequestReview result: ", result)
 
     // yield put(SowActions.willGetSow({ sow: action.payload.sow }))
-    yield put(TransactionActions.didRequestReview())
+    yield put(TransactionActions.didRequestReview({ sowCommand: SowCommands.REQUEST_REVIEW }))
 
   } catch (error) {
     console.log("error in willRequestReview ", error)
@@ -547,7 +546,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
       let resultSignedTransaction = [] as any
       if (existingAsset) {
         console.log("willCompleteTransactionSubmitMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
-        resultSignedTransaction = yield call(willDestroyAndCreateAsset, {
+        resultSignedTransaction = yield call(willDestroyAndCreateAssetMnemonic, {
           payload: {
             asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: action.payload.mnemonicSecretKey, params: action.payload.params.withoutDelay,
             addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
@@ -560,7 +559,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
         resultSignedTransaction = yield call(TransactionApi.signTxn,
           action.payload.mnemonicSecretKey, action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
         )
-        resultSignedTransaction = [resultSignedTransaction]
+        // resultSignedTransaction = [resultSignedTransaction]
         console.log("in willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
       }
 
@@ -569,22 +568,22 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
 
       if (resultAlgorandSendTokenCreationTx.error) {
         console.log("willCompleteTransactionSubmitMnemonic fail")
-        yield put(TransactionActions.didCompleteTransactionSubmitFail(resultAlgorandSendTokenCreationTx.error))
+        yield put(TransactionActions.didCompleteTransactionSubmitFail({ error: resultAlgorandSendTokenCreationTx.error, sowCommand: SowCommands.SUBMIT }))
         yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendTokenCreationTx.error, type: "danger" }));
       }
       else {
         console.log("willCompleteTransactionSubmitMnemonic success")
-        yield put(TransactionActions.didCompleteTransactionSubmit(resultAlgorandSendTokenCreationTx))
+        yield put(TransactionActions.didCompleteTransactionSubmit({ asset: resultAlgorandSendTokenCreationTx, sowCommand: SowCommands.SUBMIT }))
       }
     }
     else {
       console.log("willCompleteTransactionSubmitMnemonic fail")
-      yield put(TransactionActions.didCompleteTransactionSubmitFail(resultCheckAccountTransaction.error))
+      yield put(TransactionActions.didCompleteTransactionSubmitFail({ error: resultCheckAccountTransaction.error, sowCommand: SowCommands.SUBMIT }))
       yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
     }
   } catch (error) {
     console.log("error in willCompleteTransactionSubmitMnemonic ", error)
-    yield put(TransactionActions.didCompleteTransactionSubmitFail(error))
+    yield put(TransactionActions.didCompleteTransactionSubmitFail({ error: error, sowCommand: SowCommands.SUBMIT }))
     yield put(NotificationActions.willShowNotification({ message: error, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning('willCompleteTransactionSubmitMnemonic'));
@@ -593,6 +592,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
 function* willPrepareTransactionSubmitAlgoSigner() {
   console.log("in willPrepareTransactionSubmitAlgoSigner")
   yield put(UIActions.startActivityRunning('willPrepareTransactionSubmitAlgoSigner'));
+  const userAttributes = yield select(ProfileSelectors.getProfile)
 
   try {
     const resultAlgoConnect = yield call(TransactionApi.algoConnect)
@@ -601,28 +601,32 @@ function* willPrepareTransactionSubmitAlgoSigner() {
     const resultAccounts = yield call(TransactionApi.algoGetAccounts)
     console.log("willPrepareTransactionSubmitAlgoSigner resultAccounts: ", resultAccounts)
 
-    yield put(TransactionActions.didPrepareTransactionSubmitAlgoSigner(resultAccounts))
+    const myAccount = resultAccounts.find((account: any) => account.address === userAttributes.public_key)
+    console.log("willPrepareTransactionSubmitAlgoSigner myAccount: ", myAccount)
+
+    myAccount ? yield put(TransactionActions.didPrepareTransactionSubmitAlgoSigner({ account: myAccount, sowCommand: SowCommands.SUBMIT }))
+      : yield put(TransactionActions.didCompleteTransactionSubmitFail({ error: "Add your Uncommon Creative account to AlgoSigner.", sowCommand: SowCommands.SUBMIT }))
   } catch (error) {
     console.log("error in willPrepareTransactionSubmitAlgoSigner ", error)
   }
 }
 
 function* willCompleteTransactionSubmitAlgoSigner(action: any) {
-  console.log("in willCompleteTransactionSubmitAlgoSigner")
+  console.log("in willCompleteTransactionSubmitAlgoSigner with: ", action)
   yield put(UIActions.startActivityRunning('willCompleteTransactionSubmitAlgoSigner'));
   const users = yield select(ProfileSelectors.getUsers)
 
-  const tokenName = uuidv4().substring(0, 8)
+  // const tokenName = uuidv4().substring(0, 8)
   const hash = action.payload.pdfHash
   const note = undefined;
   const defaultFrozen = false;
   const addr = users[action.payload.currentSow.seller].public_key;
   const decimals = 0;
   const totalIssuance = 1;
-  const unitName = tokenName;
-  const assetName = tokenName;
-  const assetURL = "https://www.example.com/" + tokenName;
-  const assetMetadataHash = Buffer.from(hash, "base64")
+  const unitName = configuration[stage].submitAsset_unitName + action.payload.currentSow.sow.substring(0, 5)
+  const assetName = configuration[stage].submitAsset_assetName + action.payload.currentSow.sow.substring(0, 5)
+  const assetURL = "https://www.example.com/" + unitName;
+  const assetMetadataHash = hash // senza Buffer.from per AlgoSigner
   console.log("willCompleteTransactionSubmitAlgoSigner assetMetadataHash: ", assetMetadataHash)
   // Specified address can change reserve, freeze, clawback, and manager
   const manager = users[action.payload.currentSow.seller].public_key;
@@ -636,17 +640,82 @@ function* willCompleteTransactionSubmitAlgoSigner(action: any) {
   const clawback = users[action.payload.currentSow.seller].public_key;
 
   try {
-    const resultSignedTransaction = yield call(TransactionApi.algoSignSubmit,
-      action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
+    let resultSignedTransactions = [] as any
+
+    // CHECK EXISTING ASSET AND DESTROOY IT
+    // const existingAsset = action.payload.account['created-assets'].find((asset: any) => asset.params['unit-name'] === configuration[stage].submitAsset_unitName + action.payload.currentSow.sow.substring(0, 5))
+    // console.log("willCompleteTransactionSubmitAlgoSigner existingAsset: ", existingAsset)
+    // if (existingAsset) {
+    //   // DUE FIRME - DESTROY AND CREATE ASSET
+    //   console.log("willCompleteTransactionSubmitAlgoSigner ASSET FOUND: ", existingAsset)
+    //   const resultTransactions = yield call(TransactionApi.destroyAndCreateAssetAlgoSigner,
+    //     addr,
+    //     note,
+    //     existingAsset.index,
+    //     action.payload.params.withoutDelay,
+    //     totalIssuance,
+    //     decimals,
+    //     defaultFrozen,
+    //     manager,
+    //     reserve,
+    //     freeze,
+    //     clawback,
+    //     unitName,
+    //     assetName,
+    //     assetURL,
+    //     assetMetadataHash
+    //   )
+
+    //   const resultDestroyAssetTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions[0])
+    //   console.log("willCompleteTransactionSubmitAlgoSigner resultDestroyAssetTxnSigned: ", resultDestroyAssetTxnSigned)
+
+    //   //// DID
+
+    //   const resultCreateAssetTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions[1])
+    //   console.log("willCompleteTransactionSubmitAlgoSigner resultCreateAssetTxnSigned: ", resultCreateAssetTxnSigned)
+
+    //   resultSignedTransactions = [resultDestroyAssetTxnSigned, resultCreateAssetTxnSigned]
+    // }
+    // else {
+    // UNA FIRMA - CREATE ASSET
+    // console.log("willCompleteTransactionSubmitAlgoSigner ASSET NOT FOUND: ", existingAsset)
+    resultSignedTransactions = yield call(TransactionApi.createAssetAlgoSigner,
+      addr,
+      note,
+      action.payload.params.withoutDelay,
+      totalIssuance,
+      decimals,
+      defaultFrozen,
+      manager,
+      reserve,
+      freeze,
+      clawback,
+      unitName,
+      assetName,
+      assetURL,
+      assetMetadataHash
     )
-    console.log("in willCompleteTransactionSubmitAlgoSigner resultSignedTransaction: ", resultSignedTransaction)
+    // }
+    console.log("willCompleteTransactionSubmitAlgoSigner resultSignedTransactions: ", resultSignedTransactions)
 
-    const result = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction.toString())
+    const resultAlgorandSendTokenCreationTx = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransactions)
+    console.log("willCompleteTransactionSubmitAlgoSigner resultAlgorandSendTokenCreationTx: ", resultAlgorandSendTokenCreationTx)
 
-    yield put(TransactionActions.didCompleteTransactionSubmit(result))
+    if (resultAlgorandSendTokenCreationTx.error) {
+      console.log("willCompleteTransactionSubmitMnemonic fail")
+      yield put(TransactionActions.didCompleteTransactionSubmitFail({ error: resultAlgorandSendTokenCreationTx.error, sowCommand: SowCommands.SUBMIT }))
+      yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendTokenCreationTx.error, type: "danger" }));
+    }
+    else {
+      console.log("willCompleteTransactionSubmitMnemonic success")
+      yield put(TransactionActions.didCompleteTransactionSubmit({ asset: resultAlgorandSendTokenCreationTx, sowCommand: SowCommands.SUBMIT }))
+    }
   } catch (error) {
     console.log("error in willCompleteTransactionSubmitAlgoSigner ", error)
+    yield put(TransactionActions.didCompleteTransactionSubmitFail({ error: error.message ? error.message : error, sowCommand: SowCommands.SUBMIT }))
+    yield put(NotificationActions.willShowNotification({ message: error.message ? error.message : error, type: "danger" }));
   }
+  yield put(UIActions.stopActivityRunning('willCompleteTransactionSubmitAlgoSigner'));
 }
 
 export function* willCheckAccountTransaction(action: any) {
@@ -696,11 +765,11 @@ export function* willCheckAccountTransaction(action: any) {
   }
 }
 
-export function* willDestroyAndCreateAsset(action: any) {
-  console.log("in willDestroyAndCreateAsset with: ", action)
+export function* willDestroyAndCreateAssetMnemonic(action: any) {
+  console.log("in willDestroyAndCreateAssetMnemonic with: ", action)
 
   try {
-    const resultSignedDAndCTxn = yield call(TransactionApi.destroyAndCreateAsset,
+    const resultSignedDAndCTxn = yield call(TransactionApi.destroyAndCreateAssetMnemonic,
       action.payload.mnemonicSecretKey,
       action.payload.addr,
       action.payload.note,
@@ -718,10 +787,10 @@ export function* willDestroyAndCreateAsset(action: any) {
       action.payload.assetURL,
       action.payload.assetMetadataHash,
     )
-    console.log("willDestroyAndCreateAsset resultDAndCTxn: ", resultSignedDAndCTxn)
+    console.log("willDestroyAndCreateAssetMnemonic resultDAndCTxn: ", resultSignedDAndCTxn)
 
     return resultSignedDAndCTxn
   } catch (error) {
-    console.log("error in willDestroyAndCreateAsset ", error)
+    console.log("error in willDestroyAndCreateAssetMnemonic ", error)
   }
 }

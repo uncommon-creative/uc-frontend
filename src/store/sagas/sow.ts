@@ -147,11 +147,11 @@ function* willSubmitStatementOfWork(action: any) {
       yield put(SowActions.didSubmitStatementOfWork(result))
 
       yield call(willBuildPdf, { payload: { sow: result.sow } })
-      yield call(willGetParams, { payload: { seller: result.seller, buyer: result.buyer } })
-      yield put(TransactionActions.goToTransactionPage(2))
+      // yield call(willGetParams, { payload: { seller: result.seller, buyer: result.buyer, sowCommand: SowCommands.SUBMIT } })
+      yield put(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.SUBMIT }))
 
       // yield put(push("/home"))
-      yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
+      // yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
     }
     else {
       yield call(willDraftStatementOfWork, action)

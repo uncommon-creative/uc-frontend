@@ -155,7 +155,7 @@ export const CreateStatementOfWorkPage = () => {
                 onSubmit={values => {
                   console.log('in onsubmit with: ', values)
                   dispatch(SowActions.willSubmitStatementOfWork({ sow: values/* , history: history */ }));
-                  dispatch(TransactionActions.goToTransactionPage(0))
+                  // dispatch(TransactionActions.goToTransactionPage(0))
                   toggleModalSubmitSow()
                 }}
               >

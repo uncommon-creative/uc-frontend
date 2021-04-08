@@ -37,14 +37,14 @@ export const SowAttachmentsInput = ({ currentSow, keyAttachment }: any) => {
           }}
         />
       </FormGroup>
-      {currentSow.status == SowStatus.DRAFT && newAttachments.map((element: any, index: any) => {
+      {currentSow.status == SowStatus.DRAFT && newAttachments.map((att: any, index: any) => {
         return (
           <ListGroupItem data-cy="attachmentsSow" key={index}>
             <ListGroupItemHeading>
               <Button close onClick={() => {
-                dispatch(SowActions.willDeleteAttachment({ sow: currentSow, attachment: element }))
+                dispatch(SowActions.willDeleteAttachment({ sow: currentSow, attachment: att }))
               }} />
-              <FileButton file={element} />
+              <FileButton file={att} />
             </ListGroupItemHeading>
           </ListGroupItem>
         )

@@ -81,7 +81,7 @@ export const SowAttachments = () => {
             {newAttachments.some((file: any) => file.filename == configuration[stage].deliverable_key) ?
               newAttachments.map((attachment: any, index: any) => {
                 return (attachment.filename == configuration[stage].deliverable_key &&
-                  <ListGroupItem data-cy="attachmentsSeller" key={index} >
+                  <ListGroupItem data-cy="attachmentDeliverable" key={index} >
                     <FileButton file={attachment} />
                   </ListGroupItem>
                 )
