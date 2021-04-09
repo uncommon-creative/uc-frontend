@@ -19,6 +19,7 @@ import { actions as ChatActions, selectors as ChatSelectors } from '../../store/
 import { selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
 import { actions as NotificationActions } from '../../store/slices/notification'
+import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { actions as UIActions } from '../../store/slices/ui'
 import { ActivityButton } from '../common/ActivityButton';
 import { Payment } from './Payment'
@@ -33,6 +34,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
+  const userAttributes = useSelector(ProfileSelectors.getProfile)
   const messagesCommands = useSelector(ChatSelectors.getMessagesCommands)
   const currentChosenArbitrator = useSelector(ArbitratorSelectors.getCurrentChosenArbitrator)
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
@@ -43,7 +45,6 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const params = useSelector(TransactionSelectors.getParams)
   const payment = useSelector(TransactionSelectors.getPayment)
-  const worksAgreementPdf = useSelector(SowSelectors.getWorksAgreementPdf)
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
   const [currentFromAlgoSigner, setCurrentFromAlgoSigner] = React.useState('');
@@ -154,9 +155,8 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">Furthermore, you are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>{JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</a>.</CardSubtitle>
             <Payment />
 
-            {payment.toPay > 0 &&
-              <Row>
-                {/* <Col>
+            <Row>
+              {/* <Col>
                   <Card outline onClick={() => {
                     dispatch(TransactionActions.willCompleteTransactionAcceptAndPayQR({ multiSigAddress: multiSig.address, total: payment.total, sow: currentSow.sow }))
                   }}>
@@ -166,39 +166,30 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
                     </CardBody>
                   </Card>
                 </Col> */}
-                <Col>
-                  <Card data-cy='acceptAndPay' onClick={() => {
-                    dispatch(TransactionActions.goToTransactionPage({ transactionPage: 4, sowCommand: SowCommands.ACCEPT_AND_PAY }))
-                  }}>
-                    <CardBody className="text-center">
-                      <CardSubtitle tag="h5" className="mb-2 text-muted text-center">Mnemonic</CardSubtitle>
-                      <FontAwesomeIcon icon={faKey} size="5x" />
-                    </CardBody>
-                  </Card>
-                </Col>
-                <Col>
-                  <Card onClick={() => {
-                    // isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionAcceptAndPayAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, total: payment.total }))
-                    //   : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
-                    dispatch(NotificationActions.willShowNotification({ message: "In development", type: "info" }));
-                  }}>
-                    <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
-                      <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner (in development)</CardSubtitle>
-                      {!isAlgoSignInstalled && <CardSubtitle tag="h6" className="mb-2 text-muted text-center">(not installed)</CardSubtitle>}
-                      <img src={AlgoSignerLogo} height="80" alt="AlgoSigner Logo" />
-                    </CardBody>
-                  </Card>
-                </Col>
-              </Row>
-            }
+              <Col>
+                <Card data-cy='acceptAndPay' onClick={() => {
+                  dispatch(TransactionActions.goToTransactionPage({ transactionPage: 4, sowCommand: SowCommands.ACCEPT_AND_PAY }))
+                }}>
+                  <CardBody className="text-center">
+                    <CardSubtitle tag="h5" className="mb-2 text-muted text-center">Mnemonic</CardSubtitle>
+                    <FontAwesomeIcon icon={faKey} size="5x" />
+                  </CardBody>
+                </Card>
+              </Col>
+              <Col>
+                <Card onClick={() => {
+                  isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareAlgoSigner({ sowCommand: SowCommands.ACCEPT_AND_PAY }))
+                    : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
+                }}>
+                  <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
+                    <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner</CardSubtitle>
+                    {!isAlgoSignInstalled && <CardSubtitle tag="h6" className="mb-2 text-muted text-center">(not installed)</CardSubtitle>}
+                    <img src={AlgoSignerLogo} height="80" alt="AlgoSigner Logo" />
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
           </ModalBody>
-          {payment.toPay <= 0 &&
-            <ModalFooter>
-              <ActivityButton data-cy='acceptAndPay' disabled={!acceptedConditions} name="willCompleteTransactionAcceptAndPayPaid" color="primary" onClick={() => {
-                dispatch(TransactionActions.goToTransactionPage({ transactionPage: 4, sowCommand: SowCommands.ACCEPT_AND_PAY }))
-              }}>Complete</ActivityButton>
-            </ModalFooter>
-          }
         </>
       }
       {/* {transactionPage[SowCommands.ACCEPT_AND_PAY] == 3 &&
@@ -237,6 +228,8 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Fund the wallet with mnemonic secret key</ModalHeader>
           <ModalBody>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are signing the quote and committing to receive the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">Furthermore, you are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>{JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</a>.</CardSubtitle>
             <Payment />
 
             <FormGroup>
@@ -253,8 +246,10 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.ACCEPT_AND_PAY }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPay' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptAndPay" color="primary" onClick={async () => {
-              payment.toPay <= 0 ? dispatch(TransactionActions.willCompleteTransactionAcceptAndPayPaid({ params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
-                : dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, toPay: payment.toPay, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
+              // payment.toPay <= 0 ? dispatch(TransactionActions.willCompleteTransactionAcceptAndPayPaid({ params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
+              //   : dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, toPay: payment.toPay, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
+
+              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ multiSigAddress: multiSig.address, params: params, currentSow: currentSow, toPay: payment.toPay, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -263,31 +258,21 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Fund the wallet with AlgoSigner</ModalHeader>
           <ModalBody>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are signing the quote and committing to receive the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">Furthermore, you are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>{JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</a>.</CardSubtitle>
             <Payment />
 
-            <CardSubtitle tag="h6" className="pt-5 text-muted text-center">Select one of your AlgoSigner accounts</CardSubtitle>
-            {algoSigner.accounts &&
-              algoSigner.accounts.map((element: any, index: any) => {
-                return (
-                  <ListGroupItem disabled={element.amount < payment.toPay} className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
-                    onClick={() => {
-                      console.log("select currentFromAlgoSigner: ", element.address)
-                      setCurrentFromAlgoSigner(element.address)
-                    }}
-                  >
-                    {element.address + ': ' + t('transaction.payment.algo', { value: element.amount / 1000000 })}
-                  </ListGroupItem>
-                )
-              })
-            }
+            <ListGroupItem className='border border-primary bg-light'>
+              {algoSigner.account.address + ': ' + t('transaction.payment.algo', { value: algoSigner.account.amount / 1000000 })}
+            </ListGroupItem>
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.ACCEPT_AND_PAY }))
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willCompleteTransactionAcceptAndPayAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionAcceptAndPayAlgoSigner" color="primary"
+            <ActivityButton data-cy='willCompleteTransactionAcceptAndPayAlgoSigner' name="willCompleteTransactionAcceptAndPayAlgoSigner" color="primary"
               onClick={() => {
-                dispatch(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, toPay: payment.toPay, sow: currentSow.sow }))
+                dispatch(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner({ multiSigAddress: multiSig.address, params: params, currentSow: currentSow, toPay: payment.toPay, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId, account: algoSigner.account }))
               }}
             >Complete the transaction</ActivityButton>
           </ModalFooter>
