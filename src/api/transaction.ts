@@ -91,7 +91,7 @@ export function signTransactionsAcceptAndPayMnemonic(multiSigAddress: any, param
   }
 }
 
-export function signTransactionsAcceptAndPayPaid(params: any, mnemonicSecretKey: any, buyer: any, assetId: any) {
+export function signTransactionsAcceptAndPayMnemonicPaid(params: any, mnemonicSecretKey: any, buyer: any, assetId: any) {
   try {
 
     const txnOptin = algosdk.makeAssetTransferTxnWithSuggestedParams(buyer, buyer, undefined, undefined, 0, undefined, assetId, params)
@@ -284,29 +284,73 @@ export const algoGetAccounts = async () => {
   }
 }
 
-export const algoSign = async (from: any, multiSigAddress: any, toPay: any, sow: any) => {
+export const createTransactionsAcceptAndPayAlgoSigner = async (multiSigAddress: any, params: any, toPay: any, buyer: any, assetId: any) => {
   try {
-    let paramsAlgoSigner = await AlgoSigner.algod({
-      ledger: configuration[stage].algorand_net,
-      path: '/v2/transactions/params',
-    });
+    let optinTxn: any = {
+      from: buyer,
+      to: buyer,
+      closeRemainderTo: undefined,
+      revocationTarget: undefined,
+      amount: 0,
+      note: undefined,
+      assetIndex: assetId,
+      fee: params.fee,
+      firstRound: params.firstRound,
+      lastRound: params.lastRound,
+      genesisID: params.genesisID,
+      genesisHash: params.genesisHash,
+      rekeyTo: undefined,
+      type: 'axfer'
+    }
+    // console.log("createTransactionsAcceptAndPayAlgoSigner optinTxn: ", optinTxn)
+    let paymentTxn: any = {
+      from: buyer,
+      to: multiSigAddress,
+      fee: params.fee,
+      type: 'pay',
+      amount: toPay,
+      firstRound: params.firstRound,
+      lastRound: params.lastRound,
+      genesisID: params.genesisID,
+      genesisHash: params.genesisHash,
+      note: undefined
+    }
+    // console.log("createTransactionsAcceptAndPayAlgoSigner paymentTxn: ", paymentTxn)
 
-    const txn = {
-      "from": from,
-      "to": multiSigAddress,
-      "fee": paramsAlgoSigner.fee,
-      "type": 'pay',
-      "amount": toPay,
-      "firstRound": paramsAlgoSigner['last-round'],
-      "lastRound": paramsAlgoSigner['last-round'] + 1000,
-      "genesisID": paramsAlgoSigner['genesis-id'],
-      "genesisHash": paramsAlgoSigner['genesis-hash'],
-      "note": sow
-    };
+    let gid = algosdk.assignGroupID([optinTxn, paymentTxn]);
+    optinTxn.group = gid[1].group.toString('base64');
+    paymentTxn.group = gid[0].group.toString('base64');
+    // console.log("createTransactionsAcceptAndPayAlgoSigner optinTxn after group: ", optinTxn)
+    // console.log("createTransactionsAcceptAndPayAlgoSigner paymentTxn after group: ", paymentTxn)
 
-    let result = await AlgoSigner.sign(txn)
-    console.log("algoSign result: ", result);
-    return result;
+    return [optinTxn, paymentTxn]
+  } catch (error) {
+    console.log("createTransactionsAcceptAndPayAlgoSigner error: ", error)
+    throw error
+  }
+}
+
+export const createTransactionsAcceptAndPayPaidAlgoSigner = async (params: any, buyer: any, assetId: any) => {
+  try {
+    let optinTxn: any = {
+      from: buyer,
+      to: buyer,
+      closeRemainderTo: undefined,
+      revocationTarget: undefined,
+      amount: 0,
+      note: undefined,
+      assetIndex: assetId,
+      fee: params.fee,
+      firstRound: params.firstRound,
+      lastRound: params.lastRound,
+      genesisID: params.genesisID,
+      genesisHash: params.genesisHash,
+      rekeyTo: undefined,
+      type: 'axfer'
+    }
+    // console.log("createTransactionsAcceptAndPayPaidAlgoSigner optinTxn: ", optinTxn)
+
+    return [optinTxn];
   } catch (error) {
     console.log("algoSign error: ", error)
     throw error
@@ -683,7 +727,7 @@ export const signTxAlgoSigner = async (tx: any) => {
 
     let signedTx = await AlgoSigner.sign(tx)
     signedTx.blob = atob(signedTx.blob).split('').map((x) => x.charCodeAt(0)).toString()
-    console.log("signTxAlgoSigner signedTx after: ", signedTx);
+    console.log("signTxAlgoSigner signedTx: ", signedTx);
 
     return signedTx
   } catch (error) {

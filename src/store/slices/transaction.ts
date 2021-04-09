@@ -46,10 +46,8 @@ export const currentSlice = createSlice({
     didAlgorandPollAccountAmount: (state, action: PayloadAction<any>) => void (state.activePolls[action.payload.sow] = action.payload.timestamp),
 
     willCompleteTransactionAcceptAndPayQR: (state, action: PayloadAction<any>) => void (state.transactionPage[action.payload.sowCommand] = 3),
-    willCompleteTransactionAcceptAndPayPaid: (state, action: PayloadAction<any>) => state,
+    // willCompleteTransactionAcceptAndPayPaid: (state, action: PayloadAction<any>) => state,
     willCompleteTransactionAcceptAndPayMnemonic: (state, action: PayloadAction<any>) => state,
-    willPrepareTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => state,
-    didPrepareTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.accounts = action.payload.accounts, state.transactionPage[action.payload.sowCommand] = 5),
     willCompleteTransactionAcceptAndPayAlgoSigner: (state, action: PayloadAction<any>) => state,
     didCompleteTransactionAcceptAndPay: (state, action: PayloadAction<any>) => void (state.transactionAcceptAndPay = action.payload.tx, state.transactionPage[action.payload.sowCommand] = 6),
     didCompleteTransactionAcceptAndPayFail: (state, action: PayloadAction<any>) => void (state.error = action.payload.error, state.transactionPage[action.payload.sowCommand] = 7),
@@ -73,8 +71,8 @@ export const currentSlice = createSlice({
     didRequestReview: (state, action: PayloadAction<any>) => void (state.transactionPage[action.payload.sowCommand] = 2),
 
     willCompleteTransactionSubmitMnemonic: (state, action: PayloadAction<any>) => state,
-    willPrepareTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => state,
-    didPrepareTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.account = action.payload.account, state.transactionPage[action.payload.sowCommand] = 4),
+    willPrepareAlgoSigner: (state, action: PayloadAction<any>) => state,
+    didPrepareAlgoSigner: (state, action: PayloadAction<any>) => void (state.algoSigner.account = action.payload.account),
     willCompleteTransactionSubmitAlgoSigner: (state, action: PayloadAction<any>) => state,
     didCompleteTransactionSubmit: (state, action: PayloadAction<any>) => void (state.submitToken = action.payload.asset, state.transactionPage[action.payload.sowCommand] = 5),
     didCompleteTransactionSubmitFail: (state, action: PayloadAction<any>) => void (state.error = action.payload.error, state.transactionPage[action.payload.sowCommand] = 6),
@@ -89,7 +87,7 @@ export const {
   willCreateMultiSigAddress, didCreateMultiSigAddress,
   didCompleteTransactionAcceptAndPay, didCompleteTransactionAcceptAndPayFail,
   willCompleteTransactionAcceptAndPayQR, willCompleteTransactionAcceptAndPayMnemonic,
-  willPrepareTransactionAcceptAndPayAlgoSigner, didPrepareTransactionAcceptAndPayAlgoSigner, willCompleteTransactionAcceptAndPayAlgoSigner,
+  willCompleteTransactionAcceptAndPayAlgoSigner,
   willCompleteTransactionClaimMilestoneMetMnemonic, didCompleteTransactionClaimMilestoneMet,
   didGetSignedMsig, willCompleteTransactionAcceptMilestoneMnemonic, didCompleteTransactionAcceptMilestone, didCompleteTransactionAcceptMilestoneFail,
   willReject, willRequestReview, didRequestReview

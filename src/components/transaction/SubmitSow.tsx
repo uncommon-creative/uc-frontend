@@ -101,7 +101,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
               </Col>
               <Col>
                 <Card onClick={() => {
-                  isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionSubmitAlgoSigner())
+                  isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareAlgoSigner({ sowCommand: SowCommands.SUBMIT }))
                     : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
                   // dispatch(NotificationActions.willShowNotification({ message: "In development", type: "info" }));
                 }}>
@@ -146,14 +146,14 @@ export const SubmitSow = ({ modal, toggle }: any) => {
           <ModalBody>
             <CardSubtitle tag="h6" className="py-3 text-muted text-center">You are signing the quote and committing to provide the service as described in the <a target="_blank" href={worksAgreementPdf.downloadUrl}>works agreement</a>.</CardSubtitle>
 
-            <ListGroupItem disabled={algoSigner.account.address != userAttributes.public_key} className={currentFromAlgoSigner == algoSigner.account.address ? 'border border-primary bg-light' : 'border'}>
+            <ListGroupItem className='border border-primary bg-light'>
               {algoSigner.account.address + ': ' + t('transaction.payment.algo', { value: algoSigner.account.amount / 1000000 })}
             </ListGroupItem>
 
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.goToTransactionPage(2))
+              dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.SUBMIT }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionSubmitAlgoSigner' name="willCompleteTransactionSubmitAlgoSigner" color="primary"
               onClick={() => {
