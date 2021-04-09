@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Button, Col, Row,
+  Button, Col, Row, Spinner,
   Modal, ModalHeader, ModalBody, ModalFooter,
   ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText,
   FormGroup, Label, Input, Jumbotron, CardSubtitle, CardText
@@ -40,6 +40,14 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
 
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl">
+      {transactionPage[SowCommands.ACCEPT_MILESTONE] == 0 &&
+        <>
+          <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.ACCEPT_MILESTONE}`)}</ModalHeader>
+          <ModalBody className="text-center">
+            <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+          </ModalBody>
+        </>
+      }
       {transactionPage[SowCommands.ACCEPT_MILESTONE] == 1 &&
         <>
           <ModalHeader toggle={toggle}>Accept the conditions</ModalHeader>

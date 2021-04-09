@@ -69,7 +69,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
     <Modal isOpen={modal} toggle={toggle} size="xl">
       {transactionPage[SowCommands.SUBMIT] == 0 &&
         <>
-          <ModalHeader toggle={toggle}>Submitting the Statement of Work</ModalHeader>
+          <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.SUBMIT}`)}</ModalHeader>
           <ModalBody className="text-center">
             <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
           </ModalBody>

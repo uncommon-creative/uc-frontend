@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Button, Col, Row, Card, CardBody, CardTitle,
   Modal, ModalHeader, ModalBody, ModalFooter,
-  ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText,
-  FormGroup, Label, Input, Jumbotron, CardSubtitle, CardText
+  Spinner, Jumbotron, CardText
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
@@ -30,6 +28,14 @@ export const Reject = ({ modal, toggle }: any) => {
 
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl">
+      {transactionPage[SowCommands.REJECT] == 0 &&
+        <>
+          <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.REJECT}`)}</ModalHeader>
+          <ModalBody className="text-center">
+            <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+          </ModalBody>
+        </>
+      }
       {transactionPage[SowCommands.REJECT] == 1 &&
         <>
           <ModalHeader toggle={toggle}>Reject</ModalHeader>

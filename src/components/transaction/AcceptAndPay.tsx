@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Button, Col, Row, Card, CardBody, CardTitle,
+  Button, Col, Row, Card, CardBody, CardTitle, Spinner,
   Modal, ModalHeader, ModalBody, ModalFooter,
   ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText,
   FormGroup, Label, Input, Jumbotron, CardSubtitle, CardText
@@ -115,6 +115,14 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
 
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl" data-cy='acceptAndPayModal'>
+      {transactionPage[SowCommands.ACCEPT_AND_PAY] == 0 &&
+        <>
+          <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.ACCEPT_AND_PAY}`)}</ModalHeader>
+          <ModalBody className="text-center">
+            <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+          </ModalBody>
+        </>
+      }
       {transactionPage[SowCommands.ACCEPT_AND_PAY] == 1 &&
         <>
           <ModalHeader toggle={toggle}>Accept the conditions</ModalHeader>
@@ -299,7 +307,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
                 {transactionAcceptAndPay.tx &&
                   <>
                     <LinkBlockExplorer title={'Opt-in transaction: ' + transactionAcceptAndPay.tx[0].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[0]} />
-                    {transactionAcceptAndPay.tx[1] && <LinkBlockExplorer title={'Payment transaction: ' + transactionAcceptAndPay.tx[1]} type="tx" id={transactionAcceptAndPay.tx[1]} />}
+                    {transactionAcceptAndPay.tx[1] && <LinkBlockExplorer title={'Payment transaction: ' + transactionAcceptAndPay.tx[1].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[1]} />}
                   </>
                 }
               </CardText>

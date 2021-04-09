@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Button, Col, Row, Card, CardBody,
+  Button, Col, Row, Card, CardBody, Spinner,
   Modal, ModalHeader, ModalBody, ModalFooter,
   ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText,
   FormGroup, Label, Input, Jumbotron, CardSubtitle, CardText
@@ -66,6 +66,14 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
 
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl">
+      {transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 0 &&
+        <>
+          <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.CLAIM_MILESTONE_MET}`)}</ModalHeader>
+          <ModalBody className="text-center">
+            <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+          </ModalBody>
+        </>
+      }
       {transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 1 &&
         <>
           <ModalHeader toggle={toggle}>Accept the conditions</ModalHeader>
@@ -179,7 +187,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 3, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionClaimMilestoneMetMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
+              dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag }))
             }}>Sign the transaction</ActivityButton>
           </ModalFooter>
         </>
