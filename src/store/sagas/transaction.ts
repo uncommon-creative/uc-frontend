@@ -327,27 +327,26 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
     console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
-      const existingAsset = resultCheckAccountTransaction.addressInfo.createdAssets.find((asset: any) => JSON.parse(asset).params['unit-name'] === configuration[stage].deliverableAsset_unitName + action.payload.currentSow.sow.substring(0, 2))
-      console.log("willCompleteTransactionClaimMilestoneMetMnemonic existingAsset: ", existingAsset)
+      // const existingAsset = resultCheckAccountTransaction.addressInfo.createdAssets.find((asset: any) => JSON.parse(asset).params['unit-name'] === configuration[stage].deliverableAsset_unitName + action.payload.currentSow.sow.substring(0, 2))
+      // console.log("willCompleteTransactionClaimMilestoneMetMnemonic existingAsset: ", existingAsset)
       let resultSignedTransaction = [] as any
-      if (existingAsset) {
-        console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
-        resultSignedTransaction = yield call(willDestroyAndCreateAssetMnemonic, {
-          payload: {
-            asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: action.payload.mnemonicSecretKey, params: action.payload.params.withoutDelay,
-            addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
-          }
-        })
-        console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultSignedTransaction: ", resultSignedTransaction)
-      }
-      else {
-        console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET NOT FOUND")
-        resultSignedTransaction = yield call(TransactionApi.signTxn,
-          action.payload.mnemonicSecretKey, action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
-        )
-        resultSignedTransaction = [resultSignedTransaction]
-        console.log("in willCompleteTransactionClaimMilestoneMetMnemonic resultSignedTransaction: ", resultSignedTransaction)
-      }
+      // if (existingAsset) {
+      //   console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
+      //   resultSignedTransaction = yield call(willDestroyAndCreateAssetMnemonic, {
+      //     payload: {
+      //       asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: action.payload.mnemonicSecretKey, params: action.payload.params.withoutDelay,
+      //       addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
+      //     }
+      //   })
+      //   console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultSignedTransaction: ", resultSignedTransaction)
+      // }
+      // else {
+      // console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET NOT FOUND")
+      resultSignedTransaction = yield call(TransactionApi.signTxn,
+        action.payload.mnemonicSecretKey, action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
+      )
+      console.log("in willCompleteTransactionClaimMilestoneMetMnemonic resultSignedTransaction: ", resultSignedTransaction)
+      // }
 
       const resultAlgorandSendDeliverableTokenCreationTx = yield call(TransactionApi.algorandSendDeliverableTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction)
       console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultalgorandSendDeliverableTokenCreationTx: ", resultAlgorandSendDeliverableTokenCreationTx)
@@ -371,7 +370,7 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
           ],
         };
 
-        const resultClaimMilestoneMetTxGroup = yield call(TransactionApi.signTransactionsClaimMilestoneMetMnemonic, action.payload.multiSigAddress.address, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, action.payload.mnemonicSecretKey, action.payload.currentSow.price, mparams, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
+        const resultClaimMilestoneMetTxGroup = yield call(TransactionApi.signTransactionsClaimMilestoneMetMnemonic, action.payload.multiSigAddress.address, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, action.payload.mnemonicSecretKey, action.payload.currentSow.price, mparams, users[action.payload.currentSow.buyer].public_key, resultAlgorandSendDeliverableTokenCreationTx.assetId)
         console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultSignedMultisigTransaction: ", resultClaimMilestoneMetTxGroup)
 
         const resultAlgorandSendClaimMilestoneMet = yield call(TransactionApi.algorandSendClaimMilestoneMet, action.payload.currentSow.sow, resultClaimMilestoneMetTxGroup.tx, resultClaimMilestoneMetTxGroup.backupTx)
@@ -541,27 +540,26 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
     console.log("willCompleteTransactionSubmitMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
-      const existingAsset = resultCheckAccountTransaction.addressInfo.createdAssets.find((asset: any) => JSON.parse(asset).params['unit-name'] === configuration[stage].submitAsset_unitName + action.payload.currentSow.sow.substring(0, 5))
-      console.log("willCompleteTransactionSubmitMnemonic existingAsset: ", existingAsset)
+      // const existingAsset = resultCheckAccountTransaction.addressInfo.createdAssets.find((asset: any) => JSON.parse(asset).params['unit-name'] === configuration[stage].submitAsset_unitName + action.payload.currentSow.sow.substring(0, 5))
+      // console.log("willCompleteTransactionSubmitMnemonic existingAsset: ", existingAsset)
       let resultSignedTransaction = [] as any
-      if (existingAsset) {
-        console.log("willCompleteTransactionSubmitMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
-        resultSignedTransaction = yield call(willDestroyAndCreateAssetMnemonic, {
-          payload: {
-            asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: action.payload.mnemonicSecretKey, params: action.payload.params.withoutDelay,
-            addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
-          }
-        })
-        console.log("willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
-      }
-      else {
-        console.log("willCompleteTransactionSubmitMnemonic ASSET NOT FOUND")
-        resultSignedTransaction = yield call(TransactionApi.signTxn,
-          action.payload.mnemonicSecretKey, action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
-        )
-        // resultSignedTransaction = [resultSignedTransaction]
-        console.log("in willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
-      }
+      // if (existingAsset) {
+      //   console.log("willCompleteTransactionSubmitMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
+      //   resultSignedTransaction = yield call(willDestroyAndCreateAssetMnemonic, {
+      //     payload: {
+      //       asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: action.payload.mnemonicSecretKey, params: action.payload.params.withoutDelay,
+      //       addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
+      //     }
+      //   })
+      //   console.log("willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
+      // }
+      // else {
+      // console.log("willCompleteTransactionSubmitMnemonic ASSET NOT FOUND")
+      resultSignedTransaction = yield call(TransactionApi.signTxn,
+        action.payload.mnemonicSecretKey, action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
+      )
+      console.log("in willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
+      // }
 
       const resultAlgorandSendTokenCreationTx = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction)
       console.log("willCompleteTransactionSubmitMnemonic resultAlgorandSendTokenCreationTx: ", resultAlgorandSendTokenCreationTx)

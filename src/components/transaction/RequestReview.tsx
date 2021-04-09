@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Button, Col, Row, Card, CardBody, CardTitle,
-  Modal, ModalHeader, ModalBody, ModalFooter,
-  ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText,
+  Modal, ModalHeader, ModalBody, ModalFooter, Spinner,
   FormGroup, Label, Input, Jumbotron, CardSubtitle, CardText
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +20,7 @@ export const RequestReview = ({ modal, toggle }: any) => {
   const [notes, setNotes] = React.useState('');
 
   React.useEffect(() => {
+    dispatch(TransactionActions.goToTransactionPage({ transactionPage: 1, sowCommand: SowCommands.REQUEST_REVIEW }))
 
     return () => {
       dispatch(TransactionActions.goToTransactionPage({ transactionPage: 0, sowCommand: SowCommands.REQUEST_REVIEW }))
@@ -31,6 +30,14 @@ export const RequestReview = ({ modal, toggle }: any) => {
 
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl">
+      {transactionPage[SowCommands.REQUEST_REVIEW] == 0 &&
+        <>
+          <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.REQUEST_REVIEW}`)}</ModalHeader>
+          <ModalBody className="text-center">
+            <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+          </ModalBody>
+        </>
+      }
       {transactionPage[SowCommands.REQUEST_REVIEW] == 1 &&
         <>
           <ModalHeader toggle={toggle}>Request Review</ModalHeader>

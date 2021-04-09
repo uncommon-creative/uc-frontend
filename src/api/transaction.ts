@@ -531,17 +531,21 @@ export function signTransactionsClaimMilestoneMetMnemonic(multiSigAddress: any, 
   try {
     let txnPayment = algosdk.makePaymentTxnWithSuggestedParams(multiSigAddress, sellerAddress, price * 1000000, undefined, undefined, params);
     // console.log("signTransactionsClaimMilestoneMetMnemonic txnPayment: ", txnPayment)
+    let txnPaymentGroup = algosdk.makePaymentTxnWithSuggestedParams(multiSigAddress, sellerAddress, price * 1000000, undefined, undefined, params);
+    // console.log("signTransactionsClaimMilestoneMetMnemonic txnPaymentGroup: ", txnPaymentGroup)
     const txnOptin = algosdk.makeAssetTransferTxnWithSuggestedParams(buyerAddress, buyerAddress, undefined, undefined, 0, undefined, assetId, params)
     // console.log("signTransactionsClaimMilestoneMetMnemonic txnOptin: ", txnOptin)
     const txnAsset = algosdk.makeAssetTransferTxnWithSuggestedParams(sellerAddress, buyerAddress, undefined, undefined, 1, undefined, assetId, params)
     // console.log("signTransactionsClaimMilestoneMetMnemonic txnAsset: ", txnAsset)
 
-    let gid = algosdk.assignGroupID([txnPayment, txnOptin, txnAsset]);
+    let gid = algosdk.assignGroupID([txnPaymentGroup, txnOptin, txnAsset]);
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
 
     let signedPaymentTxn = algosdk.signMultisigTransaction(txnPayment, mparams, secret_key.sk);
     signedPaymentTxn.blob = signedPaymentTxn.blob.toString()
+    let signedPaymentTxnGroup = algosdk.signMultisigTransaction(txnPaymentGroup, mparams, secret_key.sk);
+    signedPaymentTxnGroup.blob = signedPaymentTxnGroup.blob.toString()
     let parsedOptinTxn = {
       txID: "unknown",
       blob: algosdk.encodeObj(txnOptin.get_obj_for_encoding()).toString()
@@ -549,7 +553,7 @@ export function signTransactionsClaimMilestoneMetMnemonic(multiSigAddress: any, 
     let signedAssetTxn = algosdk.signTransaction(txnAsset, secret_key.sk)
     signedAssetTxn.blob = signedAssetTxn.blob.toString()
 
-    const signedGroup = [signedPaymentTxn, parsedOptinTxn, signedAssetTxn]
+    const signedGroup = [signedPaymentTxnGroup, parsedOptinTxn, signedAssetTxn]
 
     return { tx: signedGroup, backupTx: [signedPaymentTxn] }
   } catch (error) {
