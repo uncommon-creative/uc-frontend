@@ -47,7 +47,6 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
   const payment = useSelector(TransactionSelectors.getPayment)
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
-  const [currentFromAlgoSigner, setCurrentFromAlgoSigner] = React.useState('');
 
   const typeNumber: TypeNumber = 4;
   const errorCorrectionLevel: ErrorCorrectionLevel = 'L';
@@ -105,7 +104,6 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
     return () => {
       setAcceptedConditions(false)
       setMnemonicSecretKey('')
-      setCurrentFromAlgoSigner('')
       dispatch(TransactionActions.goToTransactionPage({ transactionPage: 0, sowCommand: SowCommands.ACCEPT_AND_PAY }))
     }
   }, [modal])
@@ -115,7 +113,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
   }, [transactionPage])
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl" data-cy='acceptAndPayModal'>
+    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"} data-cy='acceptAndPayModal'>
       {transactionPage[SowCommands.ACCEPT_AND_PAY] == 0 &&
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.ACCEPT_AND_PAY}`)}</ModalHeader>
@@ -149,7 +147,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
       }
       {transactionPage[SowCommands.ACCEPT_AND_PAY] == 2 &&
         <>
-          <ModalHeader toggle={toggle}>Choose the payment method</ModalHeader>
+          <ModalHeader toggle={toggle}>Choose the method to sign</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are signing the quote and committing to receive the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">Furthermore, you are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>{JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</a>.</CardSubtitle>

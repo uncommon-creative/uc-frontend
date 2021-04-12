@@ -39,7 +39,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
   }, [modal])
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl">
+    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"}>
       {transactionPage[SowCommands.ACCEPT_MILESTONE] == 0 &&
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.ACCEPT_MILESTONE}`)}</ModalHeader>

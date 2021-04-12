@@ -44,7 +44,6 @@ export const SubmitSow = ({ modal, toggle }: any) => {
   const params = useSelector(TransactionSelectors.getParams)
   const worksAgreementPdf = useSelector(SowSelectors.getWorksAgreementPdf)
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
-  const [currentFromAlgoSigner, setCurrentFromAlgoSigner] = React.useState('');
 
   const [isAlgoSignInstalled, setAlgo] = React.useState(false);
   React.useEffect(() => {
@@ -60,13 +59,12 @@ export const SubmitSow = ({ modal, toggle }: any) => {
 
     return () => {
       setMnemonicSecretKey('')
-      setCurrentFromAlgoSigner('')
       dispatch(TransactionActions.goToTransactionPage({ transactionPage: 0, sowCommand: SowCommands.SUBMIT }))
     }
   }, [modal])
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl">
+    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"}>
       {transactionPage[SowCommands.SUBMIT] == 0 &&
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.SUBMIT}`)}</ModalHeader>
@@ -85,7 +83,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
       }
       {transactionPage[SowCommands.SUBMIT] == 2 &&
         <>
-          <ModalHeader toggle={toggle}>Choose how to sign</ModalHeader>
+          <ModalHeader toggle={toggle}>Choose the method to sign</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-3 text-muted text-center">You are signing the quote and committing to provide the service as described in the <a target="_blank" href={worksAgreementPdf.downloadUrl}>works agreement</a>.</CardSubtitle>
             <Row>
@@ -102,8 +100,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
               <Col>
                 <Card onClick={() => {
                   isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareAlgoSigner({ sowCommand: SowCommands.SUBMIT }))
-                    : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
-                  // dispatch(NotificationActions.willShowNotification({ message: "In development", type: "info" }));
+                    : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }))
                 }}>
                   <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
                     <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner</CardSubtitle>

@@ -26,7 +26,7 @@ export const ArbitratorsSelect = ({ modal, toggle }: any) => {
   const { values, setFieldValue } = useFormikContext();
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl">
+    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"}>
       <ModalHeader toggle={toggle}>Select three arbitrators</ModalHeader>
       <ModalBody>
         <FormGroup>

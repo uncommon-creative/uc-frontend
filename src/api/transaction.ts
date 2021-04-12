@@ -352,7 +352,7 @@ export const createTransactionsAcceptAndPayPaidAlgoSigner = async (params: any, 
 
     return [optinTxn];
   } catch (error) {
-    console.log("algoSign error: ", error)
+    console.log("createTransactionsAcceptAndPayPaidAlgoSigner error: ", error)
     throw error
   }
 }
@@ -606,6 +606,72 @@ export function signTransactionsClaimMilestoneMetMnemonic(multiSigAddress: any, 
   }
 }
 
+export const createTransactionsClaimMilestonMetAlgoSigner = async (multiSigAddress: any, sellerAddress: any, params: any, price: any, buyerAddress: any, assetId: any) => {
+  try {
+    let txnPayment: any = {
+      from: multiSigAddress,
+      to: sellerAddress,
+      amount: price * 1000000,
+      closeRemainderTo: undefined,
+      note: undefined,
+      fee: params.fee,
+      firstRound: params.firstRound,
+      lastRound: params.lastRound,
+      genesisID: params.genesisID,
+      genesisHash: params.genesisHash,
+      type: 'pay'
+    }
+    // console.log("createTransactionsClaimMilestonMetAlgoSigner txnPayment: ", txnPayment)
+    let txnPaymentGroup: any = {
+      from: multiSigAddress,
+      to: sellerAddress,
+      amount: price * 1000000,
+      closeRemainderTo: undefined,
+      note: undefined,
+      fee: params.fee,
+      firstRound: params.firstRound,
+      lastRound: params.lastRound,
+      genesisID: params.genesisID,
+      genesisHash: params.genesisHash,
+      type: 'pay'
+    }
+    // console.log("createTransactionsClaimMilestonMetAlgoSigner txnPaymentGroup: ", txnPaymentGroup)
+    const txnOptin = algosdk.makeAssetTransferTxnWithSuggestedParams(buyerAddress, buyerAddress, undefined, undefined, 0, undefined, assetId, params)
+    // console.log("createTransactionsClaimMilestonMetAlgoSigner txnOptin: ", txnOptin)
+    let txnAsset: any = {
+      from: sellerAddress,
+      to: buyerAddress,
+      closeRemainderTo: undefined,
+      revocationTarget: undefined,
+      amount: 1,
+      note: undefined,
+      assetIndex: assetId,
+      fee: params.fee,
+      firstRound: params.firstRound,
+      lastRound: params.lastRound,
+      genesisID: params.genesisID,
+      genesisHash: params.genesisHash,
+      rekeyTo: undefined,
+      type: 'axfer'
+    }
+    // console.log("createTransactionsClaimMilestonMetAlgoSigner txnAsset: ", txnAsset)
+
+    let gid = algosdk.assignGroupID([txnPaymentGroup, txnOptin, txnAsset]);
+    txnPaymentGroup.group = gid[1].group.toString('base64');
+    let parsedOptinTxn: any = {
+      txID: "unknown",
+      blob: algosdk.encodeObj(txnOptin.get_obj_for_encoding()).toString()
+    }
+    txnAsset.group = gid[1].group.toString('base64');
+    let groupTxn = [txnPaymentGroup, parsedOptinTxn, txnAsset]
+
+    return { tx: groupTxn, backupTx: txnPayment }
+  } catch (error) {
+    console.log("createTransactionsClaimMilestonMetAlgoSigner error: ", error)
+    throw error
+  }
+}
+
 export const algorandSendClaimMilestoneMet = async (sow: any, tx: any, backupTx: any) => {
   const mutation = loader('../graphql/algorandSendClaimMilestoneMet.gql')
 
@@ -727,11 +793,41 @@ export const signTxAlgoSigner = async (tx: any) => {
 
     let signedTx = await AlgoSigner.sign(tx)
     signedTx.blob = atob(signedTx.blob).split('').map((x) => x.charCodeAt(0)).toString()
-    console.log("signTxAlgoSigner signedTx: ", signedTx);
+    // console.log("signTxAlgoSigner signedTx: ", signedTx);
 
     return signedTx
   } catch (error) {
     console.log("signTxAlgoSigner error: ", error)
+    throw error
+  }
+}
+
+export const signMultisigTxAlgoSigner = async (tx: any, msig: any) => {
+  try {
+    console.log("signMultisigTxAlgoSigner tx: ", tx);
+
+    let msig_txn = {
+      msig: {
+        subsig: [
+          { pk: msig[0] },
+          { pk: msig[1] },
+          { pk: msig[2] },
+          { pk: msig[3] },
+        ],
+        thr: 2,
+        v: 1
+      },
+      txn: tx
+    };
+
+    let signedTx = await AlgoSigner.signMultisig(msig_txn)
+    // console.log("signMultisigTxAlgoSigner signedTx: ", signedTx);
+    signedTx.blob = atob(signedTx.blob).split('').map((x) => x.charCodeAt(0)).toString()
+    console.log("signMultisigTxAlgoSigner signedTx after split: ", signedTx);
+
+    return signedTx
+  } catch (error) {
+    console.log("signMultisigTxAlgoSigner error: ", error)
     throw error
   }
 }
