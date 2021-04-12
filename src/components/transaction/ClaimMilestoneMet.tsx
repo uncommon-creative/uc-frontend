@@ -41,7 +41,6 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const params = useSelector(TransactionSelectors.getParams)
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
-  const [currentFromAlgoSigner, setCurrentFromAlgoSigner] = React.useState('');
   const newAttachments = useSelector(SowSelectors.getNewAttachments)
 
   React.useEffect(() => {
@@ -65,7 +64,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
   }, [transactionPage]);
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl">
+    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"}>
       {transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 0 &&
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.CLAIM_MILESTONE_MET}`)}</ModalHeader>
@@ -134,7 +133,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
       }
       {transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 3 &&
         <>
-          <ModalHeader toggle={toggle}>Choose the method to sign the multisig</ModalHeader>
+          <ModalHeader toggle={toggle}>Choose the method to sign</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are claiming the milestone as met committing the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
             <Row>
@@ -150,13 +149,11 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
               </Col>
               <Col>
                 <Card onClick={() => {
-                  console.log("willPrepareTransactionClaimMilestoneMetAlgoSigner onClick")
-                  // isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareTransactionClaimMilestoneMetAlgoSigner({ sow: currentSow.sow, multiSigAddress: multiSig.address, total: payment.total }))
-                  // : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
-                  dispatch(NotificationActions.willShowNotification({ message: "In development", type: "info" }));
+                  isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareAlgoSigner({ sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+                    : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }))
                 }}>
                   <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
-                    <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner (in development)</CardSubtitle>
+                    <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner</CardSubtitle>
                     {!isAlgoSignInstalled && <CardSubtitle tag="h6" className="mb-2 text-muted text-center">(not installed)</CardSubtitle>}
                     <img src={AlgoSignerLogo} height="80" alt="AlgoSigner Logo" />
                   </CardBody>
@@ -170,6 +167,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Claim milestone met with mnemonic Secret Key</ModalHeader>
           <ModalBody>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are claiming the milestone as met committing the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
 
@@ -187,7 +185,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 3, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionClaimMilestoneMetMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag }))
+              dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig.address, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag }))
             }}>Sign the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -196,31 +194,20 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Claim milestone met with AlgoSigner</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="pt-5 text-muted text-center">Select one of your AlgoSigner accounts</CardSubtitle>
-            {algoSigner.accounts &&
-              algoSigner.accounts.map((element: any, index: any) => {
-                return (
-                  <ListGroupItem disabled className={currentFromAlgoSigner == element.address ? 'border border-primary bg-light' : 'border'} key={index}
-                    onClick={() => {
-                      console.log("select currentFromAlgoSigner: ", element.address)
-                      setCurrentFromAlgoSigner(element.address)
-                    }}
-                  >
-                    {element.address + ': ' + t('transaction.payment.algo', { value: element.amount / 1000000 })}
-                  </ListGroupItem>
-                )
-              })
-            }
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are claiming the milestone as met committing the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
+
+            <ListGroupItem className='border border-primary bg-light'>
+              {algoSigner.account.address + ': ' + t('transaction.payment.algo', { value: algoSigner.account.amount / 1000000 })}
+            </ListGroupItem>
+
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 3, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetAlgoSigner' disabled={currentFromAlgoSigner == ''} name="willCompleteTransactionClaimMilestoneMetAlgoSigner" color="primary"
+            <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetAlgoSigner' name="willCompleteTransactionClaimMilestoneMetAlgoSigner" color="primary"
               onClick={() => {
-                console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner onClick")
-                // dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetAlgoSigner({ from: currentFromAlgoSigner, multiSigAddress: multiSig.address, toPay: payment.toPay, sow: currentSow.sow }))
-                // subscribeOnAmountChecked()
+                dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetAlgoSigner({ multiSigAddress: multiSig.address, params: params, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag }))
               }}
             >Complete the transaction</ActivityButton>
           </ModalFooter>

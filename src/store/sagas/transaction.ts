@@ -272,15 +272,15 @@ function* willCompleteTransactionAcceptAndPayAlgoSigner(action: any) {
       const resultTransactions = yield call(TransactionApi.createTransactionsAcceptAndPayAlgoSigner, action.payload.multiSigAddress, action.payload.params.withoutDelay, action.payload.toPay, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
       console.log("in willCompleteTransactionAcceptAndPayAlgoSigner resultTransactions: ", resultTransactions)
 
-      const resultPaymentTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions[0])
-      console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultPaymentTxnSigned: ", resultPaymentTxnSigned)
+      const resultOptinTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions[0])
+      console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultOptinTxnSigned: ", resultOptinTxnSigned)
 
       //// DID
 
-      const resultOptinTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions[1])
-      console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultOptinTxnSigned: ", resultOptinTxnSigned)
+      const resultPaymentTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions[1])
+      console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultPaymentTxnSigned: ", resultPaymentTxnSigned)
 
-      resultSignedTransaction = [resultPaymentTxnSigned, resultOptinTxnSigned]
+      resultSignedTransaction = [resultOptinTxnSigned, resultPaymentTxnSigned]
       console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultSignedTransactions: ", resultSignedTransaction)
     }
 
@@ -377,14 +377,22 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
           ],
         };
 
-        const resultClaimMilestoneMetTxGroup = yield call(TransactionApi.signTransactionsClaimMilestoneMetMnemonic, action.payload.multiSigAddress.address, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, action.payload.mnemonicSecretKey, action.payload.currentSow.price, mparams, users[action.payload.currentSow.buyer].public_key, resultAlgorandSendDeliverableTokenCreationTx.assetId)
+        const resultClaimMilestoneMetTxGroup = yield call(TransactionApi.signTransactionsClaimMilestoneMetMnemonic, action.payload.multiSigAddress, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, action.payload.mnemonicSecretKey, action.payload.currentSow.price, mparams, users[action.payload.currentSow.buyer].public_key, resultAlgorandSendDeliverableTokenCreationTx.assetId)
         console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultSignedMultisigTransaction: ", resultClaimMilestoneMetTxGroup)
 
         const resultAlgorandSendClaimMilestoneMet = yield call(TransactionApi.algorandSendClaimMilestoneMet, action.payload.currentSow.sow, resultClaimMilestoneMetTxGroup.tx, resultClaimMilestoneMetTxGroup.backupTx)
         console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendClaimMilestoneMet: ", resultAlgorandSendClaimMilestoneMet)
 
-        yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet({ tx: resultAlgorandSendDeliverableTokenCreationTx, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
-        yield put(NotificationActions.willShowNotification({ message: "Milestone claimed as met", type: "info" }));
+        if (resultAlgorandSendClaimMilestoneMet.error) {
+          console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendClaimMilestoneMet fail")
+          yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail({ error: resultAlgorandSendClaimMilestoneMet.error, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+          yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendClaimMilestoneMet.error, type: "danger" }))
+        }
+        else {
+          yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet({ tx: resultAlgorandSendDeliverableTokenCreationTx, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+          yield put(NotificationActions.willShowNotification({ message: "Milestone claimed as met", type: "info" }));
+
+        }
       }
     }
     else {
@@ -414,10 +422,119 @@ function* willPrepareTransactionClaimMilestoneMetAlgoSigner(action: any) {
 function* willCompleteTransactionClaimMilestoneMetAlgoSigner(action: any) {
   console.log("in willCompleteTransactionClaimMilestoneMetAlgoSigner with: ", action)
   yield put(UIActions.startActivityRunning('willCompleteTransactionClaimMilestoneMetAlgoSigner'));
+  const users = yield select(ProfileSelectors.getUsers)
+
+  const hash = action.payload.hash
+  const note = undefined;
+  const defaultFrozen = false;
+  const addr = users[action.payload.currentSow.seller].public_key;
+  const decimals = 0;
+  const totalIssuance = 1;
+  const unitName = configuration[stage].deliverableAsset_unitName + action.payload.currentSow.sow.substring(0, 2)
+  const assetName = configuration[stage].deliverableAsset_assetName + action.payload.currentSow.sow.substring(0, 2)
+  const assetURL = "https://www.example.com/" + unitName;
+  const assetMetadataHash = hash // senza Buffer.from per AlgoSigner
+  console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner assetMetadataHash: ", assetMetadataHash)
+  // Specified address can change reserve, freeze, clawback, and manager
+  const manager = users[action.payload.currentSow.seller].public_key;
+  // Specified address is considered the asset reserve
+  // (it has no special privileges, this is only informational)
+  const reserve = users[action.payload.currentSow.seller].public_key;
+  // Specified address can freeze or unfreeze user asset holdings 
+  const freeze = users[action.payload.currentSow.seller].public_key;
+  // Specified address can revoke user asset holdings and send 
+  // them to other addresses    
+  const clawback = users[action.payload.currentSow.seller].public_key;
 
   try {
 
-    yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet({ sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+    let resultSignedTransactions = [] as any
+    // if (existingAsset) {
+    //   console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner ASSET FOUND: ", JSON.parse(existingAsset))
+    //   resultSignedTransactions = yield call(willDestroyAndCreateAssetMnemonic, {
+    //     payload: {
+    //       asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: action.payload.mnemonicSecretKey, params: action.payload.params.withoutDelay,
+    //       addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
+    //     }
+    //   })
+    //   console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner resultSignedTransactions: ", resultSignedTransactions)
+    // }
+    // else {
+    // console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner ASSET NOT FOUND")
+    resultSignedTransactions = yield call(TransactionApi.createAssetAlgoSigner,
+      addr,
+      note,
+      action.payload.params.withoutDelay,
+      totalIssuance,
+      decimals,
+      defaultFrozen,
+      manager,
+      reserve,
+      freeze,
+      clawback,
+      unitName,
+      assetName,
+      assetURL,
+      assetMetadataHash
+    )
+    console.log("in willCompleteTransactionClaimMilestoneMetAlgoSigner resultSignedTransactions: ", resultSignedTransactions)
+    // }
+
+    const resultAlgorandSendDeliverableTokenCreationTx = yield call(TransactionApi.algorandSendDeliverableTokenCreationTx, action.payload.currentSow.sow, resultSignedTransactions)
+    console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner resultalgorandSendDeliverableTokenCreationTx: ", resultAlgorandSendDeliverableTokenCreationTx)
+
+    if (resultAlgorandSendDeliverableTokenCreationTx.error) {
+      console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner resultAlgorandSendDeliverableTokenCreationTx fail")
+      yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail({ error: resultAlgorandSendDeliverableTokenCreationTx.error, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+      yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendDeliverableTokenCreationTx.error, type: "danger" }));
+    }
+    else {
+      console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner resultAlgorandSendDeliverableTokenCreationTx success")
+
+      const resultTransactions = yield call(TransactionApi.createTransactionsClaimMilestonMetAlgoSigner, action.payload.multiSigAddress, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, action.payload.currentSow.price, users[action.payload.currentSow.buyer].public_key, resultAlgorandSendDeliverableTokenCreationTx.assetId)
+      console.log("in willCompleteTransactionClaimMilestoneMetAlgoSigner resultTransactions: ", resultTransactions)
+
+      const resultPaymentBackupTxnSigned = yield call(TransactionApi.signMultisigTxAlgoSigner,
+        resultTransactions.backupTx,
+        [
+          users[action.payload.currentSow.seller].public_key,
+          users[action.payload.currentSow.buyer].public_key,
+          users[action.payload.currentSow.arbitrator].public_key,
+          configuration[stage].uc_backup_public_key
+        ]
+      )
+      console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner resultPaymentBackupTxnSigned: ", resultPaymentBackupTxnSigned)
+      const backupTxnSigned = [resultPaymentBackupTxnSigned]
+      const resultPaymentGroupTxnSigned = yield call(TransactionApi.signMultisigTxAlgoSigner,
+        resultTransactions.tx[0],
+        [
+          users[action.payload.currentSow.seller].public_key,
+          users[action.payload.currentSow.buyer].public_key,
+          users[action.payload.currentSow.arbitrator].public_key,
+          configuration[stage].uc_backup_public_key
+        ]
+      )
+      console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner resultPaymentGroupTxnSigned: ", resultPaymentGroupTxnSigned)
+      // const resultOptinTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions.tx[1])
+      console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner resultTransactions.tx[1]: ", resultTransactions.tx[1])
+      const resultAssetTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions.tx[2])
+      console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner resultAssetTxnSigned: ", resultAssetTxnSigned)
+      const groupTxnSigned = [resultPaymentGroupTxnSigned, resultTransactions.tx[1], resultAssetTxnSigned]
+      console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner groupTxnSigned: ", groupTxnSigned)
+
+      const resultAlgorandSendClaimMilestoneMet = yield call(TransactionApi.algorandSendClaimMilestoneMet, action.payload.currentSow.sow, groupTxnSigned, backupTxnSigned)
+      console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner resultAlgorandSendClaimMilestoneMet: ", resultAlgorandSendClaimMilestoneMet)
+
+      if (resultAlgorandSendClaimMilestoneMet.error) {
+        console.log("willCompleteTransactionClaimMilestoneMetAlgoSigner resultAlgorandSendClaimMilestoneMet fail")
+        yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail({ error: resultAlgorandSendClaimMilestoneMet.error, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+        yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendClaimMilestoneMet.error, type: "danger" }))
+      }
+      else {
+        yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet({ tx: resultAlgorandSendDeliverableTokenCreationTx, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+        yield put(NotificationActions.willShowNotification({ message: "Milestone claimed as met", type: "info" }));
+      }
+    }
   } catch (error) {
     console.log("error in willCompleteTransactionClaimMilestoneMetAlgoSigner ", error)
   }
@@ -616,6 +733,9 @@ function* willPrepareAlgoSigner(action: any) {
           yield put(TransactionActions.goToTransactionPage({ transactionPage: 4, sowCommand: action.payload.sowCommand }))
           break;
         case SowCommands.ACCEPT_AND_PAY:
+          yield put(TransactionActions.goToTransactionPage({ transactionPage: 5, sowCommand: action.payload.sowCommand }))
+          break;
+        case SowCommands.CLAIM_MILESTONE_MET:
           yield put(TransactionActions.goToTransactionPage({ transactionPage: 5, sowCommand: action.payload.sowCommand }))
           break;
         default:
