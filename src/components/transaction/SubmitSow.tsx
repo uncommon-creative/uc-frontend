@@ -10,8 +10,6 @@ import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faKey } from '@fortawesome/free-solid-svg-icons'
-import { API, graphqlOperation } from 'aws-amplify';
-import { loader } from 'graphql.macro';
 
 import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
 import { actions as ChatActions } from '../../store/slices/chat'

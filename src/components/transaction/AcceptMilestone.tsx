@@ -94,7 +94,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are accepting the milestone approving the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "deliverable").downloadUrl}>deliverable</a> as the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
             <Row>
               <Col>
-                <Card data-cy='mnemonicSubmit' onClick={() => {
+                <Card data-cy='mnemonicAcceptMilestone' onClick={() => {
                   dispatch(TransactionActions.goToTransactionPage({ transactionPage: 3, sowCommand: SowCommands.ACCEPT_MILESTONE }))
                 }}>
                   <CardBody className="text-center">

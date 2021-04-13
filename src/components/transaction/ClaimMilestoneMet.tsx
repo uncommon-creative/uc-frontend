@@ -125,7 +125,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
 
           </ModalBody>
           <ModalFooter>
-            <ActivityButton data-cy='completeTransaction' disabled={!(newAttachments.some((file: any) => file.filename == configuration[stage].deliverable_key))} name="completeTransaction" color="primary" onClick={() => {
+            <ActivityButton data-cy='continueTransaction' disabled={!(newAttachments.some((file: any) => file.filename == configuration[stage].deliverable_key))} name="completeTransaction" color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 3, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
             }}>Continue</ActivityButton>
           </ModalFooter>
