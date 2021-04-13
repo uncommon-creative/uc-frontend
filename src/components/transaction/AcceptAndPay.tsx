@@ -244,9 +244,6 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.ACCEPT_AND_PAY }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPay' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptAndPay" color="primary" onClick={async () => {
-              // payment.toPay <= 0 ? dispatch(TransactionActions.willCompleteTransactionAcceptAndPayPaid({ params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
-              //   : dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ multiSigAddress: multiSig, params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, toPay: payment.toPay, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
-
               dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ mnemonicSecretKey: mnemonicSecretKey, multiSigAddress: multiSig.address, params: params, currentSow: currentSow, toPay: payment.toPay, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
