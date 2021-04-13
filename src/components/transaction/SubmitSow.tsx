@@ -10,7 +10,6 @@ import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faKey } from '@fortawesome/free-solid-svg-icons'
-
 import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
 
@@ -24,7 +23,6 @@ import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { ActivityButton } from '../common/ActivityButton';
 import { LinkBlockExplorer } from '../common/LinkBlockExplorer'
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
-
 
 declare var AlgoSigner: any;
 

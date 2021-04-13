@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 
 import { TransactionFee } from '../store/slices/transaction'
 import { configuration } from '../config'
+import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 const algosdk = require('algosdk');
@@ -171,7 +172,7 @@ export const setSignedMsig = async (sow: any, signedMsig: any) => {
   }
 }
 
-export function signGroupAcceptMilestone(signedMsig: any, mnemonicSecretKey: any, msigparams: any) {
+export function signGroupAcceptMilestoneMnemonic(signedMsig: any, mnemonicSecretKey: any, msigparams: any) {
   try {
 
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
@@ -181,9 +182,7 @@ export function signGroupAcceptMilestone(signedMsig: any, mnemonicSecretKey: any
     console.log("in signGroupAcceptMilestone signedMsig.tx[0]: ", signedMsig.tx[0])
     console.log("in signGroupAcceptMilestone bufferMultisig: ", bufferMultisig)
 
-
     let signedMultisig = algosdk.appendSignMultisigTransaction(bufferMultisig, msigparams, secret_key.sk);
-
 
     console.log("in signGroupAcceptMilestone signedMultisig: ", signedMultisig)
 
@@ -576,7 +575,7 @@ export function signTransactionsClaimMilestoneMetMnemonic(multiSigAddress: any, 
     let txnPayment = algosdk.makePaymentTxnWithSuggestedParams(multiSigAddress, sellerAddress, price * 1000000, undefined, undefined, params);
     // console.log("signTransactionsClaimMilestoneMetMnemonic txnPayment: ", txnPayment)
     let txnPaymentGroup = algosdk.makePaymentTxnWithSuggestedParams(multiSigAddress, sellerAddress, price * 1000000, undefined, undefined, params);
-    // console.log("signTransactionsClaimMilestoneMetMnemonic txnPaymentGroup: ", txnPaymentGroup)
+    console.log("signTransactionsClaimMilestoneMetMnemonic txnPaymentGroup: ", txnPaymentGroup)
     const txnOptin = algosdk.makeAssetTransferTxnWithSuggestedParams(buyerAddress, buyerAddress, undefined, undefined, 0, undefined, assetId, params)
     // console.log("signTransactionsClaimMilestoneMetMnemonic txnOptin: ", txnOptin)
     const txnAsset = algosdk.makeAssetTransferTxnWithSuggestedParams(sellerAddress, buyerAddress, undefined, undefined, 1, undefined, assetId, params)
@@ -787,13 +786,72 @@ export const createAssetAlgoSigner = async (addr: any, note: any, params: any,
   }
 }
 
+export const createTransactionsAcceptMilestoneAlgoSigner = async (group: any) => {
+  try {
+    // payment
+    const blob1Splitted = Buffer.from(group[0].blob.split(','));
+    console.log("createTransactionsAcceptMilestoneAlgoSigner blob1Splitted: ", blob1Splitted);
+    let newmsig = JSON.stringify(algosdk.decodeObj(blob1Splitted).msig, _toJsonReplace, 0);
+    console.log("createTransactionsAcceptMilestoneAlgoSigner newmsig: ", JSON.parse(newmsig));
+    const blobDecoded = algosdk.decodeObj(blob1Splitted)
+    console.log("createTransactionsAcceptMilestoneAlgoSigner blobDecoded: ", blobDecoded);
+    console.log("createTransactionsAcceptMilestoneAlgoSigner blobDecoded.msig: ", blobDecoded.msig);
+    const blobDecodedNew = {
+      msig: JSON.parse(newmsig),
+      txn: {
+        flatFee: true,
+        fee: blobDecoded.txn.fee,
+        to: algosdk.encodeAddress(blobDecoded.txn.rcv),
+        amount: blobDecoded.txn.amt,
+        from: algosdk.encodeAddress(blobDecoded.txn.snd),
+        firstRound: blobDecoded.txn.fv,
+        lastRound: blobDecoded.txn.lv,
+        genesisID: blobDecoded.txn.gen,
+        genesisHash: Buffer.from(blobDecoded.txn.gh).toString("base64"),
+        group: Buffer.from(blobDecoded.txn.grp).toString("base64"),
+        type: 'pay'
+      }
+    }
+    console.log("createTransactionsAcceptMilestoneAlgoSigner blobDecodedNew: ", blobDecodedNew);
+
+    // optin
+    console.log("createTransactionsAcceptMilestoneAlgoSigner group[1]:", group[1])
+    let group1 = algosdk.decodeObj(Buffer.from(group[1].blob.split(',')))
+    console.log("createTransactionsAcceptMilestoneAlgoSigner group1:", group1)
+    let optinTxn: any = {
+      flatFee: true,
+      from: algosdk.encodeAddress(group1.snd),
+      to: algosdk.encodeAddress(group1.arcv),
+      closeRemainderTo: undefined,
+      revocationTarget: undefined,
+      amount: 0,
+      note: undefined,
+      assetIndex: group1.xaid,
+      fee: group1.fee,
+      firstRound: group1.fv,
+      lastRound: group1.lv,
+      genesisID: group1.gen,
+      genesisHash: Buffer.from(group1.gh).toString("base64"),
+      rekeyTo: undefined,
+      type: 'axfer',
+      group: Buffer.from(group1.grp).toString("base64")
+    }
+    console.log("createTransactionsAcceptMilestoneAlgoSigner optinTxn: ", optinTxn);
+
+    return { payment: { blob1Splitted: blob1Splitted, blobDecodedNew: blobDecodedNew }, optin: optinTxn }
+  } catch (error) {
+    console.log("createTransactionsAcceptMilestoneAlgoSigner error: ", error)
+    throw error
+  }
+}
+
 export const signTxAlgoSigner = async (tx: any) => {
   try {
     console.log("signTxAlgoSigner tx: ", tx);
 
     let signedTx = await AlgoSigner.sign(tx)
     signedTx.blob = atob(signedTx.blob).split('').map((x) => x.charCodeAt(0)).toString()
-    // console.log("signTxAlgoSigner signedTx: ", signedTx);
+    console.log("signTxAlgoSigner signedTx: ", signedTx);
 
     return signedTx
   } catch (error) {
@@ -805,8 +863,9 @@ export const signTxAlgoSigner = async (tx: any) => {
 export const signMultisigTxAlgoSigner = async (tx: any, msig: any) => {
   try {
     console.log("signMultisigTxAlgoSigner tx: ", tx);
+    console.log("signMultisigTxAlgoSigner msig: ", msig);
 
-    let msig_txn = {
+    const msig_txn = {
       msig: {
         subsig: [
           { pk: msig[0] },
@@ -821,7 +880,6 @@ export const signMultisigTxAlgoSigner = async (tx: any, msig: any) => {
     };
 
     let signedTx = await AlgoSigner.signMultisig(msig_txn)
-    // console.log("signMultisigTxAlgoSigner signedTx: ", signedTx);
     signedTx.blob = atob(signedTx.blob).split('').map((x) => x.charCodeAt(0)).toString()
     console.log("signMultisigTxAlgoSigner signedTx after split: ", signedTx);
 
@@ -830,4 +888,57 @@ export const signMultisigTxAlgoSigner = async (tx: any, msig: any) => {
     console.log("signMultisigTxAlgoSigner error: ", error)
     throw error
   }
+}
+
+export const signAppendMultisigTxAlgoSigner = async (tx: any) => {
+  try {
+    console.log("signAppendMultisigTxAlgoSigner tx.blob1Splitted: ", tx.blob1Splitted)
+    console.log("signAppendMultisigTxAlgoSigner tx.blobDecodedNew: ", tx.blobDecodedNew)
+
+    let signedTx = await AlgoSigner.signMultisig(tx.blobDecodedNew)
+    signedTx.blob = atob(signedTx.blob).split('').map((x) => x.charCodeAt(0))
+    let from64bit_T1 = new Uint8Array(tx.blob1Splitted);
+    let from64bit_T2 = new Uint8Array(signedTx.blob);
+    // console.log("signAppendMultisigTxAlgoSigner from64bit_T1: ", algosdk.decodeObj(from64bit_T1))
+    // console.log("signAppendMultisigTxAlgoSigner from64bit_T2: ", algosdk.decodeObj(from64bit_T2))
+
+    const mergedTx = algosdk.mergeMultisigTransactions([from64bit_T1, from64bit_T2]).toString()
+    // console.log("signAppendMultisigTxAlgoSigner mergedTx: ", mergedTx)
+
+    return { txID: signedTx.txID, blob: mergedTx }
+  } catch (error) {
+    console.log("signAppendMultisigTxAlgoSigner error: ", error)
+    throw error
+  }
+}
+
+function _toJsonReplace(key, value) {
+  // Return value immediately if null or undefined
+  if (value === undefined || value === null) {
+    return value;
+  }
+  // Check for uint8 arrays to get buffer for print
+  if (value instanceof Uint8Array || (typeof (value) === 'object' && value instanceof Array && value.length > 0 && typeof (value[0]) === 'number')) {
+    let wasUpdated = false;
+    try {
+      let newvalue = algosdk.encodeAddress(value);
+      if (algosdk.isValidAddress(newvalue)) {
+        value = newvalue;
+        wasUpdated = true;
+      }
+    }
+    catch (e) {
+      // Ignore as this error since it is just display related and a forced decode and fallback to a normal base64 to ascii         
+    }
+    if (!wasUpdated) {
+      value = btoa(String.fromCharCode.apply(null, value));
+    }
+    return value;
+  }
+  // Check for literal string match on object type to cycle further into the recursive replace
+  if (value === '[object Object]') {
+    return JSON.stringify(value, _toJsonReplace, 2);
+  }
+  // Return without modification
+  return value;
 }
