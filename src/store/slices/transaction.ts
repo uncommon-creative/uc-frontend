@@ -62,8 +62,9 @@ export const currentSlice = createSlice({
     willGetSignedMsig: (state, action: PayloadAction<any>) => state,
     didGetSignedMsig: (state, action: PayloadAction<any>) => void (state.signedMsig = action.payload.signedMsig, state.transactionPage[action.payload.sowCommand] = 2),
     willCompleteTransactionAcceptMilestoneMnemonic: (state, action: PayloadAction<any>) => state,
-    didCompleteTransactionAcceptMilestone: (state, action: PayloadAction<any>) => void (state.transactionAcceptMilestone = action.payload.tx, state.transactionPage[action.payload.sowCommand] = 3),
-    didCompleteTransactionAcceptMilestoneFail: (state, action: PayloadAction<any>) => void (state.error = action.payload.error, state.transactionPage[action.payload.sowCommand] = 4),
+    willCompleteTransactionAcceptMilestoneAlgoSigner: (state, action: PayloadAction<any>) => state,
+    didCompleteTransactionAcceptMilestone: (state, action: PayloadAction<any>) => void (state.transactionAcceptMilestone = action.payload.tx, state.transactionPage[action.payload.sowCommand] = 5),
+    didCompleteTransactionAcceptMilestoneFail: (state, action: PayloadAction<any>) => void (state.error = action.payload.error, state.transactionPage[action.payload.sowCommand] = 6),
 
     willReject: (state, action: PayloadAction<any>) => void (state.transactionPage[action.payload.sowCommand] = 2),
 
@@ -98,7 +99,7 @@ export const selectors = {
   getMultiSig: (state: any) => state.transaction.multiSig,
   getTransactionAcceptAndPay: (state: any) => state.transaction.transactionAcceptAndPay,
   getAlgoSigner: (state: any) => state.transaction.algoSigner,
-  getTransactionAcceptMilestone: (state: any) => state.transaction.transactionAcceptMilestone,
+  // getTransactionAcceptMilestone: (state: any) => state.transaction.transactionAcceptMilestone,
   getTransactionClaimMilestoneMet: (state: any) => state.transaction.transactionClaimMilestoneMet,
   getSignedMsig: (state: any) => state.transaction.signedMsig,
   getPayment: (state: any) => state.transaction.payment,

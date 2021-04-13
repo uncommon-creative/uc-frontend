@@ -1,17 +1,23 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Button, Col, Row, Spinner,
+  Button, Col, Row, Spinner, Card, CardBody,
   Modal, ModalHeader, ModalBody, ModalFooter,
   ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText,
   FormGroup, Label, Input, Jumbotron, CardSubtitle, CardText
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faKey } from '@fortawesome/free-solid-svg-icons'
 
 import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
+import { actions as NotificationActions } from '../../store/slices/notification'
 import { ActivityButton } from '../common/ActivityButton';
+import AlgoSignerLogo from '../../images/AlgoSigner.png'
+
+declare var AlgoSigner: any;
 
 export const AcceptMilestone = ({ modal, toggle }: any) => {
 
@@ -27,6 +33,16 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const params = useSelector(TransactionSelectors.getParams)
+  const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
+
+  const [isAlgoSignInstalled, setAlgo] = React.useState(false);
+  React.useEffect(() => {
+    if (transactionPage[SowCommands.ACCEPT_MILESTONE] == 2) {
+      if (typeof AlgoSigner !== 'undefined') {
+        setAlgo(true);
+      }
+    }
+  }, [transactionPage]);
 
   React.useEffect(() => {
     dispatch(TransactionActions.goToTransactionPage({ transactionPage: 1, sowCommand: SowCommands.ACCEPT_MILESTONE }))
@@ -73,11 +89,41 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
       }
       {transactionPage[SowCommands.ACCEPT_MILESTONE] == 2 &&
         <>
+          <ModalHeader toggle={toggle}>Choose the method to sign</ModalHeader>
+          <ModalBody>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are accepting the milestone approving the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "deliverable").downloadUrl}>deliverable</a> as the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
+            <Row>
+              <Col>
+                <Card data-cy='mnemonicSubmit' onClick={() => {
+                  dispatch(TransactionActions.goToTransactionPage({ transactionPage: 3, sowCommand: SowCommands.ACCEPT_MILESTONE }))
+                }}>
+                  <CardBody className="text-center">
+                    <CardSubtitle tag="h5" className="mb-2 text-muted text-center">Mnemonic</CardSubtitle>
+                    <FontAwesomeIcon icon={faKey} size="5x" />
+                  </CardBody>
+                </Card>
+              </Col>
+              <Col>
+                <Card onClick={() => {
+                  isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareAlgoSigner({ sowCommand: SowCommands.ACCEPT_MILESTONE }))
+                    : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }))
+                }}>
+                  <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
+                    <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner</CardSubtitle>
+                    {!isAlgoSignInstalled && <CardSubtitle tag="h6" className="mb-2 text-muted text-center">(not installed)</CardSubtitle>}
+                    <img src={AlgoSignerLogo} height="80" alt="AlgoSigner Logo" />
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          </ModalBody>
+        </>
+      }
+      {transactionPage[SowCommands.ACCEPT_MILESTONE] == 3 &&
+        <>
           <ModalHeader toggle={toggle}>Accept milestone</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are accepting the milestone approving the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "deliverable").downloadUrl}>deliverable</a> as the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
-            {/* <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000}</CardSubtitle> */}
 
             <FormGroup>
               <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
@@ -90,7 +136,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
-              dispatch(TransactionActions.goToTransactionPage({ transactionPage: 1, sowCommand: SowCommands.ACCEPT_MILESTONE }))
+              dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.ACCEPT_MILESTONE }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptMilestoneMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptMilestoneMnemonic" color="primary" onClick={async () => {
               dispatch(TransactionActions.willCompleteTransactionAcceptMilestoneMnemonic({ signedMsig: signedMsig, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
@@ -98,12 +144,33 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage[SowCommands.ACCEPT_MILESTONE] == 3 &&
+      {transactionPage[SowCommands.ACCEPT_MILESTONE] == 4 &&
+        <>
+          <ModalHeader toggle={toggle}>Sign with AlgoSigner</ModalHeader>
+          <ModalBody>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are accepting the milestone approving the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "deliverable").downloadUrl}>deliverable</a> as the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
+
+            <ListGroupItem className='border border-primary bg-light'>
+              {algoSigner.account.address + ': ' + t('transaction.payment.algo', { value: algoSigner.account.amount / 1000000 })}
+            </ListGroupItem>
+
+          </ModalBody>
+          <ModalFooter>
+            <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
+              dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.ACCEPT_MILESTONE }))
+            }}>Cancel</ActivityButton>
+            <ActivityButton data-cy='willCompleteTransactionAcceptMilestoneAlgoSigner' name="willCompleteTransactionAcceptMilestoneAlgoSigner" color="primary"
+              onClick={() => {
+                dispatch(TransactionActions.willCompleteTransactionAcceptMilestoneAlgoSigner({ signedMsig: signedMsig, currentSow: currentSow }))
+              }}
+            >Complete the signature</ActivityButton>
+          </ModalFooter>
+        </>
+      }
+      {transactionPage[SowCommands.ACCEPT_MILESTONE] == 5 &&
         <>
           <ModalHeader toggle={toggle}>Transaction completed</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionCompleted')}
@@ -120,7 +187,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {transactionPage[SowCommands.ACCEPT_MILESTONE] == 4 &&
+      {transactionPage[SowCommands.ACCEPT_MILESTONE] == 6 &&
         <>
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>
