@@ -19,6 +19,7 @@ import { ActivityButton } from '../components/common/ActivityButton'
 import { RefreshButton } from '../components/common/RefreshButton'
 import { FileButton } from '../components/common/FileButton'
 import { SowDetails } from '../components/sow/SowDetails'
+import { SowSummary } from '../components/sow/SowSummary'
 import { SowAttachments } from '../components/sow/SowAttachments'
 import { AcceptAndPay } from '../components/transaction/AcceptAndPay'
 import { ClaimMilestoneMet } from '../components/transaction/ClaimMilestoneMet'
@@ -47,14 +48,12 @@ export const StatementOfWorkPage = () => {
   const newAttachments = useSelector(SowSelectors.getNewAttachments)
   const user = useSelector(AuthSelectors.getUser)
   const users = useSelector(ProfileSelectors.getUsers)
-  const [modalOpenSowDetails, setModalOpenSowDetails] = React.useState(false);
   const [modalOpenAcceptSow, setModalOpenAcceptSow] = React.useState(false);
   const [modalOpenClaimMilestoneMet, setModalOpenClaimMilestoneMet] = React.useState(false);
   const [modalOpenAcceptMilestone, setModalOpenAcceptMilestone] = React.useState(false);
   const [modalOpenReject, setModalOpenReject] = React.useState(false);
   const [modalOpenRequestReview, setModalOpenRequestReview] = React.useState(false);
 
-  const toggleModalSowDetails = () => setModalOpenSowDetails(!modalOpenSowDetails);
   const toggleModalAcceptSow = () => setModalOpenAcceptSow(!modalOpenAcceptSow);
   const toggleModalClaimMilestoneMet = () => setModalOpenClaimMilestoneMet(!modalOpenClaimMilestoneMet);
   const toggleModalAcceptMilestone = () => setModalOpenAcceptMilestone(!modalOpenAcceptMilestone);
@@ -95,112 +94,16 @@ export const StatementOfWorkPage = () => {
                 </Col>
               </Row>
               <Row>
-                <Col className="col-md-8 col-12">
+                <Col className="col-lg-8 col-12">
                   <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Chat</CardSubtitle>
                   <Jumbotron>
                     <ChatSow currentSow={currentSow} />
                   </Jumbotron>
                 </Col>
-                <Col className="col-md-4 col-12">
+                <Col className="col-lg-4 col-12">
                   <Row>
                     <Col className="col-12">
-                      <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Summary</CardSubtitle>
-
-                      <Jumbotron>
-                        {currentSow.seller == user.username && currentSow.status == SowStatus.SUBMITTED &&
-                          <Button color="primary" block to="/create-statement-of-work" outline tag={Link}>Edit</Button>
-                        }
-                        {/* <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{currentSow.title}</CardSubtitle> */}
-                        {currentSow.seller == user.username ?
-                          <Row className="d-flex justify-content-between">
-                            <Col className="col-12 col-lg-auto">
-                              <CardText>Buyer:</CardText>
-                            </Col>
-                            <Col className="col-12 col-lg-auto text-lg-right">
-                              <CardText color="primary">
-                                {validateEmail(currentSow.buyer) ?
-                                  currentSow.buyer
-                                  :
-                                  users[currentSow.buyer].given_name + ' ' + users[currentSow.buyer].family_name
-                                }
-                              </CardText>
-                            </Col>
-                          </Row>
-                          :
-                          <Row className="d-flex justify-content-between">
-                            <Col className="col-12 col-lg-auto">
-                              <CardText>Seller:</CardText>
-                            </Col>
-                            <Col className="col-12 col-lg-auto text-lg-right">
-                              <CardText color="primary">
-                                {validateEmail(currentSow.seller) ?
-                                  currentSow.seller
-                                  :
-                                  users[currentSow.seller].given_name + ' ' + users[currentSow.seller].family_name
-                                }
-                              </CardText>
-                            </Col>
-                          </Row>
-                        }
-                        {currentSow.arbitrator &&
-                          <Row className="d-flex justify-content-between">
-                            <Col className="col-12 col-lg-auto">
-                              <CardText>Arbitrator:</CardText>
-                            </Col>
-                            <Col className="col-12 col-lg-auto text-lg-right">
-                              <CardText color="primary">
-                                {users[currentSow.arbitrator].given_name + ' ' + users[currentSow.arbitrator].family_name}
-                              </CardText>
-                            </Col>
-                          </Row>
-                        }
-                        <Row className="d-flex justify-content-between">
-                          <Col className="col-12 col-lg-auto">
-                            <CardText>Deadline:</CardText>
-                          </Col>
-                          <Col className="col-12 col-lg-auto text-lg-right">
-                            <CardText color="primary">{new Date(currentSow.deadline).toLocaleDateString()}</CardText>
-                          </Col>
-                        </Row>
-                        <Row className="d-flex justify-content-between">
-                          <Col className="col-12 col-lg-auto">
-                            <CardText>Price:</CardText>
-                          </Col>
-                          <Col className="col-12 col-lg-auto text-lg-right">
-                            <CardText color="primary">{currentSow.price} {currentSow.currency}</CardText>
-                          </Col>
-                        </Row>
-                        <Row className="d-flex justify-content-between">
-                          <Col className="col-12 col-lg-auto">
-                            <CardText>Created:</CardText>
-                          </Col>
-                          <Col className="col-12 col-lg-auto text-lg-right">
-                            <CardText color="primary">{new Date(currentSow.createdAt).toLocaleDateString()}</CardText>
-                          </Col>
-                        </Row>
-                        <Row className="d-flex justify-content-between">
-                          <Col className="col-12 col-lg-auto">
-                            <CardText>Expiration:</CardText>
-                          </Col>
-                          <Col className="col-12 col-lg-auto text-lg-right">
-                            <CardText color="primary">{new Date(currentSow.sowExpiration).toLocaleDateString()}</CardText>
-                          </Col>
-                        </Row>
-                        <Row className="d-flex justify-content-between">
-                          <Col className="col-12 col-lg-auto">
-                            <CardText>Status:</CardText>
-                          </Col>
-                          <Col className="col-12 col-lg-auto text-lg-right">
-                            <CardText color="primary">{currentSow.status}</CardText>
-                          </Col>
-                        </Row>
-                        <Row className="mt-3">
-                          <Col className="text-lg-right">
-                            <Button color="link" onClick={toggleModalSowDetails}>view details</Button>
-                          </Col>
-                        </Row>
-
-                      </Jumbotron>
+                      <SowSummary />
                     </Col>
                   </Row>
                   {currentSow.status == SowStatus.SUBMITTED && currentSow.buyer == user.username &&
@@ -325,7 +228,6 @@ export const StatementOfWorkPage = () => {
             </CardBody>
           </Card>
 
-          <SowDetails modal={modalOpenSowDetails} toggle={toggleModalSowDetails} />
           {(currentSow.status === SowStatus.SUBMITTED || currentSow.status === SowStatus.ACCEPTED_PAID) &&
             <AcceptAndPay modal={modalOpenAcceptSow} toggle={toggleModalAcceptSow} />
           }
