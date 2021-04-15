@@ -27,7 +27,7 @@ export const Reject = ({ modal, toggle }: any) => {
   }, [modal])
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"}>
+    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"} scrollable={true}>
       {transactionPage[SowCommands.REJECT] == 0 &&
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.REJECT}`)}</ModalHeader>

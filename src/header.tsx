@@ -13,7 +13,6 @@ import { selectors as AuthSelectors } from './store/slices/auth'
 import { actions as AuthActions } from './store/slices/auth'
 import { selectors as ProfileSelectors, actions as ProfileActions } from './store/slices/profile'
 import { LinkBlockExplorer } from './components/common/LinkBlockExplorer'
-
 import UCLogo from './images/UC.webp'
 
 export const Header = ({ className }: any) => {

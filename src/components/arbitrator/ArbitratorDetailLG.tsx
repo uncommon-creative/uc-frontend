@@ -38,7 +38,7 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
   return (
     <>
       {users[currentArbitrator.user] &&
-        <Modal isOpen={modal} toggle={toggle} size="xl">
+        <Modal isOpen={modal} toggle={toggle} size="xl" scrollable={true}>
           {/* <ModalHeader>{currentArbitrator.given_name}</ModalHeader> */}
           <ModalBody>
             <Row className='d-flex flex-wrap'>

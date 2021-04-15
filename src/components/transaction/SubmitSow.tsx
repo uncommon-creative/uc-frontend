@@ -60,7 +60,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
   }, [modal])
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"}>
+    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"} scrollable={true}>
       {transactionPage[SowCommands.SUBMIT] == 0 &&
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.SUBMIT}`)}</ModalHeader>
