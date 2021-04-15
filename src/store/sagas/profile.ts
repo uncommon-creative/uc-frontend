@@ -96,6 +96,10 @@ export function* willGetUserProfile(action: any) {
       console.log("in willGetUserProfile result ", result)
 
       yield put(ProfileActions.didGetUserProfile({ userID: action.user, userData: result }))
+      return result
+    }
+    else {
+      return users[action.user]
     }
   } catch (error) {
     console.log("error willGetUserProfile: ", error)

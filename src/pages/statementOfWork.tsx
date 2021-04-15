@@ -65,11 +65,18 @@ export const StatementOfWorkPage = () => {
 
   React.useEffect(() => {
     console.log("in statementOfWorkPage currentSow: ", currentSow)
-    dispatch(SowActions.willGetSow({ sow: code }))
+    dispatch(SowActions.willGetSow({ sow: code, history: history }))
+
+
   }, [])
 
   React.useEffect(() => {
     currentSow.status == SowStatus.SUBMITTED && dispatch(ArbitratorActions.selectingOneArbitrator())
+
+    if (currentSow.status == SowStatus.DRAFT && user.username == currentSow.buyer && !userAttributes.address) {
+      history.push('/profile')
+      dispatch(NotificationActions.willShowNotification({ message: "Please complete your profile in order to continue.", type: "info" }))
+    }
   }, [currentSow])
 
   return (
@@ -125,7 +132,7 @@ export const StatementOfWorkPage = () => {
                       </Col>
                     </Row>
                   }
-                  {(currentSow.status != SowStatus.REJECTED && currentSow.status != SowStatus.EXPIRED && currentSow.status != SowStatus.MILESTONE_ACCEPTED && currentSow.status != SowStatus.SYSTEM_SIGNED) &&
+                  {(currentSow.status != SowStatus.DRAFT && currentSow.status != SowStatus.REJECTED && currentSow.status != SowStatus.EXPIRED && currentSow.status != SowStatus.MILESTONE_ACCEPTED && currentSow.status != SowStatus.SYSTEM_SIGNED) &&
                     <Row>
                       <Col className="col-12">
                         <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Special commands</CardSubtitle>

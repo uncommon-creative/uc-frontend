@@ -46,7 +46,7 @@ export const TableSows = ({ tabId, data }: any) => {
               {tabId == 2 && <Badge data-cy='unreadMessagesSowBuyer' pill color={row.messagesToReadBuyer == 0 ? "secondary" : "primary"}>{row.messagesToReadBuyer}</Badge>}
               {tabId == 3 && <Badge data-cy='unreadMessagesSowArbitrator' pill color={row.messagesToReadArbitrator == 0 ? "secondary" : "primary"}>{row.messagesToReadArbitrator}</Badge>}
             </Col>
-            <Col className="col-10">
+            <Col className={((tabId == 1 && row.messagesToReadSeller != 0) || (tabId == 2 && row.messagesToReadBuyer != 0) || (tabId == 3 && row.messagesToReadArbitrator != 0)) ? "col-10 font-weight-bold" : "col-10"}>
               {row.title}
             </Col>
           </Row>,
@@ -56,10 +56,15 @@ export const TableSows = ({ tabId, data }: any) => {
         Header: 'Customer',
         accessor: 'buyer',
         Cell: ({ value }: any) => (
-          validateEmail(value) ?
-            value
-            :
-            users[value] ? users[value].given_name + ' ' + users[value].family_name : ''
+          value ?
+            value === 'not_set' ?
+              '-'
+              :
+              validateEmail(value) ?
+                value
+                :
+                users[value] ? users[value].given_name + ' ' + users[value].family_name : '-'
+            : '-'
         )
       },
       {
@@ -67,13 +72,13 @@ export const TableSows = ({ tabId, data }: any) => {
         accessor: 'seller',
         Cell: ({ value }: any) => (
           value ?
-            value == 'not_set' ?
+            value === 'not_set' ?
               '-'
               :
               validateEmail(value) ?
                 value
                 :
-                users[value].given_name + ' ' + users[value].family_name
+                users[value] ? users[value].given_name + ' ' + users[value].family_name : '-'
             : '-'
         )
       },

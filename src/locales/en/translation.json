@@ -15,6 +15,8 @@
     "emptyComandsWithoutDate": "Awaiting action from {{given_name}} {{family_name}}.",
     "buyerMilestoneClaimedInfo": "You have 7 days starting from the milestone claiming date to take an action, otherwise the system will accept the milestone and complete the payment.",
     "SowCommands": {
+      "SAVE_DRAFT": "Save draft",
+      "SAVE_DRAFT_info": "The seller created and shared a Statement of Work with the buyer.",
       "SUBMIT": "Submit",
       "SUBMIT_info": "The seller submitted the Statement of Work.",
       "ACCEPT_AND_PAY": "Accept and Pay",

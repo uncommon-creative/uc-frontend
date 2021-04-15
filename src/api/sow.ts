@@ -216,12 +216,12 @@ export const getSowAttachmentsList = async (sow: any) => {
 
 
 export const getSow = async (sow: any) => {
-  const query = loader('../graphql/getSow.gql');
+  const query = loader('../graphql/getSowFromLink.gql');
 
   try {
     const result: any = await API.graphql(graphqlOperation(query, { sow: sow }));
-    // console.log('getSow with result: ', result);
-    return result.data.getSow
+    console.log('getSow with result: ', result);
+    return result.data.getSowFromLink
   } catch (error) {
     throw error
   }

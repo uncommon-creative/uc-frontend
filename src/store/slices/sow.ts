@@ -89,6 +89,7 @@ export enum SowStatus {
 }
 
 export enum SowCommands {
+  SAVE_DRAFT = 'SAVE_DRAFT',
   SUBMIT = 'SUBMIT',
   ACCEPT_AND_PAY = 'ACCEPT_AND_PAY',
   ACCEPT_MILESTONE = 'ACCEPT_MILESTONE',

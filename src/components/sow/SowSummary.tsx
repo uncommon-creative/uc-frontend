@@ -12,9 +12,7 @@ import { faUser, faInfoCircle, faCalendarTimes, faMoneyBillAlt } from '@fortawes
 import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../../store/slices/sow'
 import { selectors as AuthSelectors } from '../../store/slices/auth'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
-import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
 import { SowDetails } from '../../components/sow/SowDetails'
-
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -23,7 +21,6 @@ function validateEmail(email: any) {
 
 export const SowSummary = () => {
 
-  let { code }: any = useParams();
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   let history = useHistory();
@@ -59,7 +56,7 @@ export const SowSummary = () => {
                 </Col>
               </Row>
             }
-            {currentSow.buyer != user.username &&
+            {currentSow.buyer != "not_set" && currentSow.buyer != user.username &&
               <Row>
                 <Col className="col-1 d-flex justify-content-center align-items-center">
                   <FontAwesomeIcon icon={faUser} size='1x' className="text-primary" />
@@ -91,19 +88,21 @@ export const SowSummary = () => {
                 </CardText>
               </Col>
             </Row>
-            <Row>
-              <Col className="col-1 d-flex justify-content-center align-items-center">
-                <FontAwesomeIcon icon={faCalendarTimes} size='1x' className="text-primary" />
-              </Col>
-              <Col>
-                <CardText className="m-0">
-                  {new Date(currentSow.deadline).toLocaleDateString()}
+            {currentSow.deadline &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faCalendarTimes} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {new Date(currentSow.deadline).toLocaleDateString()}
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Deadline
                 </CardText>
-                <CardText className="text-primary" style={{ fontSize: 12 }}>
-                  Deadline
-                </CardText>
-              </Col>
-            </Row>
+                </Col>
+              </Row>
+            }
             <Row>
               <Col className="col-1 d-flex justify-content-center align-items-center">
                 <FontAwesomeIcon icon={faMoneyBillAlt} size='1x' className="text-primary" />
@@ -119,12 +118,12 @@ export const SowSummary = () => {
             </Row>
 
             <Row className="mt-3">
-              {currentSow.seller == user.username && currentSow.status == SowStatus.SUBMITTED &&
+              {currentSow.seller == user.username && currentSow.status == SowStatus.DRAFT &&
                 <Col className="col-md-6 col-12 p-1">
                   <Button color="primary" block to="/create-statement-of-work" outline tag={Link}>Edit</Button>
                 </Col>
               }
-              <Col className={currentSow.seller == user.username && currentSow.status == SowStatus.SUBMITTED ? "col-md-6 col-12 p-1" : "col-12 p-1"}>
+              <Col className={currentSow.seller == user.username && currentSow.status == SowStatus.DRAFT ? "col-md-6 col-12 p-1" : "col-12 p-1"}>
                 <Button color="primary" block onClick={toggleModalSowDetails}>Details</Button>
               </Col>
             </Row>
