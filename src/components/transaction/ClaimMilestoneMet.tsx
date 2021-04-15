@@ -64,7 +64,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
   }, [transactionPage]);
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"}>
+    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"} scrollable={true}>
       {transactionPage[SowCommands.CLAIM_MILESTONE_MET] == 0 &&
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.CLAIM_MILESTONE_MET}`)}</ModalHeader>

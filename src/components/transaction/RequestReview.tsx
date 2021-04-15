@@ -29,7 +29,7 @@ export const RequestReview = ({ modal, toggle }: any) => {
   }, [modal])
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"}>
+    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"} scrollable={true}>
       {transactionPage[SowCommands.REQUEST_REVIEW] == 0 &&
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.REQUEST_REVIEW}`)}</ModalHeader>

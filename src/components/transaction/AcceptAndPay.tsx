@@ -113,7 +113,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
   }, [transactionPage])
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"} data-cy='acceptAndPayModal'>
+    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"} data-cy='acceptAndPayModal' scrollable={true}>
       {transactionPage[SowCommands.ACCEPT_AND_PAY] == 0 &&
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.ACCEPT_AND_PAY}`)}</ModalHeader>

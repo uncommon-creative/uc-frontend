@@ -7,23 +7,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams, useHistory } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faArrowAltCircleRight, faArrowAltCircleLeft, faTimesCircle, faInfoCircle, faCalendarTimes, faMoneyBillAlt } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faInfoCircle, faCalendarTimes, faMoneyBillAlt } from '@fortawesome/free-solid-svg-icons'
 
-import { configuration } from '../../config'
-import { actions as NotificationActions } from '../../store/slices/notification'
 import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../../store/slices/sow'
 import { selectors as AuthSelectors } from '../../store/slices/auth'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
-import { ChatSow } from '../../components/ChatSow'
-import { ArbitratorDetailXS } from '../../components/arbitrator/ArbitratorDetailXS'
-import { ActivityButton } from '../../components/common/ActivityButton'
-import { RefreshButton } from '../../components/common/RefreshButton'
-import { FileButton } from '../../components/common/FileButton'
 import { SowDetails } from '../../components/sow/SowDetails'
-import UCLogo from '../../images/UC.webp'
 
-const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -37,10 +28,6 @@ export const SowSummary = () => {
   const { t, i18n } = useTranslation();
   let history = useHistory();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
-  const userAttributes = useSelector(ProfileSelectors.getProfile)
-  const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators);
-  const currentChosenArbitrator = useSelector(ArbitratorSelectors.getCurrentChosenArbitrator)
-  const newAttachments = useSelector(SowSelectors.getNewAttachments)
   const user = useSelector(AuthSelectors.getUser)
   const users = useSelector(ProfileSelectors.getUsers)
 
@@ -91,25 +78,6 @@ export const SowSummary = () => {
                 </Col>
               </Row>
             }
-            {/* {currentSow.arbitrator &&
-              <Row>
-                <Col className="col-1 d-flex justify-content-center align-items-center">
-                  <FontAwesomeIcon icon={faTimesCircle} size='1x' className="text-primary" />
-                </Col>
-                <Col>
-                  <CardText className="m-0">
-                    {validateEmail(currentSow.arbitrator) ?
-                      currentSow.arbitrator
-                      :
-                      users[currentSow.arbitrator].given_name + ' ' + users[currentSow.arbitrator].family_name
-                    }
-                  </CardText>
-                  <CardText className="text-primary" style={{ fontSize: 12 }}>
-                    Arbitrator
-                  </CardText>
-                </Col>
-              </Row>
-            } */}
             <Row>
               <Col className="col-1 d-flex justify-content-center align-items-center">
                 <FontAwesomeIcon icon={faInfoCircle} size='1x' className="text-primary" />
@@ -120,7 +88,7 @@ export const SowSummary = () => {
                 </CardText>
                 <CardText className="text-primary" style={{ fontSize: 12 }}>
                   Status
-                  </CardText>
+                </CardText>
               </Col>
             </Row>
             <Row>
@@ -133,7 +101,7 @@ export const SowSummary = () => {
                 </CardText>
                 <CardText className="text-primary" style={{ fontSize: 12 }}>
                   Deadline
-                  </CardText>
+                </CardText>
               </Col>
             </Row>
             <Row>
@@ -146,7 +114,7 @@ export const SowSummary = () => {
                 </CardText>
                 <CardText className="text-primary" style={{ fontSize: 12 }}>
                   Price
-                  </CardText>
+                </CardText>
               </Col>
             </Row>
 
