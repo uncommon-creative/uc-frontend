@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faGavel, faInfoCircle, faCalendarDay, faCalendarTimes, faCalendarCheck, faMoneyBillAlt, faCheckDouble, faPeopleArrows, faTags, faBalanceScale } from '@fortawesome/free-solid-svg-icons'
 
-import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
+import { actions as SowActions, selectors as SowSelectors, SowCommands, SowStatus } from '../../store/slices/sow'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { SowHtml } from './SowHtml';
 import { ActivityButton } from '../common/ActivityButton';
@@ -37,15 +37,17 @@ export const SowDetails = ({ modal, toggle }: any) => {
       <ModalBody>
         <Row>
           <Col className="col-lg-8 col-12">
-            <Jumbotron>
-              <Row>
-                <Col>
-                  <CardText className="my-1" name="description" id="description">
-                    <div dangerouslySetInnerHTML={{ __html: currentSow.description }} />
-                  </CardText>
-                </Col>
-              </Row>
-            </Jumbotron>
+            {currentSow.description &&
+              <Jumbotron>
+                <Row>
+                  <Col>
+                    <CardText className="my-1" name="description" id="description">
+                      <div dangerouslySetInnerHTML={{ __html: currentSow.description }} />
+                    </CardText>
+                  </Col>
+                </Row>
+              </Jumbotron>
+            }
             {currentSow.licenseTermsNotes &&
               <Row>
                 <Col className="col-1 d-flex justify-content-center align-items-center">
@@ -80,23 +82,25 @@ export const SowDetails = ({ modal, toggle }: any) => {
                   </CardText>
               </Col>
             </Row>
-            <Row>
-              <Col className="col-1 d-flex justify-content-center align-items-center">
-                <FontAwesomeIcon icon={faUser} size='1x' className="text-primary" />
-              </Col>
-              <Col>
-                <CardText className="m-0">
-                  {validateEmail(currentSow.buyer) ?
-                    currentSow.buyer
-                    :
-                    users[currentSow.buyer].given_name + ' ' + users[currentSow.buyer].family_name
-                  }
-                </CardText>
-                <CardText className="text-primary" style={{ fontSize: 12 }}>
-                  Buyer
+            {currentSow.buyer != "not_set" &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faUser} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {validateEmail(currentSow.buyer) ?
+                      currentSow.buyer
+                      :
+                      users[currentSow.buyer].given_name + ' ' + users[currentSow.buyer].family_name
+                    }
                   </CardText>
-              </Col>
-            </Row>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Buyer
+                  </CardText>
+                </Col>
+              </Row>
+            }
             {currentSow.arbitrator &&
               <Row>
                 <Col className="col-1 d-flex justify-content-center align-items-center">
@@ -142,32 +146,36 @@ export const SowDetails = ({ modal, toggle }: any) => {
                 </CardText>
               </Col>
             </Row>
-            <Row>
-              <Col className="col-1 d-flex justify-content-center align-items-center">
-                <FontAwesomeIcon icon={faCalendarTimes} size='1x' className="text-primary" />
-              </Col>
-              <Col>
-                <CardText className="m-0">
-                  {new Date(currentSow.deadline).toLocaleDateString()}
+            {currentSow.deadline &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faCalendarTimes} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {new Date(currentSow.deadline).toLocaleDateString()}
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Deadline
                 </CardText>
-                <CardText className="text-primary" style={{ fontSize: 12 }}>
-                  Deadline
+                </Col>
+              </Row>
+            }
+            {currentSow.sowExpiration &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faCalendarCheck} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {new Date(currentSow.sowExpiration).toLocaleDateString()}
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Order must be confirmed by
                 </CardText>
-              </Col>
-            </Row>
-            <Row>
-              <Col className="col-1 d-flex justify-content-center align-items-center">
-                <FontAwesomeIcon icon={faCalendarCheck} size='1x' className="text-primary" />
-              </Col>
-              <Col>
-                <CardText className="m-0">
-                  {new Date(currentSow.sowExpiration).toLocaleDateString()}
-                </CardText>
-                <CardText className="text-primary" style={{ fontSize: 12 }}>
-                  Order must be confirmed by
-                </CardText>
-              </Col>
-            </Row>
+                </Col>
+              </Row>
+            }
             <Row>
               <Col className="col-1 d-flex justify-content-center align-items-center">
                 <FontAwesomeIcon icon={faMoneyBillAlt} size='1x' className="text-primary" />
@@ -209,31 +217,34 @@ export const SowDetails = ({ modal, toggle }: any) => {
                 </CardText>
               </Col>
             </Row>
-
-            <Row>
-              <Col className="col-1 d-flex justify-content-center align-items-center">
-                <FontAwesomeIcon icon={faTags} size='1x' className="text-primary" />
-              </Col>
-              <Col>
-                <CardText className="m-0">
-                  {currentSow.tags && currentSow.tags.map((tag: any, index: any) => {
-                    return (
-                      <Badge className="mr-2" color="primary">{JSON.parse(tag).label}</Badge>
-                    )
-                  })}
+            {currentSow.tags.length > 0 &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faTags} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {currentSow.tags && currentSow.tags.map((tag: any, index: any) => {
+                      return (
+                        <Badge className="mr-2" color="primary">{JSON.parse(tag).label}</Badge>
+                      )
+                    })}
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Tags
                 </CardText>
-                <CardText className="text-primary" style={{ fontSize: 12 }}>
-                  Tags
-                </CardText>
-              </Col>
-            </Row>
+                </Col>
+              </Row>
+            }
           </Col>
         </Row>
       </ModalBody>
       <ModalFooter>
-        <ActivityButton data-cy='willBuildHtml' name="willBuildHtml" color="primary" onClick={() => {
-          dispatch(SowActions.willBuildHtml({ currentSow: currentSow }))
-        }}>Show legal agreement</ActivityButton>
+        {currentSow.status != SowStatus.DRAFT &&
+          <ActivityButton data-cy='willBuildHtml' name="willBuildHtml" color="primary" onClick={() => {
+            dispatch(SowActions.willBuildHtml({ currentSow: currentSow }))
+          }}>Show legal agreement</ActivityButton>
+        }
         <ActivityButton data-cy='closeSowExtended' name="closeSowExtended" outline color="primary" onClick={() => {
           toggle()
         }}>Close</ActivityButton>

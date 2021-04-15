@@ -73,7 +73,6 @@ function* willCreateStatementOfWork(action: any) {
 
 function* willDraftStatementOfWork(action: any) {
   console.log("in willDraftStatementOfWork with: ", action)
-
   yield put(UIActions.startActivityRunning("draftSow"));
 
   const tagsParsed = action.payload.sow.tags.map((tag: any) => JSON.stringify(tag))
@@ -122,7 +121,7 @@ function* willSubmitStatementOfWork(action: any) {
 
   try {
     if (userAttributes.address) {
-      const result = yield call(
+      const resultDraft = yield call(
         SowApi.draftStatementOfWork, // submitStatementOfWork
         action.payload.sow.sow,
         arbitratorsParsed,
@@ -141,17 +140,27 @@ function* willSubmitStatementOfWork(action: any) {
         action.payload.sow.licenseTermsOption,
         action.payload.sow.licenseTermsNotes
       )
-      console.log("willSubmitStatementOfWork result: ", result)
+      console.log("willSubmitStatementOfWork resultDraft: ", resultDraft)
 
-      yield call(willGetUserProfile, { user: result.buyer })
-      yield put(SowActions.didSubmitStatementOfWork(result))
+      const userBuyer = yield call(willGetUserProfile, { user: resultDraft.buyer })
+      console.log("willSubmitStatementOfWork userBuyer: ", userBuyer)
 
-      yield call(willBuildPdf, { payload: { sow: result.sow } })
-      // yield call(willGetParams, { payload: { seller: result.seller, buyer: result.buyer, sowCommand: SowCommands.SUBMIT } })
-      yield put(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.SUBMIT }))
+      // NOT REGISTERED
+      if (!userBuyer.email) {
+        yield put(NotificationActions.willShowNotification({ message: "The buyer has to sign up to Uncommon Creative in order to proceed with the submission", type: "danger" }));
+        action.payload.history.push('/statement-of-work/' + resultDraft.sow)
+      }
+      // PROFILE NOT COMPLETED
+      else if (!userBuyer.address) {
+        yield put(NotificationActions.willShowNotification({ message: "The buyer has to complete his profile on Uncommon Creative in order to proceed with the submission", type: "danger" }));
+        action.payload.history.push('/statement-of-work/' + resultDraft.sow)
+      }
+      else {
+        yield put(SowActions.didSubmitStatementOfWork(resultDraft))
 
-      // yield put(push("/home"))
-      // yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
+        yield call(willBuildPdf, { payload: { sow: resultDraft.sow } })
+        yield put(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.SUBMIT }))
+      }
     }
     else {
       yield call(willDraftStatementOfWork, action)
@@ -340,12 +349,12 @@ function* willSelectSow(action: any) {
 
   yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow.sow } });
 
-  if (action.payload.sow.status == "DRAFT") {
-    action.payload.history.push('/create-statement-of-work')
-  }
-  else {
-    action.payload.history.push('/statement-of-work/' + action.payload.sow.sow)
-  }
+  // if (action.payload.sow.status == "DRAFT") {
+  //   action.payload.history.push('/create-statement-of-work')
+  // }
+  // else {
+  action.payload.history.push('/statement-of-work/' + action.payload.sow.sow)
+  // }
 }
 
 function* willGetSowAttachmentsList(action: any) {
@@ -386,22 +395,29 @@ function* willGetSow(action: any) {
   try {
     const result = yield call(SowApi.getSow, action.payload.sow);
     console.log("result willGetSow: ", result)
-    yield call(willGetUserProfile, { user: result.seller })
-    yield call(willGetUserProfile, { user: result.buyer })
-    result.arbitrator && (yield call(willGetUserProfile, { user: result.arbitrator }))
-    yield put(SowActions.didGetSow(result))
-    yield put(ChatActions.willReadSowChat(action.payload))
-    yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow } });
-
-    const fullArbitrators = [] as any
-    if (Array.isArray(result.arbitrators)) {
-      for (const arb of result.arbitrators) {
-        fullArbitrators.push(yield call(ArbitratorApi.getArbitrator, arb))
-        yield call(willGetUserProfile, { user: arb })
-      }
+    if (result.sow == "error") {
+      action.payload.history.push("/")
+      yield put(NotificationActions.willShowNotification({ message: "Access denied", type: "danger" }));
     }
-    console.log("in willGetSow with fullArbitrators: ", fullArbitrators)
-    yield put(SowActions.willConfirmArbitrators({ arbitrators: fullArbitrators, toggle: () => { } }))
+    else {
+      yield call(willGetUserProfile, { user: result.seller })
+      yield call(willGetUserProfile, { user: result.buyer })
+      result.arbitrator && (yield call(willGetUserProfile, { user: result.arbitrator }))
+      yield put(SowActions.didGetSow(result))
+      yield put(ChatActions.willReadSowChat(action.payload))
+      yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow } });
+
+      const fullArbitrators = [] as any
+      if (Array.isArray(result.arbitrators)) {
+        for (const arb of result.arbitrators) {
+          fullArbitrators.push(yield call(ArbitratorApi.getArbitrator, arb))
+          yield call(willGetUserProfile, { user: arb })
+        }
+      }
+      console.log("in willGetSow with fullArbitrators: ", fullArbitrators)
+      yield put(SowActions.willConfirmArbitrators({ arbitrators: fullArbitrators, toggle: () => { } }))
+    }
+
 
   } catch (error) {
     console.log("error in willGetSow ", error)
