@@ -12,6 +12,7 @@ import * as AuthApi from './api/auth'
 import { selectors as AuthSelectors } from './store/slices/auth'
 import { actions as AuthActions } from './store/slices/auth'
 import { selectors as ProfileSelectors, actions as ProfileActions } from './store/slices/profile'
+import { selectors as AssetCurrencySelectors, actions as AssetCurrencyActions } from './store/slices/assetCurrency'
 import { LinkBlockExplorer } from './components/common/LinkBlockExplorer'
 import UCLogo from './images/UC.webp'
 
@@ -55,6 +56,9 @@ export const Header = ({ className }: any) => {
                 <DropdownItem data-cy='profile' onClick={() => {
                   dispatch(ProfileActions.willGoToProfile({ user: user.username, history: history }));
                 }}>Profile</DropdownItem>
+                <DropdownItem onClick={() => {
+                  dispatch(AssetCurrencyActions.willGoToAssetCurrencyPage({ user: userAttributes.public_key, history: history }));
+                }}>Opt-in asset currency</DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem data-cy='logout' onClick={() => {
                   dispatch(AuthActions.willLogoutUser());

@@ -23,11 +23,13 @@ export const currentSlice = createSlice({
     activePolls: {} as any,
     submitToken: "",
     transactionClaimMilestoneMet: {} as any,
-    error: ''
+    error: '',
+    algorandAccountInfo: {}
   },
   reducers: {
     goToTransactionPage: (state, action: PayloadAction<any>) => void (state.transactionPage[action.payload.sowCommand] = action.payload.transactionPage),
     willGetAlgorandAccountInfo: (state, action: PayloadAction<any>) => state,
+    didGetAlgorandAccountInfo: (state, action: PayloadAction<any>) => void (state.algorandAccountInfo = action.payload),
     willGetParams: (state, action: PayloadAction<any>) => state,
     didGetParams: (state, action: PayloadAction<any>) => void (state.params.withoutDelay = action.payload.params, state.transactionPage[action.payload.sowCommand] = 1),
     willGetParamsWithDelay: (state, action: PayloadAction<any>) => state,
@@ -94,6 +96,7 @@ export const {
   willReject, willRequestReview, didRequestReview
 } = actions
 export const selectors = {
+  getAlgorandAccountInfo: (state: any) => state.transaction.algorandAccountInfo,
   getTransactionPage: (state: any) => state.transaction.transactionPage,
   getParams: (state: any) => state.transaction.params,
   getMultiSig: (state: any) => state.transaction.multiSig,

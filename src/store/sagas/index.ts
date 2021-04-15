@@ -6,6 +6,7 @@ import { sagas as sowSagas } from './sow'
 import { sagas as arbitratorSagas } from './arbitrator'
 import { sagas as chatSagas } from './chat'
 import { sagas as transactionSagas } from './transaction'
+import { sagas as assetCurrencySagas } from './assetCurrency'
 
 function* runAllSagas() {
   console.log('in root saga')
@@ -16,7 +17,8 @@ function* runAllSagas() {
     sowSagas(),
     arbitratorSagas(),
     chatSagas(),
-    transactionSagas()
+    transactionSagas(),
+    assetCurrencySagas()
   ])
 }
 

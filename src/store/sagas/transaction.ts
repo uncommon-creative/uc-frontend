@@ -40,12 +40,14 @@ export function* sagas() {
   console.log('in transaction saga');
 }
 
-function* willGetAlgorandAccountInfo(action: any) {
+export function* willGetAlgorandAccountInfo(action: any) {
   console.log("in willGetAlgorandAccountInfo with: ", action)
 
   try {
-    const result = yield call(TransactionApi.algorandGetAccountInfo, action);
-    // console.log("result willGetAlgorandAccountInfo: ", result)
+    const result = yield call(TransactionApi.algorandGetAccountInfo, action.payload);
+    console.log("result willGetAlgorandAccountInfo: ", result)
+    yield put(TransactionActions.didGetAlgorandAccountInfo(result))
+
     return result
   } catch (error) {
     console.log("error in willGetAlgorandAccountInfo ", error)
@@ -105,7 +107,7 @@ function* willCreateMultiSigAddress(action: any) {
     const result = yield call(TransactionApi.createMultiSigAddress, { seller: seller_public_key, buyer: buyer_public_key, arbitrator: arbitrator_public_key, backup: backup_public_key })
     console.log("result willCreateMultiSigAddress: ", result)
 
-    const multiSigAddressInfo = yield call(willGetAlgorandAccountInfo, result)
+    const multiSigAddressInfo = yield call(willGetAlgorandAccountInfo, {payload: result})
     console.log("willCreateMultiSigAddress multiSigAddressInfo: ", multiSigAddressInfo)
 
     yield put(TransactionActions.didCreateMultiSigAddress({ multisig: multiSigAddressInfo, sowCommand: action.payload.sowCommand }))
@@ -867,7 +869,7 @@ export function* willCheckAccountTransaction(action: any) {
       }
     }
     else {
-      const addressInfo = yield call(willGetAlgorandAccountInfo, resultMnemonicToSecretKey.addr)
+      const addressInfo = yield call(willGetAlgorandAccountInfo, { payload: resultMnemonicToSecretKey.addr })
       // console.log("willCheckAccountTransaction addressInfo: ", addressInfo)
       const accountMinBalance = addressInfo.assets.length * AlgorandMinBalance + addressInfo.createdAssets.length * AlgorandMinBalance + AlgorandMinBalance
       // console.log("in willCheckAccountTransaction accountMinBalance: ", accountMinBalance)
