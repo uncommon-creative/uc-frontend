@@ -13,6 +13,7 @@ import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommand
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
+import { actions as AssetCurrencyActions, selectors as AssetCurrencySelectors } from '../store/slices/assetCurrency'
 import { ChatSow } from '../components/ChatSow'
 import { ArbitratorDetailXS } from '../components/arbitrator/ArbitratorDetailXS'
 import { ActivityButton } from '../components/common/ActivityButton'
@@ -43,6 +44,8 @@ export const StatementOfWorkPage = () => {
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   console.log("in statementOfWorkPage currentSow: ", currentSow)
   const userAttributes = useSelector(ProfileSelectors.getProfile)
+  const algorandAccount = useSelector(ProfileSelectors.getAlgorandAccount)
+  const assetsCurrencies = useSelector(AssetCurrencySelectors.getAssetsCurrencies)
   const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators);
   const currentChosenArbitrator = useSelector(ArbitratorSelectors.getCurrentChosenArbitrator)
   const newAttachments = useSelector(SowSelectors.getNewAttachments)
@@ -173,11 +176,17 @@ export const StatementOfWorkPage = () => {
                                 <>
                                   <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={currentChosenArbitrator == ''} block color="primary" name={SowCommands.ACCEPT_AND_PAY}
                                     onClick={
-                                      userAttributes.address ? toggleModalAcceptSow
-                                        : () => {
+                                      !userAttributes.address ?
+                                        () => {
                                           history.push('/profile')
                                           dispatch(NotificationActions.willShowNotification({ message: "Please complete your profile before accept and pay.", type: "info" }));
                                         }
+                                        : (currentSow.currency != "ALGO" && !algorandAccount.assets.some((accountAsset: any) => JSON.parse(accountAsset)["asset-id"] == assetsCurrencies.find((asset: any) => asset.assetName === currentSow.currency).assetIndex)) ?
+                                          () => {
+                                            dispatch(AssetCurrencyActions.willGoToAssetCurrencyPage({ address: userAttributes.public_key, history: history }));
+                                            dispatch(AssetCurrencyActions.willSelectAssetCurrency({ asset: assetsCurrencies.find((asset: any) => asset.assetName === currentSow.currency).assetIndex }))
+                                          }
+                                          : toggleModalAcceptSow
                                     }
                                   >
                                     <span id={SowCommands.ACCEPT_AND_PAY}>Accept and pay</span>

@@ -91,7 +91,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='continueTransaction' disabled={!acceptedConditions} name="continueTransaction" color="primary" onClick={() => {
-              dispatch(TransactionActions.willCreateMultiSigAddress({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+              dispatch(TransactionActions.willCreateMultiSigAddress({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator, price: currentSow.price, currency: currentSow.currency, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
             }}>Continue</ActivityButton>
           </ModalFooter>
         </>

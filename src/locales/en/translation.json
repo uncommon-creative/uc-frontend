@@ -63,11 +63,11 @@
       "algo": "{{value}} ALGO",
       "summary": "Summary of payment",
       "multisigAddress": "Your funds will be sent to escrow account: {{multisigAddress}}",
-      "balances": "A) Current balance of escrow account:",
+      "balances": "A1) Current balance of escrow account:",
       "price": "B) Price to be paid:",
       "fee": "C) Blockchain Fee:",
-      "total": "Total (B+C):",
-      "toPay": "To pay (B+C-A):"
+      "total": "Total ALGO (B+C):",
+      "toPay": "To pay ALGO (B+C-A):"
     }
   }
 }

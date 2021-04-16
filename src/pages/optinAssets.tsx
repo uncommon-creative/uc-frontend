@@ -55,9 +55,9 @@ export const OptinAssetPage = () => {
                         }}>Opt-in {asset.assetName}</ActivityButton>
                       </Col>
                       <Col className="col-auto">
-                        <ActivityButton outline disabled={!algorandAccount.assets.some((accountAsset: any) => JSON.parse(accountAsset)["asset-id"] == asset.assetIndex)} name="dispenseAsset" color="primary" onClick={() => {
+                        <ActivityButton outline disabled={!algorandAccount.assets.some((accountAsset: any) => JSON.parse(accountAsset)["asset-id"] == asset.assetIndex)} name={"willDispenseAssetCurrency" + asset.assetName} color="primary" onClick={() => {
                           dispatch(AssetCurrencyActions.willDispenseAssetCurrency({ address: algorandAccount.address, asset: asset }))
-                        }}>Dispense {asset.assetName}</ActivityButton>
+                        }}>Get {asset.assetName}</ActivityButton>
                       </Col>
                     </Row>
                   </ListGroupItem>

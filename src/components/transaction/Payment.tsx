@@ -5,13 +5,15 @@ import {
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
-import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
+import { selectors as TransactionSelectors } from '../../store/slices/transaction'
+import { selectors as SowSelectors } from '../../store/slices/sow'
 
-export const Payment = ({ modal, toggle }: any) => {
+export const Payment = () => {
 
   const { t, i18n } = useTranslation();
   const multiSig = useSelector(TransactionSelectors.getMultiSig)
   const payment = useSelector(TransactionSelectors.getPayment)
+  const currentSow = useSelector(SowSelectors.getCurrentSow)
 
   return (
     <>
@@ -23,7 +25,18 @@ export const Payment = ({ modal, toggle }: any) => {
           <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.balances')}</CardSubtitle>
         </Col>
         <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.algo', { value: payment.balances / 1000000 })}</CardSubtitle>
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.algo', { value: payment.balancesAlgo / 1000000 })}</CardSubtitle>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <CardSubtitle tag="h6" className="my-1">{"A2) Current balance of escrow account:"}</CardSubtitle>
+        </Col>
+        <Col>
+          {payment.balancesAssetCurrency == -1 ?
+            <CardSubtitle tag="h6" className="my-1">Opt-in on asset {currentSow.currency} required</CardSubtitle>
+            : <CardSubtitle tag="h6" className="my-1">{payment.balancesAssetCurrency / 1000000} {currentSow.currency}</CardSubtitle>
+          }
         </Col>
       </Row>
       <Row>
@@ -31,7 +44,7 @@ export const Payment = ({ modal, toggle }: any) => {
           <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.price')}</CardSubtitle>
         </Col>
         <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.algo', { value: payment.price / 1000000 })}</CardSubtitle>
+          <CardSubtitle tag="h6" className="my-1">{payment.price / 1000000} {currentSow.currency}</CardSubtitle>
         </Col>
       </Row>
       <Row>
@@ -47,17 +60,37 @@ export const Payment = ({ modal, toggle }: any) => {
           <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.total')}</CardSubtitle>
         </Col>
         <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.algo', { value: payment.total / 1000000 })}</CardSubtitle>
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.algo', { value: payment.totalAlgo / 1000000 })}</CardSubtitle>
         </Col>
       </Row>
+      {currentSow.currency != "ALGO" &&
+        <Row>
+          <Col>
+            <CardSubtitle tag="h6" className="my-1">Total {currentSow.currency} (B+C):</CardSubtitle>
+          </Col>
+          <Col>
+            <CardSubtitle tag="h6" className="my-1">{payment.totalAssetCurrency / 1000000 } {currentSow.currency}</CardSubtitle>
+          </Col>
+        </Row>
+      }
       <Row>
         <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.toPay')}</CardSubtitle>
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.total')}</CardSubtitle>
         </Col>
         <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.algo', { value: payment.toPay / 1000000 })}</CardSubtitle>
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.algo', { value: payment.toPayAlgo / 1000000 })}</CardSubtitle>
         </Col>
       </Row>
+      {currentSow.currency != "ALGO" &&
+        <Row>
+          <Col>
+            <CardSubtitle tag="h6" className="my-1">To pay {currentSow.currency} (B+C-A):</CardSubtitle>
+          </Col>
+          <Col>
+            <CardSubtitle tag="h6" className="my-1">{payment.toPayAssetCurrency / 1000000 } {currentSow.currency}</CardSubtitle>
+          </Col>
+        </Row>
+      }
     </>
   )
 }
