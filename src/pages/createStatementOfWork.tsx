@@ -21,7 +21,7 @@ import { SowAttachmentsInput } from '../components/SowAttachmentsInput'
 import { DescriptionEditor } from '../components/DescriptionEditor'
 import { actions as SowActions, selectors as SowSelectors, SowStatus } from '../store/slices/sow'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
-import { actions as TransactionActions, selectors as TransactionSelectors } from '../store/slices/transaction'
+import { actions as AssetCurrencyActions, selectors as AssetCurrencySelectors } from '../store/slices/assetCurrency'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as UISelectors } from '../store/slices/ui'
 import { SubmitSow } from '../components/transaction/SubmitSow'
@@ -99,6 +99,7 @@ export const CreateStatementOfWorkPage = () => {
   const { t, i18n } = useTranslation();
   const isLoading = useSelector(UISelectors.isLoading)
   let history = useHistory();
+  const algorandAccount = useSelector(ProfileSelectors.getAlgorandAccount)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   console.log("sow in CreateStatementOfWorkPage: ", currentSow)
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
@@ -107,6 +108,7 @@ export const CreateStatementOfWorkPage = () => {
   const [deadlineValue, setDeadlineValue] = React.useState(currentSow.deadline ? currentSow.deadline : '');
   const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators)
   const users = useSelector(ProfileSelectors.getUsers)
+  const assetsCurrencies = useSelector(AssetCurrencySelectors.getAssetsCurrencies)
 
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
   const toggleModal = () => setModalOpen(!modalOpen);
@@ -235,12 +237,27 @@ export const CreateStatementOfWorkPage = () => {
                                         setPriceCurrency("ALGO")
                                       }}
                                     >ALGO</DropdownItem>
-                                    <DropdownItem disabled={priceCurrency == "USDC"}
-                                      onClick={() => {
-                                        setFieldValue('currency', "USDC")
-                                        setPriceCurrency("USDC")
-                                      }}
-                                    >USDC</DropdownItem>
+                                    {assetsCurrencies.map((asset: any, index: any) => {
+                                      return (
+                                        <>
+                                          {algorandAccount.assets.some((accountAsset: any) => JSON.parse(accountAsset)["asset-id"] == asset.assetIndex) ?
+                                            <DropdownItem disabled={priceCurrency == asset.assetName}
+                                              onClick={() => {
+                                                setFieldValue('currency', asset.assetName)
+                                                setPriceCurrency(asset.assetName)
+                                              }}
+                                            >{asset.assetName}</DropdownItem>
+                                            :
+                                            <DropdownItem tag={Link} to="/optin-assets">
+                                              <ActivityButton name="willSelectAssetCurrency" color="link" className="pl-0" onClick={() => {
+                                                dispatch(SowActions.willDraftStatementOfWork({ sow: values }))
+                                                dispatch(AssetCurrencyActions.willSelectAssetCurrency({ asset: asset.assetIndex }))
+                                              }}>{asset.assetName} (opt-in)</ActivityButton>
+                                            </DropdownItem>
+                                          }
+                                        </>
+                                      )
+                                    })}
                                   </DropdownMenu>
                                 </InputGroupButtonDropdown>
                                 {errors.price && touched.price ? (

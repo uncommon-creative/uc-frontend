@@ -150,7 +150,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Choose the method to sign</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are signing the quote and committing to receive the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
-            <CardSubtitle tag="h6" className="py-1 text-muted text-center">Furthermore, you are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>{JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</a>.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">Furthermore, you are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_link["asset"] + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>{JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</a>.</CardSubtitle>
             <Payment />
 
             <Row>
@@ -227,7 +227,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Fund the wallet with mnemonic secret key</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are signing the quote and committing to receive the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
-            <CardSubtitle tag="h6" className="py-1 text-muted text-center">Furthermore, you are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>{JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</a>.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">Furthermore, you are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_link["asset"] + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>{JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</a>.</CardSubtitle>
             <Payment />
 
             <FormGroup>
@@ -254,7 +254,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Fund the wallet with AlgoSigner</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are signing the quote and committing to receive the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
-            <CardSubtitle tag="h6" className="py-1 text-muted text-center">Furthermore, you are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>{JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</a>.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">Furthermore, you are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_link["asset"] + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>{JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</a>.</CardSubtitle>
             <Payment />
 
             <ListGroupItem className='border border-primary bg-light'>

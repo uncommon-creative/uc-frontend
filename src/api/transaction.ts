@@ -4,7 +4,6 @@ import * as _ from 'lodash';
 
 import { TransactionFee } from '../store/slices/transaction'
 import { configuration } from '../config'
-import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 const algosdk = require('algosdk');

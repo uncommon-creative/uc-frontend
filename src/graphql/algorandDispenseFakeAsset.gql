@@ -1,0 +1,9 @@
+mutation algorandDispenseFakeAsset(
+  $addr: String
+  $asset: FakeAsset
+) {
+  algorandDispenseFakeAsset(
+    addr: $addr
+    asset: $asset
+  )
+}

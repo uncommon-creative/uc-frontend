@@ -11,6 +11,7 @@ export const currentSlice = createSlice({
     uploadingPortrait: false,
     publicKey: "",
     attributes: {} as any,
+    algorandAccount: {},
     algoAccount: {},
     users: {}
   },
@@ -23,6 +24,7 @@ export const currentSlice = createSlice({
     willAddPublicKey: (state, action: PayloadAction<any>) => void (state.publicKey = action.payload.publicKey, state.attributes.publicKey = action.payload.publicKey),
     willRetrieveProfileData: (state, action: PayloadAction<any>) => state,
     didRetrieveProfileData: (state, action: PayloadAction<any>) => void (state.attributes = action.payload),
+    didRetrieveAlgorandData: (state, action: PayloadAction<any>) => void (state.algorandAccount = action.payload),
 
     willGenerateAlgoAccount: (state, action: PayloadAction<any>) => state,
     didGenerateAlgoAccount: (state, action: PayloadAction<any>) => void (state.algoAccount = action.payload),
@@ -55,5 +57,6 @@ export const selectors = {
   getUsers: (state: any) => state.profile.users,
   getPublicKey: (state: any) => state.profile.publicKey,
   getProfile: (state: any) => state.profile.attributes,
-  getAlgoAccount: (state: any) => state.profile.algoAccount
+  getAlgoAccount: (state: any) => state.profile.algoAccount,
+  getAlgorandAccount: (state: any) => state.profile.algorandAccount
 }

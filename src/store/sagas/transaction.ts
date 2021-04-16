@@ -2,12 +2,12 @@ import { call, put, takeEvery, takeLatest, delay, select } from 'redux-saga/effe
 
 import { actions as SowActions, SowStatus, SowCommands } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
-import { actions as ProfileActions, selectors as ProfileSelectors } from '../slices/profile'
+import { selectors as ProfileSelectors } from '../slices/profile'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../slices/transaction'
+import { actions as AssetCurrencyActions } from '../slices/assetCurrency'
 import { actions as UIActions } from '../slices/ui'
 import * as TransactionApi from '../../api/transaction'
 import { willGetUserProfile } from '../sagas/profile'
-import { willSendCommandChat } from '../sagas/chat'
 import { TransactionFee, AlgorandFee, AlgorandMinBalance } from '../slices/transaction'
 import { configuration } from '../../config'
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
@@ -40,12 +40,14 @@ export function* sagas() {
   console.log('in transaction saga');
 }
 
-function* willGetAlgorandAccountInfo(action: any) {
+export function* willGetAlgorandAccountInfo(action: any) {
   console.log("in willGetAlgorandAccountInfo with: ", action)
 
   try {
-    const result = yield call(TransactionApi.algorandGetAccountInfo, action);
-    // console.log("result willGetAlgorandAccountInfo: ", result)
+    const result = yield call(TransactionApi.algorandGetAccountInfo, action.payload);
+    console.log("result willGetAlgorandAccountInfo: ", result)
+    yield put(TransactionActions.didGetAlgorandAccountInfo(result))
+
     return result
   } catch (error) {
     console.log("error in willGetAlgorandAccountInfo ", error)
@@ -62,7 +64,13 @@ export function* willGetParams(action: any) {
 
     const result = yield call(TransactionApi.algorandGetTxParams);
     console.log("result willGetParams: ", result)
-    yield put(TransactionActions.didGetParams({ params: result, sowCommand: action.payload.sowCommand }))
+    if (action.payload.sowCommand === "OptinAssetCurrency") {
+      yield put(TransactionActions.didGetParams({ params: result, sowCommand: action.payload.sowCommand }))
+      yield put(AssetCurrencyActions.goToModalPage({ modalPage: 1 }))
+    }
+    else {
+      yield put(TransactionActions.didGetParams({ params: result, sowCommand: action.payload.sowCommand }))
+    }
   } catch (error) {
     console.log("error in willGetParams ", error)
   }
@@ -105,7 +113,7 @@ function* willCreateMultiSigAddress(action: any) {
     const result = yield call(TransactionApi.createMultiSigAddress, { seller: seller_public_key, buyer: buyer_public_key, arbitrator: arbitrator_public_key, backup: backup_public_key })
     console.log("result willCreateMultiSigAddress: ", result)
 
-    const multiSigAddressInfo = yield call(willGetAlgorandAccountInfo, result)
+    const multiSigAddressInfo = yield call(willGetAlgorandAccountInfo, { payload: result })
     console.log("willCreateMultiSigAddress multiSigAddressInfo: ", multiSigAddressInfo)
 
     yield put(TransactionActions.didCreateMultiSigAddress({ multisig: multiSigAddressInfo, sowCommand: action.payload.sowCommand }))
@@ -867,7 +875,7 @@ export function* willCheckAccountTransaction(action: any) {
       }
     }
     else {
-      const addressInfo = yield call(willGetAlgorandAccountInfo, resultMnemonicToSecretKey.addr)
+      const addressInfo = yield call(willGetAlgorandAccountInfo, { payload: resultMnemonicToSecretKey.addr })
       // console.log("willCheckAccountTransaction addressInfo: ", addressInfo)
       const accountMinBalance = addressInfo.assets.length * AlgorandMinBalance + addressInfo.createdAssets.length * AlgorandMinBalance + AlgorandMinBalance
       // console.log("in willCheckAccountTransaction accountMinBalance: ", accountMinBalance)
