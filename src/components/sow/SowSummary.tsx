@@ -103,19 +103,21 @@ export const SowSummary = () => {
                 </Col>
               </Row>
             }
-            <Row>
-              <Col className="col-1 d-flex justify-content-center align-items-center">
-                <FontAwesomeIcon icon={faMoneyBillAlt} size='1x' className="text-primary" />
-              </Col>
-              <Col>
-                <CardText className="m-0">
-                  {currentSow.price} {currentSow.currency}
+            {typeof currentSow.price === "number" &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faMoneyBillAlt} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {currentSow.price} {currentSow.currency}
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Price
                 </CardText>
-                <CardText className="text-primary" style={{ fontSize: 12 }}>
-                  Price
-                </CardText>
-              </Col>
-            </Row>
+                </Col>
+              </Row>
+            }
 
             <Row className="mt-3">
               {currentSow.seller == user.username && currentSow.status == SowStatus.DRAFT &&

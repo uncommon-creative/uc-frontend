@@ -100,7 +100,7 @@ function* willDraftStatementOfWork(action: any) {
     )
     console.log("willDraftStatementOfWork result: ", result)
 
-    yield put(push("/home"))
+    // yield put(push("/home"))
     yield put(NotificationActions.willShowNotification({ message: "Statement of work saved", type: "success" }));
   } catch (error) {
     console.log("error in willDraftStatementOfWork ", error)

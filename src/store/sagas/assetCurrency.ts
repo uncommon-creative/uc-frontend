@@ -32,7 +32,7 @@ export function* willSelectAssetCurrency(action: any) {
   yield put(UIActions.startActivityRunning("willSelectAssetCurrency"));
 
   try {
-
+    yield put(AssetCurrencyActions.toggleModalOpen())
     yield put(AssetCurrencyActions.didSelectAssetCurrency(action.payload.asset))
 
   } catch (error) {

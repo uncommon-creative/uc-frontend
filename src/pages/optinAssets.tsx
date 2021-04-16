@@ -51,7 +51,6 @@ export const OptinAssetPage = () => {
                       </Col>
                       <Col className="col-auto ml-auto">
                         <ActivityButton disabled={algorandAccount.assets.some((accountAsset: any) => JSON.parse(accountAsset)["asset-id"] == asset.assetIndex)} name="willSelectAssetCurrency" color="primary" onClick={() => {
-                          dispatch(AssetCurrencyActions.toggleModalOpen())
                           dispatch(AssetCurrencyActions.willSelectAssetCurrency({ asset: asset.assetIndex }))
                         }}>Opt-in {asset.assetName}</ActivityButton>
                       </Col>
