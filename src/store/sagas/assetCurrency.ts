@@ -85,7 +85,7 @@ export function* willDispenseAssetCurrency(action: any) {
   yield put(UIActions.startActivityRunning("willDispenseAssetCurrency"));
 
   try {
-    const resultDispense = yield call(AssetCurrencyApi.algorandDispenseFakeAsset, action.payload.address, action.payload.asset.fakeAssetEnum)
+    const resultDispense = yield call(AssetCurrencyApi.algorandDispenseFakeAsset, action.payload.address, action.payload.asset.assetName)
     console.log("willOptinAssetCurrency resultDispense: ", resultDispense)
 
   } catch (error) {

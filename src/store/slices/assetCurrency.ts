@@ -3,13 +3,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 const assetsCurrencies = [
   {
     assetIndex: 15187514,
-    assetName: "UC-USDT",
-    fakeAssetEnum: "USDT"
+    assetName: "USDT"
   },
   {
     assetIndex: 15187465,
-    assetName: "UC-USDC",
-    fakeAssetEnum: "USDC"
+    assetName: "USDC"
   }
 ]
 
