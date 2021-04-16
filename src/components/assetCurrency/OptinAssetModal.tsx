@@ -23,6 +23,7 @@ import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { ActivityButton } from '../common/ActivityButton';
 import { LinkBlockExplorer } from '../common/LinkBlockExplorer'
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
+import { TransactionFee } from '../../store/slices/transaction'
 
 declare var AlgoSigner: any;
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
@@ -32,10 +33,12 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
   const dispatch = useDispatch();
   let history = useHistory();
   const { t, i18n } = useTranslation();
+  const userAttributes = useSelector(ProfileSelectors.getProfile)
   const modalPage = useSelector(AssetCurrencySelectors.getModalPage)
   const currentAssetCurrency = useSelector(AssetCurrencySelectors.getCurrentAssetCurrency)
+  const optinResult = useSelector(AssetCurrencySelectors.getOptinResult)
+  const error = useSelector(AssetCurrencySelectors.getError)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
-  const transactionError = useSelector(TransactionSelectors.getError)
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const params = useSelector(TransactionSelectors.getParams)
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
@@ -50,11 +53,11 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
   }, [modalPage]);
 
   React.useEffect(() => {
-    // modal && dispatch(TransactionActions.willGetParams({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentChosenArbitrator, sowCommand: SowCommands.SUBMIT }))
+    modal && dispatch(TransactionActions.willGetParams({ sowCommand: "OptinAssetCurrency" }))
 
     return () => {
       setMnemonicSecretKey('')
-      // dispatch(AssetCurrencyActions.goToModalPage({ modalPage: 0 }))
+      dispatch(AssetCurrencyActions.goToModalPage({ modalPage: 0 }))
     }
   }, [modal])
 
@@ -72,7 +75,7 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Choose the method to sign</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_asset_link + currentAssetCurrency}>{currentAssetCurrency}</a>.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_link["asset"] + currentAssetCurrency}>{currentAssetCurrency}</a>.</CardSubtitle>
 
             <Row>
               <Col>
@@ -106,7 +109,7 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Sign with mnemonic secret key</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_asset_link + currentAssetCurrency}>{currentAssetCurrency}</a>.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_link["asset"] + currentAssetCurrency}>{currentAssetCurrency}</a>.</CardSubtitle>
             <FormGroup>
               <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
               <Input value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
@@ -121,12 +124,12 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
               dispatch(AssetCurrencyActions.goToModalPage({ modalPage: 1 }))
             }}>Cancel</ActivityButton>
             <ActivityButton disabled={mnemonicSecretKey == ''} name="willOptinAssetCurrency" color="primary" onClick={async () => {
-              dispatch(AssetCurrencyActions.willOptinAssetCurrency({mnemonicSecretKey: mnemonicSecretKey}))
+              dispatch(AssetCurrencyActions.willOptinAssetCurrency({ params: params, mnemonicSecretKey: mnemonicSecretKey, address: userAttributes.public_key, assetId: currentAssetCurrency, toPay: TransactionFee }))
             }}>Sign</ActivityButton>
-        </ModalFooter>
+          </ModalFooter>
         </>
       }
-{/* {modalPage == 3 &&
+      {/* {modalPage == 3 &&
         <>
           <ModalHeader toggle={toggle}>Sign with AlgoSigner</ModalHeader>
           <ModalBody>
@@ -149,42 +152,42 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       } */}
-{
-  modalPage == 4 &&
-  <>
-    <ModalHeader toggle={toggle}>Opt-in completed</ModalHeader>
-    <ModalBody>
-      <Jumbotron>
-        <CardText>
-          The Opt-in was completed.
+      {
+        modalPage == 4 &&
+        <>
+          <ModalHeader toggle={toggle}>Opt-in completed</ModalHeader>
+          <ModalBody>
+            <Jumbotron>
+              <CardText>
+                The Opt-in was completed.
               </CardText>
-        <CardText>
-          {/* <LinkBlockExplorer title={'Asset: ' + submitToken.assetId} type="asset" id={submitToken.assetId} />
-                <LinkBlockExplorer title={'Transaction: ' + submitToken.tx.substring(0, 6) + '...'} type="tx" id={submitToken.tx} /> */}
-        </CardText>
-      </Jumbotron>
-    </ModalBody>
-    <ModalFooter>
-      <ActivityButton name="closeOptin" color="primary" tag={Link} to={`/home`}>Close</ActivityButton>
-    </ModalFooter>
-  </>
-}
-{
-  modalPage == 5 &&
-  <>
-    <ModalHeader toggle={toggle}>Opt-in failed</ModalHeader>
-    <ModalBody>
-      <Jumbotron>
-        <CardText>
-          {t('transaction.transactionFailed', { errorMessage: transactionError })}
-        </CardText>
-      </Jumbotron>
-    </ModalBody>
-    <ModalFooter>
-      <ActivityButton name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
-    </ModalFooter>
-  </>
-}
+              <CardText>
+                <LinkBlockExplorer title={'Asset: ' + currentAssetCurrency} type="asset" id={currentAssetCurrency} />
+                <LinkBlockExplorer title={'Transaction: ' + optinResult.tx.substring(0, 6) + '...'} type="tx" id={optinResult.tx} />
+              </CardText>
+            </Jumbotron>
+          </ModalBody>
+          <ModalFooter>
+            <ActivityButton name="closeOptin" color="primary" tag={Link} to={`/home`}>Close</ActivityButton>
+          </ModalFooter>
+        </>
+      }
+      {
+        modalPage == 5 &&
+        <>
+          <ModalHeader toggle={toggle}>Opt-in failed</ModalHeader>
+          <ModalBody>
+            <Jumbotron>
+              <CardText>
+                {t('transaction.transactionFailed', { errorMessage: error })}
+              </CardText>
+            </Jumbotron>
+          </ModalBody>
+          <ModalFooter>
+            <ActivityButton name="closeTransaction" color="primary" onClick={toggle}>Close</ActivityButton>
+          </ModalFooter>
+        </>
+      }
     </Modal >
   )
 }

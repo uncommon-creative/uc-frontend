@@ -26,16 +26,12 @@ export const OptinAssetPage = () => {
   const { t, i18n } = useTranslation();
   let history = useHistory();
   const userAttributes = useSelector(ProfileSelectors.getProfile)
+  const algorandAccount = useSelector(ProfileSelectors.getAlgorandAccount)
   console.log("userAttributes:", userAttributes)
   const user = useSelector(AuthSelectors.getUser)
   const modalOpen = useSelector(AssetCurrencySelectors.getModalOpen)
   const assetsCurrencies = useSelector(AssetCurrencySelectors.getAssetsCurrencies)
   const currentAssetCurrency = useSelector(AssetCurrencySelectors.getCurrentAssetCurrency)
-  const algorandAccountInfo = useSelector(TransactionSelectors.getAlgorandAccountInfo)
-
-  // React.useEffect(() => {
-  //   dispatch(TransactionActions.willGetAlgorandAccountInfo(userAttributes.public_key))
-  // }, [userAttributes]);
 
   return (
     <>
@@ -54,10 +50,15 @@ export const OptinAssetPage = () => {
                         <LinkBlockExplorer title={`${asset.assetName}: ${asset.assetIndex}`} type="asset" id={asset.assetIndex} />
                       </Col>
                       <Col className="col-auto ml-auto">
-                        <ActivityButton disabled={algorandAccountInfo.assets.some((accountAsset: any) => (accountAsset["asset-id"] == asset.assetIndex))} name="optinAsset" color="primary" onClick={() => {
+                        <ActivityButton disabled={algorandAccount.assets.some((accountAsset: any) => JSON.parse(accountAsset)["asset-id"] == asset.assetIndex)} name="willSelectAssetCurrency" color="primary" onClick={() => {
                           dispatch(AssetCurrencyActions.toggleModalOpen())
                           dispatch(AssetCurrencyActions.willSelectAssetCurrency({ asset: asset.assetIndex }))
                         }}>Opt-in {asset.assetName}</ActivityButton>
+                      </Col>
+                      <Col className="col-auto">
+                        <ActivityButton outline disabled={!algorandAccount.assets.some((accountAsset: any) => JSON.parse(accountAsset)["asset-id"] == asset.assetIndex)} name="dispenseAsset" color="primary" onClick={() => {
+                          dispatch(AssetCurrencyActions.willDispenseAssetCurrency({ address: algorandAccount.address, asset: asset }))
+                        }}>Dispense {asset.assetName}</ActivityButton>
                       </Col>
                     </Row>
                   </ListGroupItem>

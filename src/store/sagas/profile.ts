@@ -5,6 +5,7 @@ import { actions as AuthActions } from '../slices/auth'
 import * as ArbitratorApi from '../../api/arbitrator'
 import { actions as ArbitratorActions } from '../slices/arbitrator'
 import { willSaveArbitratorSettings } from './arbitrator'
+import { willGetAlgorandAccountInfo } from './transaction'
 import { actions as NotificationActions } from '../slices/notification'
 import * as ServiceApi from '../../api/service'
 import { actions as UIActions } from '../slices/ui'
@@ -49,9 +50,10 @@ function* willRetrieveProfileData(action: any) {
       yield call(willGenerateAlgoAccount)
       yield put(push("/create-algo-account"))
     }
-    // else {
-    //   console.log('with public_key')
-    // }
+    else {
+      const algorandData = yield call(willGetAlgorandAccountInfo, { payload: result.public_key })
+      yield put(ProfileActions.didRetrieveAlgorandData(algorandData))
+    }
 
   } catch (error) {
     console.log('Error retriving profile data', error);
