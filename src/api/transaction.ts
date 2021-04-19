@@ -88,42 +88,75 @@ export function signTransactionsAcceptAndPayMnemonicAlgo(multiSigAddress: any, p
   }
 }
 
-export function signTransactionsAcceptAndPayMnemonicPaid(params: any, mnemonicSecretKey: any, buyer: any, assetId: any) {
+// export function signTransactionsAcceptAndPayMnemonicPaid(params: any, mnemonicSecretKey: any, buyer: any, assetId: any) {
+//   try {
+
+//     const txnOptin = algosdk.makeAssetTransferTxnWithSuggestedParams(buyer, buyer, undefined, undefined, 0, undefined, assetId, params)
+//     console.log("signTransactionsAcceptAndPayPaid txnOptin: ", txnOptin)
+
+//     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
+//     let signedOptinTxn = algosdk.signTransaction(txnOptin, secret_key.sk)
+//     signedOptinTxn.blob = signedOptinTxn.blob.toString()
+
+//     return [signedOptinTxn]
+//   } catch (error) {
+//     console.log("signTransactionsAcceptAndPayPaid API error: ", error)
+//     throw error
+//   }
+// }
+
+export function signTransactionsAcceptAndPayMnemonicAssetOptin(multiSigAddress: any, params: any, mnemonicSecretKey: any, toPayAlgo: any, toPayAssetCurrency: any, buyerAddress: any, assetIdSow: any, assetCurrencyIndex: any, mparams: any) {
   try {
+    const txnPaymentAlgo = algosdk.makePaymentTxnWithSuggestedParams(buyerAddress, multiSigAddress, toPayAlgo, undefined, undefined, params);
+    console.log("signTransactionsAcceptAndPayMnemonicAssetOptin txnPayment: ", txnPaymentAlgo)
+    const txnOptinAssetCurrencyMsig = algosdk.makeAssetTransferTxnWithSuggestedParams(multiSigAddress, multiSigAddress, undefined, undefined, 0, undefined, assetCurrencyIndex, params)
+    console.log("signTransactionsAcceptAndPayMnemonicAssetOptin txnOptinAssetCurrencyMsig: ", txnOptinAssetCurrencyMsig)
+    const txnOptinAssetSowBuyer = algosdk.makeAssetTransferTxnWithSuggestedParams(buyerAddress, buyerAddress, undefined, undefined, 0, undefined, assetIdSow, params)
+    console.log("signTransactionsAcceptAndPayMnemonicAssetOptin txnOptinAssetSowBuyer: ", txnOptinAssetSowBuyer)
+    const txnPaymentAssetCurrency = algosdk.makeAssetTransferTxnWithSuggestedParams(buyerAddress, multiSigAddress, undefined, undefined, toPayAssetCurrency, undefined, assetCurrencyIndex, params)
+    console.log("signTransactionsAcceptAndPayMnemonicAssetOptin txnPaymentAssetCurrency: ", txnPaymentAssetCurrency)
 
-    const txnOptin = algosdk.makeAssetTransferTxnWithSuggestedParams(buyer, buyer, undefined, undefined, 0, undefined, assetId, params)
-    console.log("signTransactionsAcceptAndPayPaid txnOptin: ", txnOptin)
 
+    let gid = algosdk.assignGroupID([txnPaymentAlgo, txnOptinAssetCurrencyMsig, txnOptinAssetSowBuyer, txnPaymentAssetCurrency]);
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
-    let signedOptinTxn = algosdk.signTransaction(txnOptin, secret_key.sk)
-    signedOptinTxn.blob = signedOptinTxn.blob.toString()
+    let signedTxnPaymentAlgo = algosdk.signTransaction(txnPaymentAlgo, secret_key.sk)
+    signedTxnPaymentAlgo.blob = signedTxnPaymentAlgo.blob.toString()
+    let signedTxnOptinAssetCurrencyMsig = algosdk.signMultisigTransaction(txnOptinAssetCurrencyMsig, mparams, secret_key.sk)
+    signedTxnOptinAssetCurrencyMsig.blob = signedTxnOptinAssetCurrencyMsig.blob.toString()
+    let signedTxnOptinAssetSowBuyer = algosdk.signTransaction(txnOptinAssetSowBuyer, secret_key.sk)
+    signedTxnOptinAssetSowBuyer.blob = signedTxnOptinAssetSowBuyer.blob.toString()
+    let signedTxnPaymentAssetCurrency = algosdk.signTransaction(txnPaymentAssetCurrency, secret_key.sk)
+    signedTxnPaymentAssetCurrency.blob = signedTxnPaymentAssetCurrency.blob.toString()
 
-    return [signedOptinTxn]
+    return [signedTxnPaymentAlgo, signedTxnOptinAssetCurrencyMsig, signedTxnOptinAssetSowBuyer, signedTxnPaymentAssetCurrency]
   } catch (error) {
-    console.log("signTransactionsAcceptAndPayPaid API error: ", error)
+    console.log("signTransactionsAcceptAndPayMnemonicAssetOptin API error: ", error)
     throw error
   }
 }
 
-export function signTransactionsAcceptAndPayMnemonicAsset(multiSigAddress: any, params: any, mnemonicSecretKey: any, toPay: any, buyer: any, assetId: any) {
+export function signTransactionsAcceptAndPayMnemonicAsset(multiSigAddress: any, params: any, mnemonicSecretKey: any, toPayAlgo: any, toPayAssetCurrency: any, buyerAddress: any, assetIdSow: any, assetCurrencyIndex: any) {
   try {
+    const txnPaymentAlgo = algosdk.makePaymentTxnWithSuggestedParams(buyerAddress, multiSigAddress, toPayAlgo, undefined, undefined, params);
+    console.log("signTransactionsAcceptAndPayMnemonicAsset txnPayment: ", txnPaymentAlgo)
+    const txnOptinAssetSowBuyer = algosdk.makeAssetTransferTxnWithSuggestedParams(buyerAddress, buyerAddress, undefined, undefined, 0, undefined, assetIdSow, params)
+    console.log("signTransactionsAcceptAndPayMnemonicAsset txnOptinAssetSowBuyer: ", txnOptinAssetSowBuyer)
+    const txnPaymentAssetCurrency = algosdk.makeAssetTransferTxnWithSuggestedParams(buyerAddress, multiSigAddress, undefined, undefined, toPayAssetCurrency, undefined, assetCurrencyIndex, params)
+    console.log("signTransactionsAcceptAndPayMnemonicAsset txnPaymentAssetCurrency: ", txnPaymentAssetCurrency)
 
-    const txnOptin = algosdk.makeAssetTransferTxnWithSuggestedParams(buyer, buyer, undefined, undefined, 0, undefined, assetId, params)
-    console.log("signTransactionsAcceptAndPayMnemonic txnOptin: ", txnOptin)
 
-    const txnPayment = algosdk.makePaymentTxnWithSuggestedParams(buyer, multiSigAddress, toPay, undefined, undefined, params);
-    console.log("signTransactionsAcceptAndPayMnemonic txnPayment: ", txnPayment)
-
-    let gid = algosdk.assignGroupID([txnOptin, txnPayment]);
+    let gid = algosdk.assignGroupID([txnPaymentAlgo, txnOptinAssetSowBuyer, txnPaymentAssetCurrency]);
     const secret_key = algosdk.mnemonicToSecretKey(mnemonicSecretKey);
-    let signedOptinTxn = algosdk.signTransaction(txnOptin, secret_key.sk)
-    signedOptinTxn.blob = signedOptinTxn.blob.toString()
-    let signedPaymentTxn = algosdk.signTransaction(txnPayment, secret_key.sk)
-    signedPaymentTxn.blob = signedPaymentTxn.blob.toString()
+    let signedTxnPaymentAlgo = algosdk.signTransaction(txnPaymentAlgo, secret_key.sk)
+    signedTxnPaymentAlgo.blob = signedTxnPaymentAlgo.blob.toString()
+    let signedTxnOptinAssetSowBuyer = algosdk.signTransaction(txnOptinAssetSowBuyer, secret_key.sk)
+    signedTxnOptinAssetSowBuyer.blob = signedTxnOptinAssetSowBuyer.blob.toString()
+    let signedTxnPaymentAssetCurrency = algosdk.signTransaction(txnPaymentAssetCurrency, secret_key.sk)
+    signedTxnPaymentAssetCurrency.blob = signedTxnPaymentAssetCurrency.blob.toString()
 
-    return [signedOptinTxn, signedPaymentTxn]
+    return [signedTxnPaymentAlgo, signedTxnOptinAssetSowBuyer, signedTxnPaymentAssetCurrency]
   } catch (error) {
-    console.log("signTransactionsAcceptAndPayMnemonic API error: ", error)
+    console.log("signTransactionsAcceptAndPayMnemonicAsset API error: ", error)
     throw error
   }
 }
