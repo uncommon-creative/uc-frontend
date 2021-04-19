@@ -917,11 +917,10 @@ export function* willCheckAccountTransaction(action: any) {
     }
     else {
       const addressInfo = yield call(willGetAlgorandAccountInfo, { payload: resultMnemonicToSecretKey.addr })
-      console.log("willCheckAccountTransaction addressInfo: ", addressInfo)
+      // console.log("willCheckAccountTransaction addressInfo: ", addressInfo)
       const accountMinBalance = (addressInfo.assets.length * AlgorandMinBalance + addressInfo.createdAssets.length * AlgorandMinBalance + AlgorandMinBalance) / 1000000
-      console.log("in willCheckAccountTransaction accountMinBalance: ", accountMinBalance)
+      // console.log("in willCheckAccountTransaction accountMinBalance: ", accountMinBalance)
       const assetCurrencyIndex = action.payload.currency == "ALGO" ? undefined : assetsCurrencies.find((asset: any) => asset.assetName === action.payload.currency).assetIndex
-
 
       if (addressInfo.amount == 0) {
         return {
@@ -935,7 +934,7 @@ export function* willCheckAccountTransaction(action: any) {
           error: `After the transaction your account would result in a balance lower than the minimum balance of ${accountMinBalance} ALGO allowed by Algorand.`
         }
       }
-      else if (assetCurrencyIndex && (addressInfo.assets.find((asset: any) => JSON.parse(asset)['asset-id'] === assetCurrencyIndex).amount < action.payload.toPayAssetCurrency)) {
+      else if (assetCurrencyIndex && (JSON.parse(addressInfo.assets.find((asset: any) => JSON.parse(asset)['asset-id'] === assetCurrencyIndex)).amount < action.payload.toPayAssetCurrency)) {
         return {
           check: false,
           error: `Your account has not the necessary balance of asset ${action.payload.currency} to complete the transaction.`

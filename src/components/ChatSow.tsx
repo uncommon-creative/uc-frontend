@@ -34,14 +34,14 @@ export const ChatSow = ({ currentSow }: any) => {
   const messages = useSelector(ChatSelectors.getMessages)
   let inputRef: any = React.createRef();
 
-  // React.useEffect(() => {
-  //   const refreshChat = setInterval(() => {
-  //     dispatch(ChatActions.willRefreshSowChat({ messages: messages, sow: currentSow.sow }))
-  //     dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
-  //   }, 30000);
+  React.useEffect(() => {
+    const refreshChat = setInterval(() => {
+      dispatch(ChatActions.willRefreshSowChat({ messages: messages, sow: currentSow.sow }))
+      dispatch(SowActions.willGetSow({ sow: currentSow.sow }))
+    }, 30000);
 
-  //   return () => clearInterval(refreshChat)
-  // }, []);
+    return () => clearInterval(refreshChat)
+  }, []);
 
   React.useEffect(() => {
     updateScroll()
@@ -84,8 +84,35 @@ export const ChatSow = ({ currentSow }: any) => {
                                 <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center" : ""}>
                                   {msg.commandMessage.command == SowCommands.ACCEPT_AND_PAY ?
                                     <>
-                                      <LinkBlockExplorer title={`Opt-in transaction: ${JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
-                                      {JSON.parse(msg.commandMessage.data).tx[1] && <LinkBlockExplorer title={`Payment transaction: ${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />}
+                                      {JSON.parse(msg.commandMessage.data).tx.length == 4 &&
+                                        <>
+                                          <LinkBlockExplorer title={'Opt-in transaction: ' + JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
+                                          <LinkBlockExplorer title={'Payment fee (ALGO) transaction: ' + JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />
+                                          <LinkBlockExplorer title={`Payment (${currentSow.currency}) transaction: ` + JSON.parse(msg.commandMessage.data).tx[2].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[2]} />
+                                          <LinkBlockExplorer title={`Opt-in multisig asset ${currentSow.currency} transaction: ` + JSON.parse(msg.commandMessage.data).tx[3].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[3]} />
+                                        </>
+                                      }
+                                      {JSON.parse(msg.commandMessage.data).tx.length == 3 &&
+                                        <>
+                                          <LinkBlockExplorer title={'Payment fee (ALGO) transaction: ' + JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
+                                          <LinkBlockExplorer title={`Payment (${currentSow.currency}) transaction: ` + JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />
+                                          <LinkBlockExplorer title={`Opt-in multisig asset ${currentSow.currency} transaction: ` + JSON.parse(msg.commandMessage.data).tx[2].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[2]} />
+                                        </>
+                                      }
+                                      {JSON.parse(msg.commandMessage.data).tx.length == 2 &&
+                                        <>
+                                          <LinkBlockExplorer title={'Opt-in transaction: ' + JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
+                                          <LinkBlockExplorer title={'Payment transaction: ' + JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />
+                                        </>
+                                      }
+
+
+
+                                      {/* <>
+                                        <LinkBlockExplorer title={`Opt-in transaction: ${JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
+                                        {JSON.parse(msg.commandMessage.data).tx[1] && <LinkBlockExplorer title={`Payment transaction: ${JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6)}...`} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />} */}
+
+
                                     </>
                                     :
                                     msg.commandMessage.command == SowCommands.ACCEPT_MILESTONE ?
