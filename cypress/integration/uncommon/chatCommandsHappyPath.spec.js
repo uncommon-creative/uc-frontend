@@ -162,8 +162,9 @@ describe('Chat', () => {
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
       cy.wait(3000)
       cy.get('[data-cy=CLAIM_MILESTONE_MET]').click()
-      cy.wait(1000)
+      cy.wait(2000)
       cy.get('[data-cy=acceptConditions]').check()
+      cy.wait(1000)
       cy.get('[data-cy=continueTransaction]').click()
       cy.wait(1000)
       cy.get('[data-cy=attachmentDeliverableModal]').within(() => {
@@ -214,8 +215,9 @@ describe('Chat', () => {
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
       cy.wait(3000)
       cy.get('[data-cy=CLAIM_MILESTONE_MET]').click()
-      cy.wait(1000)
+      cy.wait(2000)
       cy.get('[data-cy=acceptConditions]').check()
+      cy.wait(1000)
       cy.get('[data-cy=continueTransaction]').click()
       cy.wait(1000)
       cy.get('[data-cy=attachmentDeliverableModal]').within(() => {

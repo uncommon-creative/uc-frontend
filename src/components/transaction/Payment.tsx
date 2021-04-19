@@ -21,73 +21,67 @@ export const Payment = () => {
       <CardSubtitle tag="h6" className="my-1 text-muted text-center">{t('transaction.payment.multisigAddress', { multisigAddress: multiSig.address })}</CardSubtitle>
 
       <Row>
-        <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.balances')}</CardSubtitle>
+        <Col className="col-7 d-flex justify-content-end">
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.balancesAlgo')}</CardSubtitle>
         </Col>
-        <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.algo', { value: payment.balancesAlgo / 1000000 })}</CardSubtitle>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <CardSubtitle tag="h6" className="my-1">{"A2) Current balance of escrow account:"}</CardSubtitle>
-        </Col>
-        <Col>
-          {payment.balancesAssetCurrency == -1 ?
-            <CardSubtitle tag="h6" className="my-1">0 (opt-in on asset {currentSow.currency} required)</CardSubtitle>
-            : <CardSubtitle tag="h6" className="my-1">{payment.balancesAssetCurrency / 1000000} {currentSow.currency}</CardSubtitle>
-          }
+        <Col className="col-auto">
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.currency', { value: payment.balancesAlgo, currency: "ALGO" })}</CardSubtitle>
         </Col>
       </Row>
-      <Row>
-        <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.price')}</CardSubtitle>
-        </Col>
-        <Col>
-          <CardSubtitle tag="h6" className="my-1">{payment.price / 1000000} {currentSow.currency}</CardSubtitle>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.fee')}</CardSubtitle>
-        </Col>
-        <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.algo', { value: payment.fee / 1000000 })}</CardSubtitle>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.total')}</CardSubtitle>
-        </Col>
-        <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.algo', { value: payment.totalAlgo / 1000000 })}</CardSubtitle>
-        </Col>
-      </Row>
-      {currentSow.currency != "ALGO" &&
+      {payment.currency != "ALGO" &&
         <Row>
-          <Col>
-            <CardSubtitle tag="h6" className="my-1">Total {currentSow.currency} (B+C):</CardSubtitle>
+          <Col className="col-7 d-flex justify-content-end">
+            <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.balancesAssetCurrency', { assetName: payment.currency })}</CardSubtitle>
           </Col>
-          <Col>
-            <CardSubtitle tag="h6" className="my-1">{payment.totalAssetCurrency / 1000000 } {currentSow.currency}</CardSubtitle>
+          <Col className="col-auto">
+            {payment.balancesAssetCurrency == -1 ?
+              <CardSubtitle tag="h6" className="my-1">0 (opt-in on asset {currentSow.currency} required)</CardSubtitle>
+              : <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.currency', { value: payment.balancesAssetCurrency, currency: payment.currency })}</CardSubtitle>
+            }
           </Col>
         </Row>
       }
       <Row>
-        <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.total')}</CardSubtitle>
+        <Col className="col-7 d-flex justify-content-end">
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.price')}</CardSubtitle>
         </Col>
-        <Col>
-          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.algo', { value: payment.toPayAlgo / 1000000 })}</CardSubtitle>
+        <Col className="col-auto">
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.currency', { value: payment.price, currency: payment.currency })}</CardSubtitle>
         </Col>
       </Row>
-      {currentSow.currency != "ALGO" &&
+      <Row>
+        <Col className="col-7 d-flex justify-content-end">
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.feeAlgo')}</CardSubtitle>
+        </Col>
+        <Col className="col-auto">
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.currency', { value: payment.feeAlgo, currency: "ALGO" })}</CardSubtitle>
+        </Col>
+      </Row>
+      {payment.currency != "ALGO" &&
         <Row>
-          <Col>
-            <CardSubtitle tag="h6" className="my-1">To pay {currentSow.currency} (B+C-A):</CardSubtitle>
+          <Col className="col-7 d-flex justify-content-end">
+            <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.feeAssetCurrency', { assetName: payment.currency })}</CardSubtitle>
           </Col>
-          <Col>
-            <CardSubtitle tag="h6" className="my-1">{payment.toPayAssetCurrency / 1000000 } {currentSow.currency}</CardSubtitle>
+          <Col className="col-auto">
+            <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.currency', { value: payment.feeAssetCurrency, currency: payment.currency })}</CardSubtitle>
+          </Col>
+        </Row>
+      }
+      <Row>
+        <Col className="col-7 d-flex justify-content-end">
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.toPayAlgo')}</CardSubtitle>
+        </Col>
+        <Col className="col-auto">
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.currency', { value: payment.toPayAlgo, currency: "ALGO" })}</CardSubtitle>
+        </Col>
+      </Row>
+      {payment.currency != "ALGO" &&
+        <Row>
+          <Col className="col-7 d-flex justify-content-end">
+            <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.toPayAssetCurrency', { assetName: payment.currency })}</CardSubtitle>
+          </Col>
+          <Col className="col-auto">
+            <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.currency', { value: payment.toPayAssetCurrency, currency: payment.currency })}</CardSubtitle>
           </Col>
         </Row>
       }

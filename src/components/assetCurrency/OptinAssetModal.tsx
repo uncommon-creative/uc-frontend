@@ -16,14 +16,13 @@ import { actions as SowActions, selectors as SowSelectors, SowCommands } from '.
 import { actions as AssetCurrencyActions, selectors as AssetCurrencySelectors } from '../../store/slices/assetCurrency'
 import { actions as ChatActions } from '../../store/slices/chat'
 import { selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
-import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
+import { actions as TransactionActions, selectors as TransactionSelectors, AlgorandFee } from '../../store/slices/transaction'
 import { actions as NotificationActions } from '../../store/slices/notification'
 import { actions as UIActions } from '../../store/slices/ui'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { ActivityButton } from '../common/ActivityButton';
 import { LinkBlockExplorer } from '../common/LinkBlockExplorer'
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
-import { TransactionFee } from '../../store/slices/transaction'
 
 declare var AlgoSigner: any;
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
@@ -124,7 +123,7 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
               dispatch(AssetCurrencyActions.goToModalPage({ modalPage: 1 }))
             }}>Cancel</ActivityButton>
             <ActivityButton disabled={mnemonicSecretKey == ''} name="willOptinAssetCurrency" color="primary" onClick={async () => {
-              dispatch(AssetCurrencyActions.willOptinAssetCurrency({ params: params, mnemonicSecretKey: mnemonicSecretKey, address: userAttributes.public_key, assetId: currentAssetCurrency, toPay: TransactionFee }))
+              dispatch(AssetCurrencyActions.willOptinAssetCurrency({ params: params, mnemonicSecretKey: mnemonicSecretKey, address: userAttributes.public_key, assetId: currentAssetCurrency, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' }))
             }}>Sign</ActivityButton>
           </ModalFooter>
         </>

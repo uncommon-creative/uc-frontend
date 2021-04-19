@@ -100,7 +100,7 @@ export const ChatSow = ({ currentSow }: any) => {
                               }
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).assetId &&
                                 <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center mt-1" : "mt-1"}>
-                                  <LinkBlockExplorer title={'Asset: ' + JSON.parse(msg.commandMessage.data).assetId} type="asset" id={JSON.parse(msg.commandMessage.data).assetId} />
+                                  <LinkBlockExplorer title={'Notarization proof: ' + JSON.parse(msg.commandMessage.data).assetId} type="asset" id={JSON.parse(msg.commandMessage.data).assetId} />
                                 </CardSubtitle>
                               }
                               {msg.commandMessage.data && JSON.parse(msg.commandMessage.data).reviews_left &&
