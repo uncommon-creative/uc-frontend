@@ -34,7 +34,7 @@ export const Payment = () => {
         </Col>
         <Col>
           {payment.balancesAssetCurrency == -1 ?
-            <CardSubtitle tag="h6" className="my-1">Opt-in on asset {currentSow.currency} required</CardSubtitle>
+            <CardSubtitle tag="h6" className="my-1">0 (opt-in on asset {currentSow.currency} required)</CardSubtitle>
             : <CardSubtitle tag="h6" className="my-1">{payment.balancesAssetCurrency / 1000000} {currentSow.currency}</CardSubtitle>
           }
         </Col>
