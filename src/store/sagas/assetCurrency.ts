@@ -82,14 +82,15 @@ export function* willOptinAssetCurrency(action: any) {
 
 export function* willDispenseAssetCurrency(action: any) {
   console.log("in willDispenseAssetCurrency with: ", action)
-  yield put(UIActions.startActivityRunning("willDispenseAssetCurrency"));
+  yield put(UIActions.startActivityRunning("willDispenseAssetCurrency" + action.payload.asset.assetName));
 
   try {
     const resultDispense = yield call(AssetCurrencyApi.algorandDispenseFakeAsset, action.payload.address, action.payload.asset.assetName)
     console.log("willOptinAssetCurrency resultDispense: ", resultDispense)
+    yield put(NotificationActions.willShowNotification({ message: `You got 100 ${action.payload.asset.assetName}`, type: "info" }));
 
   } catch (error) {
     console.log("error in willDispenseAssetCurrency ", error)
   }
-  yield put(UIActions.stopActivityRunning("willDispenseAssetCurrency"));
+  yield put(UIActions.stopActivityRunning("willDispenseAssetCurrency" + action.payload.asset.assetName));
 }

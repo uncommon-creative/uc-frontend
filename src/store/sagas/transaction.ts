@@ -4,7 +4,7 @@ import { actions as SowActions, SowStatus, SowCommands } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { selectors as ProfileSelectors } from '../slices/profile'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../slices/transaction'
-import { actions as AssetCurrencyActions } from '../slices/assetCurrency'
+import { actions as AssetCurrencyActions, selectors as AssetCurrencySelectors } from '../slices/assetCurrency'
 import { actions as UIActions } from '../slices/ui'
 import * as TransactionApi from '../../api/transaction'
 import { willGetUserProfile } from '../sagas/profile'
@@ -118,7 +118,7 @@ function* willCreateMultiSigAddress(action: any) {
 
     yield put(TransactionActions.didCreateMultiSigAddress({ multisig: multiSigAddressInfo, sowCommand: action.payload.sowCommand }))
 
-    yield call(willPreparePayment, { amount: multiSigAddressInfo.amount, price: action.payload.price, fee: TransactionFee })
+    yield call(willPreparePayment, { payload: { multiSigAddressInfo: multiSigAddressInfo, price: action.payload.price, currency: action.payload.currency, fee: TransactionFee } })
   } catch (error) {
     console.log("error in willCreateMultiSigAddress ", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
@@ -128,16 +128,27 @@ function* willCreateMultiSigAddress(action: any) {
 
 function* willPreparePayment(action: any) {
   console.log("in willPreparePayment with: ", action)
+  const assetsCurrencies = yield select(AssetCurrencySelectors.getAssetsCurrencies)
+
+  const assetCurrencyIndex = action.payload.currency == "ALGO" ? undefined : assetsCurrencies.find((asset: any) => asset.assetName === action.payload.currency).assetIndex
+  console.log("willPreparePayment assetCurrencyIndex: ", assetCurrencyIndex)
+  const multisigAsset = action.payload.multiSigAddressInfo.assets.find((asset: any) => JSON.parse(asset)['asset-id'] === assetCurrencyIndex)
+  console.log("willPreparePayment multisigAsset: ", multisigAsset)
 
   try {
-    var payment = {
-      balances: action.amount,
-      price: action.price * 1000000,
-      toPay: (action.price * 1000000 + TransactionFee) - (action.amount),
+    let payment = {
+      balancesAlgo: action.payload.multiSigAddressInfo.amount,
+      balancesAssetCurrency: action.payload.currency == "ALGO" ? undefined : multisigAsset ? JSON.parse(multisigAsset).amount : -1,
+      price: action.payload.price * 1000000,
+      currency: action.payload.currency,
+      toPayAlgo: action.payload.currency == "ALGO" ? (action.payload.price * 1000000 + TransactionFee) - (action.payload.multiSigAddressInfo.amount) : TransactionFee,
+      toPayAssetCurrency: action.payload.currency == "ALGO" ? 0 : action.payload.price * 1000000,
       fee: TransactionFee,
-      total: action.price * 1000000 + TransactionFee
+      totalAlgo: action.payload.currency == "ALGO" ? action.payload.price * 1000000 + TransactionFee : TransactionFee,
+      totalAssetCurrency: action.payload.currency == "ALGO" ? 0 : action.payload.price * 1000000
     }
-    payment.toPay < 0 && (payment.toPay = 0)
+    payment.toPayAlgo < 0 && (payment.toPayAlgo = 0)
+    payment.toPayAssetCurrency < 0 && (payment.toPayAssetCurrency = 0)
     yield put(TransactionActions.didPreparePayment(payment))
 
   } catch (error) {
@@ -171,6 +182,8 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
   console.log("in willCompleteTransactionAcceptAndPayMnemonic with: ", action)
   yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPay'));
   const users = yield select(ProfileSelectors.getUsers)
+  const assetsCurrencies = yield select(AssetCurrencySelectors.getAssetsCurrencies)
+  const algorandAccount = yield select(ProfileSelectors.getAlgorandAccount)
 
   try {
     const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: action.payload.toPay } })
@@ -181,13 +194,22 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
       console.log("willCompleteTransactionAcceptAndPayMnemonic resultSetSowArbitrator: ", resultSetSowArbitrator)
 
       let resultSignedTransaction = [] as any
-      if (action.payload.toPay <= 0) {
-        resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicPaid, action.payload.params.withoutDelay, action.payload.mnemonicSecretKey, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
-        console.log("willCompleteTransactionAcceptAndPayMnemonic PAID resultSignedTransaction: ", resultSignedTransaction)
+      // CHECK CURRENCY ASSET
+      if (assetsCurrencies.some((asset: any) => asset.assetName == action.payload.currentSow.currency)) {
+
+
+
       }
-      else {
-        resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonic, action.payload.multiSigAddress, action.payload.params.withoutDelay, action.payload.mnemonicSecretKey, action.payload.toPay, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
-        console.log("willCompleteTransactionAcceptAndPayMnemonic TO PAY resultSignedTransaction: ", resultSignedTransaction)
+      // CHECK CURRENCY ALGO
+      else if (action.payload.currentSow.currency == "ALGO") {
+        if (action.payload.toPay <= 0) {
+          resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicPaid, action.payload.params.withoutDelay, action.payload.mnemonicSecretKey, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
+          console.log("willCompleteTransactionAcceptAndPayMnemonic PAID resultSignedTransaction: ", resultSignedTransaction)
+        }
+        else {
+          resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonic, action.payload.multiSig.address, action.payload.params.withoutDelay, action.payload.mnemonicSecretKey, action.payload.toPay, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
+          console.log("willCompleteTransactionAcceptAndPayMnemonic TO PAY resultSignedTransaction: ", resultSignedTransaction)
+        }
       }
 
       const resultSentTransaction = yield call(TransactionApi.algorandSendAcceptAndPayTx, action.payload.currentSow.sow, resultSignedTransaction)
