@@ -46,7 +46,7 @@ export function* willOptinAssetCurrency(action: any) {
   yield put(UIActions.startActivityRunning("willOptinAssetCurrency"));
 
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: action.payload.toPay } })
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPayAlgo: action.payload.toPayAlgo, currency: action.payload.currency } })
     console.log("willOptinAssetCurrency resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {

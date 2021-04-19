@@ -3,12 +3,11 @@ import { call, put, takeEvery, takeLatest, delay, select } from 'redux-saga/effe
 import { actions as SowActions, SowStatus, SowCommands } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { selectors as ProfileSelectors } from '../slices/profile'
-import { actions as TransactionActions, selectors as TransactionSelectors } from '../slices/transaction'
+import { actions as TransactionActions, selectors as TransactionSelectors, TransactionsMultisigFee, AlgorandFee, AlgorandMinBalance } from '../slices/transaction'
 import { actions as AssetCurrencyActions, selectors as AssetCurrencySelectors } from '../slices/assetCurrency'
 import { actions as UIActions } from '../slices/ui'
 import * as TransactionApi from '../../api/transaction'
 import { willGetUserProfile } from '../sagas/profile'
-import { TransactionFee, AlgorandFee, AlgorandMinBalance } from '../slices/transaction'
 import { configuration } from '../../config'
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
@@ -44,7 +43,8 @@ export function* willGetAlgorandAccountInfo(action: any) {
   console.log("in willGetAlgorandAccountInfo with: ", action)
 
   try {
-    const result = yield call(TransactionApi.algorandGetAccountInfo, action.payload);
+    let result = yield call(TransactionApi.algorandGetAccountInfo, action.payload);
+    result.amount = result.amount / 1000000
     console.log("result willGetAlgorandAccountInfo: ", result)
     yield put(TransactionActions.didGetAlgorandAccountInfo(result))
 
@@ -118,7 +118,7 @@ function* willCreateMultiSigAddress(action: any) {
 
     yield put(TransactionActions.didCreateMultiSigAddress({ multisig: multiSigAddressInfo, sowCommand: action.payload.sowCommand }))
 
-    yield call(willPreparePayment, { payload: { multiSigAddressInfo: multiSigAddressInfo, price: action.payload.price, currency: action.payload.currency, fee: TransactionFee } })
+    yield call(willPreparePayment, { payload: { multiSigAddressInfo: multiSigAddressInfo, price: action.payload.price, currency: action.payload.currency } })
   } catch (error) {
     console.log("error in willCreateMultiSigAddress ", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
@@ -139,16 +139,13 @@ function* willPreparePayment(action: any) {
     let payment = {
       balancesAlgo: action.payload.multiSigAddressInfo.amount,
       balancesAssetCurrency: action.payload.currency == "ALGO" ? undefined : multisigAsset ? JSON.parse(multisigAsset).amount : -1,
-      price: action.payload.price * 1000000,
+      price: action.payload.price,
       currency: action.payload.currency,
-      toPayAlgo: action.payload.currency == "ALGO" ? (action.payload.price * 1000000 + TransactionFee) - (action.payload.multiSigAddressInfo.amount) : TransactionFee,
-      toPayAssetCurrency: action.payload.currency == "ALGO" ? 0 : action.payload.price * 1000000,
-      fee: TransactionFee,
-      totalAlgo: action.payload.currency == "ALGO" ? action.payload.price * 1000000 + TransactionFee : TransactionFee,
-      totalAssetCurrency: action.payload.currency == "ALGO" ? 0 : action.payload.price * 1000000
+      feeAlgo: TransactionsMultisigFee / 1000000,
+      feeAssetCurrency: 0,
+      toPayAlgo: (action.payload.currency == "ALGO" ? action.payload.price + (TransactionsMultisigFee / 1000000) : (TransactionsMultisigFee / 1000000)),
+      toPayAssetCurrency: action.payload.currency == "ALGO" ? 0 : action.payload.price
     }
-    payment.toPayAlgo < 0 && (payment.toPayAlgo = 0)
-    payment.toPayAssetCurrency < 0 && (payment.toPayAssetCurrency = 0)
     yield put(TransactionActions.didPreparePayment(payment))
 
   } catch (error) {
@@ -186,7 +183,7 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
   const algorandAccount = yield select(ProfileSelectors.getAlgorandAccount)
 
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: action.payload.toPay } })
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPayAlgo: action.payload.payment.toPayAlgo, toPayAssetCurrency: action.payload.payment.toPayAssetCurrency, currency: action.payload.payment.currency } })
     console.log("willCompleteTransactionAcceptAndPayMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
@@ -194,22 +191,22 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
       console.log("willCompleteTransactionAcceptAndPayMnemonic resultSetSowArbitrator: ", resultSetSowArbitrator)
 
       let resultSignedTransaction = [] as any
-      // CHECK CURRENCY ASSET
-      if (assetsCurrencies.some((asset: any) => asset.assetName == action.payload.currentSow.currency)) {
 
-
-
-      }
       // CHECK CURRENCY ALGO
-      else if (action.payload.currentSow.currency == "ALGO") {
-        if (action.payload.toPay <= 0) {
-          resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicPaid, action.payload.params.withoutDelay, action.payload.mnemonicSecretKey, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
-          console.log("willCompleteTransactionAcceptAndPayMnemonic PAID resultSignedTransaction: ", resultSignedTransaction)
-        }
-        else {
-          resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonic, action.payload.multiSig.address, action.payload.params.withoutDelay, action.payload.mnemonicSecretKey, action.payload.toPay, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
-          console.log("willCompleteTransactionAcceptAndPayMnemonic TO PAY resultSignedTransaction: ", resultSignedTransaction)
-        }
+      if (action.payload.currentSow.currency == "ALGO") {
+        // if (action.payload.toPay <= 0) {
+        //   resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicPaid, action.payload.params.withoutDelay, action.payload.mnemonicSecretKey, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
+        //   console.log("willCompleteTransactionAcceptAndPayMnemonic PAID resultSignedTransaction: ", resultSignedTransaction)
+        // }
+        // else {
+        resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAlgo, action.payload.multiSig.address, action.payload.params.withoutDelay, action.payload.mnemonicSecretKey, action.payload.payment.toPayAlgo, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
+        console.log("willCompleteTransactionAcceptAndPayMnemonic ALGO resultSignedTransaction: ", resultSignedTransaction)
+        // }
+      }
+      // CHECK CURRENCY ASSET
+      else {
+        resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAsset, action.payload.multiSig.address, action.payload.params.withoutDelay, action.payload.mnemonicSecretKey, action.payload.payment.toPayAlgo, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
+        console.log("willCompleteTransactionAcceptAndPayMnemonic ASSET resultSignedTransaction: ", resultSignedTransaction)
       }
 
       const resultSentTransaction = yield call(TransactionApi.algorandSendAcceptAndPayTx, action.payload.currentSow.sow, resultSignedTransaction)
@@ -249,31 +246,31 @@ function* willCompleteTransactionAcceptAndPayAlgoSigner(action: any) {
     console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultSetSowArbitrator: ", resultSetSowArbitrator)
 
     let resultSignedTransaction = [] as any
-    if (action.payload.toPay <= 0) {
-      const resultTransactions = yield call(TransactionApi.createTransactionsAcceptAndPayPaidAlgoSigner, action.payload.params.withoutDelay, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
-      console.log("in willCompleteTransactionAcceptAndPayAlgoSigner resultTransactions: ", resultTransactions)
+    // if (action.payload.toPay <= 0) {
+    //   const resultTransactions = yield call(TransactionApi.createTransactionsAcceptAndPayPaidAlgoSigner, action.payload.params.withoutDelay, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
+    //   console.log("in willCompleteTransactionAcceptAndPayAlgoSigner resultTransactions: ", resultTransactions)
 
-      const resultOptinTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions[0])
-      console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultOptinTxnSigned: ", resultOptinTxnSigned)
+    //   const resultOptinTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions[0])
+    //   console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultOptinTxnSigned: ", resultOptinTxnSigned)
 
-      resultSignedTransaction = [resultOptinTxnSigned]
-      console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultSignedTransactions: ", resultSignedTransaction)
-    }
-    else {
-      const resultTransactions = yield call(TransactionApi.createTransactionsAcceptAndPayAlgoSigner, action.payload.multiSigAddress, action.payload.params.withoutDelay, action.payload.toPay, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
-      console.log("in willCompleteTransactionAcceptAndPayAlgoSigner resultTransactions: ", resultTransactions)
+    //   resultSignedTransaction = [resultOptinTxnSigned]
+    //   console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultSignedTransactions: ", resultSignedTransaction)
+    // }
+    // else {
+    const resultTransactions = yield call(TransactionApi.createTransactionsAcceptAndPayAlgoSigner, action.payload.multiSigAddress, action.payload.params.withoutDelay, action.payload.payment.toPay, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
+    console.log("in willCompleteTransactionAcceptAndPayAlgoSigner resultTransactions: ", resultTransactions)
 
-      const resultOptinTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions[0])
-      console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultOptinTxnSigned: ", resultOptinTxnSigned)
+    const resultOptinTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions[0])
+    console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultOptinTxnSigned: ", resultOptinTxnSigned)
 
-      //// DID
+    //// DID
 
-      const resultPaymentTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions[1])
-      console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultPaymentTxnSigned: ", resultPaymentTxnSigned)
+    const resultPaymentTxnSigned = yield call(TransactionApi.signTxAlgoSigner, resultTransactions[1])
+    console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultPaymentTxnSigned: ", resultPaymentTxnSigned)
 
-      resultSignedTransaction = [resultOptinTxnSigned, resultPaymentTxnSigned]
-      console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultSignedTransactions: ", resultSignedTransaction)
-    }
+    resultSignedTransaction = [resultOptinTxnSigned, resultPaymentTxnSigned]
+    console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultSignedTransactions: ", resultSignedTransaction)
+    // }
 
     const resultSentTransaction = yield call(TransactionApi.algorandSendAcceptAndPayTx, action.payload.currentSow.sow, resultSignedTransaction)
     console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultSentTransaction: ", resultSentTransaction)
@@ -321,7 +318,7 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
   const clawback = users[action.payload.currentSow.seller].public_key;
 
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: AlgorandFee } })
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' } })
     console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
@@ -565,7 +562,7 @@ function* willCompleteTransactionAcceptMilestoneMnemonic(action: any) {
   };
 
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: 0 } })
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' } })
     console.log("willCompleteTransactionAcceptMilestoneMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
@@ -679,7 +676,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
   const clawback = users[action.payload.currentSow.seller].public_key;
 
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPay: AlgorandFee } })
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' } })
     console.log("willCompleteTransactionSubmitMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
@@ -883,12 +880,11 @@ function* willCompleteTransactionSubmitAlgoSigner(action: any) {
 export function* willCheckAccountTransaction(action: any) {
   console.log("in willCheckAccountTransaction with: ", action)
   const userAttributes = yield select(ProfileSelectors.getProfile)
-  // console.log("in willCheckAccountTransaction userAttributes: ", userAttributes)
+  const assetsCurrencies = yield select(AssetCurrencySelectors.getAssetsCurrencies)
 
   try {
     const resultMnemonicToSecretKey = yield call(TransactionApi.mnemonicToSecretKey, action.payload.mnemonicSecretKey)
     // console.log("willCheckAccountTransaction resultMnemonicToSecretKey: ", resultMnemonicToSecretKey)
-
 
     if (resultMnemonicToSecretKey.addr != userAttributes.public_key) {
       return {
@@ -898,9 +894,11 @@ export function* willCheckAccountTransaction(action: any) {
     }
     else {
       const addressInfo = yield call(willGetAlgorandAccountInfo, { payload: resultMnemonicToSecretKey.addr })
-      // console.log("willCheckAccountTransaction addressInfo: ", addressInfo)
-      const accountMinBalance = addressInfo.assets.length * AlgorandMinBalance + addressInfo.createdAssets.length * AlgorandMinBalance + AlgorandMinBalance
-      // console.log("in willCheckAccountTransaction accountMinBalance: ", accountMinBalance)
+      console.log("willCheckAccountTransaction addressInfo: ", addressInfo)
+      const accountMinBalance = (addressInfo.assets.length * AlgorandMinBalance + addressInfo.createdAssets.length * AlgorandMinBalance + AlgorandMinBalance) / 1000000
+      console.log("in willCheckAccountTransaction accountMinBalance: ", accountMinBalance)
+      const assetCurrencyIndex = action.payload.currency == "ALGO" ? undefined : assetsCurrencies.find((asset: any) => asset.assetName === action.payload.currency).assetIndex
+
 
       if (addressInfo.amount == 0) {
         return {
@@ -908,10 +906,16 @@ export function* willCheckAccountTransaction(action: any) {
           error: "Your account has not the necessary balance to complete the transaction."
         }
       }
-      else if ((addressInfo.amount - action.payload.toPay) < accountMinBalance) {
+      else if ((addressInfo.amount - action.payload.toPayAlgo) < accountMinBalance) {
         return {
           check: false,
-          error: `After the transaction your account would result in a balance lower than the minimum balance of ${accountMinBalance / 1000000} Algo allowed by Algorand.`
+          error: `After the transaction your account would result in a balance lower than the minimum balance of ${accountMinBalance} ALGO allowed by Algorand.`
+        }
+      }
+      else if (assetCurrencyIndex && (addressInfo.assets.find((asset: any) => JSON.parse(asset)['asset-id'] === assetCurrencyIndex).amount < action.payload.toPayAssetCurrency)) {
+        return {
+          check: false,
+          error: `Your account has not the necessary balance of asset ${action.payload.currency} to complete the transaction.`
         }
       }
       else {

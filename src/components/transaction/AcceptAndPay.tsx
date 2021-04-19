@@ -176,11 +176,12 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
               </Col>
               <Col>
                 <Card onClick={() => {
-                  isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareAlgoSigner({ sowCommand: SowCommands.ACCEPT_AND_PAY }))
-                    : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
+                  // isAlgoSignInstalled ? dispatch(TransactionActions.willPrepareAlgoSigner({ sowCommand: SowCommands.ACCEPT_AND_PAY }))
+                  //   : dispatch(NotificationActions.willShowNotification({ message: "Please install AlgoSigner", type: "info" }));
+                  dispatch(NotificationActions.willShowNotification({ message: "In development", type: "info" }));
                 }}>
                   <CardBody className={isAlgoSignInstalled ? "text-center" : "text-center text-muted"}>
-                    <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner</CardSubtitle>
+                    <CardSubtitle tag="h5" className="mb-2 text-muted text-center">AlgoSigner (in development)</CardSubtitle>
                     {!isAlgoSignInstalled && <CardSubtitle tag="h6" className="mb-2 text-muted text-center">(not installed)</CardSubtitle>}
                     <img src={AlgoSignerLogo} height="80" alt="AlgoSigner Logo" />
                   </CardBody>
@@ -244,7 +245,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.ACCEPT_AND_PAY }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionAcceptAndPay' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptAndPay" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ mnemonicSecretKey: mnemonicSecretKey, multiSig: multiSig, params: params, currentSow: currentSow, toPay: payment.toPay, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
+              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ mnemonicSecretKey: mnemonicSecretKey, multiSig: multiSig, params: params, currentSow: currentSow, payment: payment, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>

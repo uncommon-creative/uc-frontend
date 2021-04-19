@@ -60,14 +60,17 @@
     "requestReview": "Add a note to your review request.",
     "requestReviewCompleted": "The review request was sent to the seller.",
     "payment": {
-      "algo": "{{value}} ALGO",
+      "currency": "{{value}} {{currency}}",
       "summary": "Summary of payment",
       "multisigAddress": "Your funds will be sent to escrow account: {{multisigAddress}}",
-      "balances": "A1) Current balance of escrow account:",
+      
+      "balancesAlgo": "A1) Current balance (ALGO) of escrow account:",
+      "balancesAssetCurrency": "A2) Current balance ({{assetName}}) of escrow account:",
       "price": "B) Price to be paid:",
-      "fee": "C) Blockchain Fee:",
-      "total": "Total ALGO (B+C):",
-      "toPay": "To pay ALGO (B+C-A):"
+      "feeAlgo": "C) Blockchain Fee (ALGO):",
+      "feeAssetCurrency": "C) Blockchain Fee ({{assetName}}):",
+      "toPayAlgo": "Total (ALGO):",
+      "toPayAssetCurrency": "Total ({{assetName}}):"
     }
   }
 }

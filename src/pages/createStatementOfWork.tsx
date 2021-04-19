@@ -58,6 +58,7 @@ const StatementOfWorkSchema = Yup.object().shape({
     .min(0, 'Too Few!')
     .max(50, 'Too Many!'),
   price: Yup.number()
+    .integer('Only integer accepted')
     .min(1, 'Too Few!')
     .required('Required'),
   currency: Yup.string()
@@ -123,7 +124,6 @@ export const CreateStatementOfWorkPage = () => {
           <Card>
             <CardBody>
               <CardTitle tag="h5" className="text-center">Create Statement Of Work Page</CardTitle>
-              <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Create a new Statement of Work</CardSubtitle>
               <Formik
                 initialValues={{
                   sow: currentSow.sow ? currentSow.sow : '',
