@@ -30,6 +30,7 @@ const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REA
 export const OptinAssetModal = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
+  let saveMnemonic = localStorage.getItem('saveMnemonic')
   let history = useHistory();
   const { t, i18n } = useTranslation();
   const userAttributes = useSelector(ProfileSelectors.getProfile)
@@ -38,11 +39,13 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
   const optinResult = useSelector(AssetCurrencySelectors.getOptinResult)
   const error = useSelector(AssetCurrencySelectors.getError)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
-  const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const params = useSelector(TransactionSelectors.getParams)
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
 
+  const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [isAlgoSignInstalled, setAlgo] = React.useState(false);
+
   React.useEffect(() => {
     if (modalPage == 1) {
       if (typeof AlgoSigner !== 'undefined') {
@@ -109,21 +112,31 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Sign with mnemonic secret key</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_link["asset"] + currentAssetCurrency}>{currentAssetCurrency}</a>.</CardSubtitle>
-            <FormGroup>
-              <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
-              <Input value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
-                onChange={(event: any) => {
-                  setMnemonicSecretKey(event.target.value)
-                }}
-              />
-            </FormGroup>
+            {saveMnemonic && JSON.parse(saveMnemonic).save ?
+              <FormGroup>
+                <Label for="password">Password *</Label>
+                <Input data-cy="password" value={password} type="password" name="password" id="password" placeholder="password"
+                  onChange={(event: any) => {
+                    setPassword(event.target.value)
+                  }}
+                />
+              </FormGroup>
+              : <FormGroup>
+                <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
+                <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
+                  onChange={(event: any) => {
+                    setMnemonicSecretKey(event.target.value)
+                  }}
+                />
+              </FormGroup>
+            }
           </ModalBody>
           <ModalFooter>
             <ActivityButton name="goToModalPage" outline color="primary" onClick={() => {
               dispatch(AssetCurrencyActions.goToModalPage({ modalPage: 1 }))
             }}>Cancel</ActivityButton>
-            <ActivityButton disabled={mnemonicSecretKey == ''} name="willOptinAssetCurrency" color="primary" onClick={async () => {
-              dispatch(AssetCurrencyActions.willOptinAssetCurrency({ params: params, mnemonicSecretKey: mnemonicSecretKey, address: userAttributes.public_key, assetId: currentAssetCurrency, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' }))
+            <ActivityButton disabled={(mnemonicSecretKey == '' && password == '')} name="willOptinAssetCurrency" color="primary" onClick={async () => {
+              dispatch(AssetCurrencyActions.willOptinAssetCurrency({ params: params, mnemonicSecretKey: mnemonicSecretKey, password: password, saveMnemonic: saveMnemonic, address: userAttributes.public_key, assetId: currentAssetCurrency, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' }))
             }}>Sign</ActivityButton>
           </ModalFooter>
         </>

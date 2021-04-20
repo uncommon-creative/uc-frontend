@@ -191,7 +191,7 @@ export function* willSaveMnemonic(action: any) {
         localStorage.setItem('saveMnemonic', JSON.stringify(saveMnemonic))
 
         yield put(ProfileActions.didSaveMnemonic({ success: "The encrypted mnemonic secret key was saved in the local storage of the current browser." }))
-        yield put(NotificationActions.willShowNotification({ message: "Mnemonic secret key saved", type: "success" }));
+        yield put(NotificationActions.willShowNotification({ message: "Encrypted mnemonic secret key saved", type: "success" }));
       }
       else {
         yield put(ProfileActions.didSaveMnemonicFail({ error: resultCheckAccountTransaction.error }))

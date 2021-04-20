@@ -28,7 +28,7 @@ function* checkAuthentication() {
   console.log('in check auth onLoad: ', result);
   if (result) {
     const user = yield call(AuthApi.getAuthenticatedUser);
-    yield put(AuthActions.didLoginUserSuccess({user: user}));
+    yield put(AuthActions.didLoginUserSuccess({ user: user }));
   } else {
     yield put(AuthActions.didLoginUserFails({}));
   }
@@ -68,7 +68,9 @@ function* willLoginUser(action: any) {
     console.log("result: ", result)
     yield put(AuthActions.didLoginUserSuccess({ user: result, history: action.payload.history }));
     action.payload.history.push("/")
+
     yield put(ProfileActions.willToggleSaveMnemonicModal())
+
   } catch (error) {
     yield put(AuthActions.didLoginUserFails(error));
 
@@ -88,6 +90,7 @@ function* willLoginUser(action: any) {
 function* willLogoutUser(action: any) {
   try {
     const result = yield call(AuthApi.logout)
+    localStorage.removeItem('saveMnemonic')
     yield put(AuthActions.didLogoutUser(result));
     action.payload.history.push("/")
     yield put(push("/"))

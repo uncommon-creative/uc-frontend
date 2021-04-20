@@ -27,6 +27,7 @@ declare var AlgoSigner: any;
 export const SubmitSow = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
+  let saveMnemonic = localStorage.getItem('saveMnemonic')
   let history = useHistory();
   const { t, i18n } = useTranslation();
   const userAttributes = useSelector(ProfileSelectors.getProfile)
@@ -36,12 +37,14 @@ export const SubmitSow = ({ modal, toggle }: any) => {
   const multiSig = useSelector(TransactionSelectors.getMultiSig)
   const submitToken = useSelector(TransactionSelectors.getSubmitToken)
   const transactionError = useSelector(TransactionSelectors.getError)
-  const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const params = useSelector(TransactionSelectors.getParams)
   const worksAgreementPdf = useSelector(SowSelectors.getWorksAgreementPdf)
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
 
+  const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [isAlgoSignInstalled, setAlgo] = React.useState(false);
+
   React.useEffect(() => {
     if (transactionPage[SowCommands.SUBMIT] == 2) {
       if (typeof AlgoSigner !== 'undefined') {
@@ -115,21 +118,31 @@ export const SubmitSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Sign with mnemonic secret key</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-3 text-muted text-center">You are signing the quote and committing to provide the service as described in the <a target="_blank" href={worksAgreementPdf.downloadUrl}>works agreement</a>.</CardSubtitle>
-            <FormGroup>
-              <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
-              <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
-                onChange={(event: any) => {
-                  setMnemonicSecretKey(event.target.value)
-                }}
-              />
-            </FormGroup>
+            {saveMnemonic && JSON.parse(saveMnemonic).save ?
+              <FormGroup>
+                <Label for="password">Password *</Label>
+                <Input data-cy="password" value={password} type="password" name="password" id="password" placeholder="password"
+                  onChange={(event: any) => {
+                    setPassword(event.target.value)
+                  }}
+                />
+              </FormGroup>
+              : <FormGroup>
+                <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
+                <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
+                  onChange={(event: any) => {
+                    setMnemonicSecretKey(event.target.value)
+                  }}
+                />
+              </FormGroup>
+            }
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.SUBMIT }))
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willCompleteTransactionSubmitMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionSubmitMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionSubmitMnemonic({ params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, pdfHash: worksAgreementPdf.pdfHash }))
+            <ActivityButton data-cy='willCompleteTransactionSubmitMnemonic' disabled={(mnemonicSecretKey == '' && password == '')} name="willCompleteTransactionSubmitMnemonic" color="primary" onClick={async () => {
+              dispatch(TransactionActions.willCompleteTransactionSubmitMnemonic({ params: params, mnemonicSecretKey: mnemonicSecretKey, password: password, saveMnemonic: saveMnemonic, currentSow: currentSow, pdfHash: worksAgreementPdf.pdfHash }))
             }}>Sign</ActivityButton>
           </ModalFooter>
         </>

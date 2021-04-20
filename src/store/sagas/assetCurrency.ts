@@ -45,14 +45,24 @@ export function* willOptinAssetCurrency(action: any) {
   console.log("in willOptinAssetCurrency with: ", action)
   yield put(UIActions.startActivityRunning("willOptinAssetCurrency"));
 
+  let mnemonicSecretKey = ''
+  if (action.payload.saveMnemonic && JSON.parse(action.payload.saveMnemonic).save) {
+    // decrypt with action.payload.password and action.payload.saveMnemonic.salt
+    mnemonicSecretKey = JSON.parse(action.payload.saveMnemonic).encryptedMnemonic
+  }
+  else {
+    mnemonicSecretKey = action.payload.mnemonicSecretKey
+  }
+  console.log("willOptinAssetCurrency mnemonicSecretKey: ", mnemonicSecretKey)
+
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPayAlgo: action.payload.toPayAlgo, currency: action.payload.currency } })
+    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: mnemonicSecretKey, toPayAlgo: action.payload.toPayAlgo, currency: action.payload.currency } })
     console.log("willOptinAssetCurrency resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
     if (resultCheckAccountTransaction.check) {
 
       let resultSignedOptin = [] as any
-      resultSignedOptin = yield call(AssetCurrencyApi.signOptinAssetCurrencyMnemonic, action.payload.params.withoutDelay, action.payload.mnemonicSecretKey, action.payload.address, action.payload.assetId)
+      resultSignedOptin = yield call(AssetCurrencyApi.signOptinAssetCurrencyMnemonic, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.address, action.payload.assetId)
       console.log("willOptinAssetCurrency resultSignedOptin: ", resultSignedOptin)
 
       const resultSentOptin = yield call(AssetCurrencyApi.algorandSendRawTx, resultSignedOptin)
