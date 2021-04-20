@@ -10,10 +10,11 @@ import { useTranslation } from 'react-i18next';
 import { actions as SowActions, selectors as SowSelectors } from '../store/slices/sow'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as ChatSelectors } from '../store/slices/chat'
+import { selectors as UISelectors } from '../store/slices/ui'
 import { TableSows } from '../components/TableSows';
 import { ActivityButton } from '../components/common/ActivityButton';
 import { RefreshButton } from '../components/common/RefreshButton'
-import { selectors as UISelectors } from '../store/slices/ui'
+import { SaveMnemonicModal } from '../components/profile/SaveMnemonic'
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -138,6 +139,8 @@ export const HomePage = () => {
           </Card>
         </Container>
       }
+      
+      <SaveMnemonicModal />
     </>
   )
 }

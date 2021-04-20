@@ -151,8 +151,7 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       } */}
-      {
-        modalPage == 4 &&
+      {modalPage == 4 &&
         <>
           <ModalHeader toggle={toggle}>Opt-in completed</ModalHeader>
           <ModalBody>
@@ -171,8 +170,7 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
-      {
-        modalPage == 5 &&
+      {modalPage == 5 &&
         <>
           <ModalHeader toggle={toggle}>Opt-in failed</ModalHeader>
           <ModalBody>

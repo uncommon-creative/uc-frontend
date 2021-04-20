@@ -5,6 +5,7 @@ import * as AuthApi from '../../api/auth'
 import { actions as AuthActions } from '../slices/auth'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as UIActions } from '../slices/ui'
+import { actions as ProfileActions } from '../slices/profile'
 import { push } from 'connected-react-router'
 
 export function* sagas() {
@@ -67,6 +68,7 @@ function* willLoginUser(action: any) {
     console.log("result: ", result)
     yield put(AuthActions.didLoginUserSuccess({ user: result, history: action.payload.history }));
     action.payload.history.push("/")
+    yield put(ProfileActions.willToggleSaveMnemonicModal())
   } catch (error) {
     yield put(AuthActions.didLoginUserFails(error));
 

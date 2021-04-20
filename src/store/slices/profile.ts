@@ -13,7 +13,14 @@ export const currentSlice = createSlice({
     attributes: {} as any,
     algorandAccount: {},
     algoAccount: {},
-    users: {}
+    users: {},
+
+    saveMnemonic: {
+      modalOpen: false,
+      modalPage: 0,
+      
+      error: ''
+    } as any
   },
   reducers: {
     startLoadingProfile: (state, action: PayloadAction<any>) => void (state.loadingProfile = true),
@@ -41,6 +48,10 @@ export const currentSlice = createSlice({
 
     willSaveProfile: (state, action: PayloadAction<any>) => state,
     didSaveProfile: (state, action: PayloadAction<any>) => state,
+
+
+    willToggleSaveMnemonicModal: (state, action: PayloadAction<any>) => void (state.saveMnemonic.modalOpen = !state.saveMnemonic.modalOpen),
+    goToSaveMnemonicModalPage: (state, action: PayloadAction<any>) => void (state.saveMnemonic.modalPage = action.payload.modalPage),
   }
 })
 
@@ -58,5 +69,6 @@ export const selectors = {
   getPublicKey: (state: any) => state.profile.publicKey,
   getProfile: (state: any) => state.profile.attributes,
   getAlgoAccount: (state: any) => state.profile.algoAccount,
-  getAlgorandAccount: (state: any) => state.profile.algorandAccount
+  getAlgorandAccount: (state: any) => state.profile.algorandAccount,
+  getSaveMnemonic: (state: any) => state.profile.saveMnemonic
 }
