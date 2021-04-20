@@ -285,10 +285,25 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
               </CardText>
               <CardText>
                 <LinkBlockExplorer title={'Asset: ' + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId} type="asset" id={JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId} />
-                {transactionAcceptAndPay.tx &&
+                {transactionAcceptAndPay.tx.length == 4 &&
+                  <>
+                    <LinkBlockExplorer title={'Payment fee (ALGO) transaction: ' + transactionAcceptAndPay.tx[0].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[0]} />
+                    <LinkBlockExplorer title={`Opt-in multisig asset ${currentSow.currency} transaction: ` + transactionAcceptAndPay.tx[1].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[1]} />
+                    <LinkBlockExplorer title={'Opt-in deliverable asset transaction: ' + transactionAcceptAndPay.tx[2].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[2]} />
+                    <LinkBlockExplorer title={`Payment (${currentSow.currency}) transaction: ` + transactionAcceptAndPay.tx[3].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[3]} />
+                  </>
+                }
+                {transactionAcceptAndPay.tx.length == 3 &&
+                  <>
+                    <LinkBlockExplorer title={'Payment fee (ALGO) transaction: ' + transactionAcceptAndPay.tx[0].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[0]} />
+                    <LinkBlockExplorer title={'Opt-in deliverable asset transaction: ' + transactionAcceptAndPay.tx[1].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[1]} />
+                    <LinkBlockExplorer title={`Payment (${currentSow.currency}) transaction: ` + transactionAcceptAndPay.tx[2].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[2]} />
+                  </>
+                }
+                {transactionAcceptAndPay.tx.length == 2 &&
                   <>
                     <LinkBlockExplorer title={'Opt-in transaction: ' + transactionAcceptAndPay.tx[0].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[0]} />
-                    {transactionAcceptAndPay.tx[1] && <LinkBlockExplorer title={'Payment transaction: ' + transactionAcceptAndPay.tx[1].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[1]} />}
+                    <LinkBlockExplorer title={'Payment transaction: ' + transactionAcceptAndPay.tx[1].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[1]} />
                   </>
                 }
               </CardText>
@@ -310,7 +325,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount} ALGO</CardSubtitle>
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionFailed', { errorMessage: transactionError })}
