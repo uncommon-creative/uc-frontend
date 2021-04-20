@@ -317,6 +317,7 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
   console.log("in willCompleteTransactionClaimMilestoneMetMnemonic with: ", action)
   yield put(UIActions.startActivityRunning('willCompleteTransactionClaimMilestoneMetMnemonic'));
   const users = yield select(ProfileSelectors.getUsers)
+  const assetsCurrencies = yield select(AssetCurrencySelectors.getAssetsCurrencies)
 
   const hash = action.payload.hash
   const note = undefined;
@@ -388,9 +389,20 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
           ],
         };
 
-        const resultClaimMilestoneMetTxGroup = yield call(TransactionApi.signTransactionsClaimMilestoneMetMnemonic, action.payload.multiSigAddress, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, action.payload.mnemonicSecretKey, action.payload.currentSow.price, mparams, users[action.payload.currentSow.buyer].public_key, resultAlgorandSendDeliverableTokenCreationTx.assetId)
-        console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultSignedMultisigTransaction: ", resultClaimMilestoneMetTxGroup)
+        let resultClaimMilestoneMetTxGroup = [] as any
+        // CHECK CURRENCY ALGO
+        if (action.payload.currentSow.currency == 'ALGO') {
+          resultClaimMilestoneMetTxGroup = yield call(TransactionApi.signTransactionsClaimMilestoneMetMnemonicAlgo, action.payload.multiSigAddress, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, action.payload.mnemonicSecretKey, action.payload.currentSow.price, mparams, users[action.payload.currentSow.buyer].public_key, resultAlgorandSendDeliverableTokenCreationTx.assetId)
+          console.log("willCompleteTransactionClaimMilestoneMetMnemonic ALGO resultSignedMultisigTransaction: ", resultClaimMilestoneMetTxGroup)
+        }
+        // CHECK ASSET CURRENCY
+        else {
+          const assetCurrencyIndex = assetsCurrencies.find((asset: any) => asset.assetName === action.payload.currentSow.currency).assetIndex
+          // console.log("willCompleteTransactionClaimMilestoneMetMnemonic assetCurrencyIndex: ", assetCurrencyIndex)
 
+          resultClaimMilestoneMetTxGroup = yield call(TransactionApi.signTransactionsClaimMilestoneMetMnemonicAsset, action.payload.multiSigAddress, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, action.payload.mnemonicSecretKey, action.payload.currentSow.price, mparams, users[action.payload.currentSow.buyer].public_key, resultAlgorandSendDeliverableTokenCreationTx.assetId, assetCurrencyIndex)
+          console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET resultSignedMultisigTransaction: ", resultClaimMilestoneMetTxGroup)
+        }
         const resultAlgorandSendClaimMilestoneMet = yield call(TransactionApi.algorandSendClaimMilestoneMet, action.payload.currentSow.sow, resultClaimMilestoneMetTxGroup.tx, resultClaimMilestoneMetTxGroup.backupTx)
         console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendClaimMilestoneMet: ", resultAlgorandSendClaimMilestoneMet)
 
@@ -402,7 +414,6 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
         else {
           yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet({ tx: resultAlgorandSendDeliverableTokenCreationTx, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
           yield put(NotificationActions.willShowNotification({ message: "Milestone claimed as met", type: "info" }));
-
         }
       }
     }

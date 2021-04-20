@@ -170,7 +170,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are claiming the milestone as met committing the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount} ALGO</CardSubtitle>
 
             <FormGroup>
               <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
@@ -219,7 +219,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Transaction signed</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount} ALGO</CardSubtitle>
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionSigned')}
@@ -247,7 +247,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Transaction failed</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount / 1000000} ALGO</CardSubtitle>
+            <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount} ALGO</CardSubtitle>
             <Jumbotron>
               <CardText>
                 {t('transaction.transactionFailed', { errorMessage: transactionError })}

@@ -287,17 +287,17 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
                 <LinkBlockExplorer title={'Asset: ' + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId} type="asset" id={JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId} />
                 {transactionAcceptAndPay.tx.length == 4 &&
                   <>
-                    <LinkBlockExplorer title={'Opt-in transaction: ' + transactionAcceptAndPay.tx[0].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[0]} />
-                    <LinkBlockExplorer title={'Payment fee (ALGO) transaction: ' + transactionAcceptAndPay.tx[1].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[1]} />
-                    <LinkBlockExplorer title={`Payment (${currentSow.currency}) transaction: ` + transactionAcceptAndPay.tx[2].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[2]} />
-                    <LinkBlockExplorer title={`Opt-in multisig asset ${currentSow.currency} transaction: ` + transactionAcceptAndPay.tx[3].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[3]} />
+                    <LinkBlockExplorer title={'Payment fee (ALGO) transaction: ' + transactionAcceptAndPay.tx[0].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[0]} />
+                    <LinkBlockExplorer title={`Opt-in multisig asset ${currentSow.currency} transaction: ` + transactionAcceptAndPay.tx[1].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[1]} />
+                    <LinkBlockExplorer title={'Opt-in deliverable asset transaction: ' + transactionAcceptAndPay.tx[2].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[2]} />
+                    <LinkBlockExplorer title={`Payment (${currentSow.currency}) transaction: ` + transactionAcceptAndPay.tx[3].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[3]} />
                   </>
                 }
                 {transactionAcceptAndPay.tx.length == 3 &&
                   <>
                     <LinkBlockExplorer title={'Payment fee (ALGO) transaction: ' + transactionAcceptAndPay.tx[0].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[0]} />
-                    <LinkBlockExplorer title={`Payment (${currentSow.currency}) transaction: ` + transactionAcceptAndPay.tx[1].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[1]} />
-                    <LinkBlockExplorer title={`Opt-in multisig asset ${currentSow.currency} transaction: ` + transactionAcceptAndPay.tx[2].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[2]} />
+                    <LinkBlockExplorer title={'Opt-in deliverable asset transaction: ' + transactionAcceptAndPay.tx[1].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[1]} />
+                    <LinkBlockExplorer title={`Payment (${currentSow.currency}) transaction: ` + transactionAcceptAndPay.tx[2].substring(0, 6) + '...'} type="tx" id={transactionAcceptAndPay.tx[2]} />
                   </>
                 }
                 {transactionAcceptAndPay.tx.length == 2 &&
