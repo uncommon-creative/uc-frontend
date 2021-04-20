@@ -226,7 +226,7 @@ export const CreateStatementOfWorkPage = () => {
                               <InputGroup>
                                 <Input data-cy="inputSowPrice" invalid={errors.price && touched.price ? true : false} type="text" name="price" id="price" placeholder="price" tag={Field} />
                                 <InputGroupButtonDropdown addonType="append" isOpen={dropdownOpen} toggle={toggleDropDown}>
-                                  <DropdownToggle caret>
+                                  <DropdownToggle caret data-cy="inputSowCurrency">
                                     {priceCurrency}
                                   </DropdownToggle>
                                   <DropdownMenu>
@@ -241,7 +241,7 @@ export const CreateStatementOfWorkPage = () => {
                                       return (
                                         <>
                                           {algorandAccount.assets.some((accountAsset: any) => JSON.parse(accountAsset)["asset-id"] == asset.assetIndex) ?
-                                            <DropdownItem disabled={priceCurrency == asset.assetName}
+                                            <DropdownItem disabled={priceCurrency == asset.assetName} data-cy={"inputSowCurrency" + asset.assetName}
                                               onClick={() => {
                                                 setFieldValue('currency', asset.assetName)
                                                 setPriceCurrency(asset.assetName)
