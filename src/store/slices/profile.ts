@@ -18,7 +18,7 @@ export const currentSlice = createSlice({
     saveMnemonic: {
       modalOpen: false,
       modalPage: 0,
-      
+      success: '',
       error: ''
     } as any
   },
@@ -49,9 +49,11 @@ export const currentSlice = createSlice({
     willSaveProfile: (state, action: PayloadAction<any>) => state,
     didSaveProfile: (state, action: PayloadAction<any>) => state,
 
-
     willToggleSaveMnemonicModal: (state, action: PayloadAction<any>) => void (state.saveMnemonic.modalOpen = !state.saveMnemonic.modalOpen),
     goToSaveMnemonicModalPage: (state, action: PayloadAction<any>) => void (state.saveMnemonic.modalPage = action.payload.modalPage),
+    willSaveMnemonic: (state, action: PayloadAction<any>) => state,
+    didSaveMnemonic: (state, action: PayloadAction<any>) => void (state.saveMnemonic.success = action.payload.success, state.saveMnemonic.modalPage = 4),
+    didSaveMnemonicFail: (state, action: PayloadAction<any>) => void (state.saveMnemonic.error = action.payload.error, state.saveMnemonic.modalPage = 5),
   }
 })
 

@@ -134,12 +134,10 @@ export const HomePage = () => {
                 <TableSows tabId="3" data={sowsAsArbitrator} />
               </TabPane>
             </TabContent>
-
-
           </Card>
         </Container>
       }
-      
+
       <SaveMnemonicModal />
     </>
   )

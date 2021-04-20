@@ -30,12 +30,7 @@ export const SaveMnemonicModal = () => {
   const dispatch = useDispatch();
   let history = useHistory();
   const { t, i18n } = useTranslation();
-  const userAttributes = useSelector(ProfileSelectors.getProfile)
   const saveMnemonic = useSelector(ProfileSelectors.getSaveMnemonic)
-  const error = useSelector(AssetCurrencySelectors.getError)
-  const currentSow = useSelector(SowSelectors.getCurrentSow)
-  const params = useSelector(TransactionSelectors.getParams)
-  const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
 
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -64,33 +59,23 @@ export const SaveMnemonicModal = () => {
       }
       {saveMnemonic.modalPage == 1 &&
         <>
-          <ModalHeader toggle={toggleSaveMnemonicModal}>Save encrypted mnemonic secret key</ModalHeader>
+          <ModalHeader>Save encrypted mnemonic secret key</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">Do you want to save your mnemonic secret key encrypted with a password chosen by you in the local storage of the current browser?</CardSubtitle>
-            {/* <FormGroup>
-              <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
-              <Input value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
-                onChange={(event: any) => {
-                  setMnemonicSecretKey(event.target.value)
-                }}
-              />
-            </FormGroup> */}
           </ModalBody>
           <ModalFooter>
             <ActivityButton name="noSaveMnemonic" outline color="primary" onClick={() => {
-              dispatch(ProfileActions.willToggleSaveMnemonicModal())
+              dispatch(ProfileActions.willSaveMnemonic({ save: false }))
             }}>No</ActivityButton>
             <ActivityButton name="yesSaveMnemonic" color="primary" onClick={async () => {
               dispatch(ProfileActions.goToSaveMnemonicModalPage({ modalPage: 2 }))
-
-              // dispatch(AssetCurrencyActions.willOptinAssetCurrency({ params: params, mnemonicSecretKey: mnemonicSecretKey, address: userAttributes.public_key, assetId: currentAssetCurrency, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' }))
             }}>Yes</ActivityButton>
           </ModalFooter>
         </>
       }
       {saveMnemonic.modalPage == 2 &&
         <>
-          <ModalHeader toggle={toggleSaveMnemonicModal}>Insert your mnemonic secret key</ModalHeader>
+          <ModalHeader>Insert your mnemonic secret key</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are saving your mnemonic secret key encrypted with a password chosen by you in the local storage of the current browser.</CardSubtitle>
             <FormGroup>
@@ -106,16 +91,15 @@ export const SaveMnemonicModal = () => {
             <ActivityButton name="cancelSaveMnemonic" outline color="primary"
               onClick={toggleSaveMnemonicModal}
             >Cancel</ActivityButton>
-            <ActivityButton disabled={mnemonicSecretKey == ''} name="willOptinAssetCurrency" color="primary" onClick={async () => {
+            <ActivityButton disabled={mnemonicSecretKey == ''} name="continueSaveMnemonicModal" color="primary" onClick={async () => {
               dispatch(ProfileActions.goToSaveMnemonicModalPage({ modalPage: 3 }))
-              // dispatch(AssetCurrencyActions.willOptinAssetCurrency({ params: params, mnemonicSecretKey: mnemonicSecretKey, address: userAttributes.public_key, assetId: currentAssetCurrency, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' }))
             }}>Continue</ActivityButton>
           </ModalFooter>
         </>
       }
       {saveMnemonic.modalPage == 3 &&
         <>
-          <ModalHeader toggle={toggleSaveMnemonicModal}>Insert a password chosen by you</ModalHeader>
+          <ModalHeader>Insert a password chosen by you</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are saving your mnemonic secret key encrypted with a password chosen by you in the local storage of the current browser.</CardSubtitle>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">This password is chosen by you and it is not possible to recover.</CardSubtitle>
@@ -132,40 +116,44 @@ export const SaveMnemonicModal = () => {
             <ActivityButton name="cancelSaveMnemonic" outline color="primary"
               onClick={toggleSaveMnemonicModal}
             >Cancel</ActivityButton>
-            <ActivityButton disabled={password == ''} name="willOptinAssetCurrency" color="primary" onClick={async () => {
-              dispatch(ProfileActions.goToSaveMnemonicModalPage({ modalPage: 4 }))
-              // dispatch(AssetCurrencyActions.willOptinAssetCurrency({ params: params, mnemonicSecretKey: mnemonicSecretKey, address: userAttributes.public_key, assetId: currentAssetCurrency, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' }))
+            <ActivityButton disabled={password == ''} name="willSaveMnemonic" color="primary" onClick={async () => {
+              dispatch(ProfileActions.willSaveMnemonic({ save: true, mnemonicSecretKey: mnemonicSecretKey, password: password }))
             }}>Complete</ActivityButton>
           </ModalFooter>
         </>
       }
       {saveMnemonic.modalPage == 4 &&
         <>
-          <ModalHeader toggle={toggleSaveMnemonicModal}>Mnemonic saved</ModalHeader>
+          <ModalHeader>Success</ModalHeader>
           <ModalBody>
             <Jumbotron>
               <CardText>
-                The encrypted mnemonic secret key was saved in the local storage of the current browser.
+                {saveMnemonic.success}
               </CardText>
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton name="closeOptin" color="primary" onClick={toggleSaveMnemonicModal}>Close</ActivityButton>
+            <ActivityButton name="closeSaveMnemonicModal" color="primary" onClick={toggleSaveMnemonicModal}>Close</ActivityButton>
           </ModalFooter>
         </>
       }
       {saveMnemonic.modalPage == 5 &&
         <>
-          <ModalHeader toggle={toggleSaveMnemonicModal}>Mnemonic saved</ModalHeader>
+          <ModalHeader>Error</ModalHeader>
           <ModalBody>
             <Jumbotron>
               <CardText>
-                Inexpected error, please retry.
+                {saveMnemonic.error != '' ?
+                  `Error: ${saveMnemonic.error}`
+                  : "Unexpected error, please retry."
+                }
               </CardText>
             </Jumbotron>
           </ModalBody>
           <ModalFooter>
-            <ActivityButton name="closeTransaction" color="primary" onClick={toggleSaveMnemonicModal}>Close</ActivityButton>
+            <ActivityButton name="closeTransaction" color="primary" onClick={async () => {
+              dispatch(ProfileActions.goToSaveMnemonicModalPage({ modalPage: 1 }))
+            }}>Retry</ActivityButton>
           </ModalFooter>
         </>
       }

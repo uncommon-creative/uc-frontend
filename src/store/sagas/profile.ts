@@ -12,6 +12,7 @@ import { actions as UIActions } from '../slices/ui'
 import { push } from 'connected-react-router'
 
 import { willGetArbitrator } from './arbitrator'
+import { willCheckAccountTransaction } from './transaction'
 
 const algosdk = require('algosdk');
 
@@ -23,6 +24,7 @@ export function* sagas() {
   yield takeEvery(ProfileActions.willGetUserProfile.type, willGetUserProfile)
   yield takeEvery(ProfileActions.willUploadPortrait.type, willUploadPortrait)
   yield takeEvery(ProfileActions.willSubmitProfile.type, willSubmitProfile)
+  yield takeEvery(ProfileActions.willSaveMnemonic.type, willSaveMnemonic)
   console.log('in profile saga');
 }
 
@@ -170,4 +172,46 @@ function* willSaveProfile(action: any) {
     console.log("willSaveProfile error", error)
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
+}
+
+export function* willSaveMnemonic(action: any) {
+  console.log("in willSaveMnemonic with: ", action)
+  yield put(UIActions.startActivityRunning("willSaveMnemonic"));
+
+  try {
+    if (action.payload.save) {
+      const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPayAlgo: 0, currency: 'ALGO' } })
+
+      if (resultCheckAccountTransaction.check) {
+        const saveMnemonic = {
+          save: true,
+          salt: 'uncommon',
+          encryptedMnemonic: action.payload.mnemonicSecretKey
+        }
+        localStorage.setItem('saveMnemonic', JSON.stringify(saveMnemonic))
+
+        yield put(ProfileActions.didSaveMnemonic({ success: "The encrypted mnemonic secret key was saved in the local storage of the current browser." }))
+        yield put(NotificationActions.willShowNotification({ message: "Mnemonic secret key saved", type: "success" }));
+      }
+      else {
+        console.log("willOptinAssetCurrency fail")
+        yield put(ProfileActions.didSaveMnemonicFail({ error: resultCheckAccountTransaction.error }))
+        yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
+      }
+    }
+    else {
+      const saveMnemonic = {
+        save: false,
+        salt: undefined,
+        encryptedMnemonic: undefined
+      }
+      localStorage.setItem('saveMnemonic', JSON.stringify(saveMnemonic))
+      yield put(ProfileActions.didSaveMnemonic({ success: "Your decision was saved." }))
+    }
+  } catch (error) {
+    console.log("willSaveMnemonic error", error)
+    yield put(ProfileActions.didSaveMnemonicFail({ error: error.message }))
+    yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
+  }
+  yield put(UIActions.stopActivityRunning("willSaveMnemonic"));
 }
