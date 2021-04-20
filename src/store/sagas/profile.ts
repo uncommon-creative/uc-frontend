@@ -194,7 +194,6 @@ export function* willSaveMnemonic(action: any) {
         yield put(NotificationActions.willShowNotification({ message: "Mnemonic secret key saved", type: "success" }));
       }
       else {
-        console.log("willOptinAssetCurrency fail")
         yield put(ProfileActions.didSaveMnemonicFail({ error: resultCheckAccountTransaction.error }))
         yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
       }
