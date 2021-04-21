@@ -5,6 +5,7 @@ import * as AuthApi from '../../api/auth'
 import { actions as AuthActions } from '../slices/auth'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as UIActions } from '../slices/ui'
+import { actions as ProfileActions } from '../slices/profile'
 import { push } from 'connected-react-router'
 
 export function* sagas() {
@@ -27,7 +28,7 @@ function* checkAuthentication() {
   console.log('in check auth onLoad: ', result);
   if (result) {
     const user = yield call(AuthApi.getAuthenticatedUser);
-    yield put(AuthActions.didLoginUserSuccess({user: user}));
+    yield put(AuthActions.didLoginUserSuccess({ user: user }));
   } else {
     yield put(AuthActions.didLoginUserFails({}));
   }
@@ -86,6 +87,7 @@ function* willLoginUser(action: any) {
 function* willLogoutUser(action: any) {
   try {
     const result = yield call(AuthApi.logout)
+
     yield put(AuthActions.didLogoutUser(result));
     action.payload.history.push("/")
     yield put(push("/"))

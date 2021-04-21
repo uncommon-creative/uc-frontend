@@ -96,7 +96,7 @@ export const ProfilePage = () => {
     <>
       {loadingProfile ?
         <Container style={{ position: "relative", top: 150, bottom: '50%', left: '50%', right: '50%', height: '100%', zIndex: 10 }}>
-          <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+          <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
         </Container>
         :
         <Container>
@@ -121,7 +121,6 @@ export const ProfilePage = () => {
               onSubmit={values => {
                 console.log('in onsubmit with: ', values)
                 dispatch(ProfileActions.willSubmitProfile(values));
-                // dispatch(ArbitratorActions.willSaveArbitratorSettings({ arbitratorSettings: values, history: history }));
               }}
             >
               {({ errors, touched, setFieldValue, values }) => {
@@ -133,7 +132,7 @@ export const ProfilePage = () => {
                         <FormGroup>
                           <Label for="portrait">
                             {uploadingPortrait ?
-                              <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+                              <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
                               :
                               <img height="80" alt="Portrait" onError={addDefaultSrc}
                                 src={`${configuration[stage].host}/resources/${user.username}/portrait?${Date.now()}`}

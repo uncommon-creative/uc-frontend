@@ -11,9 +11,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faKey } from '@fortawesome/free-solid-svg-icons'
 
 import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
-import { selectors as ProfileSelectors } from '../../store/slices/profile'
+import { actions as ProfileActions, selectors as ProfileSelectors } from '../../store/slices/profile'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
 import { actions as NotificationActions } from '../../store/slices/notification'
+import { selectors as AuthSelectors } from '../../store/slices/auth'
+import { SaveMnemonicModal } from '../profile/SaveMnemonic'
 import { ActivityButton } from '../common/ActivityButton';
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
 
@@ -22,6 +24,9 @@ declare var AlgoSigner: any;
 export const AcceptMilestone = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
+  const user = useSelector(AuthSelectors.getUser)
+  let saveMnemonic: any = localStorage.getItem('saveMnemonic')
+  saveMnemonic = saveMnemonic ? JSON.parse(saveMnemonic)[user.username] : undefined
   const { t, i18n } = useTranslation();
   const users = useSelector(ProfileSelectors.getUsers)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
@@ -29,13 +34,16 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
   const multiSig = useSelector(TransactionSelectors.getMultiSig)
   const signedMsig = useSelector(TransactionSelectors.getSignedMsig)
   const transactionError = useSelector(TransactionSelectors.getError)
-  const [acceptedConditions, setAcceptedConditions] = React.useState(false);
-  const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const params = useSelector(TransactionSelectors.getParams)
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
 
+  const [acceptedConditions, setAcceptedConditions] = React.useState(false);
+  const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [saveMnemonicAsk, setSaveMnemonicAsk] = React.useState(false);
   const [isAlgoSignInstalled, setAlgo] = React.useState(false);
+
   React.useEffect(() => {
     if (transactionPage[SowCommands.ACCEPT_MILESTONE] == 2) {
       if (typeof AlgoSigner !== 'undefined') {
@@ -60,7 +68,7 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.ACCEPT_MILESTONE}`)}</ModalHeader>
           <ModalBody className="text-center">
-            <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+            <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
           </ModalBody>
         </>
       }
@@ -126,21 +134,43 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are accepting the milestone approving the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "deliverable").downloadUrl}>deliverable</a> as the service as described in the <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>works agreement</a>.</CardSubtitle>
 
-            <FormGroup>
-              <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
-              <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
-                onChange={(event: any) => {
-                  setMnemonicSecretKey(event.target.value)
-                }}
-              />
-            </FormGroup>
+            {saveMnemonic && saveMnemonic.save ?
+              <FormGroup>
+                <Label for="passwordSaveMnemonic">Password *</Label>
+                <Input value={password} type="password" name="passwordSaveMnemonic" id="passwordSaveMnemonic" placeholder="passwordSaveMnemonic"
+                  onChange={(event: any) => {
+                    setPassword(event.target.value)
+                  }}
+                />
+              </FormGroup>
+              :
+              <>
+                <FormGroup>
+                  <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
+                  <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
+                    onChange={(event: any) => {
+                      setMnemonicSecretKey(event.target.value)
+                    }}
+                  />
+                </FormGroup>
+                <FormGroup check>
+                  <Label check>
+                    <Input name="saveMnemonicAsk" id="saveMnemonicAsk" type="checkbox"
+                      onChange={(event) => setSaveMnemonicAsk(event.target.checked)}
+                    />
+                      Save mnemonic in local storage for quick sign
+                  </Label>
+                </FormGroup>
+              </>
+            }
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.ACCEPT_MILESTONE }))
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willCompleteTransactionAcceptMilestoneMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptMilestoneMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionAcceptMilestoneMnemonic({ signedMsig: signedMsig, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow }))
+            <ActivityButton data-cy='willCompleteTransactionAcceptMilestoneMnemonic' disabled={(mnemonicSecretKey == '' && password == '')} name="willCompleteTransactionAcceptMilestoneMnemonic" color="primary" onClick={async () => {
+              saveMnemonicAsk && dispatch(ProfileActions.willToggleSaveMnemonicModal())
+              dispatch(TransactionActions.willCompleteTransactionAcceptMilestoneMnemonic({ signedMsig: signedMsig, mnemonicSecretKey: mnemonicSecretKey, password: password, saveMnemonic: saveMnemonic, currentSow: currentSow }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -205,6 +235,8 @@ export const AcceptMilestone = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
+
+      <SaveMnemonicModal mnemonicSecretKeyProp={mnemonicSecretKey} />
     </Modal>
   )
 }

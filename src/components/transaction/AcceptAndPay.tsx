@@ -19,8 +19,10 @@ import { actions as ChatActions, selectors as ChatSelectors } from '../../store/
 import { selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
 import { actions as NotificationActions } from '../../store/slices/notification'
-import { selectors as ProfileSelectors } from '../../store/slices/profile'
+import { actions as ProfileActions, selectors as ProfileSelectors } from '../../store/slices/profile'
 import { actions as UIActions } from '../../store/slices/ui'
+import { selectors as AuthSelectors } from '../../store/slices/auth'
+import { SaveMnemonicModal } from '../profile/SaveMnemonic'
 import { ActivityButton } from '../common/ActivityButton';
 import { Payment } from './Payment'
 import { LinkBlockExplorer } from '../common/LinkBlockExplorer'
@@ -32,6 +34,9 @@ const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REA
 export const AcceptAndPay = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
+  const user = useSelector(AuthSelectors.getUser)
+  let saveMnemonic: any = localStorage.getItem('saveMnemonic')
+  saveMnemonic = saveMnemonic ? JSON.parse(saveMnemonic)[user.username] : undefined
   const { t, i18n } = useTranslation();
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   const userAttributes = useSelector(ProfileSelectors.getProfile)
@@ -41,12 +46,15 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
   const multiSig = useSelector(TransactionSelectors.getMultiSig)
   const transactionAcceptAndPay = useSelector(TransactionSelectors.getTransactionAcceptAndPay)
   const transactionError = useSelector(TransactionSelectors.getError)
-  const [acceptedConditions, setAcceptedConditions] = React.useState(false);
-  const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const params = useSelector(TransactionSelectors.getParams)
   const payment = useSelector(TransactionSelectors.getPayment)
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
+
+  const [acceptedConditions, setAcceptedConditions] = React.useState(false);
+  const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [saveMnemonicAsk, setSaveMnemonicAsk] = React.useState(false);
 
   const typeNumber: TypeNumber = 4;
   const errorCorrectionLevel: ErrorCorrectionLevel = 'L';
@@ -118,7 +126,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.ACCEPT_AND_PAY}`)}</ModalHeader>
           <ModalBody className="text-center">
-            <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+            <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
           </ModalBody>
         </>
       }
@@ -231,21 +239,43 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">Furthermore, you are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_link["asset"] + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>{JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}</a>.</CardSubtitle>
             <Payment />
 
-            <FormGroup>
-              <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
-              <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
-                onChange={(event: any) => {
-                  setMnemonicSecretKey(event.target.value)
-                }}
-              />
-            </FormGroup>
+            {saveMnemonic && saveMnemonic.save ?
+              <FormGroup>
+                <Label for="passwordSaveMnemonic">Password *</Label>
+                <Input value={password} type="password" name="passwordSaveMnemonic" id="passwordSaveMnemonic" placeholder="passwordSaveMnemonic"
+                  onChange={(event: any) => {
+                    setPassword(event.target.value)
+                  }}
+                />
+              </FormGroup>
+              :
+              <>
+                <FormGroup>
+                  <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
+                  <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
+                    onChange={(event: any) => {
+                      setMnemonicSecretKey(event.target.value)
+                    }}
+                  />
+                </FormGroup>
+                <FormGroup check>
+                  <Label check>
+                    <Input name="saveMnemonicAsk" id="saveMnemonicAsk" type="checkbox"
+                      onChange={(event) => setSaveMnemonicAsk(event.target.checked)}
+                    />
+                    Save mnemonic in local storage for quick sign
+                </Label>
+                </FormGroup>
+              </>
+            }
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.ACCEPT_AND_PAY }))
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willCompleteTransactionAcceptAndPay' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionAcceptAndPay" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ mnemonicSecretKey: mnemonicSecretKey, multiSig: multiSig, params: params, currentSow: currentSow, payment: payment, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
+            <ActivityButton data-cy='willCompleteTransactionAcceptAndPay' disabled={(mnemonicSecretKey == '' && password == '')} name="willCompleteTransactionAcceptAndPay" color="primary" onClick={async () => {
+              saveMnemonicAsk && dispatch(ProfileActions.willToggleSaveMnemonicModal())
+              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ mnemonicSecretKey: mnemonicSecretKey, password: password, saveMnemonic: saveMnemonic, multiSig: multiSig, params: params, currentSow: currentSow, payment: payment, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
@@ -337,6 +367,8 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
+
+      <SaveMnemonicModal mnemonicSecretKeyProp={mnemonicSecretKey} />
     </Modal >
   )
 }

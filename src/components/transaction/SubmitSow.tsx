@@ -12,12 +12,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faKey } from '@fortawesome/free-solid-svg-icons'
 
 import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
-import { actions as ChatActions } from '../../store/slices/chat'
 import { selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
 import { actions as NotificationActions } from '../../store/slices/notification'
-import { actions as UIActions } from '../../store/slices/ui'
-import { selectors as ProfileSelectors } from '../../store/slices/profile'
+import { actions as ProfileActions, selectors as ProfileSelectors } from '../../store/slices/profile'
+import { selectors as AuthSelectors } from '../../store/slices/auth'
+import { SaveMnemonicModal } from '../profile/SaveMnemonic'
 import { ActivityButton } from '../common/ActivityButton';
 import { LinkBlockExplorer } from '../common/LinkBlockExplorer'
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
@@ -27,6 +27,9 @@ declare var AlgoSigner: any;
 export const SubmitSow = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
+  const user = useSelector(AuthSelectors.getUser)
+  let saveMnemonic: any = localStorage.getItem('saveMnemonic')
+  saveMnemonic = saveMnemonic ? JSON.parse(saveMnemonic)[user.username] : undefined
   let history = useHistory();
   const { t, i18n } = useTranslation();
   const userAttributes = useSelector(ProfileSelectors.getProfile)
@@ -36,12 +39,15 @@ export const SubmitSow = ({ modal, toggle }: any) => {
   const multiSig = useSelector(TransactionSelectors.getMultiSig)
   const submitToken = useSelector(TransactionSelectors.getSubmitToken)
   const transactionError = useSelector(TransactionSelectors.getError)
-  const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const params = useSelector(TransactionSelectors.getParams)
   const worksAgreementPdf = useSelector(SowSelectors.getWorksAgreementPdf)
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
 
+  const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [saveMnemonicAsk, setSaveMnemonicAsk] = React.useState(false);
   const [isAlgoSignInstalled, setAlgo] = React.useState(false);
+
   React.useEffect(() => {
     if (transactionPage[SowCommands.SUBMIT] == 2) {
       if (typeof AlgoSigner !== 'undefined') {
@@ -65,7 +71,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.SUBMIT}`)}</ModalHeader>
           <ModalBody className="text-center">
-            <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+            <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
           </ModalBody>
         </>
       }
@@ -73,7 +79,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Submitting the Statement of Work</ModalHeader>
           <ModalBody className="text-center">
-            <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+            <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
           </ModalBody>
         </>
       }
@@ -115,21 +121,43 @@ export const SubmitSow = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Sign with mnemonic secret key</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-3 text-muted text-center">You are signing the quote and committing to provide the service as described in the <a target="_blank" href={worksAgreementPdf.downloadUrl}>works agreement</a>.</CardSubtitle>
-            <FormGroup>
-              <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
-              <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
-                onChange={(event: any) => {
-                  setMnemonicSecretKey(event.target.value)
-                }}
-              />
-            </FormGroup>
+            {saveMnemonic && saveMnemonic.save ?
+              <FormGroup>
+                <Label for="passwordSaveMnemonic">Password *</Label>
+                <Input value={password} type="password" name="passwordSaveMnemonic" id="passwordSaveMnemonic" placeholder="passwordSaveMnemonic"
+                  onChange={(event: any) => {
+                    setPassword(event.target.value)
+                  }}
+                />
+              </FormGroup>
+              :
+              <>
+                <FormGroup>
+                  <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
+                  <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
+                    onChange={(event: any) => {
+                      setMnemonicSecretKey(event.target.value)
+                    }}
+                  />
+                </FormGroup>
+                <FormGroup check>
+                  <Label check>
+                    <Input name="saveMnemonicAsk" id="saveMnemonicAsk" type="checkbox"
+                      onChange={(event) => setSaveMnemonicAsk(event.target.checked)}
+                    />
+                      Save mnemonic in local storage for quick sign
+                  </Label>
+                </FormGroup>
+              </>
+            }
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.SUBMIT }))
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willCompleteTransactionSubmitMnemonic' disabled={mnemonicSecretKey == ''} name="willCompleteTransactionSubmitMnemonic" color="primary" onClick={async () => {
-              dispatch(TransactionActions.willCompleteTransactionSubmitMnemonic({ params: params, mnemonicSecretKey: mnemonicSecretKey, currentSow: currentSow, pdfHash: worksAgreementPdf.pdfHash }))
+            <ActivityButton data-cy='willCompleteTransactionSubmitMnemonic' disabled={(mnemonicSecretKey == '' && password == '')} name="willCompleteTransactionSubmitMnemonic" color="primary" onClick={async () => {
+              saveMnemonicAsk && dispatch(ProfileActions.willToggleSaveMnemonicModal())
+              dispatch(TransactionActions.willCompleteTransactionSubmitMnemonic({ params: params, mnemonicSecretKey: mnemonicSecretKey, password: password, saveMnemonic: saveMnemonic, currentSow: currentSow, pdfHash: worksAgreementPdf.pdfHash }))
             }}>Sign</ActivityButton>
           </ModalFooter>
         </>
@@ -193,6 +221,8 @@ export const SubmitSow = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
+
+      <SaveMnemonicModal mnemonicSecretKeyProp={mnemonicSecretKey} />
     </Modal >
   )
 }

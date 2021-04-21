@@ -34,7 +34,7 @@ export const RequestReview = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.REQUEST_REVIEW}`)}</ModalHeader>
           <ModalBody className="text-center">
-            <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+            <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
           </ModalBody>
         </>
       }

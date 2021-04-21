@@ -16,7 +16,7 @@ export const LoadingLayer = ({ children, ...rest }: any) => {
       {isLoading &&
         <div style={{ position: "relative", bottom: 0, left: 0, right: 0, height: '100%', zIndex: 10 }}>
           <Container>
-            <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+            <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
           </Container>
         </div>
       }
