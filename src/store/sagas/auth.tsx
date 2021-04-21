@@ -88,8 +88,6 @@ function* willLogoutUser(action: any) {
   try {
     const result = yield call(AuthApi.logout)
 
-    // localStorage.removeItem('saveMnemonic')
-
     yield put(AuthActions.didLogoutUser(result));
     action.payload.history.push("/")
     yield put(push("/"))
