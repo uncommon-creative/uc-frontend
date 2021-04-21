@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Button, Col, Row, Card, CardBody, CardTitle, Spinner,
+  Button, Col, Row, Card, CardBody, Spinner,
   Modal, ModalHeader, ModalBody, ModalFooter,
-  ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText,
   FormGroup, Label, Input, Jumbotron, CardSubtitle, CardText
 } from 'reactstrap';
 import { Link, useHistory } from 'react-router-dom';
@@ -12,14 +11,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faKey } from '@fortawesome/free-solid-svg-icons'
 
 import { configuration } from '../../config'
-import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
 import { actions as AssetCurrencyActions, selectors as AssetCurrencySelectors } from '../../store/slices/assetCurrency'
-import { actions as ChatActions } from '../../store/slices/chat'
-import { selectors as ArbitratorSelectors } from '../../store/slices/arbitrator'
 import { actions as TransactionActions, selectors as TransactionSelectors, AlgorandFee } from '../../store/slices/transaction'
 import { actions as NotificationActions } from '../../store/slices/notification'
-import { actions as UIActions } from '../../store/slices/ui'
-import { selectors as ProfileSelectors } from '../../store/slices/profile'
+import { actions as ProfileActions, selectors as ProfileSelectors } from '../../store/slices/profile'
+import { selectors as AuthSelectors } from '../../store/slices/auth'
+import { SaveMnemonicModal } from '../profile/SaveMnemonic'
 import { ActivityButton } from '../common/ActivityButton';
 import { LinkBlockExplorer } from '../common/LinkBlockExplorer'
 import AlgoSignerLogo from '../../images/AlgoSigner.png'
@@ -30,7 +27,9 @@ const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REA
 export const OptinAssetModal = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
-  let saveMnemonic = localStorage.getItem('saveMnemonic')
+  const user = useSelector(AuthSelectors.getUser)
+  let saveMnemonic: any = localStorage.getItem('saveMnemonic')
+  saveMnemonic = saveMnemonic ? JSON.parse(saveMnemonic)[user.username] : undefined
   let history = useHistory();
   const { t, i18n } = useTranslation();
   const userAttributes = useSelector(ProfileSelectors.getProfile)
@@ -38,12 +37,12 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
   const currentAssetCurrency = useSelector(AssetCurrencySelectors.getCurrentAssetCurrency)
   const optinResult = useSelector(AssetCurrencySelectors.getOptinResult)
   const error = useSelector(AssetCurrencySelectors.getError)
-  const currentSow = useSelector(SowSelectors.getCurrentSow)
   const params = useSelector(TransactionSelectors.getParams)
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
 
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [saveMnemonicAsk, setSaveMnemonicAsk] = React.useState(false);
   const [isAlgoSignInstalled, setAlgo] = React.useState(false);
 
   React.useEffect(() => {
@@ -69,7 +68,7 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Opt-in asset</ModalHeader>
           <ModalBody className="text-center">
-            <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+            <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
           </ModalBody>
         </>
       }
@@ -112,23 +111,34 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Sign with mnemonic secret key</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_link["asset"] + currentAssetCurrency}>{currentAssetCurrency}</a>.</CardSubtitle>
-            {saveMnemonic && JSON.parse(saveMnemonic).save ?
+            {saveMnemonic && saveMnemonic.save ?
               <FormGroup>
-                <Label for="password">Password *</Label>
-                <Input data-cy="password" value={password} type="password" name="password" id="password" placeholder="password"
+                <Label for="passwordSaveMnemonic">Password *</Label>
+                <Input value={password} type="password" name="passwordSaveMnemonic" id="passwordSaveMnemonic" placeholder="passwordSaveMnemonic"
                   onChange={(event: any) => {
                     setPassword(event.target.value)
                   }}
                 />
               </FormGroup>
-              : <FormGroup>
-                <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
-                <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
-                  onChange={(event: any) => {
-                    setMnemonicSecretKey(event.target.value)
-                  }}
-                />
-              </FormGroup>
+              :
+              <>
+                <FormGroup>
+                  <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
+                  <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
+                    onChange={(event: any) => {
+                      setMnemonicSecretKey(event.target.value)
+                    }}
+                  />
+                </FormGroup>
+                <FormGroup check>
+                  <Label check>
+                    <Input name="saveMnemonicAsk" id="saveMnemonicAsk" type="checkbox"
+                      onChange={(event) => setSaveMnemonicAsk(event.target.checked)}
+                    />
+                      Save mnemonic in local storage for quick sign
+                  </Label>
+                </FormGroup>
+              </>
             }
           </ModalBody>
           <ModalFooter>
@@ -136,6 +146,7 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
               dispatch(AssetCurrencyActions.goToModalPage({ modalPage: 1 }))
             }}>Cancel</ActivityButton>
             <ActivityButton disabled={(mnemonicSecretKey == '' && password == '')} name="willOptinAssetCurrency" color="primary" onClick={async () => {
+              saveMnemonicAsk && dispatch(ProfileActions.willToggleSaveMnemonicModal())
               dispatch(AssetCurrencyActions.willOptinAssetCurrency({ params: params, mnemonicSecretKey: mnemonicSecretKey, password: password, saveMnemonic: saveMnemonic, address: userAttributes.public_key, assetId: currentAssetCurrency, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' }))
             }}>Sign</ActivityButton>
           </ModalFooter>
@@ -198,6 +209,8 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
+
+      <SaveMnemonicModal mnemonicSecretKeyProp={mnemonicSecretKey} />
     </Modal >
   )
 }

@@ -8,6 +8,7 @@ import { actions as UIActions } from '../slices/ui'
 // import * as TransactionApi from '../../api/transaction'
 import * as AssetCurrencyApi from '../../api/assetCurrency'
 import { willCheckAccountTransaction } from './transaction'
+import { willDecryptMnemonic } from './profile'
 
 export function* sagas() {
   yield takeLatest(AssetCurrencyActions.willGoToAssetCurrencyPage.type, willGoToAssetCurrencyPage)
@@ -46,9 +47,9 @@ export function* willOptinAssetCurrency(action: any) {
   yield put(UIActions.startActivityRunning("willOptinAssetCurrency"));
 
   let mnemonicSecretKey = ''
-  if (action.payload.saveMnemonic && JSON.parse(action.payload.saveMnemonic).save) {
-    // decrypt with action.payload.password and action.payload.saveMnemonic.salt
-    mnemonicSecretKey = JSON.parse(action.payload.saveMnemonic).encryptedMnemonic
+  if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
+    // DECRYPT
+    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, password: action.payload.password, salt: action.payload.saveMnemonic.salt } })
   }
   else {
     mnemonicSecretKey = action.payload.mnemonicSecretKey

@@ -138,7 +138,7 @@ export const HomePage = () => {
         </Container>
       }
 
-      <SaveMnemonicModal />
+      <SaveMnemonicModal mnemonicSecretKeyProp='' />
     </>
   )
 }

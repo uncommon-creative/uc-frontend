@@ -2,6 +2,8 @@ import { API, graphqlOperation } from 'aws-amplify';
 import { loader } from 'graphql.macro';
 import * as _ from 'lodash';
 const axios = require('axios')
+const crypto = require('crypto');
+const IV_LENGTH = 16; // For AES, this is always 16
 
 export const getProfileData = async (user: any) => {
   const query = loader('../graphql/getProfileData.gql');
@@ -55,4 +57,27 @@ export const uploadFileToS3 = async (url: any, file: any) => {
   } catch (error) {
     console.log(error)
   }
+}
+
+export function makeKey(password: any, salt: any) {
+  const key = crypto.pbkdf2Sync(password, salt, 10000, 32, 'sha256');
+  return key
+}
+
+export function encrypt(text, key) {
+  let iv = crypto.randomBytes(IV_LENGTH);
+  let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv).setAutoPadding(true);
+  let encrypted = cipher.update(text);
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
+  return iv.toString('hex') + ':' + encrypted.toString('hex');
+}
+
+export function decrypt(text, key) {
+  let textParts = text.split(':');
+  let iv = Buffer.from(textParts.shift(), 'hex');
+  let encryptedText = Buffer.from(textParts.join(':'), 'hex');
+  let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv);
+  let decrypted = decipher.update(encryptedText);
+  decrypted = Buffer.concat([decrypted, decipher.final()]);
+  return decrypted.toString();
 }

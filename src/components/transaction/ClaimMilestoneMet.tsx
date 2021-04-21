@@ -13,10 +13,12 @@ import { faKey } from '@fortawesome/free-solid-svg-icons'
 
 import { configuration } from '../../config'
 import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
-import { selectors as ProfileSelectors } from '../../store/slices/profile'
+import { actions as ProfileActions, selectors as ProfileSelectors } from '../../store/slices/profile'
 import { selectors as ChatSelectors } from '../../store/slices/chat'
 import { actions as TransactionActions, selectors as TransactionSelectors } from '../../store/slices/transaction'
 import { actions as NotificationActions } from '../../store/slices/notification'
+import { selectors as AuthSelectors } from '../../store/slices/auth'
+import { SaveMnemonicModal } from '../profile/SaveMnemonic'
 import { ActivityButton } from '../common/ActivityButton'
 import { FileButton } from '../common/FileButton'
 import { SowAttachmentsInput } from '../SowAttachmentsInput'
@@ -29,7 +31,9 @@ const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REA
 export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
-  let saveMnemonic = localStorage.getItem('saveMnemonic')
+  const user = useSelector(AuthSelectors.getUser)
+  let saveMnemonic: any = localStorage.getItem('saveMnemonic')
+  saveMnemonic = saveMnemonic ? JSON.parse(saveMnemonic)[user.username] : undefined
   const { t, i18n } = useTranslation();
   const users = useSelector(ProfileSelectors.getUsers)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
@@ -45,6 +49,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
   const [acceptedConditions, setAcceptedConditions] = React.useState(false);
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [saveMnemonicAsk, setSaveMnemonicAsk] = React.useState(false);
 
   React.useEffect(() => {
     modal && dispatch(TransactionActions.willGetParamsWithDelay({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
@@ -72,7 +77,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.CLAIM_MILESTONE_MET}`)}</ModalHeader>
           <ModalBody className="text-center">
-            <Spinner /* type='grow' */ color="primary" style={{ width: '3rem', height: '3rem' }} />
+            <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
           </ModalBody>
         </>
       }
@@ -175,23 +180,34 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount} ALGO</CardSubtitle>
 
-            {saveMnemonic && JSON.parse(saveMnemonic).save ?
+            {saveMnemonic && saveMnemonic.save ?
               <FormGroup>
-                <Label for="password">Password *</Label>
-                <Input data-cy="password" value={password} type="password" name="password" id="password" placeholder="password"
+                <Label for="passwordSaveMnemonic">Password *</Label>
+                <Input value={password} type="password" name="passwordSaveMnemonic" id="passwordSaveMnemonic" placeholder="passwordSaveMnemonic"
                   onChange={(event: any) => {
                     setPassword(event.target.value)
                   }}
                 />
               </FormGroup>
-              : <FormGroup>
-                <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
-                <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
-                  onChange={(event: any) => {
-                    setMnemonicSecretKey(event.target.value)
-                  }}
-                />
-              </FormGroup>
+              :
+              <>
+                <FormGroup>
+                  <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
+                  <Input data-cy="mnemonicSecretKey" value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
+                    onChange={(event: any) => {
+                      setMnemonicSecretKey(event.target.value)
+                    }}
+                  />
+                </FormGroup>
+                <FormGroup check>
+                  <Label check>
+                    <Input name="saveMnemonicAsk" id="saveMnemonicAsk" type="checkbox"
+                      onChange={(event) => setSaveMnemonicAsk(event.target.checked)}
+                    />
+                      Save mnemonic in local storage for quick sign
+                  </Label>
+                </FormGroup>
+              </>
             }
           </ModalBody>
           <ModalFooter>
@@ -199,6 +215,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 3, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetMnemonic' disabled={(mnemonicSecretKey == '' && password == '')} name="willCompleteTransactionClaimMilestoneMetMnemonic" color="primary" onClick={async () => {
+              saveMnemonicAsk && dispatch(ProfileActions.willToggleSaveMnemonicModal())
               dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig.address, params: params, mnemonicSecretKey: mnemonicSecretKey, password: password, saveMnemonic: saveMnemonic, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag }))
             }}>Sign the transaction</ActivityButton>
           </ModalFooter>
@@ -272,6 +289,8 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
           </ModalFooter>
         </>
       }
+
+      <SaveMnemonicModal mnemonicSecretKeyProp={mnemonicSecretKey} />
     </Modal>
   )
 }

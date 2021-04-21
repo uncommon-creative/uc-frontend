@@ -1,9 +1,7 @@
 import { call, put, takeEvery, takeLatest, delay, select } from 'redux-saga/effects'
 
 import { actions as ProfileActions, selectors as ProfileSelectors } from '../slices/profile'
-import { actions as AuthActions } from '../slices/auth'
-import * as ArbitratorApi from '../../api/arbitrator'
-import { actions as ArbitratorActions } from '../slices/arbitrator'
+import { actions as AuthActions, selectors as AuthSelectors } from '../slices/auth'
 import { willSaveArbitratorSettings } from './arbitrator'
 import { willGetAlgorandAccountInfo } from './transaction'
 import { actions as NotificationActions } from '../slices/notification'
@@ -14,6 +12,7 @@ import { push } from 'connected-react-router'
 import { willGetArbitrator } from './arbitrator'
 import { willCheckAccountTransaction } from './transaction'
 
+const crypto = require('crypto');
 const algosdk = require('algosdk');
 
 export function* sagas() {
@@ -72,7 +71,10 @@ function* willAddPublicKey(action: any) {
     const result = yield call(ServiceApi.putProfileData, "public_key", publicKey)
     console.log("willAddPublicKey ", result)
     yield put(NotificationActions.willShowNotification({ message: "Public address saved", type: "success" }))
+
     action.payload.history.push('/')
+
+    yield put(ProfileActions.willToggleSaveMnemonicModal())
   } catch (error) {
     console.log("willAddPublicKey error: ", error)
   }
@@ -177,16 +179,23 @@ function* willSaveProfile(action: any) {
 export function* willSaveMnemonic(action: any) {
   console.log("in willSaveMnemonic with: ", action)
   yield put(UIActions.startActivityRunning("willSaveMnemonic"));
+  const user = yield select(AuthSelectors.getUser)
 
   try {
+    let saveMnemonic: any = localStorage.getItem('saveMnemonic')
+    saveMnemonic = !saveMnemonic ? {} as any : JSON.parse(saveMnemonic)
+
     if (action.payload.save) {
-      const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPayAlgo: 0, currency: 'ALGO' } })
+      const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, toPayAlgo: 0, currency: 'saveMnemonic' } })
 
       if (resultCheckAccountTransaction.check) {
-        const saveMnemonic = {
+        // ENCRYPT
+        const { encryptedMnemonic, salt } = yield call(willEncryptMnemonic, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, password: action.payload.password } })
+
+        saveMnemonic[user.username] = {
           save: true,
-          salt: 'uncommon',
-          encryptedMnemonic: action.payload.mnemonicSecretKey
+          encryptedMnemonic: encryptedMnemonic,
+          salt: salt.toString('base64')
         }
         localStorage.setItem('saveMnemonic', JSON.stringify(saveMnemonic))
 
@@ -199,10 +208,10 @@ export function* willSaveMnemonic(action: any) {
       }
     }
     else {
-      const saveMnemonic = {
+      saveMnemonic[user.username] = {
         save: false,
-        salt: undefined,
-        encryptedMnemonic: undefined
+        encryptedMnemonic: undefined,
+        salt: undefined
       }
       localStorage.setItem('saveMnemonic', JSON.stringify(saveMnemonic))
       yield put(ProfileActions.didSaveMnemonic({ success: "Your decision was saved." }))
@@ -213,4 +222,31 @@ export function* willSaveMnemonic(action: any) {
     yield put(NotificationActions.willShowNotification({ message: error.message, type: "danger" }));
   }
   yield put(UIActions.stopActivityRunning("willSaveMnemonic"));
+}
+
+export function* willEncryptMnemonic(action: any) {
+  console.log("in willEncryptMnemonic with: ", action)
+
+  try {
+    const salt = crypto.randomBytes(16)
+    const key = yield call(ServiceApi.makeKey, action.payload.password, salt)
+    const encryptedMnemonic = yield call(ServiceApi.encrypt, action.payload.mnemonicSecretKey, key)
+
+    return { encryptedMnemonic, salt }
+  } catch (error) {
+    console.log("willEncryptMnemonic error", error)
+  }
+}
+
+export function* willDecryptMnemonic(action: any) {
+  console.log("in willDecryptMnemonic with: ", action)
+
+  try {
+    const key = yield call(ServiceApi.makeKey, action.payload.password, Buffer.from(action.payload.salt, 'base64'))
+    const decryptedMnemonic = yield call(ServiceApi.decrypt, action.payload.encryptedMnemonic, key)
+
+    return decryptedMnemonic
+  } catch (error) {
+    console.log("willDecryptMnemonic error", error)
+  }
 }

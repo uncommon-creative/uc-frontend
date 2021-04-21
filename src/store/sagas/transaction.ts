@@ -8,6 +8,7 @@ import { actions as AssetCurrencyActions, selectors as AssetCurrencySelectors } 
 import { actions as UIActions } from '../slices/ui'
 import * as TransactionApi from '../../api/transaction'
 import { willGetUserProfile } from '../sagas/profile'
+import { willDecryptMnemonic } from './profile'
 import { configuration } from '../../config'
 const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
@@ -183,9 +184,9 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
   const assetCurrencyIndex = action.payload.payment.currency == "ALGO" ? undefined : assetsCurrencies.find((asset: any) => asset.assetName === action.payload.payment.currency).assetIndex
 
   let mnemonicSecretKey = ''
-  if (action.payload.saveMnemonic && JSON.parse(action.payload.saveMnemonic).save) {
-    // decrypt with action.payload.password and action.payload.saveMnemonic.salt
-    mnemonicSecretKey = JSON.parse(action.payload.saveMnemonic).encryptedMnemonic
+  if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
+    // DECRYPT
+    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, password: action.payload.password, salt: action.payload.saveMnemonic.salt } })
   }
   else {
     mnemonicSecretKey = action.payload.mnemonicSecretKey
@@ -352,9 +353,9 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
   const clawback = users[action.payload.currentSow.seller].public_key;
 
   let mnemonicSecretKey = ''
-  if (action.payload.saveMnemonic && JSON.parse(action.payload.saveMnemonic).save) {
-    // decrypt with action.payload.password and action.payload.saveMnemonic.salt
-    mnemonicSecretKey = JSON.parse(action.payload.saveMnemonic).encryptedMnemonic
+  if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
+    // DECRYPT
+    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, password: action.payload.password, salt: action.payload.saveMnemonic.salt } })
   }
   else {
     mnemonicSecretKey = action.payload.mnemonicSecretKey
@@ -616,9 +617,9 @@ function* willCompleteTransactionAcceptMilestoneMnemonic(action: any) {
   };
 
   let mnemonicSecretKey = ''
-  if (action.payload.saveMnemonic && JSON.parse(action.payload.saveMnemonic).save) {
-    // decrypt with action.payload.password and action.payload.saveMnemonic.salt
-    mnemonicSecretKey = JSON.parse(action.payload.saveMnemonic).encryptedMnemonic
+  if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
+    // DECRYPT
+    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, password: action.payload.password, salt: action.payload.saveMnemonic.salt } })
   }
   else {
     mnemonicSecretKey = action.payload.mnemonicSecretKey
@@ -740,9 +741,9 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
   const clawback = users[action.payload.currentSow.seller].public_key;
 
   let mnemonicSecretKey = ''
-  if (action.payload.saveMnemonic && JSON.parse(action.payload.saveMnemonic).save) {
-    // decrypt with action.payload.password and action.payload.saveMnemonic.salt
-    mnemonicSecretKey = JSON.parse(action.payload.saveMnemonic).encryptedMnemonic
+  if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
+    // DECRYPT
+    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, password: action.payload.password, salt: action.payload.saveMnemonic.salt } })
   }
   else {
     mnemonicSecretKey = action.payload.mnemonicSecretKey
@@ -966,7 +967,7 @@ export function* willCheckAccountTransaction(action: any) {
         error: "The mnemonic secret key inserted doesn't match your public address."
       }
     }
-    else {
+    else if (action.payload.currency != 'saveMnemonic') {
       const addressInfo = yield call(willGetAlgorandAccountInfo, { payload: resultMnemonicToSecretKey.addr })
       // console.log("willCheckAccountTransaction addressInfo: ", addressInfo)
       const accountMinBalance = (addressInfo.assets.length * AlgorandMinBalance + addressInfo.createdAssets.length * AlgorandMinBalance + AlgorandMinBalance) / 1000000
@@ -997,6 +998,12 @@ export function* willCheckAccountTransaction(action: any) {
           error: null,
           addressInfo: addressInfo
         }
+      }
+    }
+    else {
+      return {
+        check: true,
+        error: null
       }
     }
   } catch (error) {
