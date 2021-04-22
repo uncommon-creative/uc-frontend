@@ -7,6 +7,8 @@ import {
 } from 'reactstrap';
 import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 
 import { configuration } from '../../config'
 import { selectors as ProfileSelectors, actions as ProfileActions } from '../../store/slices/profile'
@@ -97,7 +99,7 @@ export const SaveMnemonicModal = ({ mnemonicSecretKeyProp }: any) => {
           <ModalHeader>Insert a passphrase chosen by you</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are saving your mnemonic secret key encrypted with a passphrase chosen by you in the local storage of the current browser.</CardSubtitle>
-            <CardSubtitle tag="h6" className="py-1 text-muted text-center">This passphrase is chosen by you, it is not the password used to login and it is not possible to recover.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center font-weight-bold"><FontAwesomeIcon icon={faExclamationTriangle} size='1x' /> This passphrase is chosen by you, it is not the password used to login and it is not possible to recover.</CardSubtitle>
             <FormGroup>
               <Label for="passphrase">Passphrase *</Label>
               <Input value={passphrase} type="password" name="passphrase" id="passphrase" placeholder="passphrase"

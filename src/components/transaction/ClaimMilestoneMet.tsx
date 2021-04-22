@@ -225,7 +225,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetMnemonic' disabled={(mnemonicSecretKey == '' && passphrase == '')} name="willCompleteTransactionClaimMilestoneMetMnemonic" color="primary" onClick={async () => {
               saveMnemonicAsk && dispatch(ProfileActions.willToggleSaveMnemonicModal())
-              dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig.address, params: params, mnemonicSecretKey: mnemonicSecretKey, passphrase: passphrase, saveMnemonic: saveMnemonicMy, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag }))
+              // dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig.address, params: params, mnemonicSecretKey: mnemonicSecretKey, passphrase: passphrase, saveMnemonic: saveMnemonicMy, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag }))
             }}>Sign the transaction</ActivityButton>
           </ModalFooter>
         </>
