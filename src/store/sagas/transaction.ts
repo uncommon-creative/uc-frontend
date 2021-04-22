@@ -183,84 +183,89 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
   const assetsCurrencies = yield select(AssetCurrencySelectors.getAssetsCurrencies)
   const assetCurrencyIndex = action.payload.payment.currency == "ALGO" ? undefined : assetsCurrencies.find((asset: any) => asset.assetName === action.payload.payment.currency).assetIndex
 
-  let mnemonicSecretKey = ''
-  if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
-    // DECRYPT
-    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
-  }
-  else {
-    mnemonicSecretKey = action.payload.mnemonicSecretKey
-  }
-  console.log("willCompleteTransactionAcceptAndPayMnemonic mnemonicSecretKey: ", mnemonicSecretKey)
-
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: mnemonicSecretKey, toPayAlgo: action.payload.payment.toPayAlgo, toPayAssetCurrency: action.payload.payment.toPayAssetCurrency, currency: action.payload.payment.currency } })
-    console.log("willCompleteTransactionAcceptAndPayMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
-
-    if (resultCheckAccountTransaction.check) {
-      const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.arbitrator)
-      console.log("willCompleteTransactionAcceptAndPayMnemonic resultSetSowArbitrator: ", resultSetSowArbitrator)
-
-      let resultSignedTransaction = [] as any
-
-      // CHECK CURRENCY ALGO
-      if (action.payload.currentSow.currency == "ALGO") {
-        console.log("willCompleteTransactionAcceptAndPayMnemonic CHECK CURRENCY ALGO")
-        // if (action.payload.toPay <= 0) {
-        //   resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicPaid, action.payload.params.withoutDelay, mnemonicSecretKey, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
-        //   console.log("willCompleteTransactionAcceptAndPayMnemonic PAID resultSignedTransaction: ", resultSignedTransaction)
-        // }
-        // else {
-        resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAlgo, action.payload.multiSig.address, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.payment.toPayAlgo, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
-        console.log("willCompleteTransactionAcceptAndPayMnemonic ALGO resultSignedTransaction: ", resultSignedTransaction)
-        // }
-      }
-      // CHECK ASSET CURRENCY
-      else {
-        console.log("willCompleteTransactionAcceptAndPayMnemonic CHECK ASSET CURRENCY")
-        // CHECK MSIG OPTIN ASSET CURRENCY TO-DO
-        if (action.payload.payment.balancesAssetCurrency == -1) {
-          console.log("willCompleteTransactionAcceptAndPayMnemonic CHECK MSIG OPTIN ASSET CURRENCY TO-DO")
-          const mparams = {
-            version: 1,
-            threshold: 2,
-            addrs: [
-              users[action.payload.currentSow.seller].public_key,
-              users[action.payload.currentSow.buyer].public_key,
-              users[action.payload.arbitrator].public_key,
-              configuration[stage].uc_backup_public_key
-            ],
-          };
-
-          resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAssetOptin, action.payload.multiSig.address, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.payment.toPayAlgo, action.payload.payment.toPayAssetCurrency, users[action.payload.currentSow.buyer].public_key, action.payload.assetId, assetCurrencyIndex, mparams)
-          console.log("willCompleteTransactionAcceptAndPayMnemonic ASSET OPTIN resultSignedTransaction: ", resultSignedTransaction)
-        }
-        // CHECK MSIG OPTIN ASSET CURRENCY DONE
-        else {
-          console.log("willCompleteTransactionAcceptAndPayMnemonic CHECK MSIG OPTIN ASSET CURRENCY DONE")
-          resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAsset, action.payload.multiSig.address, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.payment.toPayAlgo, action.payload.payment.toPayAssetCurrency, users[action.payload.currentSow.buyer].public_key, action.payload.assetId, assetCurrencyIndex)
-          console.log("willCompleteTransactionAcceptAndPayMnemonic ASSET resultSignedTransaction: ", resultSignedTransaction)
-        }
-      }
-
-      const resultSentTransaction = yield call(TransactionApi.algorandSendAcceptAndPayTx, action.payload.currentSow.sow, resultSignedTransaction)
-      console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction: ", resultSentTransaction)
-
-      if (resultSentTransaction.error) {
-        console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction fail: ", resultSentTransaction)
-        yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail({ error: resultSentTransaction.error, sowCommand: SowCommands.ACCEPT_AND_PAY }))
-        yield put(NotificationActions.willShowNotification({ message: resultSentTransaction.error, type: "danger" }));
-      }
-      else {
-        console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction success: ", resultSentTransaction)
-        yield put(TransactionActions.didCompleteTransactionAcceptAndPay({ tx: resultSentTransaction, sowCommand: SowCommands.ACCEPT_AND_PAY }))
-      }
-      yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
+    let mnemonicSecretKey: any = ''
+    if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
+      // DECRYPT
+      mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
     }
     else {
-      console.log("willCompleteTransactionAcceptAndPayMnemonic fail")
-      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail({ error: resultCheckAccountTransaction.error, sowCommand: SowCommands.ACCEPT_AND_PAY }))
-      yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
+      mnemonicSecretKey = action.payload.mnemonicSecretKey
+    }
+    console.log("willCompleteTransactionAcceptAndPayMnemonic mnemonicSecretKey: ", mnemonicSecretKey)
+
+    if (mnemonicSecretKey.error) {
+      yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail({ error: mnemonicSecretKey.error, sowCommand: SowCommands.ACCEPT_AND_PAY }))
+    }
+    else {
+      const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: mnemonicSecretKey, toPayAlgo: action.payload.payment.toPayAlgo, toPayAssetCurrency: action.payload.payment.toPayAssetCurrency, currency: action.payload.payment.currency } })
+      console.log("willCompleteTransactionAcceptAndPayMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
+
+      if (resultCheckAccountTransaction.check) {
+        const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.arbitrator)
+        console.log("willCompleteTransactionAcceptAndPayMnemonic resultSetSowArbitrator: ", resultSetSowArbitrator)
+
+        let resultSignedTransaction = [] as any
+
+        // CHECK CURRENCY ALGO
+        if (action.payload.currentSow.currency == "ALGO") {
+          console.log("willCompleteTransactionAcceptAndPayMnemonic CHECK CURRENCY ALGO")
+          // if (action.payload.toPay <= 0) {
+          //   resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicPaid, action.payload.params.withoutDelay, mnemonicSecretKey, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
+          //   console.log("willCompleteTransactionAcceptAndPayMnemonic PAID resultSignedTransaction: ", resultSignedTransaction)
+          // }
+          // else {
+          resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAlgo, action.payload.multiSig.address, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.payment.toPayAlgo, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
+          console.log("willCompleteTransactionAcceptAndPayMnemonic ALGO resultSignedTransaction: ", resultSignedTransaction)
+          // }
+        }
+        // CHECK ASSET CURRENCY
+        else {
+          console.log("willCompleteTransactionAcceptAndPayMnemonic CHECK ASSET CURRENCY")
+          // CHECK MSIG OPTIN ASSET CURRENCY TO-DO
+          if (action.payload.payment.balancesAssetCurrency == -1) {
+            console.log("willCompleteTransactionAcceptAndPayMnemonic CHECK MSIG OPTIN ASSET CURRENCY TO-DO")
+            const mparams = {
+              version: 1,
+              threshold: 2,
+              addrs: [
+                users[action.payload.currentSow.seller].public_key,
+                users[action.payload.currentSow.buyer].public_key,
+                users[action.payload.arbitrator].public_key,
+                configuration[stage].uc_backup_public_key
+              ],
+            };
+
+            resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAssetOptin, action.payload.multiSig.address, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.payment.toPayAlgo, action.payload.payment.toPayAssetCurrency, users[action.payload.currentSow.buyer].public_key, action.payload.assetId, assetCurrencyIndex, mparams)
+            console.log("willCompleteTransactionAcceptAndPayMnemonic ASSET OPTIN resultSignedTransaction: ", resultSignedTransaction)
+          }
+          // CHECK MSIG OPTIN ASSET CURRENCY DONE
+          else {
+            console.log("willCompleteTransactionAcceptAndPayMnemonic CHECK MSIG OPTIN ASSET CURRENCY DONE")
+            resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAsset, action.payload.multiSig.address, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.payment.toPayAlgo, action.payload.payment.toPayAssetCurrency, users[action.payload.currentSow.buyer].public_key, action.payload.assetId, assetCurrencyIndex)
+            console.log("willCompleteTransactionAcceptAndPayMnemonic ASSET resultSignedTransaction: ", resultSignedTransaction)
+          }
+        }
+
+        const resultSentTransaction = yield call(TransactionApi.algorandSendAcceptAndPayTx, action.payload.currentSow.sow, resultSignedTransaction)
+        console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction: ", resultSentTransaction)
+
+        if (resultSentTransaction.error) {
+          console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction fail: ", resultSentTransaction)
+          yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail({ error: resultSentTransaction.error, sowCommand: SowCommands.ACCEPT_AND_PAY }))
+          yield put(NotificationActions.willShowNotification({ message: resultSentTransaction.error, type: "danger" }));
+        }
+        else {
+          console.log("willCompleteTransactionAcceptAndPayMnemonic resultSentTransaction success: ", resultSentTransaction)
+          yield put(TransactionActions.didCompleteTransactionAcceptAndPay({ tx: resultSentTransaction, sowCommand: SowCommands.ACCEPT_AND_PAY }))
+        }
+        yield put(SowActions.willGetSow({ sow: action.payload.currentSow.sow }))
+      }
+      else {
+        console.log("willCompleteTransactionAcceptAndPayMnemonic fail")
+        yield put(TransactionActions.didCompleteTransactionAcceptAndPayFail({ error: resultCheckAccountTransaction.error, sowCommand: SowCommands.ACCEPT_AND_PAY }))
+        yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
+      }
     }
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptAndPayMnemonic ", error)
@@ -352,96 +357,101 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
   // them to other addresses    
   const clawback = users[action.payload.currentSow.seller].public_key;
 
-  let mnemonicSecretKey = ''
-  if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
-    // DECRYPT
-    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
-  }
-  else {
-    mnemonicSecretKey = action.payload.mnemonicSecretKey
-  }
-  console.log("willCompleteTransactionClaimMilestoneMetMnemonic mnemonicSecretKey: ", mnemonicSecretKey)
-
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: mnemonicSecretKey, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' } })
-    console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
-
-    if (resultCheckAccountTransaction.check) {
-      // const existingAsset = resultCheckAccountTransaction.addressInfo.createdAssets.find((asset: any) => JSON.parse(asset).params['unit-name'] === configuration[stage].deliverableAsset_unitName + action.payload.currentSow.sow.substring(0, 2))
-      // console.log("willCompleteTransactionClaimMilestoneMetMnemonic existingAsset: ", existingAsset)
-      let resultSignedTransaction = [] as any
-      // if (existingAsset) {
-      //   console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
-      //   resultSignedTransaction = yield call(willDestroyAndCreateAssetMnemonic, {
-      //     payload: {
-      //       asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: mnemonicSecretKey, params: action.payload.params.withoutDelay,
-      //       addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
-      //     }
-      //   })
-      //   console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultSignedTransaction: ", resultSignedTransaction)
-      // }
-      // else {
-      // console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET NOT FOUND")
-      resultSignedTransaction = yield call(TransactionApi.signTxn,
-        mnemonicSecretKey, action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
-      )
-      console.log("in willCompleteTransactionClaimMilestoneMetMnemonic resultSignedTransaction: ", resultSignedTransaction)
-      // }
-
-      const resultAlgorandSendDeliverableTokenCreationTx = yield call(TransactionApi.algorandSendDeliverableTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction)
-      console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultalgorandSendDeliverableTokenCreationTx: ", resultAlgorandSendDeliverableTokenCreationTx)
-
-      if (resultAlgorandSendDeliverableTokenCreationTx.error) {
-        console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendDeliverableTokenCreationTx fail")
-        yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail({ error: resultAlgorandSendDeliverableTokenCreationTx.error, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
-        yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendDeliverableTokenCreationTx.error, type: "danger" }));
-      }
-      else {
-        console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendDeliverableTokenCreationTx success")
-
-        const mparams = {
-          version: 1,
-          threshold: 2,
-          addrs: [
-            users[action.payload.currentSow.seller].public_key,
-            users[action.payload.currentSow.buyer].public_key,
-            users[action.payload.currentSow.arbitrator].public_key,
-            configuration[stage].uc_backup_public_key
-          ],
-        };
-
-        let resultClaimMilestoneMetTxGroup = [] as any
-        // CHECK CURRENCY ALGO
-        if (action.payload.currentSow.currency == 'ALGO') {
-          resultClaimMilestoneMetTxGroup = yield call(TransactionApi.signTransactionsClaimMilestoneMetMnemonicAlgo, action.payload.multiSigAddress, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, mnemonicSecretKey, action.payload.currentSow.price, mparams, users[action.payload.currentSow.buyer].public_key, resultAlgorandSendDeliverableTokenCreationTx.assetId)
-          console.log("willCompleteTransactionClaimMilestoneMetMnemonic ALGO resultSignedMultisigTransaction: ", resultClaimMilestoneMetTxGroup)
-        }
-        // CHECK ASSET CURRENCY
-        else {
-          const assetCurrencyIndex = assetsCurrencies.find((asset: any) => asset.assetName === action.payload.currentSow.currency).assetIndex
-          // console.log("willCompleteTransactionClaimMilestoneMetMnemonic assetCurrencyIndex: ", assetCurrencyIndex)
-
-          resultClaimMilestoneMetTxGroup = yield call(TransactionApi.signTransactionsClaimMilestoneMetMnemonicAsset, action.payload.multiSigAddress, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, mnemonicSecretKey, action.payload.currentSow.price, mparams, users[action.payload.currentSow.buyer].public_key, resultAlgorandSendDeliverableTokenCreationTx.assetId, assetCurrencyIndex)
-          console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET resultSignedMultisigTransaction: ", resultClaimMilestoneMetTxGroup)
-        }
-        const resultAlgorandSendClaimMilestoneMet = yield call(TransactionApi.algorandSendClaimMilestoneMet, action.payload.currentSow.sow, resultClaimMilestoneMetTxGroup.tx, resultClaimMilestoneMetTxGroup.backupTx)
-        console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendClaimMilestoneMet: ", resultAlgorandSendClaimMilestoneMet)
-
-        if (resultAlgorandSendClaimMilestoneMet.error) {
-          console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendClaimMilestoneMet fail")
-          yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail({ error: resultAlgorandSendClaimMilestoneMet.error, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
-          yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendClaimMilestoneMet.error, type: "danger" }))
-        }
-        else {
-          yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet({ tx: resultAlgorandSendDeliverableTokenCreationTx, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
-          yield put(NotificationActions.willShowNotification({ message: "Milestone claimed as met", type: "info" }));
-        }
-      }
+    let mnemonicSecretKey: any = ''
+    if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
+      // DECRYPT
+      mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
     }
     else {
-      console.log("willCompleteTransactionClaimMilestoneMetMnemonic fail")
-      yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail({ error: resultCheckAccountTransaction.error, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
-      yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
+      mnemonicSecretKey = action.payload.mnemonicSecretKey
+    }
+    console.log("willCompleteTransactionClaimMilestoneMetMnemonic mnemonicSecretKey: ", mnemonicSecretKey)
+
+    if (mnemonicSecretKey.error) {
+      yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail({ error: mnemonicSecretKey.error, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+    }
+    else {
+      const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: mnemonicSecretKey, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' } })
+      console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
+
+      if (resultCheckAccountTransaction.check) {
+        // const existingAsset = resultCheckAccountTransaction.addressInfo.createdAssets.find((asset: any) => JSON.parse(asset).params['unit-name'] === configuration[stage].deliverableAsset_unitName + action.payload.currentSow.sow.substring(0, 2))
+        // console.log("willCompleteTransactionClaimMilestoneMetMnemonic existingAsset: ", existingAsset)
+        let resultSignedTransaction = [] as any
+        // if (existingAsset) {
+        //   console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
+        //   resultSignedTransaction = yield call(willDestroyAndCreateAssetMnemonic, {
+        //     payload: {
+        //       asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: mnemonicSecretKey, params: action.payload.params.withoutDelay,
+        //       addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
+        //     }
+        //   })
+        //   console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultSignedTransaction: ", resultSignedTransaction)
+        // }
+        // else {
+        // console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET NOT FOUND")
+        resultSignedTransaction = yield call(TransactionApi.signTxn,
+          mnemonicSecretKey, action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
+        )
+        console.log("in willCompleteTransactionClaimMilestoneMetMnemonic resultSignedTransaction: ", resultSignedTransaction)
+        // }
+
+        const resultAlgorandSendDeliverableTokenCreationTx = yield call(TransactionApi.algorandSendDeliverableTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction)
+        console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultalgorandSendDeliverableTokenCreationTx: ", resultAlgorandSendDeliverableTokenCreationTx)
+
+        if (resultAlgorandSendDeliverableTokenCreationTx.error) {
+          console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendDeliverableTokenCreationTx fail")
+          yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail({ error: resultAlgorandSendDeliverableTokenCreationTx.error, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+          yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendDeliverableTokenCreationTx.error, type: "danger" }));
+        }
+        else {
+          console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendDeliverableTokenCreationTx success")
+
+          const mparams = {
+            version: 1,
+            threshold: 2,
+            addrs: [
+              users[action.payload.currentSow.seller].public_key,
+              users[action.payload.currentSow.buyer].public_key,
+              users[action.payload.currentSow.arbitrator].public_key,
+              configuration[stage].uc_backup_public_key
+            ],
+          };
+
+          let resultClaimMilestoneMetTxGroup = [] as any
+          // CHECK CURRENCY ALGO
+          if (action.payload.currentSow.currency == 'ALGO') {
+            resultClaimMilestoneMetTxGroup = yield call(TransactionApi.signTransactionsClaimMilestoneMetMnemonicAlgo, action.payload.multiSigAddress, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, mnemonicSecretKey, action.payload.currentSow.price, mparams, users[action.payload.currentSow.buyer].public_key, resultAlgorandSendDeliverableTokenCreationTx.assetId)
+            console.log("willCompleteTransactionClaimMilestoneMetMnemonic ALGO resultSignedMultisigTransaction: ", resultClaimMilestoneMetTxGroup)
+          }
+          // CHECK ASSET CURRENCY
+          else {
+            const assetCurrencyIndex = assetsCurrencies.find((asset: any) => asset.assetName === action.payload.currentSow.currency).assetIndex
+            // console.log("willCompleteTransactionClaimMilestoneMetMnemonic assetCurrencyIndex: ", assetCurrencyIndex)
+
+            resultClaimMilestoneMetTxGroup = yield call(TransactionApi.signTransactionsClaimMilestoneMetMnemonicAsset, action.payload.multiSigAddress, users[action.payload.currentSow.seller].public_key, action.payload.params.withDelay, mnemonicSecretKey, action.payload.currentSow.price, mparams, users[action.payload.currentSow.buyer].public_key, resultAlgorandSendDeliverableTokenCreationTx.assetId, assetCurrencyIndex)
+            console.log("willCompleteTransactionClaimMilestoneMetMnemonic ASSET resultSignedMultisigTransaction: ", resultClaimMilestoneMetTxGroup)
+          }
+          const resultAlgorandSendClaimMilestoneMet = yield call(TransactionApi.algorandSendClaimMilestoneMet, action.payload.currentSow.sow, resultClaimMilestoneMetTxGroup.tx, resultClaimMilestoneMetTxGroup.backupTx)
+          console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendClaimMilestoneMet: ", resultAlgorandSendClaimMilestoneMet)
+
+          if (resultAlgorandSendClaimMilestoneMet.error) {
+            console.log("willCompleteTransactionClaimMilestoneMetMnemonic resultAlgorandSendClaimMilestoneMet fail")
+            yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail({ error: resultAlgorandSendClaimMilestoneMet.error, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+            yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendClaimMilestoneMet.error, type: "danger" }))
+          }
+          else {
+            yield put(TransactionActions.didCompleteTransactionClaimMilestoneMet({ tx: resultAlgorandSendDeliverableTokenCreationTx, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+            yield put(NotificationActions.willShowNotification({ message: "Milestone claimed as met", type: "info" }));
+          }
+        }
+      }
+      else {
+        console.log("willCompleteTransactionClaimMilestoneMetMnemonic fail")
+        yield put(TransactionActions.didCompleteTransactionClaimMilestoneMetFail({ error: resultCheckAccountTransaction.error, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+        yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
+      }
     }
   } catch (error) {
     console.log("error in willCompleteTransactionClaimMilestoneMetMnemonic ", error)
@@ -616,32 +626,37 @@ function* willCompleteTransactionAcceptMilestoneMnemonic(action: any) {
     ],
   };
 
-  let mnemonicSecretKey = ''
-  if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
-    // DECRYPT
-    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
-  }
-  else {
-    mnemonicSecretKey = action.payload.mnemonicSecretKey
-  }
-  console.log("willCompleteTransactionAcceptMilestoneMnemonic mnemonicSecretKey: ", mnemonicSecretKey)
-
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: mnemonicSecretKey, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' } })
-    console.log("willCompleteTransactionAcceptMilestoneMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
-
-    if (resultCheckAccountTransaction.check) {
-      const resultSignGroupAcceptMilestone = yield call(TransactionApi.signGroupAcceptMilestoneMnemonic, action.payload.signedMsig, mnemonicSecretKey, msigparams)
-      console.log("willCompleteTransactionAcceptMilestoneMnemonic resultSignGroupAcceptMilestone: ", resultSignGroupAcceptMilestone)
-
-      const resultConfirmedMultisigTransaction = yield call(TransactionApi.algorandFinalizeTransaction, action.payload.signedMsig.hash_round, action.payload.signedMsig.round_sow, resultSignGroupAcceptMilestone)
-      console.log("willCompleteTransactionAcceptMilestoneMnemonic resultConfirmedMultisigTransaction: ", resultConfirmedMultisigTransaction)
-      yield put(TransactionActions.didCompleteTransactionAcceptMilestone({ tx: resultConfirmedMultisigTransaction, sowCommand: SowCommands.ACCEPT_MILESTONE }))
-      yield put(NotificationActions.willShowNotification({ message: "Milestone accepted", type: "info" }));
+    let mnemonicSecretKey: any = ''
+    if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
+      // DECRYPT
+      mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
     }
     else {
-      console.log("willCompleteTransactionAcceptMilestoneMnemonic fail")
-      yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail({ error: resultCheckAccountTransaction.error, sowCommand: SowCommands.ACCEPT_MILESTONE }))
+      mnemonicSecretKey = action.payload.mnemonicSecretKey
+    }
+    console.log("willCompleteTransactionAcceptMilestoneMnemonic mnemonicSecretKey: ", mnemonicSecretKey)
+
+    if (mnemonicSecretKey.error) {
+      yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail({ error: mnemonicSecretKey.error, sowCommand: SowCommands.ACCEPT_MILESTONE }))
+    }
+    else {
+      const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: mnemonicSecretKey, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' } })
+      console.log("willCompleteTransactionAcceptMilestoneMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
+
+      if (resultCheckAccountTransaction.check) {
+        const resultSignGroupAcceptMilestone = yield call(TransactionApi.signGroupAcceptMilestoneMnemonic, action.payload.signedMsig, mnemonicSecretKey, msigparams)
+        console.log("willCompleteTransactionAcceptMilestoneMnemonic resultSignGroupAcceptMilestone: ", resultSignGroupAcceptMilestone)
+
+        const resultConfirmedMultisigTransaction = yield call(TransactionApi.algorandFinalizeTransaction, action.payload.signedMsig.hash_round, action.payload.signedMsig.round_sow, resultSignGroupAcceptMilestone)
+        console.log("willCompleteTransactionAcceptMilestoneMnemonic resultConfirmedMultisigTransaction: ", resultConfirmedMultisigTransaction)
+        yield put(TransactionActions.didCompleteTransactionAcceptMilestone({ tx: resultConfirmedMultisigTransaction, sowCommand: SowCommands.ACCEPT_MILESTONE }))
+        yield put(NotificationActions.willShowNotification({ message: "Milestone accepted", type: "info" }));
+      }
+      else {
+        console.log("willCompleteTransactionAcceptMilestoneMnemonic fail")
+        yield put(TransactionActions.didCompleteTransactionAcceptMilestoneFail({ error: resultCheckAccountTransaction.error, sowCommand: SowCommands.ACCEPT_MILESTONE }))
+      }
     }
   } catch (error) {
     console.log("error in willCompleteTransactionAcceptMilestoneMnemonic ", error)
@@ -740,59 +755,64 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
   // them to other addresses    
   const clawback = users[action.payload.currentSow.seller].public_key;
 
-  let mnemonicSecretKey = ''
-  if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
-    // DECRYPT
-    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
-  }
-  else {
-    mnemonicSecretKey = action.payload.mnemonicSecretKey
-  }
-  console.log("willCompleteTransactionSubmitMnemonic mnemonicSecretKey: ", mnemonicSecretKey)
-
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: mnemonicSecretKey, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' } })
-    console.log("willCompleteTransactionSubmitMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
-
-    if (resultCheckAccountTransaction.check) {
-      // const existingAsset = resultCheckAccountTransaction.addressInfo.createdAssets.find((asset: any) => JSON.parse(asset).params['unit-name'] === configuration[stage].submitAsset_unitName + action.payload.currentSow.sow.substring(0, 5))
-      // console.log("willCompleteTransactionSubmitMnemonic existingAsset: ", existingAsset)
-      let resultSignedTransaction = [] as any
-      // if (existingAsset) {
-      //   console.log("willCompleteTransactionSubmitMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
-      //   resultSignedTransaction = yield call(willDestroyAndCreateAssetMnemonic, {
-      //     payload: {
-      //       asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: mnemonicSecretKey, params: action.payload.params.withoutDelay,
-      //       addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
-      //     }
-      //   })
-      //   console.log("willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
-      // }
-      // else {
-      // console.log("willCompleteTransactionSubmitMnemonic ASSET NOT FOUND")
-      resultSignedTransaction = yield call(TransactionApi.signTxn,
-        mnemonicSecretKey, action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
-      )
-      console.log("in willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
-      // }
-
-      const resultAlgorandSendTokenCreationTx = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction)
-      console.log("willCompleteTransactionSubmitMnemonic resultAlgorandSendTokenCreationTx: ", resultAlgorandSendTokenCreationTx)
-
-      if (resultAlgorandSendTokenCreationTx.error) {
-        console.log("willCompleteTransactionSubmitMnemonic fail")
-        yield put(TransactionActions.didCompleteTransactionSubmitFail({ error: resultAlgorandSendTokenCreationTx.error, sowCommand: SowCommands.SUBMIT }))
-        yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendTokenCreationTx.error, type: "danger" }));
-      }
-      else {
-        console.log("willCompleteTransactionSubmitMnemonic success")
-        yield put(TransactionActions.didCompleteTransactionSubmit({ asset: resultAlgorandSendTokenCreationTx, sowCommand: SowCommands.SUBMIT }))
-      }
+    let mnemonicSecretKey: any = ''
+    if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
+      // DECRYPT
+      mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
     }
     else {
-      console.log("willCompleteTransactionSubmitMnemonic fail")
-      yield put(TransactionActions.didCompleteTransactionSubmitFail({ error: resultCheckAccountTransaction.error, sowCommand: SowCommands.SUBMIT }))
-      yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
+      mnemonicSecretKey = action.payload.mnemonicSecretKey
+    }
+    console.log("willCompleteTransactionSubmitMnemonic mnemonicSecretKey: ", mnemonicSecretKey)
+
+    if (mnemonicSecretKey.error) {
+      yield put(TransactionActions.didCompleteTransactionSubmitFail({ error: mnemonicSecretKey.error, sowCommand: SowCommands.SUBMIT }))
+    }
+    else {
+      const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: mnemonicSecretKey, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' } })
+      console.log("willCompleteTransactionSubmitMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
+
+      if (resultCheckAccountTransaction.check) {
+        // const existingAsset = resultCheckAccountTransaction.addressInfo.createdAssets.find((asset: any) => JSON.parse(asset).params['unit-name'] === configuration[stage].submitAsset_unitName + action.payload.currentSow.sow.substring(0, 5))
+        // console.log("willCompleteTransactionSubmitMnemonic existingAsset: ", existingAsset)
+        let resultSignedTransaction = [] as any
+        // if (existingAsset) {
+        //   console.log("willCompleteTransactionSubmitMnemonic ASSET FOUND: ", JSON.parse(existingAsset))
+        //   resultSignedTransaction = yield call(willDestroyAndCreateAssetMnemonic, {
+        //     payload: {
+        //       asset: JSON.parse(existingAsset), currentSow: action.payload.currentSow, mnemonicSecretKey: mnemonicSecretKey, params: action.payload.params.withoutDelay,
+        //       addr: addr, note: note, totalIssuance: totalIssuance, decimals: decimals, defaultFrozen: defaultFrozen, manager: manager, reserve: reserve, freeze: freeze, clawback: clawback, unitName: unitName, assetName: assetName, assetURL: assetURL, assetMetadataHash: assetMetadataHash
+        //     }
+        //   })
+        //   console.log("willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
+        // }
+        // else {
+        // console.log("willCompleteTransactionSubmitMnemonic ASSET NOT FOUND")
+        resultSignedTransaction = yield call(TransactionApi.signTxn,
+          mnemonicSecretKey, action.payload.params.withoutDelay, addr, note, totalIssuance, decimals, defaultFrozen, manager, reserve, freeze, clawback, unitName, assetName, assetURL, assetMetadataHash
+        )
+        console.log("in willCompleteTransactionSubmitMnemonic resultSignedTransaction: ", resultSignedTransaction)
+        // }
+
+        const resultAlgorandSendTokenCreationTx = yield call(TransactionApi.algorandSendTokenCreationTx, action.payload.currentSow.sow, resultSignedTransaction)
+        console.log("willCompleteTransactionSubmitMnemonic resultAlgorandSendTokenCreationTx: ", resultAlgorandSendTokenCreationTx)
+
+        if (resultAlgorandSendTokenCreationTx.error) {
+          console.log("willCompleteTransactionSubmitMnemonic fail")
+          yield put(TransactionActions.didCompleteTransactionSubmitFail({ error: resultAlgorandSendTokenCreationTx.error, sowCommand: SowCommands.SUBMIT }))
+          yield put(NotificationActions.willShowNotification({ message: resultAlgorandSendTokenCreationTx.error, type: "danger" }));
+        }
+        else {
+          console.log("willCompleteTransactionSubmitMnemonic success")
+          yield put(TransactionActions.didCompleteTransactionSubmit({ asset: resultAlgorandSendTokenCreationTx, sowCommand: SowCommands.SUBMIT }))
+        }
+      }
+      else {
+        console.log("willCompleteTransactionSubmitMnemonic fail")
+        yield put(TransactionActions.didCompleteTransactionSubmitFail({ error: resultCheckAccountTransaction.error, sowCommand: SowCommands.SUBMIT }))
+        yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
+      }
     }
   } catch (error) {
     console.log("error in willCompleteTransactionSubmitMnemonic ", error)

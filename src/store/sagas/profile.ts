@@ -248,5 +248,6 @@ export function* willDecryptMnemonic(action: any) {
     return decryptedMnemonic
   } catch (error) {
     console.log("willDecryptMnemonic error", error)
+    return { error: "Incorrect passphrase" }
   }
 }

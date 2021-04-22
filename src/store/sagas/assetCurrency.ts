@@ -46,43 +46,48 @@ export function* willOptinAssetCurrency(action: any) {
   console.log("in willOptinAssetCurrency with: ", action)
   yield put(UIActions.startActivityRunning("willOptinAssetCurrency"));
 
-  let mnemonicSecretKey = ''
-  if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
-    // DECRYPT
-    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
-  }
-  else {
-    mnemonicSecretKey = action.payload.mnemonicSecretKey
-  }
-  console.log("willOptinAssetCurrency mnemonicSecretKey: ", mnemonicSecretKey)
-
   try {
-    const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: mnemonicSecretKey, toPayAlgo: action.payload.toPayAlgo, currency: action.payload.currency } })
-    console.log("willOptinAssetCurrency resultCheckAccountTransaction: ", resultCheckAccountTransaction)
-
-    if (resultCheckAccountTransaction.check) {
-
-      let resultSignedOptin = [] as any
-      resultSignedOptin = yield call(AssetCurrencyApi.signOptinAssetCurrencyMnemonic, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.address, action.payload.assetId)
-      console.log("willOptinAssetCurrency resultSignedOptin: ", resultSignedOptin)
-
-      const resultSentOptin = yield call(AssetCurrencyApi.algorandSendRawTx, resultSignedOptin)
-      console.log("willOptinAssetCurrency resultSentOptin: ", resultSentOptin)
-
-      if (resultSentOptin.error) {
-        console.log("willOptinAssetCurrency resultSentOptin fail: ", resultSentOptin)
-        yield put(AssetCurrencyActions.didOptinAssetCurrencyFail({ error: resultSentOptin.error }))
-        yield put(NotificationActions.willShowNotification({ message: resultSentOptin.error, type: "danger" }));
-      }
-      else {
-        console.log("willOptinAssetCurrency resultSentOptin success: ", resultSentOptin)
-        yield put(AssetCurrencyActions.didOptinAssetCurrency({ tx: resultSentOptin }))
-      }
+    let mnemonicSecretKey: any = ''
+    if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
+      // DECRYPT
+      mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
     }
     else {
-      console.log("willOptinAssetCurrency fail")
-      yield put(AssetCurrencyActions.didOptinAssetCurrencyFail({ error: resultCheckAccountTransaction.error }))
-      yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
+      mnemonicSecretKey = action.payload.mnemonicSecretKey
+    }
+    console.log("willOptinAssetCurrency mnemonicSecretKey: ", mnemonicSecretKey)
+
+    if (mnemonicSecretKey.error) {
+      yield put(AssetCurrencyActions.didOptinAssetCurrencyFail({ error: mnemonicSecretKey.error }))
+    }
+    else {
+      const resultCheckAccountTransaction = yield call(willCheckAccountTransaction, { payload: { mnemonicSecretKey: mnemonicSecretKey, toPayAlgo: action.payload.toPayAlgo, currency: action.payload.currency } })
+      console.log("willOptinAssetCurrency resultCheckAccountTransaction: ", resultCheckAccountTransaction)
+
+      if (resultCheckAccountTransaction.check) {
+
+        let resultSignedOptin = [] as any
+        resultSignedOptin = yield call(AssetCurrencyApi.signOptinAssetCurrencyMnemonic, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.address, action.payload.assetId)
+        console.log("willOptinAssetCurrency resultSignedOptin: ", resultSignedOptin)
+
+        const resultSentOptin = yield call(AssetCurrencyApi.algorandSendRawTx, resultSignedOptin)
+        console.log("willOptinAssetCurrency resultSentOptin: ", resultSentOptin)
+
+        if (resultSentOptin.error) {
+          console.log("willOptinAssetCurrency resultSentOptin fail: ", resultSentOptin)
+          yield put(AssetCurrencyActions.didOptinAssetCurrencyFail({ error: resultSentOptin.error }))
+          yield put(NotificationActions.willShowNotification({ message: resultSentOptin.error, type: "danger" }));
+        }
+        else {
+          console.log("willOptinAssetCurrency resultSentOptin success: ", resultSentOptin)
+          yield put(AssetCurrencyActions.didOptinAssetCurrency({ tx: resultSentOptin }))
+        }
+      }
+      else {
+        console.log("willOptinAssetCurrency fail")
+        yield put(AssetCurrencyActions.didOptinAssetCurrencyFail({ error: resultCheckAccountTransaction.error }))
+        yield put(NotificationActions.willShowNotification({ message: resultCheckAccountTransaction.error, type: "danger" }));
+      }
     }
 
   } catch (error) {
