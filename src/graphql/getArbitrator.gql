@@ -17,5 +17,6 @@ query getArbitrator(
     family_name
     public_key
     email
+    requestId
   }
 }

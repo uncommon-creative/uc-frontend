@@ -136,7 +136,7 @@ export function* willSubmitProfile(action: any) {
 
   try {
     yield call(willSaveProfile, action)
-    yield call(willSaveArbitratorSettings, action)
+    action.payload.enabled && (yield call(willSaveArbitratorSettings, action))
 
     yield put(NotificationActions.willShowNotification({ message: "Profile updated", type: "success" }));
   } catch (error) {
