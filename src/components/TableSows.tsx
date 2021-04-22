@@ -41,12 +41,22 @@ export const TableSows = ({ tabId, data }: any) => {
         Header: 'Title',
         accessor: (row: any) =>
           <Row className="d-flex" tag={Link} onClick={() => dispatch(SowActions.willSelectSow({ sow: row, history: history }))}>
-            <Col className="col-1">
-              {tabId == 1 && <Badge data-cy='unreadMessagesSowSeller' pill color={row.messagesToReadSeller == 0 ? "secondary" : "primary"}>{row.messagesToReadSeller}</Badge>}
-              {tabId == 2 && <Badge data-cy='unreadMessagesSowBuyer' pill color={row.messagesToReadBuyer == 0 ? "secondary" : "primary"}>{row.messagesToReadBuyer}</Badge>}
-              {tabId == 3 && <Badge data-cy='unreadMessagesSowArbitrator' pill color={row.messagesToReadArbitrator == 0 ? "secondary" : "primary"}>{row.messagesToReadArbitrator}</Badge>}
-            </Col>
-            <Col className={((tabId == 1 && row.messagesToReadSeller != 0) || (tabId == 2 && row.messagesToReadBuyer != 0) || (tabId == 3 && row.messagesToReadArbitrator != 0)) ? "col-10 font-weight-bold" : "col-10"}>
+            {tabId == 1 && row.messagesToReadSeller > 0 &&
+              <Col className="col-1">
+                <Badge data-cy='unreadMessagesSowSeller' pill color={"primary"}>{row.messagesToReadSeller}</Badge>
+              </Col>
+            }
+            {tabId == 2 && row.messagesToReadBuyer > 0 &&
+              <Col className="col-1">
+                <Badge data-cy='unreadMessagesSowBuyer' pill color={"primary"}>{row.messagesToReadBuyer}</Badge>
+              </Col>
+            }
+            {tabId == 3 && row.messagesToReadArbitrator > 0 &&
+              <Col className="col-1">
+                <Badge data-cy='unreadMessagesSowArbitrator' pill color={"primary"}>{row.messagesToReadArbitrator}</Badge>
+              </Col>
+            }
+            <Col className={((tabId == 1 && row.messagesToReadSeller != 0) || (tabId == 2 && row.messagesToReadBuyer != 0) || (tabId == 3 && row.messagesToReadArbitrator != 0)) ? "col-10 font-weight-bold" : "col-12"}>
               {row.title}
             </Col>
           </Row>,
