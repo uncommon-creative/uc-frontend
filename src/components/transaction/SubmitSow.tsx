@@ -44,7 +44,7 @@ export const SubmitSow = ({ modal, toggle }: any) => {
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
 
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [passphrase, setPassphrase] = React.useState('');
   const [saveMnemonicAsk, setSaveMnemonicAsk] = React.useState(false);
   const [isAlgoSignInstalled, setAlgo] = React.useState(false);
 
@@ -123,10 +123,10 @@ export const SubmitSow = ({ modal, toggle }: any) => {
             <CardSubtitle tag="h6" className="py-3 text-muted text-center">You are signing the quote and committing to provide the service as described in the <a target="_blank" href={worksAgreementPdf.downloadUrl}>works agreement</a>.</CardSubtitle>
             {saveMnemonic && saveMnemonic.save ?
               <FormGroup>
-                <Label for="passwordSaveMnemonic">Password *</Label>
-                <Input value={password} type="password" name="passwordSaveMnemonic" id="passwordSaveMnemonic" placeholder="passwordSaveMnemonic"
+                <Label for="passphrase">Passphrase *</Label>
+                <Input value={passphrase} type="password" name="passphrase" id="passphrase" placeholder="passphrase"
                   onChange={(event: any) => {
-                    setPassword(event.target.value)
+                    setPassphrase(event.target.value)
                   }}
                 />
               </FormGroup>
@@ -155,9 +155,9 @@ export const SubmitSow = ({ modal, toggle }: any) => {
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.SUBMIT }))
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willCompleteTransactionSubmitMnemonic' disabled={(mnemonicSecretKey == '' && password == '')} name="willCompleteTransactionSubmitMnemonic" color="primary" onClick={async () => {
+            <ActivityButton data-cy='willCompleteTransactionSubmitMnemonic' disabled={(mnemonicSecretKey == '' && passphrase == '')} name="willCompleteTransactionSubmitMnemonic" color="primary" onClick={async () => {
               saveMnemonicAsk && dispatch(ProfileActions.willToggleSaveMnemonicModal())
-              dispatch(TransactionActions.willCompleteTransactionSubmitMnemonic({ params: params, mnemonicSecretKey: mnemonicSecretKey, password: password, saveMnemonic: saveMnemonic, currentSow: currentSow, pdfHash: worksAgreementPdf.pdfHash }))
+              dispatch(TransactionActions.willCompleteTransactionSubmitMnemonic({ params: params, mnemonicSecretKey: mnemonicSecretKey, passphrase: passphrase, saveMnemonic: saveMnemonic, currentSow: currentSow, pdfHash: worksAgreementPdf.pdfHash }))
             }}>Sign</ActivityButton>
           </ModalFooter>
         </>

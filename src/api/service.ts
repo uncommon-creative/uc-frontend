@@ -59,8 +59,8 @@ export const uploadFileToS3 = async (url: any, file: any) => {
   }
 }
 
-export function makeKey(password: any, salt: any) {
-  const key = crypto.pbkdf2Sync(password, salt, 10000, 32, 'sha256');
+export function makeKey(passphrase: any, salt: any) {
+  const key = crypto.pbkdf2Sync(passphrase, salt, 10000, 32, 'sha256');
   return key
 }
 

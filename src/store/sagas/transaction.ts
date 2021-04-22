@@ -186,7 +186,7 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
   let mnemonicSecretKey = ''
   if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
     // DECRYPT
-    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, password: action.payload.password, salt: action.payload.saveMnemonic.salt } })
+    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
   }
   else {
     mnemonicSecretKey = action.payload.mnemonicSecretKey
@@ -355,7 +355,7 @@ function* willCompleteTransactionClaimMilestoneMetMnemonic(action: any) {
   let mnemonicSecretKey = ''
   if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
     // DECRYPT
-    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, password: action.payload.password, salt: action.payload.saveMnemonic.salt } })
+    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
   }
   else {
     mnemonicSecretKey = action.payload.mnemonicSecretKey
@@ -619,7 +619,7 @@ function* willCompleteTransactionAcceptMilestoneMnemonic(action: any) {
   let mnemonicSecretKey = ''
   if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
     // DECRYPT
-    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, password: action.payload.password, salt: action.payload.saveMnemonic.salt } })
+    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
   }
   else {
     mnemonicSecretKey = action.payload.mnemonicSecretKey
@@ -743,7 +743,7 @@ function* willCompleteTransactionSubmitMnemonic(action: any) {
   let mnemonicSecretKey = ''
   if (action.payload.saveMnemonic && action.payload.saveMnemonic.save) {
     // DECRYPT
-    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, password: action.payload.password, salt: action.payload.saveMnemonic.salt } })
+    mnemonicSecretKey = yield call(willDecryptMnemonic, { payload: { encryptedMnemonic: action.payload.saveMnemonic.encryptedMnemonic, passphrase: action.payload.passphrase, salt: action.payload.saveMnemonic.salt } })
   }
   else {
     mnemonicSecretKey = action.payload.mnemonicSecretKey

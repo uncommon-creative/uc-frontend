@@ -53,7 +53,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
 
   const [acceptedConditions, setAcceptedConditions] = React.useState(false);
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [passphrase, setPassphrase] = React.useState('');
   const [saveMnemonicAsk, setSaveMnemonicAsk] = React.useState(false);
 
   const typeNumber: TypeNumber = 4;
@@ -241,10 +241,10 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
 
             {saveMnemonic && saveMnemonic.save ?
               <FormGroup>
-                <Label for="passwordSaveMnemonic">Password *</Label>
-                <Input value={password} type="password" name="passwordSaveMnemonic" id="passwordSaveMnemonic" placeholder="passwordSaveMnemonic"
+                <Label for="passphrase">Passphrase *</Label>
+                <Input value={passphrase} type="password" name="passphrase" id="passphrase" placeholder="passphrase"
                   onChange={(event: any) => {
-                    setPassword(event.target.value)
+                    setPassphrase(event.target.value)
                   }}
                 />
               </FormGroup>
@@ -273,9 +273,9 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
             <ActivityButton data-cy='goToTransactionPage' name="goToTransactionPage" outline color="primary" onClick={() => {
               dispatch(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.ACCEPT_AND_PAY }))
             }}>Cancel</ActivityButton>
-            <ActivityButton data-cy='willCompleteTransactionAcceptAndPay' disabled={(mnemonicSecretKey == '' && password == '')} name="willCompleteTransactionAcceptAndPay" color="primary" onClick={async () => {
+            <ActivityButton data-cy='willCompleteTransactionAcceptAndPay' disabled={(mnemonicSecretKey == '' && passphrase == '')} name="willCompleteTransactionAcceptAndPay" color="primary" onClick={async () => {
               saveMnemonicAsk && dispatch(ProfileActions.willToggleSaveMnemonicModal())
-              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ mnemonicSecretKey: mnemonicSecretKey, password: password, saveMnemonic: saveMnemonic, multiSig: multiSig, params: params, currentSow: currentSow, payment: payment, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
+              dispatch(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic({ mnemonicSecretKey: mnemonicSecretKey, passphrase: passphrase, saveMnemonic: saveMnemonic, multiSig: multiSig, params: params, currentSow: currentSow, payment: payment, arbitrator: currentChosenArbitrator, assetId: JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId }))
             }}>Complete the transaction</ActivityButton>
           </ModalFooter>
         </>
