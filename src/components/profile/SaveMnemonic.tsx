@@ -7,6 +7,8 @@ import {
 } from 'reactstrap';
 import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 
 import { configuration } from '../../config'
 import { selectors as ProfileSelectors, actions as ProfileActions } from '../../store/slices/profile'
@@ -22,7 +24,7 @@ export const SaveMnemonicModal = ({ mnemonicSecretKeyProp }: any) => {
   const saveMnemonic = useSelector(ProfileSelectors.getSaveMnemonic)
 
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState(mnemonicSecretKeyProp);
-  const [password, setPassword] = React.useState('');
+  const [passphrase, setPassphrase] = React.useState('');
 
   const toggleSaveMnemonicModal = () => dispatch(ProfileActions.willToggleSaveMnemonicModal())
 
@@ -37,7 +39,7 @@ export const SaveMnemonicModal = ({ mnemonicSecretKeyProp }: any) => {
 
     return () => {
       setMnemonicSecretKey('')
-      setPassword('')
+      setPassphrase('')
       dispatch(ProfileActions.goToSaveMnemonicModalPage({ modalPage: 0 }))
     }
   }, [saveMnemonic.modalOpen, mnemonicSecretKeyProp])
@@ -56,7 +58,7 @@ export const SaveMnemonicModal = ({ mnemonicSecretKeyProp }: any) => {
         <>
           <ModalHeader>Save encrypted mnemonic secret key</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="py-1 text-muted text-center">Do you want to save your mnemonic secret key encrypted with a password chosen by you in the local storage of the current browser?</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">Do you want to save your mnemonic secret key encrypted with a passphrase chosen by you in the local storage of the current browser?</CardSubtitle>
           </ModalBody>
           <ModalFooter>
             <ActivityButton name="noSaveMnemonic" outline color="primary" onClick={() => {
@@ -72,7 +74,7 @@ export const SaveMnemonicModal = ({ mnemonicSecretKeyProp }: any) => {
         <>
           <ModalHeader>Insert your mnemonic secret key</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are saving your mnemonic secret key encrypted with a password chosen by you in the local storage of the current browser.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are saving your mnemonic secret key encrypted with a passphrase chosen by you in the local storage of the current browser.</CardSubtitle>
             <FormGroup>
               <Label for="mnemonicSecretKey">Mnemonic Secret Key *</Label>
               <Input value={mnemonicSecretKey} type="textarea" name="mnemonicSecretKey" id="mnemonicSecretKey" placeholder="mnemonicSecretKey"
@@ -94,15 +96,15 @@ export const SaveMnemonicModal = ({ mnemonicSecretKeyProp }: any) => {
       }
       {saveMnemonic.modalPage == 3 &&
         <>
-          <ModalHeader>Insert a password chosen by you</ModalHeader>
+          <ModalHeader>Insert a passphrase chosen by you</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are saving your mnemonic secret key encrypted with a password chosen by you in the local storage of the current browser.</CardSubtitle>
-            <CardSubtitle tag="h6" className="py-1 text-muted text-center">This password is chosen by you, it is not the password used to login and it is not possible to recover.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are saving your mnemonic secret key encrypted with a passphrase chosen by you in the local storage of the current browser.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center font-weight-bold"><FontAwesomeIcon icon={faExclamationTriangle} size='1x' /> This passphrase is chosen by you, it is not the password used to login and it is not possible to recover.</CardSubtitle>
             <FormGroup>
-              <Label for="passwordSaveMnemonic">Password *</Label>
-              <Input value={password} type="password" name="passwordSaveMnemonic" id="passwordSaveMnemonic" placeholder="passwordSaveMnemonic"
+              <Label for="passphrase">Passphrase *</Label>
+              <Input value={passphrase} type="password" name="passphrase" id="passphrase" placeholder="passphrase"
                 onChange={(event: any) => {
-                  setPassword(event.target.value)
+                  setPassphrase(event.target.value)
                 }}
               />
             </FormGroup>
@@ -111,8 +113,8 @@ export const SaveMnemonicModal = ({ mnemonicSecretKeyProp }: any) => {
             <ActivityButton name="cancelSaveMnemonic" outline color="primary" onClick={async () => {
               dispatch(ProfileActions.goToSaveMnemonicModalPage({ modalPage: 2 }))
             }}>Cancel</ActivityButton>
-            <ActivityButton disabled={password == ''} name="willSaveMnemonic" color="primary" onClick={async () => {
-              dispatch(ProfileActions.willSaveMnemonic({ save: true, mnemonicSecretKey: mnemonicSecretKey, password: password }))
+            <ActivityButton disabled={passphrase == ''} name="willSaveMnemonic" color="primary" onClick={async () => {
+              dispatch(ProfileActions.willSaveMnemonic({ save: true, mnemonicSecretKey: mnemonicSecretKey, passphrase: passphrase }))
             }}>Complete</ActivityButton>
           </ModalFooter>
         </>
@@ -148,7 +150,7 @@ export const SaveMnemonicModal = ({ mnemonicSecretKeyProp }: any) => {
           <ModalFooter>
             <ActivityButton name="closeTransaction" color="primary" onClick={async () => {
               setMnemonicSecretKey('')
-              setPassword('')
+              setPassphrase('')
               dispatch(ProfileActions.goToSaveMnemonicModalPage({ modalPage: 1 }))
             }}>Retry</ActivityButton>
           </ModalFooter>

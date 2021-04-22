@@ -28,8 +28,9 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
   const user = useSelector(AuthSelectors.getUser)
-  let saveMnemonic: any = localStorage.getItem('saveMnemonic')
-  saveMnemonic = saveMnemonic ? JSON.parse(saveMnemonic)[user.username] : undefined
+  let saveMnemonicLS: any = localStorage.getItem('saveMnemonic')
+  let saveMnemonicParsed = saveMnemonicLS ? JSON.parse(saveMnemonicLS) : undefined
+  const saveMnemonicMy = saveMnemonicParsed ? saveMnemonicParsed[user.username] : undefined
   let history = useHistory();
   const { t, i18n } = useTranslation();
   const userAttributes = useSelector(ProfileSelectors.getProfile)
@@ -41,7 +42,7 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
   const algoSigner = useSelector(TransactionSelectors.getAlgoSigner)
 
   const [mnemonicSecretKey, setMnemonicSecretKey] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [passphrase, setPassphrase] = React.useState('');
   const [saveMnemonicAsk, setSaveMnemonicAsk] = React.useState(false);
   const [isAlgoSignInstalled, setAlgo] = React.useState(false);
 
@@ -111,15 +112,23 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
           <ModalHeader toggle={toggle}>Sign with mnemonic secret key</ModalHeader>
           <ModalBody>
             <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are explicitly opt-in to receive the asset <a target="_blank" href={configuration[stage].AlgoExplorer_link["asset"] + currentAssetCurrency}>{currentAssetCurrency}</a>.</CardSubtitle>
-            {saveMnemonic && saveMnemonic.save ?
-              <FormGroup>
-                <Label for="passwordSaveMnemonic">Password *</Label>
-                <Input value={password} type="password" name="passwordSaveMnemonic" id="passwordSaveMnemonic" placeholder="passwordSaveMnemonic"
-                  onChange={(event: any) => {
-                    setPassword(event.target.value)
-                  }}
-                />
-              </FormGroup>
+            {saveMnemonicMy && saveMnemonicMy.save ?
+              <>
+                <FormGroup>
+                  <Label for="passphrase">Passphrase *</Label>
+                  <Input value={passphrase} type="password" name="passphrase" id="passphrase" placeholder="passphrase"
+                    onChange={(event: any) => {
+                      setPassphrase(event.target.value)
+                    }}
+                  />
+                </FormGroup>
+                <Button color="link" onClick={() => {
+                  delete saveMnemonicParsed[user.username]
+                  localStorage.setItem('saveMnemonic', JSON.stringify(saveMnemonicParsed))
+                  dispatch(AssetCurrencyActions.goToModalPage({ modalPage: 1 }))
+                  dispatch(NotificationActions.willShowNotification({ message: "Passphrase deleted", type: "info" }));
+                }}>Forgot passphrase? Delete passphrase and use mnemonic</Button>
+              </>
               :
               <>
                 <FormGroup>
@@ -145,9 +154,9 @@ export const OptinAssetModal = ({ modal, toggle }: any) => {
             <ActivityButton name="goToModalPage" outline color="primary" onClick={() => {
               dispatch(AssetCurrencyActions.goToModalPage({ modalPage: 1 }))
             }}>Cancel</ActivityButton>
-            <ActivityButton disabled={(mnemonicSecretKey == '' && password == '')} name="willOptinAssetCurrency" color="primary" onClick={async () => {
+            <ActivityButton disabled={(mnemonicSecretKey == '' && passphrase == '')} name="willOptinAssetCurrency" color="primary" onClick={async () => {
               saveMnemonicAsk && dispatch(ProfileActions.willToggleSaveMnemonicModal())
-              dispatch(AssetCurrencyActions.willOptinAssetCurrency({ params: params, mnemonicSecretKey: mnemonicSecretKey, password: password, saveMnemonic: saveMnemonic, address: userAttributes.public_key, assetId: currentAssetCurrency, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' }))
+              dispatch(AssetCurrencyActions.willOptinAssetCurrency({ params: params, mnemonicSecretKey: mnemonicSecretKey, passphrase: passphrase, saveMnemonic: saveMnemonicMy, address: userAttributes.public_key, assetId: currentAssetCurrency, toPayAlgo: AlgorandFee / 1000000, currency: 'ALGO' }))
             }}>Sign</ActivityButton>
           </ModalFooter>
         </>

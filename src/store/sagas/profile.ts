@@ -190,7 +190,7 @@ export function* willSaveMnemonic(action: any) {
 
       if (resultCheckAccountTransaction.check) {
         // ENCRYPT
-        const { encryptedMnemonic, salt } = yield call(willEncryptMnemonic, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, password: action.payload.password } })
+        const { encryptedMnemonic, salt } = yield call(willEncryptMnemonic, { payload: { mnemonicSecretKey: action.payload.mnemonicSecretKey, passphrase: action.payload.passphrase } })
 
         saveMnemonic[user.username] = {
           save: true,
@@ -229,7 +229,7 @@ export function* willEncryptMnemonic(action: any) {
 
   try {
     const salt = crypto.randomBytes(16)
-    const key = yield call(ServiceApi.makeKey, action.payload.password, salt)
+    const key = yield call(ServiceApi.makeKey, action.payload.passphrase, salt)
     const encryptedMnemonic = yield call(ServiceApi.encrypt, action.payload.mnemonicSecretKey, key)
 
     return { encryptedMnemonic, salt }
@@ -242,11 +242,12 @@ export function* willDecryptMnemonic(action: any) {
   console.log("in willDecryptMnemonic with: ", action)
 
   try {
-    const key = yield call(ServiceApi.makeKey, action.payload.password, Buffer.from(action.payload.salt, 'base64'))
+    const key = yield call(ServiceApi.makeKey, action.payload.passphrase, Buffer.from(action.payload.salt, 'base64'))
     const decryptedMnemonic = yield call(ServiceApi.decrypt, action.payload.encryptedMnemonic, key)
 
     return decryptedMnemonic
   } catch (error) {
     console.log("willDecryptMnemonic error", error)
+    return { error: "Incorrect passphrase" }
   }
 }
