@@ -32,8 +32,9 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
 
   const dispatch = useDispatch();
   const user = useSelector(AuthSelectors.getUser)
-  let saveMnemonic: any = localStorage.getItem('saveMnemonic')
-  saveMnemonic = saveMnemonic ? JSON.parse(saveMnemonic)[user.username] : undefined
+  let saveMnemonicLS: any = localStorage.getItem('saveMnemonic')
+  let saveMnemonicParsed = saveMnemonicLS ? JSON.parse(saveMnemonicLS) : undefined
+  const saveMnemonicMy = saveMnemonicParsed ? saveMnemonicParsed[user.username] : undefined
   const { t, i18n } = useTranslation();
   const users = useSelector(ProfileSelectors.getUsers)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
@@ -180,15 +181,23 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">{multiSig.address}</CardSubtitle>
             <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Balances: {multiSig.amount} ALGO</CardSubtitle>
 
-            {saveMnemonic && saveMnemonic.save ?
-              <FormGroup>
-                <Label for="passphrase">Passphrase *</Label>
-                <Input value={passphrase} type="password" name="passphrase" id="passphrase" placeholder="passphrase"
-                  onChange={(event: any) => {
-                    setPassphrase(event.target.value)
-                  }}
-                />
-              </FormGroup>
+            {saveMnemonicMy && saveMnemonicMy.save ?
+              <>
+                <FormGroup>
+                  <Label for="passphrase">Passphrase *</Label>
+                  <Input value={passphrase} type="password" name="passphrase" id="passphrase" placeholder="passphrase"
+                    onChange={(event: any) => {
+                      setPassphrase(event.target.value)
+                    }}
+                  />
+                </FormGroup>
+                <Button color="link" onClick={() => {
+                  delete saveMnemonicParsed[user.username]
+                  localStorage.setItem('saveMnemonic', JSON.stringify(saveMnemonicParsed))
+                  dispatch(TransactionActions.goToTransactionPage({ transactionPage: 3, sowCommand: SowCommands.CLAIM_MILESTONE_MET }))
+                  dispatch(NotificationActions.willShowNotification({ message: "Passphrase deleted", type: "info" }));
+                }}>Forgot passphrase? Delete passphrase and use mnemonic</Button>
+              </>
               :
               <>
                 <FormGroup>
@@ -216,7 +225,7 @@ export const ClaimMilestoneMet = ({ modal, toggle }: any) => {
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy='willCompleteTransactionClaimMilestoneMetMnemonic' disabled={(mnemonicSecretKey == '' && passphrase == '')} name="willCompleteTransactionClaimMilestoneMetMnemonic" color="primary" onClick={async () => {
               saveMnemonicAsk && dispatch(ProfileActions.willToggleSaveMnemonicModal())
-              dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig.address, params: params, mnemonicSecretKey: mnemonicSecretKey, passphrase: passphrase, saveMnemonic: saveMnemonic, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag }))
+              dispatch(TransactionActions.willCompleteTransactionClaimMilestoneMetMnemonic({ multiSigAddress: multiSig.address, params: params, mnemonicSecretKey: mnemonicSecretKey, passphrase: passphrase, saveMnemonic: saveMnemonicMy, currentSow: currentSow, hash: newAttachments.find((file: any) => file.filename == configuration[stage].deliverable_key).etag }))
             }}>Sign the transaction</ActivityButton>
           </ModalFooter>
         </>
