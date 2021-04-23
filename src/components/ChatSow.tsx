@@ -140,8 +140,18 @@ export const ChatSow = ({ currentSow }: any) => {
                                 : msg.commandMessage.command == SowCommands.CLAIM_MILESTONE_MET ?
                                   <CardText className="mt-3">
                                     <Trans i18nKey={SowCommands.CLAIM_MILESTONE_MET}>
-                                      {"The seller claimed the milestone as met attaching the "}
-                                      <a target="_blank" href={newAttachments.find((file: any) => file.filename === "deliverable").downloadUrl}>deliverable</a>
+
+                                      {newAttachments.some((file: any) => file.filename === "deliverable") ?
+                                        <>
+                                          {"The seller claimed the milestone as met attaching the "}
+                                          <a target="_blank" href={newAttachments.find((file: any) => file.filename === "deliverable").downloadUrl}>deliverable</a>
+                                        </>
+                                        : <>
+                                          {"The seller claimed the milestone as met attaching the "}
+                                          {"deliverable"}
+                                        </>
+
+                                      }
                                       {".\nThe buyer has 7 days starting from today to take an action, otherwise the system will accept the milestone and complete the payment."}
                                     </Trans>
                                   </CardText>
