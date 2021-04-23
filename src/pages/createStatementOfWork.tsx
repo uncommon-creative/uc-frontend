@@ -354,14 +354,13 @@ export const CreateStatementOfWorkPage = () => {
                         </Col>
                       </Row>
 
-                      <Jumbotron>
+                      {/* <Jumbotron>
                         <FormGroup>
                           <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Arbitrators *</CardSubtitle>
                           <Row name="arbitrators" id="arbitrators">
                             {currentArbitrators.map((arbitrator: any, index: any) => {
                               return (
                                 <Col className="col-md-4 col-12 d-flex">
-                                  {/* <ArbitratorDetail arbitrator={arbitrator} /> */}
                                   <ArbitratorDetailMD arbitrator={arbitrator} />
                                 </Col>
                               )
@@ -378,7 +377,7 @@ export const CreateStatementOfWorkPage = () => {
                               }}>Select the arbitrators</Button>
                             </Col>
                           </Row>
-                          {/* <ArbitratorsSelect modal={modalOpenViewArbitratorsSow} toggle={toggleModal} /> */}
+                          <ArbitratorsSelect modal={modalOpenViewArbitratorsSow} toggle={toggleModal} />
                           <Input invalid={errors.arbitrators && touched.arbitrators ? true : false} name="arbitrators" id="arbitrators" placeholder="arbitrators" tag={FieldArray}
                             render={(arrayHelpers: any) => {
                               const arbs = values.arbitrators;
@@ -406,7 +405,7 @@ export const CreateStatementOfWorkPage = () => {
                             <FormFeedback className="d-block">{errors.arbitrators}</FormFeedback>
                           ) : null}
                         </FormGroup>
-                      </Jumbotron>
+                      </Jumbotron> */}
                       <Row>
                         <Col>
                           <Label for="licenseTerms">{t('sow.input.sowLicenseTermsLabel')} *</Label>

@@ -86,8 +86,8 @@ export const SubmitSow = ({ modal, toggle }: any) => {
         <>
           <ModalHeader toggle={toggle}>Choose the method to sign</ModalHeader>
           <ModalBody>
-            <CardSubtitle tag="h6" className="py-3 text-muted text-center">You are signing the quote and committing to provide the service as described in the <a target="_blank" href={worksAgreementPdf.downloadUrl}>works agreement</a>.</CardSubtitle>
-            <CardSubtitle tag="h6" className="py-3 text-muted text-center"><FontAwesomeIcon icon={faExclamationTriangle} size='1x' /> Be sure to have the buyer's approval about the selected arbitrator, price, etc.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center">You are signing the quote and committing to provide the service as described in the <a target="_blank" href={worksAgreementPdf.downloadUrl}>works agreement</a>.</CardSubtitle>
+            <CardSubtitle tag="h6" className="py-1 text-muted text-center"><FontAwesomeIcon icon={faExclamationTriangle} size='1x' /> Be sure to have the buyer's approval about the selected arbitrator, price, etc.</CardSubtitle>
             <Row>
               <Col>
                 <Card data-cy='mnemonicSubmit' onClick={() => {
