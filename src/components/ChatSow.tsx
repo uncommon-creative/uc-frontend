@@ -9,12 +9,13 @@ import 'react-chat-elements/dist/main.css';
 import { MessageBox, MessageList, Input as InputChatElements, Button, Avatar } from 'react-chat-elements';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 import { ActivityButton } from './common/ActivityButton'
 import { SowAttachmentsInput } from './SowAttachmentsInput'
 import { LinkBlockExplorer } from './common/LinkBlockExplorer'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
+import { selectors as SowSelectors } from '../store/slices/sow'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { actions as SowActions, SowStatus, SowCommands } from "../store/slices/sow";
@@ -31,6 +32,7 @@ export const ChatSow = ({ currentSow }: any) => {
   const message = useSelector(ChatSelectors.getMessage)
   const user = useSelector(AuthSelectors.getUser)
   const users = useSelector(ProfileSelectors.getUsers)
+  const newAttachments = useSelector(SowSelectors.getNewAttachments);
   const messages = useSelector(ChatSelectors.getMessages)
   let inputRef: any = React.createRef();
 
@@ -127,9 +129,27 @@ export const ChatSow = ({ currentSow }: any) => {
                                   {'#' + JSON.parse(msg.commandMessage.data).reviews_left + '\n' + JSON.parse(msg.commandMessage.data).message}
                                 </CardSubtitle>
                               }
-                              <CardText className="mt-3">
-                                {t(`chat.SowCommands.${msg.commandMessage.command}_info`)}
-                              </CardText>
+                              {msg.commandMessage.command == SowCommands.SUBMIT ?
+                                <CardText className="mt-3">
+                                  <Trans i18nKey={SowCommands.SUBMIT}>
+                                    {"The seller submitted the "}
+                                    <a target="_blank" href={newAttachments.find((file: any) => file.filename === "works_agreement.pdf").downloadUrl}>Statement of Work</a>
+                                    {" to be checked and accepted by the buyer."}
+                                  </Trans>
+                                </CardText>
+                                : msg.commandMessage.command == SowCommands.CLAIM_MILESTONE_MET ?
+                                  <CardText className="mt-3">
+                                    <Trans i18nKey={SowCommands.CLAIM_MILESTONE_MET}>
+                                      {"The seller claimed the milestone as met attaching the "}
+                                      <a target="_blank" href={newAttachments.find((file: any) => file.filename === "deliverable").downloadUrl}>deliverable</a>
+                                      {".\nThe buyer has 7 days starting from today to take an action, otherwise the system will accept the milestone and complete the payment."}
+                                    </Trans>
+                                  </CardText>
+                                  : <CardText className="mt-3">
+                                    {t(`chat.SowCommands.${msg.commandMessage.command}_info`)}
+                                  </CardText>
+                              }
+
                             </>
                             : msg.attachmentMessage.key.split('/').pop().length > 20 ?
                               msg.attachmentMessage.key.split('/').pop().substring(0, 16) + '... ' + msg.attachmentMessage.key.split('/').pop().substring(msg.attachmentMessage.key.split('/').pop().length - 4, msg.attachmentMessage.key.split('/').pop().length)
@@ -159,7 +179,7 @@ export const ChatSow = ({ currentSow }: any) => {
             }
           </Card>
         </Col>
-      </Row>
+      </Row >
       <Row>
         <Col className="col-12 px-0">
           <InputChatElements
