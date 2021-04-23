@@ -37,6 +37,8 @@ describe('Chat', () => {
       .should('have.value', "Italy")
 
     // enable and set arbitrator settings
+    cy.get('[data-cy=arbitratorSettingsCollapse]')
+      .click()
     cy.get('[data-cy=arbitratorSettingsEnabled]')
       .parent()
       .click('left')
@@ -66,6 +68,8 @@ describe('Chat', () => {
     cy.wait(1000)
     cy.get('[data-cy=profile]').contains('Profile').click()
     cy.wait(2000)
+    cy.get('[data-cy=arbitratorSettingsCollapse]')
+      .click()
     cy.get('[data-cy=arbitratorSettingsFeeFlat]')
       .should('have.value', 10)
     cy.get('[data-cy=arbitratorSettingsFeePercentage]')
@@ -94,9 +98,9 @@ describe('Chat', () => {
     cy.get('[data-cy=submitProfile]')
       .click()
 
+    // check profile
     cy.get('[data-cy=profileBio]')
       .should('have.value', "Ceci n'est pas une biographie.")
-
     cy.get('[data-cy=profileAddress]')
       .should('have.value', "Viale Regina Margherita, 71")
     cy.get('[data-cy=profileAddressCity]')

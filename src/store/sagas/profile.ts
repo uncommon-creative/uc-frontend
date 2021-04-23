@@ -2,6 +2,7 @@ import { call, put, takeEvery, takeLatest, delay, select } from 'redux-saga/effe
 
 import { actions as ProfileActions, selectors as ProfileSelectors } from '../slices/profile'
 import { actions as AuthActions, selectors as AuthSelectors } from '../slices/auth'
+import { selectors as ArbitratorSelectors } from '../slices/arbitrator'
 import { willSaveArbitratorSettings } from './arbitrator'
 import { willGetAlgorandAccountInfo } from './transaction'
 import { actions as NotificationActions } from '../slices/notification'
@@ -133,10 +134,13 @@ export function* willSubmitProfile(action: any) {
   console.log("in willSubmitProfile with: ", action)
   yield put(UIActions.startActivityRunning("submitProfile"));
   yield put(ProfileActions.startLoadingProfile())
+  const myArbitratorSettings = yield select(ArbitratorSelectors.getMyArbitratorSettings)
 
   try {
     yield call(willSaveProfile, action)
-    yield call(willSaveArbitratorSettings, action)
+    if ((myArbitratorSettings && (myArbitratorSettings.enabled != action.payload.enabled)) || action.payload.enabled) {
+      yield call(willSaveArbitratorSettings, action)
+    }
 
     yield put(NotificationActions.willShowNotification({ message: "Profile updated", type: "success" }));
   } catch (error) {

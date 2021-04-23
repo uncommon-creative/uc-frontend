@@ -404,8 +404,8 @@ function* willGetSow(action: any) {
       yield call(willGetUserProfile, { user: result.buyer })
       result.arbitrator && (yield call(willGetUserProfile, { user: result.arbitrator }))
       yield put(SowActions.didGetSow(result))
-      yield put(ChatActions.willReadSowChat(action.payload))
       yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow } });
+      yield put(ChatActions.willReadSowChat(action.payload))
 
       const fullArbitrators = [] as any
       if (Array.isArray(result.arbitrators)) {

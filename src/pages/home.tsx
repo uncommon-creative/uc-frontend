@@ -51,62 +51,70 @@ export const HomePage = () => {
             <Row>
               <Col>
                 <Nav tabs>
-                  <NavItem>
-                    <NavLink
-                      active={activeTab === '1'}
-                      onClick={() => { toggle('1'); }}
-                    >
-                      <Row className="mx-0">
-                        <Col className="px-1">
-                          Freelance
-                        </Col>
-                        <Col className="p-0">
-                          {unreadMessages.asSeller != 0 &&
-                            <Badge data-cy='unreadMessagesSeller' pill color={unreadMessages.asSeller == 0 ? "secondary" : "primary"}>{unreadMessages.asSeller}</Badge>
-                          }
-                        </Col>
-                      </Row>
-                    </NavLink>
-                  </NavItem>
-                  {sowsAsBuyer.length > 0 &&
-                    <NavItem>
-                      <NavLink
-                        data-cy='customerTab'
-                        active={activeTab === '2'}
-                        onClick={() => { toggle('2'); }}
-                      >
-                        <Row className="mx-0">
-                          <Col className="px-1">
-                            Customer
-                        </Col>
-                          <Col className="p-0">
-                            {unreadMessages.asBuyer != 0 &&
-                              <Badge data-cy='unreadMessagesBuyer' pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
+                  <Row>
+                    <Col className="col-auto">
+                      <NavItem>
+                        <NavLink
+                          active={activeTab === '1'}
+                          onClick={() => { toggle('1'); }}
+                        >
+                          <Row className="d-flex justify-content-between">
+                            <Col className="px-1 col-auto">
+                              I'm a seller
+                            </Col>
+                            {unreadMessages.asSeller != 0 &&
+                              <Col className="px-1 col-auto ml-auto">
+                                <Badge className="m-0" data-cy='unreadMessagesSeller' pill color={"primary"}>{unreadMessages.asSeller}</Badge>
+                              </Col>
                             }
-                          </Col>
-                        </Row>
-                      </NavLink>
-                    </NavItem>
-                  }
-                  {sowsAsArbitrator.length > 0 &&
-                    <NavItem>
-                      <NavLink
-                        active={activeTab === '3'}
-                        onClick={() => { toggle('3'); }}
-                      >
-                        <Row className="mx-0">
-                          <Col className="px-1">
-                            Arbitrator
-                        </Col>
-                          <Col className="p-0">
-                            {unreadMessages.asBuyer != 0 &&
-                              <Badge data-cy='unreadMessagesBuyer' pill color={unreadMessages.asBuyer == 0 ? "secondary" : "primary"}>{unreadMessages.asBuyer}</Badge>
-                            }
-                          </Col>
-                        </Row>
-                      </NavLink>
-                    </NavItem>
-                  }
+                          </Row>
+                        </NavLink>
+                      </NavItem>
+                    </Col>
+                    {sowsAsBuyer.length > 0 &&
+                      <Col className="col-auto">
+                        <NavItem>
+                          <NavLink
+                            data-cy='customerTab'
+                            active={activeTab === '2'}
+                            onClick={() => { toggle('2'); }}
+                          >
+                            <Row className="d-flex justify-content-between ">
+                              <Col className="px-1 col-auto">
+                                I'm a buyer
+                              </Col>
+                              {unreadMessages.asBuyer != 0 &&
+                                <Col className="px-1 col-auto ml-auto">
+                                  <Badge data-cy='unreadMessagesBuyer' pill color={"primary"}>{unreadMessages.asBuyer}</Badge>
+                                </Col>
+                              }
+                            </Row>
+                          </NavLink>
+                        </NavItem>
+                      </Col>
+                    }
+                    {sowsAsArbitrator.length > 0 &&
+                      <Col className="col-auto">
+                        <NavItem>
+                          <NavLink
+                            active={activeTab === '3'}
+                            onClick={() => { toggle('3'); }}
+                          >
+                            <Row className="d-flex justify-content-between">
+                              <Col className="px-1 col-auto">
+                                Arbitrator
+                              </Col>
+                              {unreadMessages.asBuyer != 0 &&
+                                <Col className="px-1 col-auto ml-auto">
+                                  <Badge data-cy='unreadMessagesBuyer' pill color={"primary"}>{unreadMessages.asBuyer}</Badge>
+                                </Col>
+                              }
+                            </Row>
+                          </NavLink>
+                        </NavItem>
+                      </Col>
+                    }
+                  </Row>
                 </Nav>
               </Col>
               <Col className="d-flex justify-content-end">
