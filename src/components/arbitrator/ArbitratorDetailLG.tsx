@@ -29,8 +29,10 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
   const { t, i18n } = useTranslation();
   const selectingThreeArbitrators = useSelector(ArbitratorSelectors.isSelectingThreeArbitrators)
   const selectingOneArbitrator = useSelector(ArbitratorSelectors.isSelectingOneArbitrator)
+  const selectingArbitratorSow = useSelector(ArbitratorSelectors.isSelectingArbitratorSow)
   const currentArbitrator = useSelector(ArbitratorSelectors.getCurrentArbitrator)
   const currentSelectedArbitrators = useSelector(ArbitratorSelectors.getCurrentSelectedArbitrators)
+  const currentSelectedArbitrator = useSelector(ArbitratorSelectors.getCurrentSelectedArbitrator)
   const users = useSelector(ProfileSelectors.getUsers)
 
   const addDefaultSrc = (ev: any) => { ev.target.src = Portrait }
@@ -120,6 +122,18 @@ export const ArbitratorDetailLG = ({ modal, toggle }: any) => {
                 dispatch(ArbitratorActions.willChooseArbitrator(currentArbitrator.user))
                 toggle()
               }}>Select the arbitrator</ActivityButton>
+            </ModalFooter>
+          }
+
+          {selectingArbitratorSow &&
+            <ModalFooter>
+              {currentArbitrator.user != currentSelectedArbitrator.user ?
+                <ActivityButton data-cy='willChooseArbitrator' name="ArbitratorDetailLG" color="primary" onClick={() => {
+                  dispatch(ArbitratorActions.willSelectArbitrator({ arbitrator: currentArbitrator }))
+                  toggle()
+                }}>Select the arbitrator</ActivityButton>
+                : <Button disabled color="primary">Arbitrator selected</Button>
+              }
             </ModalFooter>
           }
         </Modal>

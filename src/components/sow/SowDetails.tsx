@@ -26,7 +26,7 @@ export const SowDetails = ({ modal, toggle }: any) => {
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   const html = useSelector(SowSelectors.getHtml)
   const users = useSelector(ProfileSelectors.getUsers)
-
+  
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl" scrollable={true}>
 
@@ -65,24 +65,26 @@ export const SowDetails = ({ modal, toggle }: any) => {
             }
           </Col>
           <Col className="col-lg-4 col-12">
-            <Row>
-              <Col className="col-1 d-flex justify-content-center align-items-center">
-                <FontAwesomeIcon icon={faUser} size='1x' className="text-primary" />
-              </Col>
-              <Col>
-                <CardText className="m-0">
-                  {validateEmail(currentSow.seller) ?
-                    currentSow.seller
-                    :
-                    users[currentSow.seller].given_name + ' ' + users[currentSow.seller].family_name
-                  }
-                </CardText>
-                <CardText className="text-primary" style={{ fontSize: 12 }}>
-                  Seller
+            {currentSow.seller &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faUser} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {validateEmail(currentSow.seller) ?
+                      currentSow.seller
+                      :
+                      users[currentSow.seller].given_name + ' ' + users[currentSow.seller].family_name
+                    }
                   </CardText>
-              </Col>
-            </Row>
-            {currentSow.buyer != "not_set" &&
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Seller
+                  </CardText>
+                </Col>
+              </Row>
+            }
+            {currentSow.buyer && currentSow.buyer != "not_set" &&
               <Row>
                 <Col className="col-1 d-flex justify-content-center align-items-center">
                   <FontAwesomeIcon icon={faUser} size='1x' className="text-primary" />
@@ -94,14 +96,14 @@ export const SowDetails = ({ modal, toggle }: any) => {
                       :
                       users[currentSow.buyer].given_name + ' ' + users[currentSow.buyer].family_name
                     }
-                  </CardText>
+                  </CardText> 
                   <CardText className="text-primary" style={{ fontSize: 12 }}>
                     Buyer
                   </CardText>
                 </Col>
               </Row>
             }
-            {currentSow.arbitrator &&
+            {currentSow.arbitrator && currentSow.arbitrator != 'not_set' &&
               <Row>
                 <Col className="col-1 d-flex justify-content-center align-items-center">
                   <FontAwesomeIcon icon={faGavel} size='1x' className="text-primary" />

@@ -11,19 +11,22 @@ export const currentSlice = createSlice({
     currentArbitrator: {},
     currentChosenArbitrator: '',
     currentSelectedArbitrators: [],
+
+    currentSelectedArbitrator: {},
+    selectingArbitratorSow: false
+
   },
   reducers: {
     willGetArbitrator: (state, action: PayloadAction<any>) => state,
     didGetArbitrator: (state, action: PayloadAction<any>) => void (state.myArbitratorSettings = action.payload),
 
-    willGetArbitratorsList: (state, action: PayloadAction<any>) => void (state.selectingThreeArbitrators = true, state.selectingOneArbitrator = false),
+    willGetArbitratorsList: (state, action: PayloadAction<any>) => state,
     didGetArbitratorsList: (state, action: PayloadAction<any>) => void (state.arbitratorsList = action.payload.arbitrators),
 
-    willGetFullArbitratorsList: (state, action: PayloadAction<any>) => void (state.selectingThreeArbitrators = false, state.selectingOneArbitrator = false),
+    willGetFullArbitratorsList: (state, action: PayloadAction<any>) => void (state.selectingThreeArbitrators = false, state.selectingOneArbitrator = false, state.selectingArbitratorSow = false),
     didGetFullArbitratorsList: (state, action: PayloadAction<any>) => void (state.arbitratorsList = action.payload.arbitrators),
 
     willSaveArbitratorSettings: (state, action: PayloadAction<any>) => state,
-
 
     willViewCurrentArbitrator: (state, action: PayloadAction<any>) => state,
     didViewCurrentArbitrator: (state, action: PayloadAction<any>) => void (state.currentArbitrator = action.payload),
@@ -34,6 +37,10 @@ export const currentSlice = createSlice({
     selectingOneArbitrator: (state, action: PayloadAction<any>) => void (state.selectingThreeArbitrators = false, state.selectingOneArbitrator = true),
 
     willChooseArbitrator: (state, action: PayloadAction<any>) => void (state.currentChosenArbitrator = action.payload),
+
+
+    willViewArbitratorsSow: (state, action: PayloadAction<any>) => void (state.selectingArbitratorSow = true),
+    willSelectArbitrator: (state, action: PayloadAction<any>) => void (state.currentSelectedArbitrator = action.payload.arbitrator),
   }
 })
 
@@ -51,4 +58,7 @@ export const selectors = {
   getCurrentArbitrator: (state: any) => state.arbitrator.currentArbitrator,
   getCurrentChosenArbitrator: (state: any) => state.arbitrator.currentChosenArbitrator,
   getCurrentSelectedArbitrators: (state: any) => state.arbitrator.currentSelectedArbitrators,
+
+  isSelectingArbitratorSow: (state: any) => state.arbitrator.selectingArbitratorSow,
+  getCurrentSelectedArbitrator: (state: any) => state.arbitrator.currentSelectedArbitrator,
 }

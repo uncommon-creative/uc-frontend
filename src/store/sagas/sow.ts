@@ -7,7 +7,8 @@ import { actions as SowActions, SowStatus, SowCommands } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as ChatActions } from '../slices/chat'
 import { actions as ProfileActions, selectors as ProfileSelectors } from '../slices/profile'
-import { actions as TransactionActions, selectors as TransactionSelectors } from '../slices/transaction'
+import { actions as TransactionActions } from '../slices/transaction'
+import { actions as ArbitratorActions } from '../slices/arbitrator'
 import { actions as UIActions } from '../slices/ui'
 import * as ArbitratorApi from '../../api/arbitrator'
 import { willGetUserProfile } from '../sagas/profile'
@@ -82,7 +83,8 @@ function* willDraftStatementOfWork(action: any) {
     const result = yield call(
       SowApi.draftStatementOfWork,
       action.payload.sow.sow,
-      arbitratorsParsed,
+      action.payload.sow.arbitrator.user,
+      // arbitratorsParsed,
       action.payload.sow.codeOfConduct,
       action.payload.sow.currency,
       action.payload.sow.buyer,
@@ -124,7 +126,8 @@ function* willSubmitStatementOfWork(action: any) {
       const resultDraft = yield call(
         SowApi.draftStatementOfWork, // submitStatementOfWork
         action.payload.sow.sow,
-        arbitratorsParsed,
+        action.payload.sow.arbitrator.user,
+        // arbitratorsParsed,
         action.payload.sow.codeOfConduct,
         action.payload.sow.currency,
         action.payload.sow.buyer,
@@ -401,8 +404,14 @@ function* willGetSow(action: any) {
     }
     else {
       yield call(willGetUserProfile, { user: result.seller })
-      yield call(willGetUserProfile, { user: result.buyer })
-      result.arbitrator && (yield call(willGetUserProfile, { user: result.arbitrator }))
+      result.buyer != 'not_set' && (yield call(willGetUserProfile, { user: result.buyer }))
+      if (result.arbitrator && result.arbitrator != 'not_set') {
+        yield call(willGetUserProfile, { user: result.arbitrator })
+        const arb = yield call(ArbitratorApi.getArbitrator, result.arbitrator)
+        // console.log("willGetSow arb", arb)
+        yield put(ArbitratorActions.willSelectArbitrator({ arbitrator: arb }))
+
+      }
       yield put(SowActions.didGetSow(result))
       yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow } });
       yield put(ChatActions.willReadSowChat(action.payload))
@@ -417,8 +426,6 @@ function* willGetSow(action: any) {
       console.log("in willGetSow with fullArbitrators: ", fullArbitrators)
       yield put(SowActions.willConfirmArbitrators({ arbitrators: fullArbitrators, toggle: () => { } }))
     }
-
-
   } catch (error) {
     console.log("error in willGetSow ", error)
   }
