@@ -37,7 +37,7 @@ export const SowSummary = () => {
       <Jumbotron>
         <Card>
           <CardBody>
-            {currentSow.seller != user.username &&
+            {currentSow.seller && currentSow.seller != user.username &&
               <Row>
                 <Col className="col-1 d-flex justify-content-center align-items-center">
                   <FontAwesomeIcon icon={faUser} size='1x' className="text-primary" />
@@ -56,7 +56,7 @@ export const SowSummary = () => {
                 </Col>
               </Row>
             }
-            {currentSow.buyer != "not_set" && currentSow.buyer != user.username &&
+            {currentSow.buyer && currentSow.buyer != "not_set" && currentSow.buyer != user.username &&
               <Row>
                 <Col className="col-1 d-flex justify-content-center align-items-center">
                   <FontAwesomeIcon icon={faUser} size='1x' className="text-primary" />

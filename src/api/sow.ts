@@ -21,7 +21,7 @@ export const createStatementOfWork = async () => {
 
 export const draftStatementOfWork = async (
   sow: any,
-  arbitrators: any,
+  arbitrator: any,
   codeOfConduct: any,
   currency: any,
   buyer: any,
@@ -43,7 +43,7 @@ export const draftStatementOfWork = async (
   try {
     const result: any = await API.graphql(graphqlOperation(mutation, {
       sow: sow,
-      arbitrators: arbitrators,
+      arbitrator: arbitrator,
       codeOfConduct: codeOfConduct,
       currency: currency,
       buyer: buyer,

@@ -116,7 +116,7 @@ export const StatementOfWorkPage = () => {
                       <SowSummary />
                     </Col>
                   </Row>
-                  {currentSow.status == SowStatus.SUBMITTED && currentSow.buyer == user.username &&
+                  {/* {currentSow.status == SowStatus.SUBMITTED && currentSow.buyer == user.username &&
                     <Row>
                       <Col className="col-12">
                         <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Arbitrators</CardSubtitle>
@@ -134,7 +134,7 @@ export const StatementOfWorkPage = () => {
                         </Jumbotron>
                       </Col>
                     </Row>
-                  }
+                  } */}
                   {(currentSow.status != SowStatus.DRAFT && currentSow.status != SowStatus.REJECTED && currentSow.status != SowStatus.EXPIRED && currentSow.status != SowStatus.MILESTONE_ACCEPTED && currentSow.status != SowStatus.SYSTEM_SIGNED) &&
                     <Row>
                       <Col className="col-12">
@@ -174,7 +174,7 @@ export const StatementOfWorkPage = () => {
                             <>
                               {currentSow.status == SowStatus.SUBMITTED &&
                                 <>
-                                  <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} disabled={currentChosenArbitrator == ''} block color="primary" name={SowCommands.ACCEPT_AND_PAY}
+                                  <ActivityButton data-cy={SowCommands.ACCEPT_AND_PAY} /* disabled={currentChosenArbitrator == ''} */ block color="primary" name={SowCommands.ACCEPT_AND_PAY}
                                     onClick={
                                       !userAttributes.address ?
                                         () => {
@@ -189,10 +189,11 @@ export const StatementOfWorkPage = () => {
                                           : toggleModalAcceptSow
                                     }
                                   >
-                                    <span id={SowCommands.ACCEPT_AND_PAY}>Accept and pay</span>
+                                    Accept and pay
+                                    {/* <span id={SowCommands.ACCEPT_AND_PAY}>Accept and pay</span>
                                     <Tooltip placement="top" isOpen={tooltipOpenAcceptAndPay} target={SowCommands.ACCEPT_AND_PAY} toggle={currentChosenArbitrator == '' ? toggleAcceptAndPay : () => { }}>
                                       Please choose an arbitrator
-                                    </Tooltip>
+                                    </Tooltip> */}
                                   </ActivityButton>
                                 </>
 

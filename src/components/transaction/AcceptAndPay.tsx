@@ -149,7 +149,7 @@ export const AcceptAndPay = ({ modal, toggle }: any) => {
           </ModalBody>
           <ModalFooter>
             <ActivityButton data-cy='continueTransaction' disabled={!acceptedConditions} name="continueTransaction" color="primary" onClick={() => {
-              dispatch(TransactionActions.willCreateMultiSigAddress({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentChosenArbitrator, price: currentSow.price, currency: currentSow.currency, sowCommand: SowCommands.ACCEPT_AND_PAY }))
+              dispatch(TransactionActions.willCreateMultiSigAddress({ seller: currentSow.seller, buyer: currentSow.buyer, arbitrator: currentSow.arbitrator, price: currentSow.price, currency: currentSow.currency, sowCommand: SowCommands.ACCEPT_AND_PAY }))
             }}>Continue</ActivityButton>
           </ModalFooter>
         </>

@@ -21,8 +21,8 @@ export function* sagas() {
   yield takeLatest(TransactionActions.willGetParamsWithDelay.type, willGetParamsWithDelay)
   yield takeLatest(TransactionActions.willCreateMultiSigAddress.type, willCreateMultiSigAddress)
   yield takeLatest(TransactionActions.willPreparePayment.type, willPreparePayment)
-  yield takeLatest(TransactionActions.willSetSowArbitrator.type, willSetSowArbitrator)
-  yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayQR.type, willCompleteTransactionAcceptAndPayQR)
+  // yield takeLatest(TransactionActions.willSetSowArbitrator.type, willSetSowArbitrator)
+  // yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayQR.type, willCompleteTransactionAcceptAndPayQR)
   // yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayPaid.type, willCompleteTransactionAcceptAndPayPaid)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayMnemonic.type, willCompleteTransactionAcceptAndPayMnemonic)
   yield takeLatest(TransactionActions.willCompleteTransactionAcceptAndPayAlgoSigner.type, willCompleteTransactionAcceptAndPayAlgoSigner)
@@ -154,27 +154,27 @@ function* willPreparePayment(action: any) {
   }
 }
 
-function* willSetSowArbitrator(action: any) {
-  console.log("in willSetSowArbitrator with: ", action)
+// function* willSetSowArbitrator(action: any) {
+//   console.log("in willSetSowArbitrator with: ", action)
 
-  try {
-    const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.sow, action.payload.arbitrator)
-    console.log("willSetSowArbitrator resultSetSowArbitrator: ", resultSetSowArbitrator)
-  } catch (error) {
-    console.log("error in willSetSowArbitrator ", error)
-  }
-}
+//   try {
+//     const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.sow, action.payload.arbitrator)
+//     console.log("willSetSowArbitrator resultSetSowArbitrator: ", resultSetSowArbitrator)
+//   } catch (error) {
+//     console.log("error in willSetSowArbitrator ", error)
+//   }
+// }
 
-function* willCompleteTransactionAcceptAndPayQR(action: any) {
-  console.log("in willCompleteTransactionAcceptAndPayQR with: ", action)
-  yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayQR'));
+// function* willCompleteTransactionAcceptAndPayQR(action: any) {
+//   console.log("in willCompleteTransactionAcceptAndPayQR with: ", action)
+//   yield put(UIActions.startActivityRunning('willCompleteTransactionAcceptAndPayQR'));
 
-  try {
-    yield call(willAlgorandPollAccountAmount, action)
-  } catch (error) {
-    console.log("error in willCompleteTransactionAcceptAndPayQR ", error)
-  }
-}
+//   try {
+//     yield call(willAlgorandPollAccountAmount, action)
+//   } catch (error) {
+//     console.log("error in willCompleteTransactionAcceptAndPayQR ", error)
+//   }
+// }
 
 function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
   console.log("in willCompleteTransactionAcceptAndPayMnemonic with: ", action)
@@ -202,8 +202,8 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
       console.log("willCompleteTransactionAcceptAndPayMnemonic resultCheckAccountTransaction: ", resultCheckAccountTransaction)
 
       if (resultCheckAccountTransaction.check) {
-        const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.arbitrator)
-        console.log("willCompleteTransactionAcceptAndPayMnemonic resultSetSowArbitrator: ", resultSetSowArbitrator)
+        // const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.arbitrator)
+        // console.log("willCompleteTransactionAcceptAndPayMnemonic resultSetSowArbitrator: ", resultSetSowArbitrator)
 
         let resultSignedTransaction = [] as any
 
@@ -281,8 +281,8 @@ function* willCompleteTransactionAcceptAndPayAlgoSigner(action: any) {
   const users = yield select(ProfileSelectors.getUsers)
 
   try {
-    const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.arbitrator)
-    console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultSetSowArbitrator: ", resultSetSowArbitrator)
+    // const resultSetSowArbitrator = yield call(TransactionApi.setSowArbitrator, action.payload.currentSow.sow, action.payload.arbitrator)
+    // console.log("willCompleteTransactionAcceptAndPayAlgoSigner resultSetSowArbitrator: ", resultSetSowArbitrator)
 
     let resultSignedTransaction = [] as any
     // if (action.payload.toPay <= 0) {

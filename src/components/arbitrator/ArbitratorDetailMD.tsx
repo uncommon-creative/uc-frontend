@@ -23,6 +23,9 @@ export const ArbitratorDetailMD = ({ arbitrator }: any) => {
 
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
+  const currentSelectedArbitrator = useSelector(ArbitratorSelectors.getCurrentSelectedArbitrator)
+  const selectingArbitratorSow = useSelector(ArbitratorSelectors.isSelectingArbitratorSow)
+
   const [modalOpen, setModalOpen] = React.useState(false);
 
   const toggleModal = () => setModalOpen(!modalOpen);
@@ -30,7 +33,7 @@ export const ArbitratorDetailMD = ({ arbitrator }: any) => {
 
   return (
     <>
-      <Card tag="button" color="primary" className="flex-fill mx-auto" outline onClick={() => {
+      <Card tag="button" color={selectingArbitratorSow && currentSelectedArbitrator.user == arbitrator.user ? "primary" : ""} className="flex-fill mx-auto" outline onClick={() => {
         dispatch(ArbitratorActions.willViewCurrentArbitrator(arbitrator))
         setModalOpen(!modalOpen)
       }}>

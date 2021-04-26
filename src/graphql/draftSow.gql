@@ -1,6 +1,6 @@
 mutation draftSow(
   $sow: ID,
-  $arbitrators: [String],
+  $arbitrator: String,
   $codeOfConduct: Boolean,
   $currency: Currency,
   $buyer: String,
@@ -18,7 +18,7 @@ mutation draftSow(
 ) {
   draftSow(
     sow: $sow
-    arbitrators: $arbitrators,
+    arbitrator: $arbitrator,
     codeOfConduct: $codeOfConduct,
     currency: $currency,
     buyer: $buyer,
@@ -35,7 +35,7 @@ mutation draftSow(
     licenseTermsNotes: $licenseTermsNotes
   ) {
     sow
-    arbitrators
+    arbitrator
     codeOfConduct
     currency
     buyer
