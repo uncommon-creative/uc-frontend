@@ -330,7 +330,7 @@ export const CreateStatementOfWorkPage = () => {
                             <FormGroup>
                               <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Arbitrator *</CardSubtitle>
                               <Row name="arbitrators" id="arbitrators">
-                                {currentSow.arbitrator.user &&
+                                {currentSow.arbitrator && currentSow.arbitrator.user &&
                                   <Col>
                                     <ArbitratorDetailMD arbitrator={currentSelectedArbitrator} />
                                   </Col>
