@@ -104,11 +104,10 @@ function* willCreateMultiSigAddress(action: any) {
   const buyer_public_key = users[action.payload.buyer].public_key
   const arbitrator_public_key = users[action.payload.arbitrator].public_key
   const backup_public_key = configuration[stage].uc_backup_public_key
-
-  console.log("sellerData: ", seller_public_key)
-  console.log("buyerData: ", buyer_public_key)
-  console.log("arbitratorData: ", arbitrator_public_key)
-  console.log("backup_public_key: ", backup_public_key)
+  // console.log("sellerData: ", seller_public_key)
+  // console.log("buyerData: ", buyer_public_key)
+  // console.log("arbitratorData: ", arbitrator_public_key)
+  // console.log("backup_public_key: ", backup_public_key)
 
   try {
     const result = yield call(TransactionApi.createMultiSigAddress, { seller: seller_public_key, buyer: buyer_public_key, arbitrator: arbitrator_public_key, backup: backup_public_key })

@@ -248,6 +248,7 @@ export const getSowHtml = async (templt, data) => {
         N_REVIEWS: data.n_reviews,
         ACCEPTANCE_TIME: data.acceptance_time,
         ARBITRATOR_NAME: data.arbitrator_name,
+        ARBITRATOR_ADDRESS: data.arbitrator_address,
         ARBITRATOR_NAMES: data.arbitrator_names,
         PERCENTAGE_ARBITRATOR_FEE: data.percentage_arbitrator_fee,
         FLAT_ARBITRATOR_FEE: data.flat_arbitrator_fee,

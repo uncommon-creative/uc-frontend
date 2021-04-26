@@ -8,9 +8,10 @@ import { actions as NotificationActions } from '../slices/notification'
 import { actions as ChatActions } from '../slices/chat'
 import { actions as ProfileActions, selectors as ProfileSelectors } from '../slices/profile'
 import { actions as TransactionActions } from '../slices/transaction'
-import { actions as ArbitratorActions } from '../slices/arbitrator'
+import { actions as ArbitratorActions, selectors as ArbitratorsSelectors } from '../slices/arbitrator'
 import { actions as UIActions } from '../slices/ui'
 import * as ArbitratorApi from '../../api/arbitrator'
+import * as TransactionApi from '../../api/transaction'
 import { willGetUserProfile } from '../sagas/profile'
 import { configuration } from '../../config'
 
@@ -436,13 +437,21 @@ function* willBuildHtml(action: any) {
   console.log("in willBuildHtml with: ", action)
   yield put(UIActions.startActivityRunning("willBuildHtml"));
   const users = yield select(ProfileSelectors.getUsers)
+  const currentSelectedArbitrator = yield select(ArbitratorsSelectors.getCurrentSelectedArbitrator)
+
+  const seller_public_key = users[action.payload.currentSow.seller].public_key
+  const buyer_public_key = users[action.payload.currentSow.buyer].public_key
+  const arbitrator_public_key = users[action.payload.currentSow.arbitrator].public_key
+  const backup_public_key = configuration[stage].uc_backup_public_key
 
   try {
     // const result = yield call(SowApi.buildHtmlBackend, action.payload.sow);
     // console.log("result willBuildHtmlBackend: ", result)
     const downloadUrlTemplate = yield call(SowApi.getDownloadUrl, action.payload.currentSow.sow, configuration[stage].legal_document_template_key, 600)
-    // console.log("willBuildHtml downloadUrl: ", downloadUrlTemplate)
-
+    // console.log("willBuildHtml downloadUrlTemplate: ", downloadUrlTemplate)
+    const multisigAddress = yield call(TransactionApi.createMultiSigAddress, { seller: seller_public_key, buyer: buyer_public_key, arbitrator: arbitrator_public_key, backup: backup_public_key })
+    // console.log("willBuildHtml multisigAddress: ", multisigAddress)
+    
     const resultHtml = yield call(SowApi.getSowHtml,
       downloadUrlTemplate,
       {
@@ -454,15 +463,16 @@ function* willBuildHtml(action: any) {
         startdate: new Date(action.payload.currentSow.submittedDate).toLocaleDateString(),
         price: action.payload.currentSow.price,
         currency: action.payload.currentSow.currency,
-        msig_address: "UNABLE TO COMPUTE ADDRESS", //
+        msig_address: multisigAddress,
         uc_fee: "0.5%", //
         deadline: new Date(action.payload.currentSow.deadline).toLocaleDateString(),
         n_reviews: action.payload.currentSow.numberReviews,
         acceptance_time: new Date(action.payload.currentSow.sowExpiration).toLocaleDateString(),
-        arbitrator_name: null, //
+        arbitrator_name: currentSelectedArbitrator.given_name + ' ' + currentSelectedArbitrator.family_name,
+        arbitrator_address: users[action.payload.currentSow.arbitrator].address.address + ', ' + users[action.payload.currentSow.arbitrator].address.city + ', ' + users[action.payload.currentSow.arbitrator].address.zip + ', ' + users[action.payload.currentSow.arbitrator].address.state + ', ' + users[action.payload.currentSow.arbitrator].address.country,
         arbitrator_names: action.payload.arbitrators, //
-        percentage_arbitrator_fee: null, //
-        flat_arbitrator_fee: null, //
+        percentage_arbitrator_fee: currentSelectedArbitrator.fee.perc,
+        flat_arbitrator_fee: currentSelectedArbitrator.fee.flat,
         description: action.payload.currentSow.description,
         definition_of_done: null, //"DEFINITION OF DONE PLACEHOLDER", //
         license: action.payload.currentSow.licenseTermsNotes,
