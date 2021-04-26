@@ -48,6 +48,20 @@
       "sowLicenseTermsLabel": "License Terms",
       "sowLicenseTermsLabelOption1": "All rights transferred to the buyer",
       "sowLicenseTermsLabelOption2": "Customized"
+    },
+    "SowStatus": {
+      "DRAFT": "DRAFT",
+      "SUBMITTED": "QUOTED",
+      "ACCEPTED_PAID": "ORDER PAID",
+      "MILESTONE_ACCEPTED": "MILESTONE ACCEPTED",
+      "MILESTONE_CLAIMED": "MILESTONE CLAIMED",
+      "REVIEW_REQUIRED": "REVIEW REQUIRED",
+      "DISPUTED": "DISPUTED",
+      "SYSTEM_SIGNED": "AUTO APPROVED",
+      
+      "PAYMENT_SENT": "PAYMENT SENT",
+      "REJECTED": "REJECTED",
+      "EXPIRED": "EXPIRED"
     }
   },
   "transaction": {

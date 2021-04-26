@@ -13,6 +13,7 @@ import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommand
 import { selectors as AuthSelectors } from '../../store/slices/auth'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { SowDetails } from '../../components/sow/SowDetails'
+import { SowStatusBadge } from '../../components/common/SowStatusBadge'
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -81,7 +82,7 @@ export const SowSummary = () => {
               </Col>
               <Col>
                 <CardText className="m-0">
-                  {currentSow.status}
+                  <SowStatusBadge status={currentSow.status} />
                 </CardText>
                 <CardText className="text-primary" style={{ fontSize: 12 }}>
                   Status

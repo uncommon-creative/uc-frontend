@@ -12,6 +12,7 @@ import { selectors as SowSelectors } from '../store/slices/sow'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { actions as SowActions } from "../store/slices/sow";
+import { SowStatusBadge } from './common/SowStatusBadge'
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -109,6 +110,7 @@ export const TableSows = ({ tabId, data }: any) => {
       {
         Header: 'Status',
         accessor: 'status',
+        Cell: ({ value }: any) => <SowStatusBadge status={value} />,
         width: getColumnWidth(data, 'accessor', 'Status'),
       },
     ],

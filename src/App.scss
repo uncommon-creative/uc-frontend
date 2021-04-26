@@ -39,12 +39,24 @@
 
 /* make the customizations */
 $theme-colors: (
-    "primary": #005ea6,
-    "secondary": #ffffff,
-    "tertiary": #6c757d,
-    "light": #dee2e6
-    // "info": tomato,
-    // "danger": teal
+  "primary": #005ea6,
+  "secondary": #ffffff,
+  "tertiary": #6c757d,
+  "light": #dee2e6,
+  // "info": tomato,
+  // "danger": teal
+
+  "DRAFT": #111111,
+  "SUBMITTED": #111111,
+  "ACCEPTED_PAID": #111111,
+  "MILESTONE_ACCEPTED": #111111,
+  "MILESTONE_CLAIMED": #111111,
+  "REJECTED": #111111,
+  "REVIEW_REQUIRED": #111111,
+  "DISPUTED": #111111,
+  "EXPIRED": #111111,
+  "PAYMENT_SENT": #111111,
+  "SYSTEM_SIGNED": #111111
 );
 
 $spacer: 1rem !default;
