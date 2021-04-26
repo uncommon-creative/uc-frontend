@@ -13,6 +13,7 @@ import { actions as SowActions, selectors as SowSelectors, SowCommands, SowStatu
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { SowHtml } from './SowHtml';
 import { ActivityButton } from '../common/ActivityButton';
+import { SowStatusBadge } from '../../components/common/SowStatusBadge'
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -26,7 +27,7 @@ export const SowDetails = ({ modal, toggle }: any) => {
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   const html = useSelector(SowSelectors.getHtml)
   const users = useSelector(ProfileSelectors.getUsers)
-  
+
   return (
     <Modal isOpen={modal} toggle={toggle} size="xl" scrollable={true}>
 
@@ -96,7 +97,7 @@ export const SowDetails = ({ modal, toggle }: any) => {
                       :
                       users[currentSow.buyer].given_name + ' ' + users[currentSow.buyer].family_name
                     }
-                  </CardText> 
+                  </CardText>
                   <CardText className="text-primary" style={{ fontSize: 12 }}>
                     Buyer
                   </CardText>
@@ -128,7 +129,7 @@ export const SowDetails = ({ modal, toggle }: any) => {
               </Col>
               <Col>
                 <CardText className="m-0">
-                  {currentSow.status}
+                  <SowStatusBadge status={currentSow.status} />
                 </CardText>
                 <CardText className="text-primary" style={{ fontSize: 12 }}>
                   Status
