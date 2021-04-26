@@ -450,8 +450,7 @@ function* willBuildHtml(action: any) {
     const downloadUrlTemplate = yield call(SowApi.getDownloadUrl, action.payload.currentSow.sow, configuration[stage].legal_document_template_key, 600)
     // console.log("willBuildHtml downloadUrlTemplate: ", downloadUrlTemplate)
     const multisigAddress = yield call(TransactionApi.createMultiSigAddress, { seller: seller_public_key, buyer: buyer_public_key, arbitrator: arbitrator_public_key, backup: backup_public_key })
-    console.log("willBuildHtml multisigAddress: ", multisigAddress)
-    console.log("willBuildHtml users[action.payload.currentSow.arbitrator].address: ", users[action.payload.currentSow.arbitrator].address)
+    // console.log("willBuildHtml multisigAddress: ", multisigAddress)
     
     const resultHtml = yield call(SowApi.getSowHtml,
       downloadUrlTemplate,
