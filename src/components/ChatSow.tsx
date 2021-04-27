@@ -1,4 +1,5 @@
 import React from "react";
+import { Link, useParams, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Row, Col, Card, Label,
@@ -11,14 +12,22 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation, Trans } from 'react-i18next';
 
+import { selectors as ProfileSelectors } from '../store/slices/profile'
+import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
+import { selectors as AuthSelectors } from '../store/slices/auth'
+import { actions as NotificationActions } from '../store/slices/notification'
+import { actions as SowActions, selectors as SowSelectors, SowStatus, SowCommands } from '../store/slices/sow'
+import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
+import { actions as AssetCurrencyActions, selectors as AssetCurrencySelectors } from '../store/slices/assetCurrency'
 import { ActivityButton } from './common/ActivityButton'
 import { SowAttachmentsInput } from './SowAttachmentsInput'
 import { LinkBlockExplorer } from './common/LinkBlockExplorer'
-import { selectors as ProfileSelectors } from '../store/slices/profile'
-import { selectors as SowSelectors } from '../store/slices/sow'
-import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
-import { selectors as AuthSelectors } from '../store/slices/auth'
-import { actions as SowActions, SowStatus, SowCommands } from "../store/slices/sow";
+import { AcceptAndPay } from '../components/transaction/AcceptAndPay'
+import { ClaimMilestoneMet } from '../components/transaction/ClaimMilestoneMet'
+import { AcceptMilestone } from '../components/transaction/AcceptMilestone'
+import { Reject } from '../components/transaction/Reject'
+import { RequestReview } from '../components/transaction/RequestReview'
+
 
 function updateScroll() {
   var element: any = document.getElementById("chatMessages");
@@ -29,12 +38,28 @@ export const ChatSow = ({ currentSow }: any) => {
 
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
+  let history = useHistory();
   const message = useSelector(ChatSelectors.getMessage)
   const user = useSelector(AuthSelectors.getUser)
   const users = useSelector(ProfileSelectors.getUsers)
+  const userAttributes = useSelector(ProfileSelectors.getProfile)
   const newAttachments = useSelector(SowSelectors.getNewAttachments);
+  const algorandAccount = useSelector(ProfileSelectors.getAlgorandAccount)
+  const assetsCurrencies = useSelector(AssetCurrencySelectors.getAssetsCurrencies)
   const messages = useSelector(ChatSelectors.getMessages)
   let inputRef: any = React.createRef();
+
+  const [modalOpenAcceptSow, setModalOpenAcceptSow] = React.useState(false);
+  const [modalOpenClaimMilestoneMet, setModalOpenClaimMilestoneMet] = React.useState(false);
+  const [modalOpenAcceptMilestone, setModalOpenAcceptMilestone] = React.useState(false);
+  const [modalOpenReject, setModalOpenReject] = React.useState(false);
+  const [modalOpenRequestReview, setModalOpenRequestReview] = React.useState(false);
+
+  const toggleModalAcceptSow = () => setModalOpenAcceptSow(!modalOpenAcceptSow);
+  const toggleModalClaimMilestoneMet = () => setModalOpenClaimMilestoneMet(!modalOpenClaimMilestoneMet);
+  const toggleModalAcceptMilestone = () => setModalOpenAcceptMilestone(!modalOpenAcceptMilestone);
+  const toggleModalReject = () => setModalOpenReject(!modalOpenReject);
+  const toggleModalRequestReview = () => setModalOpenRequestReview(!modalOpenRequestReview);
 
   React.useEffect(() => {
     const refreshChat = setInterval(() => {
@@ -162,6 +187,63 @@ export const ChatSow = ({ currentSow }: any) => {
                                     {t(`chat.SowCommands.${msg.commandMessage.command}_info`)}
                                   </CardText>
                               }
+                              {currentSow.status == SowStatus.SUBMITTED && msg.commandMessage.command == SowCommands.SUBMIT && currentSow.buyer === user.username &&
+                                <Row>
+                                  <Col>
+                                    <ActivityButton /* disabled={currentChosenArbitrator == ''} */ block color="primary" name={SowCommands.ACCEPT_AND_PAY}
+                                      onClick={
+                                        !userAttributes.address ?
+                                          () => {
+                                            history.push('/profile')
+                                            dispatch(NotificationActions.willShowNotification({ message: "Please complete your profile before accept and pay.", type: "info" }));
+                                          }
+                                          : (currentSow.currency != "ALGO" && !algorandAccount.assets.some((accountAsset: any) => JSON.parse(accountAsset)["asset-id"] == assetsCurrencies.find((asset: any) => asset.assetName === currentSow.currency).assetIndex)) ?
+                                            () => {
+                                              dispatch(AssetCurrencyActions.willGoToAssetCurrencyPage({ address: userAttributes.public_key, history: history }));
+                                              dispatch(AssetCurrencyActions.willSelectAssetCurrency({ asset: assetsCurrencies.find((asset: any) => asset.assetName === currentSow.currency).assetIndex }))
+                                            }
+                                            : toggleModalAcceptSow
+                                      }
+                                    >
+                                      Accept and pay
+                                    </ActivityButton>
+                                  </Col>
+                                  <Col>
+                                    <ActivityButton block color="primary" name={SowCommands.REJECT}
+                                      onClick={toggleModalReject}
+                                    >Reject</ActivityButton>
+                                  </Col>
+                                </Row>
+                              }
+                              {(currentSow.status == SowStatus.ACCEPTED_PAID || currentSow.status == SowStatus.REVIEW_REQUIRED) && (msg.commandMessage.command == SowCommands.ACCEPT_AND_PAY || msg.commandMessage.command == SowCommands.REQUEST_REVIEW) && currentSow.seller === user.username &&
+                                <Row>
+                                  <Col>
+                                    <ActivityButton block color="primary" name={SowCommands.CLAIM_MILESTONE_MET}
+                                      onClick={toggleModalClaimMilestoneMet}
+                                    >Claim milestone met</ActivityButton>
+                                  </Col>
+                                </Row>
+                              }
+                              {currentSow.status == SowStatus.MILESTONE_CLAIMED && msg.commandMessage.command == SowCommands.CLAIM_MILESTONE_MET && currentSow.buyer === user.username &&
+                                <Row>
+                                  <Col>
+                                    <ActivityButton block color="primary" name={SowCommands.REQUEST_REVIEW}
+                                      disabled={currentSow.numberReviews == 0}
+                                      onClick={toggleModalRequestReview}
+                                    >Request review</ActivityButton>
+                                  </Col>
+                                  <Col>
+                                    <ActivityButton block color="primary" name={SowCommands.REJECT}
+                                      onClick={toggleModalReject}
+                                    >Reject</ActivityButton>
+                                  </Col>
+                                  <Col>
+                                    <ActivityButton block color="primary" name={SowCommands.ACCEPT_MILESTONE}
+                                      onClick={toggleModalAcceptMilestone}
+                                    >Accept milestone</ActivityButton>
+                                  </Col>
+                                </Row>
+                              }
 
                             </>
                             : msg.attachmentMessage.key.split('/').pop().length > 20 ?
@@ -235,6 +317,18 @@ export const ChatSow = ({ currentSow }: any) => {
           </Col>
         </Row>
       </Formik>
+
+      {(currentSow.status === SowStatus.SUBMITTED || currentSow.status === SowStatus.ACCEPTED_PAID) &&
+        <AcceptAndPay modal={modalOpenAcceptSow} toggle={toggleModalAcceptSow} />
+      }
+      {(currentSow.status == SowStatus.ACCEPTED_PAID || currentSow.status == SowStatus.REVIEW_REQUIRED || currentSow.status == SowStatus.MILESTONE_CLAIMED) &&
+        <ClaimMilestoneMet modal={modalOpenClaimMilestoneMet} toggle={toggleModalClaimMilestoneMet} />
+      }
+      {(currentSow.status === SowStatus.MILESTONE_CLAIMED || currentSow.status === SowStatus.PAYMENT_SENT) &&
+        <AcceptMilestone modal={modalOpenAcceptMilestone} toggle={toggleModalAcceptMilestone} />
+      }
+      <Reject modal={modalOpenReject} toggle={toggleModalReject} />
+      <RequestReview modal={modalOpenRequestReview} toggle={toggleModalRequestReview} />
     </>
   )
 }
