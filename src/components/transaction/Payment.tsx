@@ -5,8 +5,11 @@ import {
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
+import { configuration } from '../../config'
 import { selectors as TransactionSelectors } from '../../store/slices/transaction'
 import { selectors as SowSelectors } from '../../store/slices/sow'
+
+const stage: string = process.env.REACT_APP_STAGE != undefined ? process.env.REACT_APP_STAGE : "dev"
 
 export const Payment = () => {
 
@@ -67,6 +70,14 @@ export const Payment = () => {
           </Col>
         </Row>
       }
+      <Row>
+        <Col className="col-7 d-flex justify-content-end">
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.feeCommissionUC', { percentage: configuration[stage].uc_commission_percentage, currency: payment.currency })}</CardSubtitle>
+        </Col>
+        <Col className="col-auto">
+          <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.currency', { value: payment.feeCommissionUC, currency: payment.currency })}</CardSubtitle>
+        </Col>
+      </Row>
       <Row>
         <Col className="col-7 d-flex justify-content-end">
           <CardSubtitle tag="h6" className="my-1">{t('transaction.payment.toPayAlgo')}</CardSubtitle>

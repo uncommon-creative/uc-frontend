@@ -29,7 +29,10 @@ export const configuration: any = {
       'tx': 'https://testnet.algoexplorer.io/tx/',
       'address': 'https://testnet.algoexplorer.io/address/',
       'asset': 'https://testnet.algoexplorer.io/asset/'
-    }
+    },
+    'uc_commission_percentage': 1,
+    'uc_commission_public_key': '7NCU4YXPFQWNWBDVDY4EZI7H5LZUXKTPA7MEB3EM7U37TQF6JR57CTGIP4'
+
   },
   demo: {
     Auth: {
@@ -61,6 +64,8 @@ export const configuration: any = {
       'tx': 'https://testnet.algoexplorer.io/tx/',
       'address': 'https://testnet.algoexplorer.io/address/',
       'asset': 'https://testnet.algoexplorer.io/asset/'
-    }
+    },
+    'uc_commission_percentage': 1,
+    'uc_commission_public_key': '7NCU4YXPFQWNWBDVDY4EZI7H5LZUXKTPA7MEB3EM7U37TQF6JR57CTGIP4'
   }
 }

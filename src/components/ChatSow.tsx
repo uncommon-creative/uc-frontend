@@ -86,25 +86,28 @@ export const ChatSow = ({ currentSow }: any) => {
                                 <CardSubtitle className={msg.commandMessage.command == SowCommands.SYSTEM_SIGN ? "text-center" : ""}>
                                   {msg.commandMessage.command == SowCommands.ACCEPT_AND_PAY ?
                                     <>
-                                      {JSON.parse(msg.commandMessage.data).tx.length == 4 &&
+                                      {JSON.parse(msg.commandMessage.data).tx.length == 5 &&
                                         <>
                                           <LinkBlockExplorer title={'Payment fee (ALGO) transaction: ' + JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
                                           <LinkBlockExplorer title={`Opt-in multisig asset ${currentSow.currency} transaction: ` + JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />
                                           <LinkBlockExplorer title={'Opt-in deliverable asset transaction: ' + JSON.parse(msg.commandMessage.data).tx[2].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[2]} />
                                           <LinkBlockExplorer title={`Payment (${currentSow.currency}) transaction: ` + JSON.parse(msg.commandMessage.data).tx[3].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[3]} />
+                                          <LinkBlockExplorer title={`Payment UC commission (${currentSow.currency}) transaction: ` + JSON.parse(msg.commandMessage.data).tx[4].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[4]} />
                                         </>
                                       }
-                                      {JSON.parse(msg.commandMessage.data).tx.length == 3 &&
+                                      {JSON.parse(msg.commandMessage.data).tx.length == 4 &&
                                         <>
                                           <LinkBlockExplorer title={'Payment fee (ALGO) transaction: ' + JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
                                           <LinkBlockExplorer title={'Opt-in deliverable asset transaction: ' + JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />
                                           <LinkBlockExplorer title={`Payment (${currentSow.currency}) transaction: ` + JSON.parse(msg.commandMessage.data).tx[2].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[2]} />
+                                          <LinkBlockExplorer title={`Payment UC commission (${currentSow.currency}) transaction: ` + JSON.parse(msg.commandMessage.data).tx[3].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[3]} />
                                         </>
                                       }
-                                      {JSON.parse(msg.commandMessage.data).tx.length == 2 &&
+                                      {JSON.parse(msg.commandMessage.data).tx.length == 3 &&
                                         <>
                                           <LinkBlockExplorer title={'Opt-in transaction: ' + JSON.parse(msg.commandMessage.data).tx[0].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[0]} />
                                           <LinkBlockExplorer title={'Payment transaction: ' + JSON.parse(msg.commandMessage.data).tx[1].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[1]} />
+                                          <LinkBlockExplorer title={'Payment UC commission transaction: ' + JSON.parse(msg.commandMessage.data).tx[2].substring(0, 6) + '...'} type="tx" id={JSON.parse(msg.commandMessage.data).tx[2]} />
                                         </>
                                       }
                                     </>

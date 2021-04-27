@@ -82,6 +82,7 @@
       "price": "B) Price to be paid:",
       "feeAlgo": "C) Blockchain Fee (ALGO):",
       "feeAssetCurrency": "C) Blockchain Fee ({{assetName}}):",
+      "feeCommissionUC": "C) Commission UC Fee +{{percentage}}% ({{currency}}):",
       "toPayAlgo": "Total (ALGO):",
       "toPayAssetCurrency": "Total ({{assetName}}):"
     }
