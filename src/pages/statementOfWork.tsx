@@ -51,6 +51,7 @@ export const StatementOfWorkPage = () => {
   const newAttachments = useSelector(SowSelectors.getNewAttachments)
   const user = useSelector(AuthSelectors.getUser)
   const users = useSelector(ProfileSelectors.getUsers)
+
   const [modalOpenAcceptSow, setModalOpenAcceptSow] = React.useState(false);
   const [modalOpenClaimMilestoneMet, setModalOpenClaimMilestoneMet] = React.useState(false);
   const [modalOpenAcceptMilestone, setModalOpenAcceptMilestone] = React.useState(false);
@@ -158,9 +159,9 @@ export const StatementOfWorkPage = () => {
                                 </CardText>
                               }
                               {(currentSow.status == SowStatus.ACCEPTED_PAID || currentSow.status == SowStatus.REVIEW_REQUIRED) &&
-                                <Button data-cy={SowCommands.CLAIM_MILESTONE_MET} block color="primary" name={SowCommands.CLAIM_MILESTONE_MET}
+                                <ActivityButton data-cy={SowCommands.CLAIM_MILESTONE_MET} block color="primary" name={SowCommands.CLAIM_MILESTONE_MET}
                                   onClick={toggleModalClaimMilestoneMet}
-                                >Claim milestone met</Button>
+                                >Claim milestone met</ActivityButton>
                               }
                               {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
                                 <CardText className="text-muted text-center">
