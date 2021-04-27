@@ -143,8 +143,9 @@ function* willPreparePayment(action: any) {
       currency: action.payload.currency,
       feeAlgo: TransactionsMultisigFee / 1000000,
       feeAssetCurrency: 0,
+      feeCommissionUC: (action.payload.price / 100) * configuration[stage].uc_commission_percentage,
       toPayAlgo: (action.payload.currency == "ALGO" ? action.payload.price + (TransactionsMultisigFee / 1000000) : (TransactionsMultisigFee / 1000000)),
-      toPayAssetCurrency: action.payload.currency == "ALGO" ? 0 : action.payload.price
+      toPayAssetCurrency: action.payload.currency == "ALGO" ? 0 : action.payload.price,
     }
     yield put(TransactionActions.didPreparePayment(payment))
 
@@ -214,7 +215,7 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
           //   console.log("willCompleteTransactionAcceptAndPayMnemonic PAID resultSignedTransaction: ", resultSignedTransaction)
           // }
           // else {
-          resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAlgo, action.payload.multiSig.address, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.payment.toPayAlgo, users[action.payload.currentSow.buyer].public_key, action.payload.assetId)
+          resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAlgo, action.payload.multiSig.address, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.payment.toPayAlgo, users[action.payload.currentSow.buyer].public_key, action.payload.assetId, action.payload.payment.feeCommissionUC, configuration[stage].uc_commission_public_key)
           console.log("willCompleteTransactionAcceptAndPayMnemonic ALGO resultSignedTransaction: ", resultSignedTransaction)
           // }
         }
@@ -235,13 +236,13 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
               ],
             };
 
-            resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAssetOptin, action.payload.multiSig.address, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.payment.toPayAlgo, action.payload.payment.toPayAssetCurrency, users[action.payload.currentSow.buyer].public_key, action.payload.assetId, assetCurrencyIndex, mparams)
+            resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAssetOptin, action.payload.multiSig.address, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.payment.toPayAlgo, action.payload.payment.toPayAssetCurrency, users[action.payload.currentSow.buyer].public_key, action.payload.assetId, assetCurrencyIndex, mparams, action.payload.payment.feeCommissionUC, configuration[stage].uc_commission_public_key)
             console.log("willCompleteTransactionAcceptAndPayMnemonic ASSET OPTIN resultSignedTransaction: ", resultSignedTransaction)
           }
           // CHECK MSIG OPTIN ASSET CURRENCY DONE
           else {
             console.log("willCompleteTransactionAcceptAndPayMnemonic CHECK MSIG OPTIN ASSET CURRENCY DONE")
-            resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAsset, action.payload.multiSig.address, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.payment.toPayAlgo, action.payload.payment.toPayAssetCurrency, users[action.payload.currentSow.buyer].public_key, action.payload.assetId, assetCurrencyIndex)
+            resultSignedTransaction = yield call(TransactionApi.signTransactionsAcceptAndPayMnemonicAsset, action.payload.multiSig.address, action.payload.params.withoutDelay, mnemonicSecretKey, action.payload.payment.toPayAlgo, action.payload.payment.toPayAssetCurrency, users[action.payload.currentSow.buyer].public_key, action.payload.assetId, assetCurrencyIndex, action.payload.payment.feeCommissionUC, configuration[stage].uc_commission_public_key)
             console.log("willCompleteTransactionAcceptAndPayMnemonic ASSET resultSignedTransaction: ", resultSignedTransaction)
           }
         }
