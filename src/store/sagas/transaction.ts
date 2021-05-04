@@ -231,7 +231,7 @@ function* willCompleteTransactionAcceptAndPayMnemonic(action: any) {
               addrs: [
                 users[action.payload.currentSow.seller].public_key,
                 users[action.payload.currentSow.buyer].public_key,
-                users[action.payload.arbitrator].public_key,
+                users[action.payload.currentSow.arbitrator].public_key,
                 configuration[stage].uc_backup_public_key
               ],
             };
