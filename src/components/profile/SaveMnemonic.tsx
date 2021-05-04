@@ -29,8 +29,6 @@ export const SaveMnemonicModal = ({ mnemonicSecretKeyProp }: any) => {
   const toggleSaveMnemonicModal = () => dispatch(ProfileActions.willToggleSaveMnemonicModal())
 
   React.useEffect(() => {
-    console.log(" SaveMnemonicModal mnemonicSecretKey: ", mnemonicSecretKey)
-    console.log(" SaveMnemonicModal mnemonicSecretKeyProp: ", mnemonicSecretKeyProp)
     setMnemonicSecretKey(mnemonicSecretKeyProp)
     if (saveMnemonic.modalOpen) {
       mnemonicSecretKey == '' ? dispatch(ProfileActions.goToSaveMnemonicModalPage({ modalPage: 1 }))

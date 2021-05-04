@@ -230,7 +230,7 @@ export const ChatSow = ({ currentSow }: any) => {
                                     <ActivityButton block color="primary" name={SowCommands.REQUEST_REVIEW}
                                       disabled={currentSow.numberReviews == 0}
                                       onClick={toggleModalRequestReview}
-                                    >Request review</ActivityButton>
+                                    >Ask review</ActivityButton>
                                   </Col>
                                   <Col>
                                     <ActivityButton block color="primary" name={SowCommands.REJECT}
@@ -240,7 +240,7 @@ export const ChatSow = ({ currentSow }: any) => {
                                   <Col>
                                     <ActivityButton block color="primary" name={SowCommands.ACCEPT_MILESTONE}
                                       onClick={toggleModalAcceptMilestone}
-                                    >Accept milestone</ActivityButton>
+                                    >Accept</ActivityButton>
                                   </Col>
                                 </Row>
                               }

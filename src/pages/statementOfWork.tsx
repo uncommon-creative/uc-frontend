@@ -208,7 +208,7 @@ export const StatementOfWorkPage = () => {
                                 <ActivityButton data-cy={SowCommands.REQUEST_REVIEW} block color="primary" name={SowCommands.REQUEST_REVIEW}
                                   disabled={currentSow.numberReviews == 0}
                                   onClick={toggleModalRequestReview}
-                                >Request review</ActivityButton>
+                                >Ask review</ActivityButton>
                               }
                               {(currentSow.status == SowStatus.SUBMITTED || currentSow.status == SowStatus.MILESTONE_CLAIMED) &&
                                 <ActivityButton data-cy={SowCommands.REJECT} block color="primary" name={SowCommands.REJECT}
@@ -218,7 +218,7 @@ export const StatementOfWorkPage = () => {
                               {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
                                 <ActivityButton data-cy={SowCommands.ACCEPT_MILESTONE} block color="primary" name={SowCommands.ACCEPT_MILESTONE}
                                   onClick={toggleModalAcceptMilestone}
-                                >Accept milestone</ActivityButton>
+                                >Accept</ActivityButton>
                               }
                               {currentSow.status == SowStatus.MILESTONE_CLAIMED &&
                                 <CardText className="text-muted text-center">
