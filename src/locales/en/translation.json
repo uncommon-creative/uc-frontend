@@ -29,7 +29,7 @@
       "CLAIM_MILESTONE_MET_info": "The seller claimed the milestone as met attaching the <1>deliverable</1>.\nThe buyer has 7 days starting from today to take an action, otherwise the system will accept the milestone and complete the payment.",
       "REJECT": "Reject",
       "REJECT_info": "The Statement of Work was rejected.",
-      "REQUEST_REVIEW": "Request review",
+      "REQUEST_REVIEW": "Ask review",
       "REQUEST_REVIEW_info": "The buyer requested a review.",
       "FINALIZE_MSIG_TRANSACTION": "Finalize multisig transaction",
       "FINALIZE_MSIG_TRANSACTION_info": "The buyer accepted the milestone.",
