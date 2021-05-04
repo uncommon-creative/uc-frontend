@@ -22,12 +22,13 @@ export const ArbitratorsSelect = ({ modal, toggle }: any) => {
   const { t, i18n } = useTranslation();
 
   const currentSelectedArbitrators = useSelector(ArbitratorSelectors.getCurrentSelectedArbitrators)
+  const currentSelectedArbitrator = useSelector(ArbitratorSelectors.getCurrentSelectedArbitrator)
 
   const { values, setFieldValue } = useFormikContext();
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl">
-      <ModalHeader toggle={toggle}>Select three arbitrators</ModalHeader>
+    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"} scrollable={true}>
+      <ModalHeader toggle={toggle}>Select an arbitrator</ModalHeader>
       <ModalBody>
         <FormGroup>
           <Label hidden for="arbitratorSearch">{t('arbitrator.input.arbitratorSearchLabel')}</Label>
@@ -43,17 +44,16 @@ export const ArbitratorsSelect = ({ modal, toggle }: any) => {
 
       </ModalBody>
       <ModalFooter>
-        {currentSelectedArbitrators.map((element: any, index: any) => {
-          return (
-            <Col className="col-3">
-              <ArbitratorDetailXS arbitrator={element} index={index} />
-            </Col>
-          )
-        })}
+        {currentSelectedArbitrator.user &&
+          <Col className="col-3">
+            <ArbitratorDetailXS arbitrator={currentSelectedArbitrator} />
+          </Col>
+        }
         <Col className="col-2">
-          <ActivityButton data-cy='inputSowArbitratorsConfirm' disabled={currentSelectedArbitrators.length == 3 ? false : true} name="confirmArbitrators" color="primary" onClick={() => {
-            setFieldValue('arbitrators', currentSelectedArbitrators)
-            dispatch(SowActions.willConfirmArbitrators({ arbitrators: update(currentSelectedArbitrators, {}), toggle: toggle }))
+          <ActivityButton data-cy='inputSowArbitratorsConfirm' disabled={!currentSelectedArbitrator.user} name="confirmArbitrators" color="primary" onClick={() => {
+            setFieldValue('arbitrator', currentSelectedArbitrator)
+            dispatch(SowActions.willSelectArbitrator({ arbitrator: currentSelectedArbitrator }))
+            toggle()
           }}>Confirm</ActivityButton>
         </Col>
       </ModalFooter>

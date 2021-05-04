@@ -42,13 +42,13 @@ export const ArbitratorDetailXS = ({ arbitrator, index }: any) => {
           <img height="45" alt="Portrait" onError={addDefaultSrc}
             src={`${configuration[stage].host}/resources/${arbitrator.user}/portrait?${Date.now()}`}
           />
-          {!selectingOneArbitrator &&
+          {/* {!selectingOneArbitrator &&
             <CardImgOverlay className="p-0">
               <Button close className="position-absolute top-0 start-0 translate-middle" onClick={() => {
                 dispatch(ArbitratorActions.willDeselectArbitrator(index))
               }} />
             </CardImgOverlay>
-          }
+          } */}
         </Col>
         <Col className="col-9 flex-fill">
           <Row>

@@ -3,6 +3,7 @@ describe('Chat', () => {
   before(() => {
     cy.login(Cypress.env('userSeller'))
     cy.wait(2000)
+
     cy.get('[data-cy=createSow]').contains('new project').click()
 
     cy.get('[data-cy="inputSowID"]')
@@ -38,6 +39,11 @@ describe('Chat', () => {
     cy.get('[data-cy=inputSowPrice]')
       .type(1)
       .should('have.value', 1)
+
+    cy.get('[data-cy=inputSowCurrency]')
+      .click()
+    cy.get('[data-cy=inputSowCurrencyUSDC]')
+      .click()
 
     cy.get('[id=rdp-form-control-deadline]')
       .click()
@@ -121,7 +127,7 @@ describe('Chat', () => {
     cy.logout()
   })
 
-  it('Send commands', () => {
+  it('Commands Happy Path', () => {
 
     cy.get('@sowID').then((sowID) => {
       cy.log("sowID: ", sowID)
@@ -141,7 +147,6 @@ describe('Chat', () => {
       cy.wait(2000)
       cy.get('[data-cy=acceptAndPay]').click()
       cy.wait(10000)
-      // if toPay>0
       // cy.get('[data-cy=acceptAndPayModal]').then((body) => {
       //   if (body.text().includes('Fund the wallet with mnemonic secret key')) {
       cy.get('[data-cy=mnemonicSecretKey]')
@@ -163,8 +168,9 @@ describe('Chat', () => {
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
       cy.wait(3000)
       cy.get('[data-cy=CLAIM_MILESTONE_MET]').click()
-      cy.wait(1000)
+      cy.wait(2000)
       cy.get('[data-cy=acceptConditions]').check()
+      cy.wait(1000)
       cy.get('[data-cy=continueTransaction]').click()
       cy.wait(1000)
       cy.get('[data-cy=attachmentDeliverableModal]').within(() => {
@@ -190,20 +196,81 @@ describe('Chat', () => {
         .contains('Claim milestone met')
       cy.logout()
 
-      // buyer REJECT
+      // buyer REQUEST_REVIEW
       cy.login(Cypress.env('userBuyer'))
       cy.wait(5000)
       cy.get('[data-cy=customerTab]').click()
       cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
       cy.wait(3000)
-      cy.get('[data-cy=REJECT]').click()
-      cy.wait(1000)
-      cy.get('[data-cy=willReject]').click()
-      cy.wait(1000)
-      cy.get('[data-cy=closeReject]').click()
+      cy.get('[data-cy=REQUEST_REVIEW]').click()
+
+      cy.get('[data-cy=notes]')
+        .type('notes cypress Request Review')
+        .should('have.value', 'notes cypress Request Review')
+      cy.get('[data-cy=willRequestReview]').click()
+      cy.wait(2000)
+      cy.get('[data-cy=closeRequestReview]').click()
       cy.wait(5000)
       cy.get('[data-cy=chatCommand]')
-        .contains('Reject')
+        .contains('Request review')
+      cy.logout()
+
+      // seller CLAIM_MILESTONE_MET
+      cy.login(Cypress.env('userSeller'))
+      cy.wait(2000)
+      cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
+      cy.wait(3000)
+      cy.get('[data-cy=CLAIM_MILESTONE_MET]').click()
+      cy.wait(2000)
+      cy.get('[data-cy=acceptConditions]').check()
+      cy.wait(1000)
+      cy.get('[data-cy=continueTransaction]').click()
+      cy.wait(1000)
+      cy.get('[data-cy=attachmentDeliverableModal]').within(() => {
+        cy.get('[data-cy=inputAttachment]')
+          .attachFile('CypressDeliverable.txt');
+      })
+      cy.wait(30000)
+        .get('[data-cy=attachmentDeliverable]')
+        .get('[data-cy=attachment]')
+        .contains('deliverable')
+      cy.get('[data-cy=continueTransaction]').click()
+      cy.wait(10000)
+      cy.get('[data-cy=mnemonicClaimMilestoneMet]').click()
+      cy.get('[data-cy=mnemonicSecretKey]')
+        .type(Cypress.env('userSellerMnemonic'))
+        .should('have.value', Cypress.env('userSellerMnemonic'))
+      cy.wait(5000)
+      cy.get('[data-cy=willCompleteTransactionClaimMilestoneMetMnemonic]').click()
+      cy.wait(10000)
+      cy.get('[data-cy=closeClaimMilestoneMet]').click()
+      cy.wait(5000)
+      cy.get('[data-cy=chatCommand]')
+        .contains('Claim milestone met')
+      cy.logout()
+
+      // buyer ACCEPT_MILESTONE
+      cy.login(Cypress.env('userBuyer'))
+      cy.wait(5000)
+      cy.get('[data-cy=customerTab]').click()
+      cy.visit(Cypress.env('host') + `/statement-of-work/${sowID}`)
+      cy.wait(3000)
+      cy.get('[data-cy=ACCEPT_MILESTONE]').click()
+      cy.wait(1000)
+      cy.get('[data-cy=acceptConditions]').check()
+      cy.get('[data-cy=continueTransaction]').click()
+      cy.wait(1000)
+      cy.get('[data-cy=mnemonicAcceptMilestone]').click()
+      cy.wait(1000)
+      cy.get('[data-cy=mnemonicSecretKey]')
+        .type(Cypress.env('userBuyerMnemonic'))
+        .should('have.value', Cypress.env('userBuyerMnemonic'))
+      cy.get('[data-cy=willCompleteTransactionAcceptMilestoneMnemonic]').click()
+      cy.wait(15000)
+      cy.get('[data-cy=closeAcceptMilestone]').click()
+      cy.wait(10000)
+      cy.get('[data-cy=chatCommand]')
+        .contains('Finalize multisig transaction')
       cy.logout()
     })
   })

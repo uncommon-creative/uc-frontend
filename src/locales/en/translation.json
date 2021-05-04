@@ -15,8 +15,10 @@
     "emptyComandsWithoutDate": "Awaiting action from {{given_name}} {{family_name}}.",
     "buyerMilestoneClaimedInfo": "You have 7 days starting from the milestone claiming date to take an action, otherwise the system will accept the milestone and complete the payment.",
     "SowCommands": {
+      "SAVE_DRAFT": "Save draft",
+      "SAVE_DRAFT_info": "The seller created and shared a Statement of Work with the buyer.",
       "SUBMIT": "Submit",
-      "SUBMIT_info": "The seller submitted the Statement of Work.",
+      "SUBMIT_info": "The seller submitted the <1>Statement of Work</1> to be checked and accepted by the buyer.",
       "ACCEPT_AND_PAY": "Accept and Pay",
       "ACCEPT_AND_PAY_info": "The buyer accepted and funded the multisig.",
       "ACCEPT_MILESTONE": "Accept milestone",
@@ -24,7 +26,7 @@
       "CREATE_DELIVERABLE_TOKEN": "Create deliverable token",
       "CREATE_DELIVERABLE_TOKEN_info": "The seller created the deliverable asset.",
       "CLAIM_MILESTONE_MET": "Claim milestone met",
-      "CLAIM_MILESTONE_MET_info": "The seller claimed the milestone as met.\nThe buyer has 7 days starting from today to take an action, otherwise the system will accept the milestone and complete the payment.",
+      "CLAIM_MILESTONE_MET_info": "The seller claimed the milestone as met attaching the <1>deliverable</1>.\nThe buyer has 7 days starting from today to take an action, otherwise the system will accept the milestone and complete the payment.",
       "REJECT": "Reject",
       "REJECT_info": "The Statement of Work was rejected.",
       "REQUEST_REVIEW": "Request review",
@@ -46,6 +48,20 @@
       "sowLicenseTermsLabel": "License Terms",
       "sowLicenseTermsLabelOption1": "All rights transferred to the buyer",
       "sowLicenseTermsLabelOption2": "Customized"
+    },
+    "SowStatus": {
+      "DRAFT": "DRAFT",
+      "SUBMITTED": "QUOTED",
+      "ACCEPTED_PAID": "ORDER PAID",
+      "MILESTONE_ACCEPTED": "ACCEPTED",
+      "MILESTONE_CLAIMED": "DELIVERED",
+      "REVIEW_REQUIRED": "REVIEW REQUIRED",
+      "DISPUTED": "DISPUTED",
+      "SYSTEM_SIGNED": "AUTO APPROVED",
+      
+      "PAYMENT_SENT": "SETTLED",
+      "REJECTED": "REJECTED",
+      "EXPIRED": "EXPIRED"
     }
   },
   "transaction": {
@@ -58,14 +74,17 @@
     "requestReview": "Add a note to your review request.",
     "requestReviewCompleted": "The review request was sent to the seller.",
     "payment": {
-      "algo": "{{value}} ALGO",
+      "currency": "{{value}} {{currency}}",
       "summary": "Summary of payment",
       "multisigAddress": "Your funds will be sent to escrow account: {{multisigAddress}}",
-      "balances": "A) Current balance of escrow account:",
+      "balancesAlgo": "A1) Current balance (ALGO) of escrow account:",
+      "balancesAssetCurrency": "A2) Current balance ({{assetName}}) of escrow account:",
       "price": "B) Price to be paid:",
-      "fee": "C) Blockchain Fee:",
-      "total": "Total (B+C):",
-      "toPay": "To pay (B+C-A):"
+      "feeAlgo": "C) Blockchain Fee (ALGO):",
+      "feeAssetCurrency": "C) Blockchain Fee ({{assetName}}):",
+      "feeCommissionUC": "C) Commission UC Fee +{{percentage}}% ({{currency}}):",
+      "toPayAlgo": "Total (ALGO):",
+      "toPayAssetCurrency": "Total ({{assetName}}):"
     }
   }
 }

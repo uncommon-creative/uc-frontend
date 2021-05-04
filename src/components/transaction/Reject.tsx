@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Button, Col, Row, Card, CardBody, CardTitle,
   Modal, ModalHeader, ModalBody, ModalFooter,
-  ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText,
-  FormGroup, Label, Input, Jumbotron, CardSubtitle, CardText
+  Spinner, Jumbotron, CardText
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
@@ -21,15 +19,24 @@ export const Reject = ({ modal, toggle }: any) => {
   const transactionPage = useSelector(TransactionSelectors.getTransactionPage)
 
   React.useEffect(() => {
+    dispatch(TransactionActions.goToTransactionPage({ transactionPage: 1, sowCommand: SowCommands.REJECT }))
 
     return () => {
-      dispatch(TransactionActions.goToTransactionPage(1))
+      dispatch(TransactionActions.goToTransactionPage({ transactionPage: 0, sowCommand: SowCommands.REJECT }))
     }
   }, [modal])
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl">
-      {transactionPage == 1 &&
+    <Modal isOpen={modal} toggle={toggle} size="xl" backdrop={"static"} scrollable={true}>
+      {transactionPage[SowCommands.REJECT] == 0 &&
+        <>
+          <ModalHeader toggle={toggle}>{t(`chat.SowCommands.${SowCommands.REJECT}`)}</ModalHeader>
+          <ModalBody className="text-center">
+            <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
+          </ModalBody>
+        </>
+      }
+      {transactionPage[SowCommands.REJECT] == 1 &&
         <>
           <ModalHeader toggle={toggle}>Reject</ModalHeader>
           <ModalBody>
@@ -43,12 +50,12 @@ export const Reject = ({ modal, toggle }: any) => {
             }}>Cancel</ActivityButton>
             <ActivityButton data-cy={"willReject"} name={"willReject"} color="primary" onClick={() => {
               dispatch(ChatActions.willSendCommandChat({ values: { command: SowCommands.REJECT }, sow: currentSow }));
-              dispatch(TransactionActions.willReject())
+              dispatch(TransactionActions.willReject({ sowCommand: SowCommands.REJECT }))
             }}>Reject</ActivityButton>
           </ModalFooter>
         </>
       }
-      {transactionPage == 2 &&
+      {transactionPage[SowCommands.REJECT] == 2 &&
         <>
           <ModalHeader toggle={toggle}>Rejected</ModalHeader>
           <ModalBody>

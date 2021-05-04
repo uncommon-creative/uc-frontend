@@ -11,8 +11,16 @@ export const currentSlice = createSlice({
     uploadingPortrait: false,
     publicKey: "",
     attributes: {} as any,
+    algorandAccount: {},
     algoAccount: {},
-    users: {}
+    users: {},
+
+    saveMnemonic: {
+      modalOpen: false,
+      modalPage: 0,
+      success: '',
+      error: ''
+    } as any
   },
   reducers: {
     startLoadingProfile: (state, action: PayloadAction<any>) => void (state.loadingProfile = true),
@@ -20,9 +28,10 @@ export const currentSlice = createSlice({
 
     willGoToProfile: (state, action: PayloadAction<any>) => state,
 
-    willAddPublicKey: (state, action: PayloadAction<any>) => void (state.publicKey = action.payload.publicKey, state.attributes.publicKey = action.payload.publicKey),
+    willAddPublicKey: (state, action: PayloadAction<any>) => void (state.publicKey = action.payload.publicKey, state.attributes.public_key = action.payload.publicKey),
     willRetrieveProfileData: (state, action: PayloadAction<any>) => state,
     didRetrieveProfileData: (state, action: PayloadAction<any>) => void (state.attributes = action.payload),
+    didRetrieveAlgorandData: (state, action: PayloadAction<any>) => void (state.algorandAccount = action.payload),
 
     willGenerateAlgoAccount: (state, action: PayloadAction<any>) => state,
     didGenerateAlgoAccount: (state, action: PayloadAction<any>) => void (state.algoAccount = action.payload),
@@ -39,6 +48,12 @@ export const currentSlice = createSlice({
 
     willSaveProfile: (state, action: PayloadAction<any>) => state,
     didSaveProfile: (state, action: PayloadAction<any>) => state,
+
+    willToggleSaveMnemonicModal: (state, action: PayloadAction<any>) => void (state.saveMnemonic.modalOpen = !state.saveMnemonic.modalOpen),
+    goToSaveMnemonicModalPage: (state, action: PayloadAction<any>) => void (state.saveMnemonic.modalPage = action.payload.modalPage),
+    willSaveMnemonic: (state, action: PayloadAction<any>) => state,
+    didSaveMnemonic: (state, action: PayloadAction<any>) => void (state.saveMnemonic.success = action.payload.success, state.saveMnemonic.modalPage = 4),
+    didSaveMnemonicFail: (state, action: PayloadAction<any>) => void (state.saveMnemonic.error = action.payload.error, state.saveMnemonic.modalPage = 5),
   }
 })
 
@@ -55,5 +70,7 @@ export const selectors = {
   getUsers: (state: any) => state.profile.users,
   getPublicKey: (state: any) => state.profile.publicKey,
   getProfile: (state: any) => state.profile.attributes,
-  getAlgoAccount: (state: any) => state.profile.algoAccount
+  getAlgoAccount: (state: any) => state.profile.algoAccount,
+  getAlgorandAccount: (state: any) => state.profile.algorandAccount,
+  getSaveMnemonic: (state: any) => state.profile.saveMnemonic
 }

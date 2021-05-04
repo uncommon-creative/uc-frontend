@@ -21,7 +21,7 @@ export const createStatementOfWork = async () => {
 
 export const draftStatementOfWork = async (
   sow: any,
-  arbitrators: any,
+  arbitrator: any,
   codeOfConduct: any,
   currency: any,
   buyer: any,
@@ -43,7 +43,7 @@ export const draftStatementOfWork = async (
   try {
     const result: any = await API.graphql(graphqlOperation(mutation, {
       sow: sow,
-      arbitrators: arbitrators,
+      arbitrator: arbitrator,
       codeOfConduct: codeOfConduct,
       currency: currency,
       buyer: buyer,
@@ -216,12 +216,12 @@ export const getSowAttachmentsList = async (sow: any) => {
 
 
 export const getSow = async (sow: any) => {
-  const query = loader('../graphql/getSow.gql');
+  const query = loader('../graphql/getSowFromLink.gql');
 
   try {
     const result: any = await API.graphql(graphqlOperation(query, { sow: sow }));
-    // console.log('getSow with result: ', result);
-    return result.data.getSow
+    console.log('getSow with result: ', result);
+    return result.data.getSowFromLink
   } catch (error) {
     throw error
   }
@@ -248,6 +248,7 @@ export const getSowHtml = async (templt, data) => {
         N_REVIEWS: data.n_reviews,
         ACCEPTANCE_TIME: data.acceptance_time,
         ARBITRATOR_NAME: data.arbitrator_name,
+        ARBITRATOR_ADDRESS: data.arbitrator_address,
         ARBITRATOR_NAMES: data.arbitrator_names,
         PERCENTAGE_ARBITRATOR_FEE: data.percentage_arbitrator_fee,
         FLAT_ARBITRATOR_FEE: data.flat_arbitrator_fee,

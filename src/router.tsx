@@ -22,6 +22,7 @@ import { CreateAlgoAccountPage } from './pages/createAlgoAccount'
 import { CreateStatementOfWorkPage } from './pages/createStatementOfWork'
 import { StatementOfWorkPage } from './pages/statementOfWork'
 import { ArbitratorsPage } from './pages/arbitrators'
+import { OptinAssetPage } from './pages/optinAssets'
 
 import { selectors as AuthSelectors } from './store/slices/auth'
 
@@ -68,7 +69,7 @@ export const AppRouter = () => {
   return (
     <ConnectedRouter history={history}>
       <Header className=" sticky-top shadow" />
-      <Container className="d-flex pt-3" style={{minHeight: 'calc(100vh - 91px - 130px)'}}>
+      <Container className="d-flex pt-3" style={{ minHeight: 'calc(100vh - 91px - 130px)' }}>
         <Switch>
           <Route path="/about">
             <About />
@@ -91,6 +92,9 @@ export const AppRouter = () => {
           <Route path="/arbitrators">
             <ArbitratorsPage />
           </Route>
+          <PrivateRoute path="/optin-assets">
+            <OptinAssetPage />
+          </PrivateRoute>
           <PrivateRoute path="/profile">
             <ProfilePage />
           </PrivateRoute>

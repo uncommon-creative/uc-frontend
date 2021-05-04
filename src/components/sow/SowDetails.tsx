@@ -1,17 +1,24 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Button, Col, Row, Card, CardBody, CardTitle, Badge,
+  Col, Row, CardTitle, Badge,
   Modal, ModalHeader, ModalBody, ModalFooter,
-  ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText,
-  FormGroup, Label, Input, Jumbotron, CardSubtitle, CardText
+  Jumbotron, CardSubtitle, CardText
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser, faGavel, faInfoCircle, faCalendarDay, faCalendarTimes, faCalendarCheck, faMoneyBillAlt, faCheckDouble, faPeopleArrows, faTags, faBalanceScale } from '@fortawesome/free-solid-svg-icons'
 
-import { actions as SowActions, selectors as SowSelectors, SowCommands } from '../../store/slices/sow'
+import { actions as SowActions, selectors as SowSelectors, SowCommands, SowStatus } from '../../store/slices/sow'
 import { selectors as ProfileSelectors } from '../../store/slices/profile'
 import { SowHtml } from './SowHtml';
 import { ActivityButton } from '../common/ActivityButton';
+import { SowStatusBadge } from '../../components/common/SowStatusBadge'
+
+function validateEmail(email: any) {
+  var re = /\S+@\S+\.\S+/;
+  return re.test(email);
+}
 
 export const SowDetails = ({ modal, toggle }: any) => {
 
@@ -22,7 +29,7 @@ export const SowDetails = ({ modal, toggle }: any) => {
   const users = useSelector(ProfileSelectors.getUsers)
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl">
+    <Modal isOpen={modal} toggle={toggle} size="xl" scrollable={true}>
 
       <ModalHeader toggle={toggle}>
         <CardTitle className="">{currentSow.title}</CardTitle>
@@ -30,116 +37,225 @@ export const SowDetails = ({ modal, toggle }: any) => {
       </ModalHeader>
       <ModalBody>
         <Row>
-          <Col>
-            <Label for="seller" tag="h6" className="my-1">Seller:</Label>
+          <Col className="col-lg-8 col-12">
+            {currentSow.description &&
+              <Jumbotron>
+                <Row>
+                  <Col>
+                    <CardText className="my-1" name="description" id="description">
+                      <div dangerouslySetInnerHTML={{ __html: currentSow.description }} />
+                    </CardText>
+                  </Col>
+                </Row>
+              </Jumbotron>
+            }
+            {currentSow.licenseTermsNotes &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faBalanceScale} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {currentSow.licenseTermsNotes}
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    License Terms
+                  </CardText>
+                </Col>
+              </Row>
+            }
           </Col>
-          <Col>
-            <CardText tag="h6" className="my-1" name="seller" id="seller">{users[currentSow.seller].given_name + ' ' + users[currentSow.seller].family_name}</CardText>
+          <Col className="col-lg-4 col-12">
+            {currentSow.seller &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faUser} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {validateEmail(currentSow.seller) ?
+                      currentSow.seller
+                      :
+                      users[currentSow.seller].given_name + ' ' + users[currentSow.seller].family_name
+                    }
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Seller
+                  </CardText>
+                </Col>
+              </Row>
+            }
+            {currentSow.buyer && currentSow.buyer != "not_set" &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faUser} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {validateEmail(currentSow.buyer) ?
+                      currentSow.buyer
+                      :
+                      users[currentSow.buyer].given_name + ' ' + users[currentSow.buyer].family_name
+                    }
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Buyer
+                  </CardText>
+                </Col>
+              </Row>
+            }
+            {currentSow.arbitrator && currentSow.arbitrator != 'not_set' &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faGavel} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {validateEmail(currentSow.arbitrator) ?
+                      currentSow.arbitrator
+                      :
+                      users[currentSow.arbitrator].given_name + ' ' + users[currentSow.arbitrator].family_name
+                    }
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Arbitrator
+                  </CardText>
+                </Col>
+              </Row>
+            }
+            <Row>
+              <Col className="col-1 d-flex justify-content-center align-items-center">
+                <FontAwesomeIcon icon={faInfoCircle} size='1x' className="text-primary" />
+              </Col>
+              <Col>
+                <CardText className="m-0">
+                  <SowStatusBadge status={currentSow.status} />
+                </CardText>
+                <CardText className="text-primary" style={{ fontSize: 12 }}>
+                  Status
+                  </CardText>
+              </Col>
+            </Row>
+            <Row>
+              <Col className="col-1 d-flex justify-content-center align-items-center">
+                <FontAwesomeIcon icon={faCalendarDay} size='1x' className="text-primary" />
+              </Col>
+              <Col>
+                <CardText className="m-0">
+                  {new Date(currentSow.createdAt).toLocaleDateString()}
+                </CardText>
+                <CardText className="text-primary" style={{ fontSize: 12 }}>
+                  Created at
+                </CardText>
+              </Col>
+            </Row>
+            {currentSow.deadline &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faCalendarTimes} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {new Date(currentSow.deadline).toLocaleDateString()}
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Deadline
+                </CardText>
+                </Col>
+              </Row>
+            }
+            {currentSow.sowExpiration &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faCalendarCheck} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {new Date(currentSow.sowExpiration).toLocaleDateString()}
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Order must be confirmed by
+                </CardText>
+                </Col>
+              </Row>
+            }
+            {typeof currentSow.price === "number" &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faMoneyBillAlt} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {currentSow.price} {currentSow.currency}
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Price
+                  </CardText>
+                </Col>
+              </Row>
+            }
+            {currentSow.quantity &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faCheckDouble} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {currentSow.quantity}
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Quantity
+                </CardText>
+                </Col>
+              </Row>
+            }
+            <Row>
+              <Col className="col-1 d-flex justify-content-center align-items-center">
+                <FontAwesomeIcon icon={faPeopleArrows} size='1x' className="text-primary" />
+              </Col>
+              <Col>
+                <CardText className="m-0">
+                  {currentSow.numberReviews}
+                </CardText>
+                <CardText className="text-primary" style={{ fontSize: 12 }}>
+                  Number of reviews
+                </CardText>
+              </Col>
+            </Row>
+            {currentSow.tags.length > 0 &&
+              <Row>
+                <Col className="col-1 d-flex justify-content-center align-items-center">
+                  <FontAwesomeIcon icon={faTags} size='1x' className="text-primary" />
+                </Col>
+                <Col>
+                  <CardText className="m-0">
+                    {currentSow.tags && currentSow.tags.map((tag: any, index: any) => {
+                      return (
+                        <Badge className="mr-2" color="primary">{JSON.parse(tag).label}</Badge>
+                      )
+                    })}
+                  </CardText>
+                  <CardText className="text-primary" style={{ fontSize: 12 }}>
+                    Tags
+                </CardText>
+                </Col>
+              </Row>
+            }
           </Col>
         </Row>
-        <Row>
-          <Col>
-            <Label for="buyer" tag="h6" className="my-1">Buyer:</Label>
-          </Col>
-          <Col>
-            <CardText tag="h6" className="my-1" name="buyer" id="buyer">{users[currentSow.buyer].given_name + ' ' + users[currentSow.buyer].family_name}</CardText>
-          </Col>
-        </Row>
-        {currentSow.arbitrator &&
-          <Row>
-            <Col>
-              <Label for="arbitrator" tag="h6" className="my-1">Arbitrator:</Label>
-            </Col>
-            <Col>
-              <CardText tag="h6" className="my-1" name="arbitrator" id="arbitrator">{users[currentSow.arbitrator].given_name + ' ' + users[currentSow.arbitrator].family_name}</CardText>
-            </Col>
-          </Row>
-        }
-        <Row>
-          <Col>
-            <Label for="status" tag="h6" className="my-1">Status:</Label>
-          </Col>
-          <Col>
-            <CardText tag="h6" className="my-1" name="status" id="status">{currentSow.status}</CardText>
-          </Col>
-        </Row>
-        <Row className="pt-2">
-          <Col className="col-md-auto col-12">
-            <CardText className="my-1" name="createdAt" id="createdAt">
-              Created at: {new Date(currentSow.createdAt).toLocaleDateString()}
-            </CardText>
-          </Col>
-          <Col className="col-md-auto col-12">
-            <CardText className="my-1" name="deadline" id="deadline">
-              Deadline: {new Date(currentSow.deadline).toLocaleDateString()}
-            </CardText>
-          </Col>
-          <Col className="col-md-auto col-12">
-            <CardText className="my-1" name="sowExpiration" id="sowExpiration">
-              Order must be confirmed by: {new Date(currentSow.sowExpiration).toLocaleDateString()}
-            </CardText>
-          </Col>
-        </Row>
-        {currentSow.licenseTermsNotes &&
-          <Row>
-            <Col>
-              <CardText className="my-1" name="licenseTerms" id="licenseTerms">
-                License Terms: {currentSow.licenseTermsNotes}
-              </CardText>
-            </Col>
-          </Row>
-        }
-        <Jumbotron>
-          {/* <CardSubtitle className="text-center text-muted">Milestone 1</CardSubtitle> */}
-          <Row className="">
-            <Col>
-              <Label for="description" tag="h6" >Description:</Label>
-              <CardText className="my-1" name="description" id="description">
-                <div dangerouslySetInnerHTML={{ __html: currentSow.description }} />
-              </CardText>
-            </Col>
-          </Row>
-          <Row className="pt-4">
-            <Col className="col-md-auto col-12">
-              <CardText className="my-1" name="quantity" id="quantity">
-                Quantity: {currentSow.quantity}
-              </CardText>
-            </Col>
-            <Col className="col-md-auto col-12">
-              <CardText className="my-1" name="price" id="price">
-                Price: {currentSow.price + ' ' + currentSow.currency}
-              </CardText>
-            </Col>
-            <Col className="col-md-auto col-12">
-              <CardText className="my-1" name="numberReviews" id="numberReviews">
-                Number of reviews: {currentSow.numberReviews}
-              </CardText>
-            </Col>
-          </Row>
-
-          <Row className="pt-4">
-            <Col className="">
-              {/* <Card> */}
-              {currentSow.tags && currentSow.tags.map((tag: any, index: any) => {
-                return (
-                  <Badge className="mr-2" color="primary">{JSON.parse(tag).label}</Badge>
-                )
-              })}
-              {/* </Card> */}
-            </Col>
-          </Row>
-        </Jumbotron>
       </ModalBody>
       <ModalFooter>
-        <ActivityButton data-cy='willBuildHtml' name="willBuildHtml" color="primary" onClick={() => {
-          dispatch(SowActions.willBuildHtml({ currentSow: currentSow }))
-        }}>Show legal agreement</ActivityButton>
+        {currentSow.status != SowStatus.DRAFT &&
+          <ActivityButton data-cy='willBuildHtml' name="willBuildHtml" color="primary" onClick={() => {
+            dispatch(SowActions.willBuildHtml({ currentSow: currentSow }))
+          }}>Show legal agreement</ActivityButton>
+        }
         <ActivityButton data-cy='closeSowExtended' name="closeSowExtended" outline color="primary" onClick={() => {
           toggle()
         }}>Close</ActivityButton>
       </ModalFooter>
 
       <SowHtml modal={html != ''} toggle={() => dispatch(SowActions.didBuildHtml(''))} />
-    </Modal>
+    </Modal >
   )
 }

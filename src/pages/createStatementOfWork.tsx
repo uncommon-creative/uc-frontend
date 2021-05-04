@@ -21,7 +21,7 @@ import { SowAttachmentsInput } from '../components/SowAttachmentsInput'
 import { DescriptionEditor } from '../components/DescriptionEditor'
 import { actions as SowActions, selectors as SowSelectors, SowStatus } from '../store/slices/sow'
 import { actions as ArbitratorActions, selectors as ArbitratorSelectors } from '../store/slices/arbitrator'
-import { actions as TransactionActions, selectors as TransactionSelectors } from '../store/slices/transaction'
+import { actions as AssetCurrencyActions, selectors as AssetCurrencySelectors } from '../store/slices/assetCurrency'
 import { selectors as ProfileSelectors } from '../store/slices/profile'
 import { selectors as UISelectors } from '../store/slices/ui'
 import { SubmitSow } from '../components/transaction/SubmitSow'
@@ -58,6 +58,7 @@ const StatementOfWorkSchema = Yup.object().shape({
     .min(0, 'Too Few!')
     .max(50, 'Too Many!'),
   price: Yup.number()
+    .integer('Only integer accepted')
     .min(1, 'Too Few!')
     .required('Required'),
   currency: Yup.string()
@@ -79,9 +80,10 @@ const StatementOfWorkSchema = Yup.object().shape({
   codeOfConduct: Yup.boolean()
     .oneOf([true], "The Code of Conduct must be accepted.")
     .required('Required'),
-  arbitrators: Yup.array()
-    .test('Should not contain the buyer', 'Should not contain the buyer', (value: any, context) => !(value.some((arb: any) => arb.email == context.parent.buyer)))
-    .length(3, 'Three arbitrators required!')
+  arbitrator: Yup.object({
+    user: Yup.string()
+  })
+    .test('Required', 'Required', (value) => value.hasOwnProperty('user'))
     .required('Required'),
   sowExpiration: Yup.number()
     .min(1, 'Select expiration')
@@ -99,17 +101,20 @@ export const CreateStatementOfWorkPage = () => {
   const { t, i18n } = useTranslation();
   const isLoading = useSelector(UISelectors.isLoading)
   let history = useHistory();
+  const algorandAccount = useSelector(ProfileSelectors.getAlgorandAccount)
   const currentSow = useSelector(SowSelectors.getCurrentSow)
   console.log("sow in CreateStatementOfWorkPage: ", currentSow)
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
-  const [modalOpen, setModalOpen] = React.useState(false);
+  const [modalOpenViewArbitratorsSow, setModalOpenViewArbitratorsSow] = React.useState(false);
   const [priceCurrency, setPriceCurrency] = React.useState(currentSow.currency ? currentSow.currency : "ALGO");
   const [deadlineValue, setDeadlineValue] = React.useState(currentSow.deadline ? currentSow.deadline : '');
   const currentArbitrators = useSelector(SowSelectors.getCurrentArbitrators)
+  const currentSelectedArbitrator = useSelector(ArbitratorSelectors.getCurrentSelectedArbitrator)
   const users = useSelector(ProfileSelectors.getUsers)
+  const assetsCurrencies = useSelector(AssetCurrencySelectors.getAssetsCurrencies)
 
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
-  const toggleModal = () => setModalOpen(!modalOpen);
+  const toggleModal = () => setModalOpenViewArbitratorsSow(!modalOpenViewArbitratorsSow);
 
   const [modalOpenSubmitSow, setModalOpenSubmitSow] = React.useState(false);
   const toggleModalSubmitSow = () => setModalOpenSubmitSow(!modalOpenSubmitSow);
@@ -121,7 +126,6 @@ export const CreateStatementOfWorkPage = () => {
           <Card>
             <CardBody>
               <CardTitle tag="h5" className="text-center">Create Statement Of Work Page</CardTitle>
-              <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Create a new Statement of Work</CardSubtitle>
               <Formik
                 initialValues={{
                   sow: currentSow.sow ? currentSow.sow : '',
@@ -145,6 +149,7 @@ export const CreateStatementOfWorkPage = () => {
                   numberReviews: currentSow.numberReviews ? currentSow.numberReviews : '',
                   termsOfService: false,
                   codeOfConduct: false,
+                  arbitrator: currentSow.arbitrator && currentSow.arbitrator != 'not_set' ? currentSow.arbitrator : {},
                   arbitrators: currentArbitrators,
                   sowExpiration: 0,
                   licenseTermsOption: currentSow.licenseTermsOption ? currentSow.licenseTermsOption : '',
@@ -154,15 +159,15 @@ export const CreateStatementOfWorkPage = () => {
                 validateOnBlur={true}
                 onSubmit={values => {
                   console.log('in onsubmit with: ', values)
-                  dispatch(SowActions.willSubmitStatementOfWork({ sow: values/* , history: history */ }));
-                  dispatch(TransactionActions.goToTransactionPage(0))
+                  dispatch(SowActions.willSubmitStatementOfWork({ sow: values, history: history }));
                   toggleModalSubmitSow()
                 }}
               >
                 {({ errors, touched, setFieldValue, values }) => {
                   return (
                     <Form>
-                      {/* {values && console.log("values: ", values)} */}
+                      {/* {values && console.log("values: ", values)}
+                      {errors && console.log("errors: ", errors)} */}
                       <FormGroup>
                         <Label for="sow">Sow</Label>
                         <Input data-cy="inputSowID" disabled invalid={errors.sow && touched.sow ? true : false} type="text" name="sow" id="sow" placeholder="sow" tag={Field} />
@@ -200,7 +205,7 @@ export const CreateStatementOfWorkPage = () => {
                         ) : null}
                       </FormGroup>
                       <Jumbotron>
-                        <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Milestone 1</CardSubtitle>
+                        {/* <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Milestone 1</CardSubtitle> */}
                         <FormGroup>
                           <Label for="description">Description *</Label>
                           <DescriptionEditor description={currentSow.description ? currentSow.description : ''} />
@@ -225,7 +230,7 @@ export const CreateStatementOfWorkPage = () => {
                               <InputGroup>
                                 <Input data-cy="inputSowPrice" invalid={errors.price && touched.price ? true : false} type="text" name="price" id="price" placeholder="price" tag={Field} />
                                 <InputGroupButtonDropdown addonType="append" isOpen={dropdownOpen} toggle={toggleDropDown}>
-                                  <DropdownToggle caret>
+                                  <DropdownToggle caret data-cy="inputSowCurrency">
                                     {priceCurrency}
                                   </DropdownToggle>
                                   <DropdownMenu>
@@ -236,12 +241,27 @@ export const CreateStatementOfWorkPage = () => {
                                         setPriceCurrency("ALGO")
                                       }}
                                     >ALGO</DropdownItem>
-                                    <DropdownItem disabled={priceCurrency == "USDC"}
-                                      onClick={() => {
-                                        setFieldValue('currency', "USDC")
-                                        setPriceCurrency("USDC")
-                                      }}
-                                    >USDC</DropdownItem>
+                                    {assetsCurrencies.map((asset: any, index: any) => {
+                                      return (
+                                        <>
+                                          {algorandAccount.assets.some((accountAsset: any) => JSON.parse(accountAsset)["asset-id"] == asset.assetIndex) ?
+                                            <DropdownItem disabled={priceCurrency == asset.assetName} data-cy={"inputSowCurrency" + asset.assetName}
+                                              onClick={() => {
+                                                setFieldValue('currency', asset.assetName)
+                                                setPriceCurrency(asset.assetName)
+                                              }}
+                                            >{asset.assetName}</DropdownItem>
+                                            :
+                                            <DropdownItem tag={Link} to="/optin-assets">
+                                              <ActivityButton name="willSelectAssetCurrency" color="link" className="pl-0" onClick={() => {
+                                                dispatch(SowActions.willDraftStatementOfWork({ sow: values }))
+                                                dispatch(AssetCurrencyActions.willSelectAssetCurrency({ asset: asset.assetIndex }))
+                                              }}>{asset.assetName} (opt-in)</ActivityButton>
+                                            </DropdownItem>
+                                          }
+                                        </>
+                                      )
+                                    })}
                                   </DropdownMenu>
                                 </InputGroupButtonDropdown>
                                 {errors.price && touched.price ? (
@@ -304,14 +324,43 @@ export const CreateStatementOfWorkPage = () => {
                         </Row>
                       </Jumbotron>
 
-                      <Jumbotron>
+                      <Row>
+                        <Col className="col-6">
+                          <Jumbotron>
+                            <FormGroup>
+                              <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Arbitrator *</CardSubtitle>
+                              <Row name="arbitrators" id="arbitrators">
+                                {currentSow.arbitrator && currentSow.arbitrator.user &&
+                                  <Col>
+                                    <ArbitratorDetailMD arbitrator={currentSelectedArbitrator} />
+                                  </Col>
+                                }
+                              </Row>
+                              <Row className="mt-2 d-flex justify-content-center">
+                                <Col className="col-auto">
+                                  <Button data-cy="inputSowArbitratorsModal" color="primary" onClick={() => {
+                                    dispatch(ArbitratorActions.willGetArbitratorsList())
+                                    dispatch(ArbitratorActions.willViewArbitratorsSow())
+                                    setModalOpenViewArbitratorsSow(!modalOpenViewArbitratorsSow)
+                                  }}>Select an arbitrator</Button>
+                                </Col>
+                              </Row>
+                              {errors.arbitrator && touched.arbitrator ? (
+                                <FormFeedback className="d-block">{errors.arbitrator}</FormFeedback>
+                              ) : null}
+                              <ArbitratorsSelect modal={modalOpenViewArbitratorsSow} toggle={toggleModal} />
+                            </FormGroup>
+                          </Jumbotron>
+                        </Col>
+                      </Row>
+
+                      {/* <Jumbotron>
                         <FormGroup>
                           <CardSubtitle tag="h6" className="mb-2 text-muted text-center">Arbitrators *</CardSubtitle>
                           <Row name="arbitrators" id="arbitrators">
                             {currentArbitrators.map((arbitrator: any, index: any) => {
                               return (
                                 <Col className="col-md-4 col-12 d-flex">
-                                  {/* <ArbitratorDetail arbitrator={arbitrator} /> */}
                                   <ArbitratorDetailMD arbitrator={arbitrator} />
                                 </Col>
                               )
@@ -320,17 +369,15 @@ export const CreateStatementOfWorkPage = () => {
                           </Row>
                           <Row className="mt-2">
                             <Col className="col-6 offset-3">
-                              {/* <Button color="primary" block onClick={() => dispatch(SowActions.willConfirmArbitrators())}>Select the arbitrators</Button> */}
                               <Button data-cy="inputSowArbitratorsModal" color="primary" block onClick={() => {
                                 dispatch(ArbitratorActions.willGetArbitratorsList())
                                 dispatch(ArbitratorActions.willSelectThreeArbitrators(currentArbitrators))
 
-                                setModalOpen(!modalOpen)
+                                setModalOpenViewArbitratorsSow(!modalOpenViewArbitratorsSow)
                               }}>Select the arbitrators</Button>
                             </Col>
                           </Row>
-                          {/* <SelectArbitrators modal={modalOpen} toggle={toggleModal} /> */}
-                          <ArbitratorsSelect modal={modalOpen} toggle={toggleModal} />
+                          <ArbitratorsSelect modal={modalOpenViewArbitratorsSow} toggle={toggleModal} />
                           <Input invalid={errors.arbitrators && touched.arbitrators ? true : false} name="arbitrators" id="arbitrators" placeholder="arbitrators" tag={FieldArray}
                             render={(arrayHelpers: any) => {
                               const arbs = values.arbitrators;
@@ -358,10 +405,9 @@ export const CreateStatementOfWorkPage = () => {
                             <FormFeedback className="d-block">{errors.arbitrators}</FormFeedback>
                           ) : null}
                         </FormGroup>
-                      </Jumbotron>
+                      </Jumbotron> */}
                       <Row>
                         <Col>
-                          {/* <FormGroup> */}
                           <Label for="licenseTerms">{t('sow.input.sowLicenseTermsLabel')} *</Label>
                           <FormGroup check>
                             <Input data-cy="licenseTerms-option1" type="radio" name="licenseTerms" id="licenseTerms-option1" checked={values.licenseTermsOption == 'option1'} invalid={errors.licenseTermsOption && touched.licenseTermsOption ? true : false}
@@ -397,7 +443,6 @@ export const CreateStatementOfWorkPage = () => {
                               <FormFeedback hidden={values.licenseTermsOption != 'option2'}>{errors.licenseTermsNotes}</FormFeedback>
                             ) : null}
                           </FormGroup>
-                          {/* </FormGroup> */}
                         </Col>
                       </Row>
                       <Row>
@@ -455,7 +500,7 @@ export const CreateStatementOfWorkPage = () => {
                         <Col><ActivityButton data-cy="inputSowSubmit" type="submit" name="submitSow" color="primary" block>{t('sow.submitStatementOfWork')}</ActivityButton></Col>
                       </Row>
                       <Row className="mt-2">
-                        <Col><Button color="primary" block outline name="draftSow" onClick={() => dispatch(SowActions.willDraftStatementOfWork({ sow: values/* , history: history */ }))}>Save draft</Button></Col>
+                        <Col><ActivityButton color="primary" block outline name="draftSow" onClick={() => dispatch(SowActions.willDraftStatementOfWork({ sow: values }))}>Save draft</ActivityButton></Col>
                         <Col><Button color="primary" block to="/" outline tag={Link}>Cancel</Button></Col>
                       </Row>
                     </Form>

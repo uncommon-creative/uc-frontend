@@ -29,7 +29,10 @@ export const configuration: any = {
       'tx': 'https://testnet.algoexplorer.io/tx/',
       'address': 'https://testnet.algoexplorer.io/address/',
       'asset': 'https://testnet.algoexplorer.io/asset/'
-    }
+    },
+    'uc_commission_percentage': 1,
+    'uc_commission_public_key': '7NCU4YXPFQWNWBDVDY4EZI7H5LZUXKTPA7MEB3EM7U37TQF6JR57CTGIP4'
+
   },
   demo: {
     Auth: {
@@ -55,10 +58,14 @@ export const configuration: any = {
     'uc_backup_public_key': '3IB3QQKFQACYNQDD2G2CVV7I7ZZDY5ZLFW7SOJQVQG6I4CPCOVE2UU35OA',
     'submitAsset_unitName': 'UC-',
     'submitAsset_assetName': 'UC project ',
+    'deliverableAsset_unitName': 'UCDLV-',
+    'deliverableAsset_assetName': 'UCDLV project ',
     'AlgoExplorer_link': {
       'tx': 'https://testnet.algoexplorer.io/tx/',
       'address': 'https://testnet.algoexplorer.io/address/',
       'asset': 'https://testnet.algoexplorer.io/asset/'
-    }
+    },
+    'uc_commission_percentage': 1,
+    'uc_commission_public_key': '7NCU4YXPFQWNWBDVDY4EZI7H5LZUXKTPA7MEB3EM7U37TQF6JR57CTGIP4'
   }
 }

@@ -7,9 +7,11 @@ import { actions as SowActions, SowStatus, SowCommands } from '../slices/sow'
 import { actions as NotificationActions } from '../slices/notification'
 import { actions as ChatActions } from '../slices/chat'
 import { actions as ProfileActions, selectors as ProfileSelectors } from '../slices/profile'
-import { actions as TransactionActions, selectors as TransactionSelectors } from '../slices/transaction'
+import { actions as TransactionActions } from '../slices/transaction'
+import { actions as ArbitratorActions, selectors as ArbitratorsSelectors } from '../slices/arbitrator'
 import { actions as UIActions } from '../slices/ui'
 import * as ArbitratorApi from '../../api/arbitrator'
+import * as TransactionApi from '../../api/transaction'
 import { willGetUserProfile } from '../sagas/profile'
 import { configuration } from '../../config'
 
@@ -73,7 +75,6 @@ function* willCreateStatementOfWork(action: any) {
 
 function* willDraftStatementOfWork(action: any) {
   console.log("in willDraftStatementOfWork with: ", action)
-
   yield put(UIActions.startActivityRunning("draftSow"));
 
   const tagsParsed = action.payload.sow.tags.map((tag: any) => JSON.stringify(tag))
@@ -83,7 +84,8 @@ function* willDraftStatementOfWork(action: any) {
     const result = yield call(
       SowApi.draftStatementOfWork,
       action.payload.sow.sow,
-      arbitratorsParsed,
+      action.payload.sow.arbitrator.user,
+      // arbitratorsParsed,
       action.payload.sow.codeOfConduct,
       action.payload.sow.currency,
       action.payload.sow.buyer,
@@ -101,7 +103,7 @@ function* willDraftStatementOfWork(action: any) {
     )
     console.log("willDraftStatementOfWork result: ", result)
 
-    yield put(push("/home"))
+    // yield put(push("/home"))
     yield put(NotificationActions.willShowNotification({ message: "Statement of work saved", type: "success" }));
   } catch (error) {
     console.log("error in willDraftStatementOfWork ", error)
@@ -122,10 +124,11 @@ function* willSubmitStatementOfWork(action: any) {
 
   try {
     if (userAttributes.address) {
-      const result = yield call(
+      const resultDraft = yield call(
         SowApi.draftStatementOfWork, // submitStatementOfWork
         action.payload.sow.sow,
-        arbitratorsParsed,
+        action.payload.sow.arbitrator.user,
+        // arbitratorsParsed,
         action.payload.sow.codeOfConduct,
         action.payload.sow.currency,
         action.payload.sow.buyer,
@@ -141,17 +144,27 @@ function* willSubmitStatementOfWork(action: any) {
         action.payload.sow.licenseTermsOption,
         action.payload.sow.licenseTermsNotes
       )
-      console.log("willSubmitStatementOfWork result: ", result)
+      console.log("willSubmitStatementOfWork resultDraft: ", resultDraft)
 
-      yield call(willGetUserProfile, { user: result.buyer })
-      yield put(SowActions.didSubmitStatementOfWork(result))
+      const userBuyer = yield call(willGetUserProfile, { user: resultDraft.buyer })
+      console.log("willSubmitStatementOfWork userBuyer: ", userBuyer)
 
-      yield call(willBuildPdf, { payload: { sow: result.sow } })
-      yield call(willGetParams, { payload: { seller: result.seller, buyer: result.buyer } })
-      yield put(TransactionActions.goToTransactionPage(2))
+      // NOT REGISTERED
+      if (!userBuyer.email) {
+        yield put(NotificationActions.willShowNotification({ message: "The buyer has to sign up to Uncommon Creative in order to proceed with the submission", type: "danger" }));
+        action.payload.history.push('/statement-of-work/' + resultDraft.sow)
+      }
+      // PROFILE NOT COMPLETED
+      else if (!userBuyer.address) {
+        yield put(NotificationActions.willShowNotification({ message: "The buyer has to complete his profile on Uncommon Creative in order to proceed with the submission", type: "danger" }));
+        action.payload.history.push('/statement-of-work/' + resultDraft.sow)
+      }
+      else {
+        yield put(SowActions.didSubmitStatementOfWork(resultDraft))
 
-      // yield put(push("/home"))
-      yield put(NotificationActions.willShowNotification({ message: "Statement of work created", type: "success" }));
+        yield call(willBuildPdf, { payload: { sow: resultDraft.sow } })
+        yield put(TransactionActions.goToTransactionPage({ transactionPage: 2, sowCommand: SowCommands.SUBMIT }))
+      }
     }
     else {
       yield call(willDraftStatementOfWork, action)
@@ -340,12 +353,12 @@ function* willSelectSow(action: any) {
 
   yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow.sow } });
 
-  if (action.payload.sow.status == "DRAFT") {
-    action.payload.history.push('/create-statement-of-work')
-  }
-  else {
-    action.payload.history.push('/statement-of-work/' + action.payload.sow.sow)
-  }
+  // if (action.payload.sow.status == "DRAFT") {
+  //   action.payload.history.push('/create-statement-of-work')
+  // }
+  // else {
+  action.payload.history.push('/statement-of-work/' + action.payload.sow.sow)
+  // }
 }
 
 function* willGetSowAttachmentsList(action: any) {
@@ -386,23 +399,34 @@ function* willGetSow(action: any) {
   try {
     const result = yield call(SowApi.getSow, action.payload.sow);
     console.log("result willGetSow: ", result)
-    yield call(willGetUserProfile, { user: result.seller })
-    yield call(willGetUserProfile, { user: result.buyer })
-    result.arbitrator && (yield call(willGetUserProfile, { user: result.arbitrator }))
-    yield put(SowActions.didGetSow(result))
-    yield put(ChatActions.willReadSowChat(action.payload))
-    yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow } });
-
-    const fullArbitrators = [] as any
-    if (Array.isArray(result.arbitrators)) {
-      for (const arb of result.arbitrators) {
-        fullArbitrators.push(yield call(ArbitratorApi.getArbitrator, arb))
-        yield call(willGetUserProfile, { user: arb })
-      }
+    if (result.sow == "error") {
+      action.payload.history.push("/")
+      yield put(NotificationActions.willShowNotification({ message: "Access denied", type: "danger" }));
     }
-    console.log("in willGetSow with fullArbitrators: ", fullArbitrators)
-    yield put(SowActions.willConfirmArbitrators({ arbitrators: fullArbitrators, toggle: () => { } }))
+    else {
+      yield call(willGetUserProfile, { user: result.seller })
+      result.buyer != 'not_set' && (yield call(willGetUserProfile, { user: result.buyer }))
+      if (result.arbitrator && result.arbitrator != 'not_set') {
+        yield call(willGetUserProfile, { user: result.arbitrator })
+        const arb = yield call(ArbitratorApi.getArbitrator, result.arbitrator)
+        // console.log("willGetSow arb", arb)
+        yield put(ArbitratorActions.willSelectArbitrator({ arbitrator: arb }))
 
+      }
+      yield put(SowActions.didGetSow(result))
+      yield call(willGetSowAttachmentsList, { payload: { sow: action.payload.sow } });
+      yield put(ChatActions.willReadSowChat(action.payload))
+
+      const fullArbitrators = [] as any
+      if (Array.isArray(result.arbitrators)) {
+        for (const arb of result.arbitrators) {
+          fullArbitrators.push(yield call(ArbitratorApi.getArbitrator, arb))
+          yield call(willGetUserProfile, { user: arb })
+        }
+      }
+      console.log("in willGetSow with fullArbitrators: ", fullArbitrators)
+      yield put(SowActions.willConfirmArbitrators({ arbitrators: fullArbitrators, toggle: () => { } }))
+    }
   } catch (error) {
     console.log("error in willGetSow ", error)
   }
@@ -413,13 +437,21 @@ function* willBuildHtml(action: any) {
   console.log("in willBuildHtml with: ", action)
   yield put(UIActions.startActivityRunning("willBuildHtml"));
   const users = yield select(ProfileSelectors.getUsers)
+  const currentSelectedArbitrator = yield select(ArbitratorsSelectors.getCurrentSelectedArbitrator)
+
+  const seller_public_key = users[action.payload.currentSow.seller].public_key
+  const buyer_public_key = users[action.payload.currentSow.buyer].public_key
+  const arbitrator_public_key = users[action.payload.currentSow.arbitrator].public_key
+  const backup_public_key = configuration[stage].uc_backup_public_key
 
   try {
     // const result = yield call(SowApi.buildHtmlBackend, action.payload.sow);
     // console.log("result willBuildHtmlBackend: ", result)
     const downloadUrlTemplate = yield call(SowApi.getDownloadUrl, action.payload.currentSow.sow, configuration[stage].legal_document_template_key, 600)
-    // console.log("willBuildHtml downloadUrl: ", downloadUrlTemplate)
-
+    // console.log("willBuildHtml downloadUrlTemplate: ", downloadUrlTemplate)
+    const multisigAddress = yield call(TransactionApi.createMultiSigAddress, { seller: seller_public_key, buyer: buyer_public_key, arbitrator: arbitrator_public_key, backup: backup_public_key })
+    // console.log("willBuildHtml multisigAddress: ", multisigAddress)
+    
     const resultHtml = yield call(SowApi.getSowHtml,
       downloadUrlTemplate,
       {
@@ -431,15 +463,16 @@ function* willBuildHtml(action: any) {
         startdate: new Date(action.payload.currentSow.submittedDate).toLocaleDateString(),
         price: action.payload.currentSow.price,
         currency: action.payload.currentSow.currency,
-        msig_address: "UNABLE TO COMPUTE ADDRESS", //
+        msig_address: multisigAddress,
         uc_fee: "0.5%", //
         deadline: new Date(action.payload.currentSow.deadline).toLocaleDateString(),
         n_reviews: action.payload.currentSow.numberReviews,
         acceptance_time: new Date(action.payload.currentSow.sowExpiration).toLocaleDateString(),
-        arbitrator_name: null, //
+        arbitrator_name: currentSelectedArbitrator.given_name + ' ' + currentSelectedArbitrator.family_name,
+        arbitrator_address: users[action.payload.currentSow.arbitrator].address.address + ', ' + users[action.payload.currentSow.arbitrator].address.city + ', ' + users[action.payload.currentSow.arbitrator].address.zip + ', ' + users[action.payload.currentSow.arbitrator].address.state + ', ' + users[action.payload.currentSow.arbitrator].address.country,
         arbitrator_names: action.payload.arbitrators, //
-        percentage_arbitrator_fee: null, //
-        flat_arbitrator_fee: null, //
+        percentage_arbitrator_fee: currentSelectedArbitrator.fee.perc,
+        flat_arbitrator_fee: currentSelectedArbitrator.fee.flat,
         description: action.payload.currentSow.description,
         definition_of_done: null, //"DEFINITION OF DONE PLACEHOLDER", //
         license: action.payload.currentSow.licenseTermsNotes,

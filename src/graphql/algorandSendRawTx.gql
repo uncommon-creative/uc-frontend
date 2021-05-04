@@ -1,0 +1,10 @@
+mutation algorandSendRawTx(
+  $tx: [TransactionInput]
+) {
+  algorandSendRawTx(
+    tx: $tx
+  ) {
+    tx
+    error
+  }
+}

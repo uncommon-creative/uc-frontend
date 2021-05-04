@@ -152,13 +152,13 @@ export const FileButton = ({ file, disabled, children, ...rest }: any) => {
             </a>
             {/* {file.filename == configuration[stage].works_agreement_key && messagesCommands[SowCommands.SUBMIT] &&
               <a target="_blank" style={{ fontSize: 11 }} className='d-flex justify-content-center mt-1 align-items-baseline'
-                href={configuration[stage].AlgoExplorer_asset_link + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>
+                href={configuration[stage].AlgoExplorer_link["asset"] + JSON.parse(messagesCommands[SowCommands.SUBMIT].commandMessage.data).assetId}>
                 Asset on Block Explorer <FontAwesomeIcon className="ml-1" icon={faExternalLinkAlt} size='1x' />
               </a>
             }
             {file.filename == configuration[stage].works_agreement_key && messagesCommands[SowCommands.ACCEPT_AND_PAY] &&
               <a target="_blank" style={{ fontSize: 11 }} className='d-flex justify-content-center mt-1 align-items-baseline'
-                href={configuration[stage].AlgoExplorer_tx_link + JSON.parse(messagesCommands[SowCommands.ACCEPT_AND_PAY].commandMessage.data).tx[0]}>
+                href={configuration[stage].AlgoExplorer_link["tx"] + JSON.parse(messagesCommands[SowCommands.ACCEPT_AND_PAY].commandMessage.data).tx[0]}>
                 Opt-in on Block Explorer <FontAwesomeIcon className="ml-1" icon={faExternalLinkAlt} size='1x' />
               </a>
             } */}

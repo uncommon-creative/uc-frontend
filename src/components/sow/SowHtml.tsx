@@ -21,7 +21,7 @@ export const SowHtml = ({ modal, toggle }: any) => {
   const users = useSelector(ProfileSelectors.getUsers)
 
   return (
-    <Modal isOpen={modal} toggle={toggle} size="xl">
+    <Modal isOpen={modal} toggle={toggle} size="xl" scrollable={true}>
 
       <ModalHeader toggle={toggle}>
         <CardTitle className="">{currentSow.title}</CardTitle>

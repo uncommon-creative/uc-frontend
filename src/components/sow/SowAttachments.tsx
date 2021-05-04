@@ -58,14 +58,17 @@ export const SowAttachments = () => {
                 <LinkBlockExplorer title="Opt-in on Block Explorer" type="tx" id={JSON.parse(messagesCommands[SowCommands.ACCEPT_AND_PAY].commandMessage.data).tx[0]} />
               }
             </Card>
-            {newAttachments.map((attachment: any, index: any) => {
-              return (
-                attachment.owner === currentSow.sow && attachment.filename != configuration[stage].deliverable_key &&
-                <ListGroupItem data-cy="attachmentsSow" key={index}>
-                  <FileButton file={attachment} />
-                </ListGroupItem>
-              )
-            })}
+            {newAttachments.some((file: any) => (file.owner === currentSow.sow && file.filename != configuration[stage].deliverable_key)) ?
+              newAttachments.map((attachment: any, index: any) => {
+                return (
+                  attachment.owner === currentSow.sow && attachment.filename != configuration[stage].deliverable_key &&
+                  <ListGroupItem data-cy="attachmentsSow" key={index}>
+                    <FileButton file={attachment} />
+                  </ListGroupItem>
+                )
+              })
+              : <CardText className="text-muted text-center">No file found</CardText>
+            }
           </Collapse>
           <ListGroupItem onClick={toggleDeliverable}>
             <Row>
@@ -81,7 +84,7 @@ export const SowAttachments = () => {
             {newAttachments.some((file: any) => file.filename == configuration[stage].deliverable_key) ?
               newAttachments.map((attachment: any, index: any) => {
                 return (attachment.filename == configuration[stage].deliverable_key &&
-                  <ListGroupItem data-cy="attachmentsSeller" key={index} >
+                  <ListGroupItem data-cy="attachmentDeliverable" key={index} >
                     <FileButton file={attachment} />
                   </ListGroupItem>
                 )

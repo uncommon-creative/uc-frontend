@@ -16,6 +16,7 @@ export const currentSlice = createSlice({
   },
   reducers: {
     willConfirmArbitrators: (state, action: PayloadAction<any>) => void (state.currentArbitrators = action.payload.arbitrators),
+    willSelectArbitrator: (state, action: PayloadAction<any>) => void (state.currentSow.arbitrator = action.payload.arbitrator),
 
     willCreateStatementOfWork: (state, action: PayloadAction<any>) => state,
     didCreateStatementOfWork: (state, action: PayloadAction<any>) => void (state.currentSow = action.payload),
@@ -89,6 +90,7 @@ export enum SowStatus {
 }
 
 export enum SowCommands {
+  SAVE_DRAFT = 'SAVE_DRAFT',
   SUBMIT = 'SUBMIT',
   ACCEPT_AND_PAY = 'ACCEPT_AND_PAY',
   ACCEPT_MILESTONE = 'ACCEPT_MILESTONE',

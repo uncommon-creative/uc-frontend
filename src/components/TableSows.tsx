@@ -12,6 +12,7 @@ import { selectors as SowSelectors } from '../store/slices/sow'
 import { actions as ChatActions, selectors as ChatSelectors } from '../store/slices/chat'
 import { selectors as AuthSelectors } from '../store/slices/auth'
 import { actions as SowActions } from "../store/slices/sow";
+import { SowStatusBadge } from './common/SowStatusBadge'
 
 function validateEmail(email: any) {
   var re = /\S+@\S+\.\S+/;
@@ -41,12 +42,22 @@ export const TableSows = ({ tabId, data }: any) => {
         Header: 'Title',
         accessor: (row: any) =>
           <Row className="d-flex" tag={Link} onClick={() => dispatch(SowActions.willSelectSow({ sow: row, history: history }))}>
-            <Col className="col-1">
-              {tabId == 1 && <Badge data-cy='unreadMessagesSowSeller' pill color={row.messagesToReadSeller == 0 ? "secondary" : "primary"}>{row.messagesToReadSeller}</Badge>}
-              {tabId == 2 && <Badge data-cy='unreadMessagesSowBuyer' pill color={row.messagesToReadBuyer == 0 ? "secondary" : "primary"}>{row.messagesToReadBuyer}</Badge>}
-              {tabId == 3 && <Badge data-cy='unreadMessagesSowArbitrator' pill color={row.messagesToReadArbitrator == 0 ? "secondary" : "primary"}>{row.messagesToReadArbitrator}</Badge>}
-            </Col>
-            <Col className="col-10">
+            {tabId == 1 && row.messagesToReadSeller > 0 &&
+              <Col className="col-1">
+                <Badge data-cy='unreadMessagesSowSeller' pill color={"primary"}>{row.messagesToReadSeller}</Badge>
+              </Col>
+            }
+            {tabId == 2 && row.messagesToReadBuyer > 0 &&
+              <Col className="col-1">
+                <Badge data-cy='unreadMessagesSowBuyer' pill color={"primary"}>{row.messagesToReadBuyer}</Badge>
+              </Col>
+            }
+            {tabId == 3 && row.messagesToReadArbitrator > 0 &&
+              <Col className="col-1">
+                <Badge data-cy='unreadMessagesSowArbitrator' pill color={"primary"}>{row.messagesToReadArbitrator}</Badge>
+              </Col>
+            }
+            <Col className={((tabId == 1 && row.messagesToReadSeller != 0) || (tabId == 2 && row.messagesToReadBuyer != 0) || (tabId == 3 && row.messagesToReadArbitrator != 0)) ? "col-10 font-weight-bold" : "col-12"}>
               {row.title}
             </Col>
           </Row>,
@@ -56,10 +67,15 @@ export const TableSows = ({ tabId, data }: any) => {
         Header: 'Customer',
         accessor: 'buyer',
         Cell: ({ value }: any) => (
-          validateEmail(value) ?
-            value
-            :
-            users[value] ? users[value].given_name + ' ' + users[value].family_name : ''
+          value ?
+            value === 'not_set' ?
+              '-'
+              :
+              validateEmail(value) ?
+                value
+                :
+                users[value] ? users[value].given_name + ' ' + users[value].family_name : '-'
+            : '-'
         )
       },
       {
@@ -67,13 +83,13 @@ export const TableSows = ({ tabId, data }: any) => {
         accessor: 'seller',
         Cell: ({ value }: any) => (
           value ?
-            value == 'not_set' ?
+            value === 'not_set' ?
               '-'
               :
               validateEmail(value) ?
                 value
                 :
-                users[value].given_name + ' ' + users[value].family_name
+                users[value] ? users[value].given_name + ' ' + users[value].family_name : '-'
             : '-'
         )
       },
@@ -94,6 +110,7 @@ export const TableSows = ({ tabId, data }: any) => {
       {
         Header: 'Status',
         accessor: 'status',
+        Cell: ({ value }: any) => <SowStatusBadge status={value} />,
         width: getColumnWidth(data, 'accessor', 'Status'),
       },
     ],

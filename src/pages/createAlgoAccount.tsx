@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {
   Card, CardBody, CardText,
-  CardTitle, CardSubtitle, Button,
-  Container, Label,
-  Col, Row, Jumbotron
+  CardTitle, CardSubtitle,
+  Container, Jumbotron,
+  Label, FormGroup, Input,
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory, Redirect } from "react-router-dom";
@@ -24,6 +24,8 @@ export const CreateAlgoAccountPage = () => {
   const algoAccount = useSelector(ProfileSelectors.getAlgoAccount)
   const algoAccountWords = algosdk.secretKeyToMnemonic(algoAccount.sk)
 
+  const [mnemonicSaved, setMnemonicSaved] = React.useState(false);
+
   return (
     <>
       {!isLoading &&
@@ -43,9 +45,19 @@ export const CreateAlgoAccountPage = () => {
               <Jumbotron>
                 <CardText name="MnemonicSecretKey">{algoAccountWords}</CardText>
               </Jumbotron>
-              <ActivityButton type="submit" name="savePublicAddress" color="primary" block
-                onClick={() => dispatch(ProfileActions.willAddPublicKey({ publicKey: algoAccount.addr, history: history }))}
-              >Save public address</ActivityButton>
+
+              <FormGroup check>
+                <Label check>
+                  <Input name="mnemonicSaved" id="mnemonicSaved" type="checkbox"
+                    onChange={(event) => setMnemonicSaved(event.target.checked)}
+                  />
+                    I saved the mnemonic secret key offline
+                  </Label>
+              </FormGroup>
+              <ActivityButton type="submit" name="savePublicAddress" color="primary" block disabled={!mnemonicSaved}
+                onClick={() => {
+                  dispatch(ProfileActions.willAddPublicKey({ publicKey: algoAccount.addr, history: history }))
+                }}>Save public address</ActivityButton>
             </CardBody>
           </Card>
         </Container>
