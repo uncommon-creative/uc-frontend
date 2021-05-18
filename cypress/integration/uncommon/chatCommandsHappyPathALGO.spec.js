@@ -207,7 +207,7 @@ describe('Chat', () => {
       cy.get('[data-cy=closeRequestReview]').click()
       cy.wait(5000)
       cy.get('[data-cy=chatCommand]')
-        .contains('Request review')
+        .contains('Ask review')
       cy.logout()
 
       // seller CLAIM_MILESTONE_MET
