@@ -146,8 +146,10 @@ function* willSubmitStatementOfWork(action: any) {
       )
       console.log("willSubmitStatementOfWork resultDraft: ", resultDraft)
 
+      const userSeller = yield call(willGetUserProfile, { user: resultDraft.seller })
+      // console.log("willSubmitStatementOfWork userSeller: ", userSeller)
       const userBuyer = yield call(willGetUserProfile, { user: resultDraft.buyer })
-      console.log("willSubmitStatementOfWork userBuyer: ", userBuyer)
+      // console.log("willSubmitStatementOfWork userBuyer: ", userBuyer)
 
       // NOT REGISTERED
       if (!userBuyer.email) {

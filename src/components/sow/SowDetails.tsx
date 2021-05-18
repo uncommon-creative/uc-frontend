@@ -113,8 +113,9 @@ export const SowDetails = ({ modal, toggle }: any) => {
                   <CardText className="m-0">
                     {validateEmail(currentSow.arbitrator) ?
                       currentSow.arbitrator
-                      :
-                      users[currentSow.arbitrator].given_name + ' ' + users[currentSow.arbitrator].family_name
+                      : currentSow.arbitrator.user ?
+                        users[currentSow.arbitrator.user].given_name + ' ' + users[currentSow.arbitrator.user].family_name
+                        : users[currentSow.arbitrator].given_name + ' ' + users[currentSow.arbitrator].family_name
                     }
                   </CardText>
                   <CardText className="text-primary" style={{ fontSize: 12 }}>
